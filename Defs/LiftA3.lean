@@ -3,21 +3,16 @@ import Mathlib.GroupTheory.PresentedGroup
 import Mathlib.Tactic.Group
 import Mathlib.Algebra.Ring.Defs
 
-import Batteries.Data.UInt
-
 namespace Steinberg
 
-#check FreeGroup
-#check commutatorElement_def
-
--- \α, α+β, β, β+γ, γ
+-- A3PositiveRoots in A3: α, α+β, β, β+γ, γ, and missing α+β+γ
 
 variable {G : Type Tu} [Group G]
          {R : Type Tv} [Ring R]
 
 /- commutator identities (holding in any group) -/
 
-theorem comm_left_str (x y : G)   : x * y = ⁅x, y⁆ * y * x := by group
+theorem comm_left_str  (x y : G)   : x * y = ⁅x, y⁆ * y * x := by group
 theorem comm_right_str (x y : G)  : x * y = y * x * ⁅x⁻¹, y⁻¹⁆ := by group
 
 theorem comm_to_comm (x y : G) (h : ⁅x, y⁆ = 1) : x * y = y * x := by
@@ -29,38 +24,38 @@ theorem comm_on_left (x y z : G) (h : x * y = z * y * x) : ⁅x, y⁆ = z := by
   group
 
 /- defining the A3 positive root system -/
-inductive Root
+inductive A3PositiveRoot
   | α | β | γ | αβ | βγ
 
-namespace Root
+namespace A3PositiveRoot
 
-def height : Root → Nat
-  | Root.α => 1
-  | Root.β => 1
-  | Root.γ => 1
-  | Root.αβ => 2
-  | Root.βγ => 2
+def height : A3PositiveRoot → Nat
+  | A3PositiveRoot.α => 1
+  | A3PositiveRoot.β => 1
+  | A3PositiveRoot.γ => 1
+  | A3PositiveRoot.αβ => 2
+  | A3PositiveRoot.βγ => 2
 
-end Root
+end A3PositiveRoot
 
-structure RootedElem (R : Type v) [Ring R] where
-  root : Root
+structure A3UnipGen (R : Type v) [Ring R] where
+  root : A3PositiveRoot
   coeff : R
   -- i : Fin root.height   -- CC: These two are equivalent
   i : Nat
   hi : i ≤ root.height
 
-namespace RootedElem
+namespace A3UnipGen
 
-open Root
+open A3PositiveRoot
 
 /- defining the weak A3 unipotent group -/
-def mk' {R : Type Tv} [Ring R] (r : Root) (coeff : R) {i : Nat} (hi : i ≤ r.height) : RootedElem R :=
+def mk' {R : Type Tv} [Ring R] (r : A3PositiveRoot) (coeff : R) {i : Nat} (hi : i ≤ r.height) : A3UnipGen R :=
   mk r coeff i hi
 
-def mkOf {R : Type Tv} [Ring R] (r : Root) (coeff : R) {i : Nat} (hi : i ≤ r.height) := FreeGroup.of <| mk' r coeff hi
+def mkOf {R : Type Tv} [Ring R] (r : A3PositiveRoot) (coeff : R) {i : Nat} (hi : i ≤ r.height) := FreeGroup.of <| mk' r coeff hi
 
-def Linearity (R : Type Tv) [Ring R] := ∀ (r : Root) (t u : R) {i : Nat} (hi : i ≤ r.height),
+def Linearity (R : Type Tv) [Ring R] := ∀ (r : A3PositiveRoot) (t u : R) {i : Nat} (hi : i ≤ r.height),
     (mkOf r t hi) * (mkOf r u hi) = (mkOf r (t + u) hi)
 
 -- nontrivial commutators
@@ -68,7 +63,7 @@ def α_comm_β (R : Type Tv) [Ring R] := ∀ (t u : R) {i j : Nat} (hi : i ≤ �
  ⁅ mkOf α t hi, mkOf β u hj ⁆ = @mkOf _ _ αβ (t * u) (i + j) (by simp [height] at *; omega)
 
 def β_comm_γ (R : Type Tv) [Ring R] := ∀ (t u : R) {i j : Nat} (hi : i ≤ β.height) (hj : j ≤ γ.height),
- ⁅ mkOf β t hi, mkOf γ u hj ⁆ = @mkOf _ _ Root.βγ (t * u) (i + j) (by simp [Root.height] at *; omega)
+ ⁅ mkOf β t hi, mkOf γ u hj ⁆ = @mkOf _ _ A3PositiveRoot.βγ (t * u) (i + j) (by simp [A3PositiveRoot.height] at *; omega)
 
 -- trivial commutators
 def β_comm_αβ (R : Type Tv) [Ring R] := ∀ (t u : R) {i j : Nat} (hi : i ≤ β.height) (hj : j ≤ αβ.height),
@@ -77,10 +72,10 @@ def β_comm_αβ (R : Type Tv) [Ring R] := ∀ (t u : R) {i j : Nat} (hi : i ≤
 def γ_comm_βγ (R : Type Tv) [Ring R] := ∀ (t u : R) {i j : Nat} (hi : i ≤ γ.height) (hj : j ≤ βγ.height),
  ⁅ mkOf γ t hi, mkOf βγ u hj ⁆ = 1
 
-def α_comm_γ (R : Type Tv) [Ring R] := ∀ (t u : R) {i j : Nat} (hi : i ≤ Root.α.height) (hj : j ≤ γ.height),
+def α_comm_γ (R : Type Tv) [Ring R] := ∀ (t u : R) {i j : Nat} (hi : i ≤ A3PositiveRoot.α.height) (hj : j ≤ γ.height),
  ⁅ mkOf α t hi, mkOf γ u hj ⁆ = 1
 
-def αβ_comm_βγ (R : Type Tv) [Ring R] := ∀ (t u : R) {i j : Nat} (hi : i ≤ Root.αβ.height) (hj : j ≤ βγ.height),
+def αβ_comm_βγ (R : Type Tv) [Ring R] := ∀ (t u : R) {i j : Nat} (hi : i ≤ A3PositiveRoot.αβ.height) (hj : j ≤ βγ.height),
  ⁅ mkOf αβ t hi, mkOf βγ u hj ⁆ = 1
 
 structure WeakA3 (R : Type Tv) [Ring R] where
@@ -95,7 +90,7 @@ structure WeakA3 (R : Type Tv) [Ring R] where
 /- analysis of the group -/
 -- deduce identity relations from linearity relations
 @[simp]
-theorem Identity (h : WeakA3 R) (r : Root) {i : Nat} (hi : i ≤ r.height) :
+theorem Identity (h : WeakA3 R) (r : A3PositiveRoot) {i : Nat} (hi : i ≤ r.height) :
     mkOf r (0 : R) hi = 1 := by
   apply @mul_left_cancel _ _ _ (mkOf r 0 hi)
   rw [mul_one]
@@ -105,7 +100,7 @@ theorem Identity (h : WeakA3 R) (r : Root) {i : Nat} (hi : i ≤ r.height) :
 
 -- deduce inverse relations from linearity relations
 @[simp]
-theorem Inverse (h : WeakA3 R) (r : Root) (t : R) {i : Nat} (hi : i ≤ r.height) :
+theorem Inverse (h : WeakA3 R) (r : A3PositiveRoot) (t : R) {i : Nat} (hi : i ≤ r.height) :
     mkOf r (-t : R) hi = (mkOf r t hi)⁻¹ := by
   apply @mul_left_cancel _ _ _ (mkOf r t hi)
   rw [h.h_lin r t (-t) hi]
@@ -169,9 +164,9 @@ theorem expr_αβ_βγ_as_βγ_αβ (h : WeakA3 R) (t u : R) {i j : Nat} (hi : i
   done
 
 -- interchange theorem, ⁅α, βγ⁆ = ⁅αβ, γ⁆
-theorem Interchange (h : WeakA3 R) (t u v : R) {i j k : Nat} (hi : i ≤ Root.α.height) (hj : j ≤ β.height) (hk : k ≤ γ.height) :
-    ⁅ mkOf α t hi, @mkOf _ _ Root.βγ (u*v) (j+k) (by simp [height] at *; omega) ⁆ =
-    ⁅ @mkOf _ _ αβ (t*u) (i+j) (by simp [height] at *; omega), mkOf Root.γ v hk ⁆:= by
+theorem Interchange (h : WeakA3 R) (t u v : R) {i j k : Nat} (hi : i ≤ A3PositiveRoot.α.height) (hj : j ≤ β.height) (hk : k ≤ γ.height) :
+    ⁅ mkOf α t hi, @mkOf _ _ A3PositiveRoot.βγ (u*v) (j+k) (by simp [height] at *; omega) ⁆ =
+    ⁅ @mkOf _ _ αβ (t*u) (i+j) (by simp [height] at *; omega), mkOf A3PositiveRoot.γ v hk ⁆:= by
   apply comm_on_left
   conv => lhs;
   -- phase I: push α to right
@@ -212,9 +207,9 @@ theorem Interchange (h : WeakA3 R) (t u v : R) {i j k : Nat} (hi : i ≤ Root.α
   rw [← commutatorElement_def]
   sorry
 
-theorem InterchangeEmpty (h : WeakA3 R) (t v : R) {i j k : Nat} (hi : i ≤ Root.α.height) (hj : j ≤ β.height) (hk : k ≤ γ.height) :
-    ⁅ mkOf α t hi, @mkOf _ _ Root.βγ v (j+k) (by simp [height] at *; omega) ⁆ =
-    ⁅ @mkOf _ _ αβ t (i+j) (by simp [height] at *; omega), mkOf Root.γ v hk ⁆ := by
+theorem InterchangeEmpty (h : WeakA3 R) (t v : R) {i j k : Nat} (hi : i ≤ A3PositiveRoot.α.height) (hj : j ≤ β.height) (hk : k ≤ γ.height) :
+    ⁅ mkOf α t hi, @mkOf _ _ A3PositiveRoot.βγ v (j+k) (by simp [height] at *; omega) ⁆ =
+    ⁅ @mkOf _ _ αβ t (i+j) (by simp [height] at *; omega), mkOf A3PositiveRoot.γ v hk ⁆ := by
     nth_rewrite 1 [← one_mul v]
     nth_rewrite 2 [← mul_one t]
     rw [Interchange h t 1 v hi hj hk]
@@ -227,9 +222,9 @@ match i with
   | 2 => ⁅ (@mkOf _ _ α t 0 (by simp [height] at *)), (@mkOf _ _ βγ (1 : R) 2 (by simp [height] at *)) ⁆
   | 3 => ⁅ (@mkOf _ _ α t 1 (by simp [height] at *)), (@mkOf _ _ βγ (1 : R) 2 (by simp [height] at *)) ⁆
 
-theorem comm_α_βγ [Ring R] (t u : R) {i j : Nat} (hi : i ≤ α.height) (hj : j ≤ βγ.height) :
-  ⁅mkOf α t hi, mkOf βγ u hj⁆ = @mkαβγ _ _ (t * u) (i+j) (by simp [height] at *; omega) := by
-  simp_rw [Interchange, mul_one]
-  sorry
+-- theorem comm_α_βγ [Ring R] (t u : R) {i j : Nat} (hi : i ≤ α.height) (hj : j ≤ βγ.height) :
+--   ⁅mkOf α t hi, mkOf βγ u hj⁆ = @mkαβγ _ _ (t * u) (i+j) (by simp [height] at *; omega) := by
+--   simp_rw [Interchange, mul_one]
+--   sorry
 
-end RootedElem
+end A3UnipGen
