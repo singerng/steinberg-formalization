@@ -210,7 +210,26 @@ theorem Interchange (h : WeakA3 R) (t u v : R) {i j k : Nat} (hi : i ≤ Root.α
   simp_rw [← mul_assoc]
   repeat rw [Inverse]
   rw [← commutatorElement_def]
-  rfl
-  done
+  sorry
+
+theorem InterchangeEmpty (h : WeakA3 R) (t v : R) {i j k : Nat} (hi : i ≤ Root.α.height) (hj : j ≤ β.height) (hk : k ≤ γ.height) :
+    ⁅ mkOf α t hi, @mkOf _ _ Root.βγ v (j+k) (by simp [height] at *; omega) ⁆ =
+    ⁅ @mkOf _ _ αβ t (i+j) (by simp [height] at *; omega), mkOf Root.γ v hk ⁆ := by
+    nth_rewrite 1 [← one_mul v]
+    nth_rewrite 2 [← mul_one t]
+    rw [Interchange h t 1 v hi hj hk]
+    done
+
+def mkαβγ {R : Type Tv} [Ring R] (t : R) {i : Nat} (hi : i ≤ 3) :=
+match i with
+  | 0 => ⁅ (@mkOf _ _ α t 0 (by simp [height] at *)), (@mkOf _ _ βγ (1 : R) 0 (by simp [height] at *)) ⁆
+  | 1 => ⁅ (@mkOf _ _ α t 0 (by simp [height] at *)), (@mkOf _ _ βγ (1 : R) 1 (by simp [height] at *)) ⁆
+  | 2 => ⁅ (@mkOf _ _ α t 0 (by simp [height] at *)), (@mkOf _ _ βγ (1 : R) 2 (by simp [height] at *)) ⁆
+  | 3 => ⁅ (@mkOf _ _ α t 1 (by simp [height] at *)), (@mkOf _ _ βγ (1 : R) 2 (by simp [height] at *)) ⁆
+
+theorem comm_α_βγ [Ring R] (t u : R) {i j : Nat} (hi : i ≤ α.height) (hj : j ≤ βγ.height) :
+  ⁅mkOf α t hi, mkOf βγ u hj⁆ = @mkαβγ _ _ (t * u) (i+j) (by simp [height] at *; omega) := by
+  simp_rw [Interchange, mul_one]
+  sorry
 
 end RootedElem
