@@ -5,7 +5,30 @@ import Mathlib.Algebra.Ring.Defs
 
 namespace Steinberg
 
--- A3PositiveRoots in A3: α, α+β, β, β+γ, γ, and missing α+β+γ
+/-!
+A formalization of a certain presentation of a variant of the group of 4x4 unipotent matrices.
+A unipotent matrix has 1's on the diagonal, 0's below the diagonal, and arbitrary entries from some ring above the diagonal.
+
+In our group, the entries are *polynomials* with `R` coefficients, i.e., the ring `R[x]` where `R` is a ring and
+`x` is an indeterminate. Specifically, we consider the group where every matrix position of "height" `i` has an
+entry of degree at most `i`, where the "height" of a position is the taxicab distance to the diagonal.
+
+We label the entries thusly:
+
+(1   α   αβ  αβγ )
+(0   1   β   βγ  )
+(0   0   1   γ   )
+(0   0   0   1   )
+
+Note that α, β, and γ have height 1, αβ and βγ have height 2, and αβγ has height 3. Thus, the α, β, and γ entries are linear
+polynomials with `R` coefficients; αβ and βγ are quadratic; and αβγ is cubic. The positions α, β, etc. are also called "roots".
+
+In our group presentation, the generators are of the form {`r` `t` `i`}, where `r` is one of α, β, γ, αβ, or βγ; `t` is in `R`
+(an arbitrary ring); and `i` is between 0 and height(`r`) inclusive. Such a generator corresponds to a unipotent matrix with a single homogeneous
+entry, `tx^i`, in the `r` position. We consider a certain set of relations which these generators satisfy, and prove from these
+all relations characterizing interactions of single-homogeneous-entry-above-diagonal unipotent matrices. (These, in turn,
+form a canonical presentation of the entire group.)
+-/
 
 variable {G : Type Tu} [Group G]
          {R : Type Tv} [Ring R]
