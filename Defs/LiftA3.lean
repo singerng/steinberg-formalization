@@ -12,8 +12,9 @@ variable {G : Type Tu} [Group G]
 
 /- commutator identities (holding in any group) -/
 
-def Deg (i : ℕ) := Fin (i+1)
-def deg_add {n m : ℕ} (a : Deg n) (b : Deg m) : Deg (n + m) := ⟨ a.val + b.val, by omega ⟩
+/-- Degrees `Deg` are the (sub)type of natural numbers (including 0)
+    that do not exceed `n`, i.e., that `Deg n = {0, 1, ..., n}`. -/
+abbrev Deg (n : ℕ) := Fin (n + 1)
 
 theorem comm_left_str  (x y : G)   : x * y = ⁅x, y⁆ * y * x := by group
 theorem comm_right_str (x y : G)  : x * y = y * x * ⁅x⁻¹, y⁻¹⁆ := by group
@@ -32,6 +33,9 @@ inductive A3PositiveRoot
 
 namespace A3PositiveRoot
 
+-- CC: Adding the reducible tag lets `simp` peer into the definition,
+--     so that you don't have to manually unfold it during proving.
+@[reducible]
 def height : A3PositiveRoot → Nat
   | A3PositiveRoot.α => 1
   | A3PositiveRoot.β => 1
@@ -39,47 +43,92 @@ def height : A3PositiveRoot → Nat
   | A3PositiveRoot.αβ => 2
   | A3PositiveRoot.βγ => 2
 
+def toString : A3PositiveRoot → String
+  | α => "α"
+  | β => "β"
+  | γ => "γ"
+  | αβ => "αβ"
+  | βγ => "βγ"
+
+instance instToString : ToString A3PositiveRoot := ⟨toString⟩
+
 end A3PositiveRoot
 
-structure A3UnipGen (R : Type v) [Ring R] where
+
+structure A3UnipGen (R : Type Tv) [Ring R] where
   root : A3PositiveRoot
   coeff : R
-  i : Deg root.height   -- CC: These two are equivalent
-  -- i : Nat
-  -- hi : i ≤ root.height
+  i : Deg root.height
 
 namespace A3UnipGen
 
 open A3PositiveRoot
 
-/- defining the weak A3 unipotent group -/
-def mk' {R : Type Tv} [Ring R] (r : A3PositiveRoot) (coeff : R) (i : Deg r.height) : A3UnipGen R :=
-  mk r coeff i
+def mkOf (r : A3PositiveRoot) (coeff : R) (i : Deg r.height) :=
+  FreeGroup.of <| mk r coeff i
 
-def mkOf {R : Type Tv} [Ring R] (r : A3PositiveRoot) (coeff : R) (i : Deg r.height) := FreeGroup.of <| mk' r coeff i
+/-- Shorthand for building free group elements from a root, degree, and ring element. -/
+scoped notation "{" r ", " coeff ", " i "}" => A3UnipGen.mkOf r coeff i
 
-def Linearity (R : Type Tv) [Ring R] := ∀ (r : A3PositiveRoot) (t u : R) (i : Deg r.height),
-    (mkOf r t i) * (mkOf r u i) = (mkOf r (t + u) i)
+/--
+  Additional shorthand for building free group elements from a root, degree, and ring element.
+
+  CC: It turns out that both `{ }` and `( )` are "reserved syntax" by Lean, and so
+      it can't make up its mind if you use things that are also reserved for
+      (Fin)sets and Prods. Thus, if you get an "ambiguous, possible interpretations"
+      error, you can fall back on using the pipe character '|' to wrap the triple.
+-/
+scoped notation "|" r ", " coeff ", " i "|" => A3UnipGen.mkOf r coeff i
+
+/--
+  Syntax for adding two `Deg`s together, and then automatically deriving the
+  proof term needed to show that the resulting value is in range.
+
+  CC: Ideally, we would just use a `Fin` operation, but the closest I could
+      find was `Fin.natAdd`, since `Fin.add` takes two `Fin`s of the same
+      limit and adds their values together, modulo `n`. Since we know that
+      the argument to derive the proof term for the addition probably only
+      depends on height, we do that here.
+-/
+syntax (name := degAdd) term " +' " term : term
+macro_rules
+  | `($x +' $y) => `(⟨($x).val + ($y).val, by simp [height] at *; omega⟩)
+
+def Linearity (R : Type Tv) [Ring R] : Prop :=
+  ∀ (r : A3PositiveRoot) (t u : R) (i : Deg r.height),
+    {r, t, i} * {r, u, i} = {r, t + u, i}
 
 -- nontrivial commutators
 def α_comm_β (R : Type Tv) [Ring R] := ∀ (t u : R) (i : Deg α.height) (j : Deg β.height),
- ⁅ mkOf α t i, mkOf β u j ⁆ = mkOf αβ (t * u) (deg_add i j)
+ ⁅ {α, t, i}, {β, u, j} ⁆ = |αβ, (t * u), (i +' j)|
 
 def β_comm_γ (R : Type Tv) [Ring R] := ∀ (t u : R) (i : Deg β.height) (j : Deg γ.height),
- ⁅ mkOf β t i, mkOf γ u j ⁆ = mkOf βγ (t * u) (deg_add i j)
+ ⁅ {β, t, i}, {γ, u, j} ⁆ = |βγ, (t * u), (i +' j)|
+
+/-
+open Lean in
+set_option hygiene false in
+macro "declare_trivial_commutator" rootOne:ident rootTwo:ident : command => do
+  let thmName := ($rootOne : A3PositiveRoot).toString ++ "_comm_" ++ ($rootTwo : A3PositiveRoot).toString
+  let mut cmds ← Syntax.getArgs <$> `(
+    def $thmName (R : Type Tv) [Ring R] :=
+      ∀ (t u : R) (i : Deg $rootOne.height) (j : Deg $rootTwo.height),
+        ⁅ { $rootOne, t, i }, { $rootTwo, u, j } ⁆ = 1
+  )
+  return (mkNullNode cmds) -/
 
 -- trivial commutators
 def β_comm_αβ (R : Type Tv) [Ring R] := ∀ (t u : R) (i : Deg β.height) (j : Deg αβ.height),
- ⁅ mkOf β t i, mkOf αβ u j ⁆ = 1
+ ⁅ {β, t, i}, {αβ, u, j} ⁆ = 1
 
 def γ_comm_βγ (R : Type Tv) [Ring R] := ∀ (t u : R) (i : Deg γ.height) (j : Deg βγ.height),
- ⁅ mkOf γ t i, mkOf βγ u j ⁆ = 1
+ ⁅ {γ, t, i}, {βγ, u, j} ⁆ = 1
 
 def α_comm_γ (R : Type Tv) [Ring R] := ∀ (t u : R) (i : Deg α.height) (j : Deg γ.height),
- ⁅ mkOf α t i, mkOf γ u j ⁆ = 1
+ ⁅ {α, t, i}, {γ, u, j} ⁆ = 1
 
 def αβ_comm_βγ (R : Type Tv) [Ring R] := ∀ (t u : R) (i : Deg αβ.height) (j : Deg βγ.height),
- ⁅ mkOf αβ t i, mkOf βγ u j ⁆ = 1
+ ⁅ {αβ, t, i}, {βγ, u, j} ⁆ = 1
 
 structure WeakA3 (R : Type Tv) [Ring R] where
   h_lin : Linearity R
@@ -94,7 +143,7 @@ structure WeakA3 (R : Type Tv) [Ring R] where
 -- deduce identity relations from linearity relations
 @[simp]
 theorem Identity (h : WeakA3 R) (r : A3PositiveRoot) (i : Deg r.height) :
-    mkOf r (0 : R) i = 1 := by
+    {r, (0 : R), i} = 1 := by
   apply @mul_left_cancel _ _ _ (mkOf r 0 i)
   rw [mul_one]
   rw [h.h_lin r (0 : R) (0 : R) i]
@@ -115,7 +164,7 @@ theorem Inverse (h : WeakA3 R) (r : A3PositiveRoot) (t : R) (i : Deg r.height) :
 -- explicit expressions of commutators
 @[simp]
 theorem expr_βγ_as_β_comm_γ (h : WeakA3 R) (t u : R) (i : Deg β.height) (j : Deg γ.height) :
-    mkOf βγ (t*u) (deg_add i j) = (mkOf β t i) * (mkOf γ u j) * (mkOf β (-t) i) * (mkOf γ (-u) j) := by
+    |βγ, (t*u), (i +' j)| = {β, t, i} * {γ, u, j} * {β, (-t), i} * {γ, (-u), j} := by
   rw [Inverse h β t i]
   rw [Inverse h γ u j]
   rw [← commutatorElement_def]
@@ -125,14 +174,14 @@ theorem expr_βγ_as_β_comm_γ (h : WeakA3 R) (t u : R) (i : Deg β.height) (j 
 -- rewrites for products of noncommuting elements
 @[simp]
 theorem expr_α_β_as_αβ_β_α (h : WeakA3 R) (t u : R) (i : Deg α.height) (j : Deg β.height) :
-    (mkOf α t i) * (mkOf β u j) = (mkOf αβ (t*u) (deg_add i j)) * (mkOf β u j) * (mkOf α t i) := by
+    (mkOf α t i) * (mkOf β u j) = (mkOf αβ (t*u) (i +' j)) * (mkOf β u j) * (mkOf α t i) := by
   rw [← h.h_α_β t u i j]
   rw [comm_left_str (mkOf α t i) (mkOf β u j)]
   done
 
 @[simp]
 theorem expr_β_γ_as_βγ_γ_β (h : WeakA3 R) (t u : R) (i : Deg β.height) (j : Deg γ.height) :
-    (mkOf β t i) * (mkOf γ u j) = (mkOf βγ (t*u) (deg_add i j)) * (mkOf γ u j) * (mkOf β t i) := by
+    (mkOf β t i) * (mkOf γ u j) = (mkOf βγ (t*u) (i +' j)) * (mkOf γ u j) * (mkOf β t i) := by
   rw [← h.h_β_γ t u i j]
   rw [comm_left_str (mkOf β t i) (mkOf γ u j)]
   done
