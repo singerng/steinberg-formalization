@@ -44,8 +44,7 @@ def LinearityProp (f : R → G) : Prop :=
   ∀ (t u : R), (f t) * (f u) = f (t + u)
 
 -- `f(0) = 0`
-@[simp]
-def IdentityProp (f : R → G) : Prop :=
+abbrev IdentityProp (f : R → G) : Prop :=
   f (0 : R) = (1 : G)
 
 -- `f(t)⁻¹ = f(-t)`
