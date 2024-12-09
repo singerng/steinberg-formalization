@@ -3,6 +3,7 @@ import Mathlib.GroupTheory.PresentedGroup
 import Mathlib.Tactic.Group
 import Mathlib.Algebra.Ring.Defs
 
+import Steinberg.Defs.Basic
 import Steinberg.Macro.Group
 
 namespace Steinberg
@@ -37,23 +38,10 @@ form a canonical presentation of the entire group.)
 variable {G : Type Tu} [Group G]
          {R : Type Tv} [Ring R]
 
-/- commutator identities (holding in any group) -/
 
 /-- Degrees `Deg` are the (sub)type of natural numbers (including 0)
     that do not exceed `n`, i.e., that `Deg n = {0, 1, ..., n}`. -/
 abbrev Deg (n : ℕ) := Fin (n + 1)
-
-theorem comm_left_str  (x y : G)   : x * y = ⁅x, y⁆ * y * x := by group
-theorem comm_right_str (x y : G)  : x * y = y * x * ⁅x⁻¹, y⁻¹⁆ := by group
-
-theorem comm_to_comm {x y : G} : ⁅x, y⁆ = 1 → x * y = y * x := by
-  intro h; rw [comm_left_str, h, one_mul]
-
-theorem comm_on_left {x y z : G} : x * y = z * y * x → ⁅x, y⁆ = z := by
-  intro h
-  group
-  rw [h]
-  group
 
 /- defining the A3 positive root system -/
 inductive A3PositiveRoot
