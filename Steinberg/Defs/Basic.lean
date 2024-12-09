@@ -8,8 +8,12 @@ variable {G : Type Tu} [Group G]
 theorem comm_left_str  (x y : G)   : x * y = ⁅x, y⁆ * y * x := by group
 theorem comm_right_str (x y : G)  : x * y = y * x * ⁅x⁻¹, y⁻¹⁆ := by group
 
-theorem comm_to_comm {x y : G} : ⁅x, y⁆ = 1 → x * y = y * x := by
-  intro h; rw [comm_left_str, h, one_mul]
+theorem trivial_comm_to_commutes {x y : G} : ⁅x, y⁆ = 1 → x * y = y * x := by
+  intro h
+  rw [comm_left_str, h, one_mul]
+
+theorem commutes_to_trivial_comm {x y : G} : x * y = y * x → ⁅x, y⁆ = 1 := by
+  sorry
 
 theorem comm_on_left {x y z : G} : x * y = z * y * x → ⁅x, y⁆ = z := by
   intro h

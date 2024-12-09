@@ -109,15 +109,15 @@ def split_deg3 (i : Deg 3) : (Deg 1) × (Deg 2) :=
   | 2 => (1, 1)
   | 3 => (1, 2)
 
--- theorem split_deg3_sum (i : Deg 3) :
---   let (i₁, i₂) := split_deg3 i
---   i.val = i₁.val + i₂.val := by
---   match i with
---   | 0 => omega
---   | 1 => omega
---   | 2 => omega
---   | 3 => omega
---   done
+theorem split_deg3_sum (i : Deg 3) :
+  let (i₁, i₂) := split_deg3 i
+  i = i₁ +' i₂ := by
+  match i with
+  | 0 => simp
+  | 1 => simp
+  | 2 => simp
+  | 3 => simp
+  done
 
 def mkOf (ζ : A3PositiveRoot) (i : Deg ζ.height) (t : R) : FreeGroup (A3UnipGen R) :=
   match ζ with
@@ -174,7 +174,9 @@ abbrev inv_of_root (R : Type Tv) [Ring R] (ζ : A3PositiveRoot) : Prop :=
 
 -- assumptions
 -- trivial commutators
+def α_comm_αβ  (R : Type Tv) [Ring R] := trivial_commutator_of_root_pair R α αβ
 def β_comm_αβ  (R : Type Tv) [Ring R] := trivial_commutator_of_root_pair R β αβ
+def β_comm_βγ  (R : Type Tv) [Ring R] := trivial_commutator_of_root_pair R β βγ
 def γ_comm_βγ  (R : Type Tv) [Ring R] := trivial_commutator_of_root_pair R γ βγ
 def α_comm_γ   (R : Type Tv) [Ring R] := trivial_commutator_of_root_pair R α γ
 def αβ_comm_βγ (R : Type Tv) [Ring R] := trivial_commutator_of_root_pair R αβ βγ
@@ -193,7 +195,9 @@ structure WeakA3 (R : Type Tv) [Ring R] where
   h_α_β : α_comm_β R
   h_β_γ : β_comm_γ R
   h_α_γ : α_comm_γ R
+  h_α_αβ : α_comm_αβ R
   h_β_αβ : β_comm_αβ R
+  h_β_βγ : β_comm_βγ R
   h_γ_βγ : γ_comm_βγ R
   h_αβ_βγ : αβ_comm_βγ R
 
@@ -224,7 +228,7 @@ theorem inv_of_present (h : WeakA3 R) (ζ : A3PositiveRoot):
 
 -- explicit expressions of commutators
 @[simp]
-theorem expr_βγ_as_β_comm_γ (h : WeakA3 R) :
+theorem expr_βγ_as_β_γ_β_γ (h : WeakA3 R) :
     ∀ (i : Deg β.height) (j : Deg γ.height) (t u : R),
       |βγ, (i +' j), (t * u)| = {β, i, t} * {γ, j, u} * {β, i, (-t)} * {γ, j, (-u)} := by
   intro i j t u
@@ -263,28 +267,35 @@ theorem expr_β_γ_as_βγ_γ_β (h : WeakA3 R)  :
 theorem expr_α_γ_as_γ_α (h : WeakA3 R)  :
     ∀ (i : Deg α.height) (j : Deg γ.height) (t u : R), CommutesProp {α, i, t} {γ, j, u} := by
   intro i j t u
-  apply comm_to_comm
+  apply trivial_comm_to_commutes
   rw [h.h_α_γ]
+
+@[simp]
+theorem expr_α_αβ_as_αβ_α (h : WeakA3 R) :
+    ∀ (i : Deg α.height) (j : Deg αβ.height) (t u : R), CommutesProp {α, i, t} {αβ, j, u} := by
+  intro i j t u
+  apply trivial_comm_to_commutes
+  rw [h.h_α_αβ]
 
 @[simp]
 theorem expr_β_αβ_as_αβ_β (h : WeakA3 R) :
     ∀ (i : Deg β.height) (j : Deg αβ.height) (t u : R), CommutesProp {β, i, t} {αβ, j, u} := by
   intro i j t u
-  apply comm_to_comm
+  apply trivial_comm_to_commutes
   rw [h.h_β_αβ]
 
 @[simp]
 theorem expr_γ_βγ_as_βγ_γ (h : WeakA3 R) :
     ∀ (i : Deg γ.height) (j : Deg βγ.height) (t u : R), CommutesProp {γ, i, t} {βγ, j, u} := by
   intro i j t u
-  apply comm_to_comm
+  apply trivial_comm_to_commutes
   rw [h.h_γ_βγ]
 
 @[simp]
 theorem expr_αβ_βγ_as_βγ_αβ (h : WeakA3 R) :
   ∀ (i : Deg αβ.height) (j : Deg βγ.height) (t u : R), CommutesProp {αβ, i, t} {βγ, j, u} := by
   intro i j t u
-  apply comm_to_comm
+  apply trivial_comm_to_commutes
   rw [h.h_αβ_βγ]
 
 -- interchange theorem, ⁅α, βγ⁆ = ⁅αβ, γ⁆
@@ -295,7 +306,7 @@ theorem Interchange (h : WeakA3 R) (i : Deg α.height) (j : Deg β.height) (k : 
   -- phase I: push α to right
   conv =>
     lhs
-    rw [expr_βγ_as_β_comm_γ h]
+    rw [expr_βγ_as_β_γ_β_γ h]
     simp [← mul_assoc]
     rw [expr_α_β_as_αβ_β_α h]
     rw [mul_assoc _ |α, i, t|]
@@ -451,5 +462,56 @@ theorem comm_αβ_γ (h : WeakA3 R) : single_commutator_of_root_pair R αβ γ �
   | 0, 1 => exact comm_αβ_γ_01 h t u
   | 1, 1 => exact comm_αβ_γ_11 h t u
   | 2, 1 => exact comm_αβ_γ_21 h t u
+
+/-- we're cooking.... -/
+theorem expr_αβγ_as_α_βγ_α_βγ (h : WeakA3 R) :
+    ∀ (i : Deg α.height) (j : Deg βγ.height) (t u : R),
+      |αβγ, (i +' j), (t * u)| = {α, i, t} * {βγ, j, u} * {α, i, (-t)} * {βγ, j, (-u)} := by
+  intro i j t u
+  rw [inv_of_present h α]
+  rw [inv_of_present h βγ]
+  rw [← commutatorElement_def]
+  rw [← one_mul (t * u)]
+  rw [← comm_α_βγ h]
+  repeat simp
+  done
+
+theorem expr_αβγ_as_αβ_γ_αβ_γ (h : WeakA3 R) :
+    ∀ (i : Deg αβ.height) (j : Deg γ.height) (t u : R),
+      |αβγ, (i +' j), (t * u)| = {αβ, i, t} * {γ, j, u} * {αβ, i, (-t)} * {γ, j, (-u)} := by
+  intro i j t u
+  rw [inv_of_present h αβ]
+  rw [inv_of_present h γ]
+  rw [← commutatorElement_def]
+  rw [← one_mul (t * u)]
+  rw [← comm_αβ_γ h]
+  repeat simp
+  done
+
+/- simple proof: we know αβγ is expressible as a product of αβ's and γ's (expr_αβγ_as_αβ_γ_αβ_γ), and we know that α's
+   commute with αβ's (expr_α_αβ_as_αβ_α) and γ's (expr_α_γ_as_γ_α) -/
+theorem comm_α_αβγ (R : Type Tv) [Ring R] (h : WeakA3 R) : trivial_commutator_of_root_pair R α αβγ := by
+  intro i j t u
+  rw [TrivialCommutatorProp]
+  apply commutes_to_trivial_comm
+  let (j₂, j₁) := split_deg3 j
+  have id : j = j₁ +' j₂ := by
+    sorry
+  rw [id]
+  rw [← one_mul u]
+  rw [expr_αβγ_as_αβ_γ_αβ_γ h]
+  mul_assoc_l
+  rw [expr_α_αβ_as_αβ_α h]
+  rw [mul_assoc _ |α, i, t|]
+  rw [expr_α_γ_as_γ_α h]
+  mul_assoc_l
+  rw [mul_assoc _ |α, i, t|]
+  rw [expr_α_αβ_as_αβ_α h]
+  mul_assoc_l
+  rw [mul_assoc _ |α, i, t|]
+  rw [expr_α_γ_as_γ_α h]
+  mul_assoc_l
+
+
 
 end A3UnipGen
