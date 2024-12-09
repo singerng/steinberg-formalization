@@ -38,7 +38,6 @@ form a canonical presentation of the entire group.)
 variable {G : Type Tu} [Group G]
          {R : Type Tv} [Ring R]
 
-
 /-- Degrees `Deg` are the (sub)type of natural numbers (including 0)
     that do not exceed `n`, i.e., that `Deg n = {0, 1, ..., n}`. -/
 abbrev Deg (n : ℕ) := Fin (n + 1)
@@ -108,7 +107,7 @@ scoped notation "|" r ", " coeff ", " i "|" => A3UnipGen.mkOf r coeff i
 -/
 syntax (name := degAdd) term " +' " term : term
 macro_rules
-  | `($x +' $y) => `(⟨($x).val + ($y).val, by simp [height] at *; omega⟩)
+  | `($x +' $y) => `(⟨($x).val + ($y).val, by first | trivial | omega | simp [height] at *; omega⟩)
 
 def Linearity (R : Type Tv) [Ring R] : Prop :=
   ∀ (r : A3PositiveRoot) (t u : R) (i : Deg r.height),
@@ -259,16 +258,47 @@ theorem InterchangeEmpty (h : WeakA3 R) (t v : R) (i : Deg α.height) (j : Deg �
   nth_rewrite 2 [← mul_one t]
   rw [Interchange h]
 
-def mkαβγ {R : Type Tv} [Ring R] (t : R) :=
-  ⁅ |α, t, (0 : Fin 2)|, |βγ, (1 : R), (0 : Fin 3)| ⁆
--- ⁅ (mkOf α t (0 : Deg 1)), (mkOf βγ (1 : R) (0 : Deg 2)) ⁆
--- match i.val with
---   | 0 => ⁅ (mkOf 0 (by simp [height] at *)), (@mkOf _ _ βγ (1 : R) 0 (by simp [height] at *)) ⁆
---   | 1 => ⁅ (@mkOf _ _ α t 0 (by simp [height] at *)), (@mkOf _ _ βγ (1 : R) 1 (by simp [height] at *)) ⁆
---   | 2 => ⁅ (@mkOf _ _ α t 0 (by simp [height] at *)), (@mkOf _ _ βγ (1 : R) 2 (by simp [height] at *)) ⁆
---   | 3 => ⁅ (@mkOf _ _ α t 1 (by simp [height] at *)), (@mkOf _ _ βγ (1 : R) 2 (by simp [height] at *)) ⁆
+def mkαβγ {R : Type Tv} [Ring R] (t : R) (i : Deg 3) :=
+match i with
+  | 0 => ⁅ |α, t, (0 : Deg 1)|, |βγ, (1 : R), (0 : Deg 2)| ⁆
+  | 1 => ⁅ |α, t, (0 : Deg 1)|, |βγ, (1 : R), (1 : Deg 2)| ⁆
+  | 2 => ⁅ |α, t, (0 : Deg 1)|, |βγ, (1 : R), (2 : Deg 2)| ⁆
+  | 3 => ⁅ |α, t, (1 : Deg 1)|, |βγ, (1 : R), (2 : Deg 2)| ⁆
 
--- theorem comm_α_βγ_0 (h : WeakA3 R) (t u : R) :
+theorem LinkOne (f : R → R → G) (g : R → R → G) :
+  (∀ (t u v : R), f (t * u) v = g t (u * v)) → (∀ (t u : R), f t u = f (t * u) 1 ∧ g t u = f (t * u) 1) := by
+  intro h
+  intro t u
+  nth_rewrite 1 [← mul_one t]
+  rw [h]
+  rw [one_mul]
+  nth_rewrite 1 [← mul_one u]
+  rw [h]
+  rw [mul_one]
+  simp
+  done
+
+-- /- the whopper........ -/
+theorem comm_α_βγ_0 (h : WeakA3 R) :
+  ∀ (t u : R), ⁅ |α, t * u, (0 : Deg 1)|, |βγ, 1, (0 : Deg 2)| ⁆ = ⁅ |α, t, (0 : Deg 1)|, |βγ, u, (0 : Deg 2)| ⁆ := by
+  let f := fun (t : R) (u : R) => ⁅ |α, t * u, (0 : Deg 1)|, |βγ, (1 : R), (0 : Deg 2)| ⁆
+  let g := fun (t : R) (u : R) => ⁅ |α, t, (0 : Deg 1)|, |βγ, u, (0 : Deg 2)| ⁆
+  intro t u
+  rw [f t u]
+  rw [g t u]
+
+
+  rw [mkαβγ]
+
+  have id : ((0 : Deg 1) +' (0 : Deg 1)) = (0 : Deg 2) := by
+    simp
+  intro t u
+  rw [← id]
+  rw [LinkOne]
+  done
+
+-- theorem
+
 --   ⁅@mkOf _ _ α t 0 (by simp [height] at *), @mkOf _ _ βγ u 0 (by simp [height] at *)⁆ =
 --   @mkαβγ _ _ (t * u) 0 := by
 --   -- rw [mkαβγ (t*u) 0]
