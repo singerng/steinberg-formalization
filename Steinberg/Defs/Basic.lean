@@ -5,8 +5,9 @@ variable {G : Type Tu} [Group G]
          {R : Type Tv} [Ring R]
 
 /- commutator identities (holding in any group) -/
-theorem comm_left_str  (x y : G)   : x * y = ⁅x, y⁆ * y * x := by group
-theorem comm_right_str (x y : G)  : x * y = y * x * ⁅x⁻¹, y⁻¹⁆ := by group
+theorem comm_left_str  (x y : G) : x * y = ⁅x, y⁆ * y * x := by group
+theorem comm_mid_str (x y : G)   : x * y = y * ⁅x, y⁻¹⁆⁻¹ * x := by group
+theorem comm_right_str (x y : G) : x * y = y * x * ⁅x⁻¹, y⁻¹⁆ := by group
 
 theorem trivial_comm_to_commutes {x y : G} : ⁅x, y⁆ = 1 → x * y = y * x := by
   intro h
@@ -32,6 +33,11 @@ def CommutesProp (x y : G) : Prop :=
 -- `x * y = z * y * x`
 def ReorderLeftProp (x y z : G) : Prop :=
   x * y = z * y * x
+
+@[reducible]
+-- `x * y = z * y * x`
+def ReorderMidProp (x y z : G) : Prop :=
+  x * y = y * z * x
 
 @[reducible]
 def TrivialCommutatorProp (x y : G) : Prop :=

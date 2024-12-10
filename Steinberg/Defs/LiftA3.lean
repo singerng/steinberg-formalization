@@ -288,6 +288,24 @@ theorem expr_β_γ_as_βγ_γ_β (h : WeakA3 R)  :
   rw [comm_left_str]
   done
 
+-- there's a simpler proof
+@[simp]
+theorem expr_β_γ_as_γ_βγ_β (h : WeakA3 R)  :
+    ∀ (i : Deg β.height) (j : Deg γ.height) (t u : R), ReorderMidProp {β, i, t} {γ, j, u} |βγ, (i +' j), (t*u)| := by
+  intro i j t u
+  rw [← one_mul (t * u)]
+  rw [← h.h_β_γ]
+  rw [ReorderMidProp]
+  rw [comm_mid_str]
+  rw [← inv_of_present h γ]
+  rw [h.h_β_γ]
+  rw [← inv_of_present h βγ]
+  simp
+  rw [h.h_β_γ]
+  simp
+  repeat simp [isPresent] at *
+  done
+
 -- rewrites for products of commuting elements
 theorem expr_α_γ_as_γ_α (h : WeakA3 R)  :
     ∀ (i : Deg α.height) (j : Deg γ.height) (t u : R), CommutesProp {α, i, t} {γ, j, u} := by
@@ -549,8 +567,34 @@ theorem comm_γ_αβγ (R : Type Tv) [Ring R] (h : WeakA3 R) : trivial_commutato
   rw [expr_γ_βγ_as_βγ_γ h]
   mul_assoc_l
 
+/-- the only commutator proof where we have to do something 'interesting' -/
 theorem comm_β_αβγ (R : Type Tv) [Ring R] (h : WeakA3 R) : trivial_commutator_of_root_pair R β αβγ := by
-  sorry
+  intro i j t u
+  apply commutes_to_trivial_comm
+  let ⟨ j₁, j₂, id ⟩ := (decompose αβ.height γ.height j)
+  rw [id]
+  rw [← one_mul u]
+  rw [expr_αβγ_as_αβ_γ_αβ_γ h]
+  mul_assoc_l
+  rw [expr_β_αβ_as_αβ_β h]
+  rw [mul_assoc _ |β, i, t|]
+  rw [expr_β_γ_as_γ_βγ_β h]
+  mul_assoc_l
+  rw [mul_assoc _ |β, i, t|]
+  rw [expr_β_αβ_as_αβ_β h]
+  mul_assoc_l
+  rw [mul_assoc _ |β, i, t|]
+  rw [expr_β_γ_as_βγ_γ_β h]
+  rw [mul_assoc _ _ |αβ, j₁, -1|]
+  rw [← expr_αβ_βγ_as_βγ_αβ]
+  mul_assoc_l
+  rw [mul_assoc _ _ |βγ, i +' j₂, t * u|]
+  mul_assoc_l
+  rw [mul_assoc _ |βγ, i +' j₂, t * u|]
+  rw [mul_neg]
+  rw [inv_of_present h βγ]
+  group
+  simp [isPresent] at *
 
 theorem comm_αβ_αβγ (R : Type Tv) [Ring R] (h : WeakA3 R) : trivial_commutator_of_root_pair R αβ αβγ := by
   intro i j t u
