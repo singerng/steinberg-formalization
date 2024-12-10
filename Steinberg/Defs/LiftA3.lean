@@ -541,7 +541,47 @@ theorem comm_βγ_αβγ (R : Type Tv) [Ring R] (h : WeakA3 R) : trivial_commuta
 theorem comm_αβγ_αβγ (R : Type Tv) [Ring R] (h : WeakA3 R) : trivial_commutator_of_root_pair R αβγ αβγ := by
   sorry
 
+theorem expr_α_αβγ_as_αβγ_α (h : WeakA3 R) :
+    ∀ (i : Deg α.height) (j : Deg αβγ.height) (t u : R), CommutesProp {α, i, t} {αβγ, j, u} := by
+  intro i j t u
+  apply trivial_comm_to_commutes
+  rw [comm_α_αβγ R h]
+
+theorem expr_βγ_αβγ_as_αβγ_βγ (h : WeakA3 R) :
+    ∀ (i : Deg βγ.height) (j : Deg αβγ.height) (t u : R), CommutesProp {βγ, i, t} {αβγ, j, u} := by
+  intro i j t u
+  apply trivial_comm_to_commutes
+  rw [comm_βγ_αβγ R h]
+
 theorem lin_αβγ (R : Type Tv) [Ring R] (h : WeakA3 R) : linearity_of_root R αβγ := by
-  sorry
+  intro i t u
+  let (i₁, i₂) := split_deg3 i
+  have id : i = i₁ +' i₂ := by
+    sorry
+  rw [id]
+  nth_rewrite 1 [← mul_one t]
+  rw [expr_αβγ_as_α_βγ_α_βγ h]
+  rw [mul_assoc _ _ |αβγ, i₁ +' i₂, u|]
+  rw [expr_βγ_αβγ_as_αβγ_βγ h]
+  mul_assoc_l
+  rw [mul_assoc _ _ |αβγ, i₁ +' i₂, u|]
+  rw [expr_α_αβγ_as_αβγ_α h]
+  mul_assoc_l
+  rw [mul_assoc _ _ |αβγ, i₁ +' i₂, u|]
+  rw [expr_βγ_αβγ_as_αβγ_βγ h]
+  mul_assoc_l
+  nth_rewrite 1 [← mul_one u]
+  rw [expr_αβγ_as_α_βγ_α_βγ h]
+  mul_assoc_l
+  rw [h.h_lin]
+  nth_rewrite 1 [inv_of_present h βγ]
+  group
+  rw [mul_assoc _ |α, i₁, -u|]
+  rw [h.h_lin]
+  have rid : -u + -t = -(t+u) := by simp
+  rw [rid]
+  rw [← expr_αβγ_as_α_βγ_α_βγ h]
+  simp [height] at *
+  repeat simp [isPresent] at *
 
 end A3UnipGen
