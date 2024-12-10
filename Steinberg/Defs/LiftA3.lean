@@ -187,7 +187,7 @@ abbrev single_commutator_of_root_pair (R : Type Tv) [Ring R] (ζ η θ : A3Posit
     -- CommutatorProp {ζ, i, t} {η, j, u} |θ, i +' j, C * (t * u)|
     ⁅ {ζ, i, t}, {η, j, u} ⁆ = |θ, i +' j, C * (t * u)|
 
-abbrev linearity_of_root (R : Type Tv) [Ring R] (ζ : A3PositiveRoot) : Prop :=
+abbrev lin_of_root (R : Type Tv) [Ring R] (ζ : A3PositiveRoot) : Prop :=
   ∀ (i : Deg ζ.height) (t u : R), {ζ, i, t} * {ζ, i, u} = {ζ, i, t+u}
 
 abbrev id_of_root (R : Type Tv) [Ring R] (ζ : A3PositiveRoot) : Prop :=
@@ -206,7 +206,7 @@ def α_comm_γ   (R : Type Tv) [Ring R] := trivial_commutator_of_root_pair R α 
 
 -- linearity
 def lin_of_present (R : Type Tv) [Ring R] : Prop := ∀ (ζ : A3PositiveRoot),
-  ζ.isPresent → linearity_of_root R ζ
+  ζ.isPresent → lin_of_root R ζ
 
 -- nontrivial commutators
 def α_comm_β (R : Type Tv) [Ring R] : Prop := single_commutator_of_root_pair R α β αβ 1 (by simp [height] at *)
@@ -239,7 +239,6 @@ theorem id_of_present (h : WeakA3 R) (ζ : A3PositiveRoot) :
   done
 
 -- deduce inverse relations from linearity relations
-@[simp]
 theorem inv_of_present (h : WeakA3 R) (ζ : A3PositiveRoot):
     ζ.isPresent → inv_of_root R ζ := by
   intro h_pres i t
@@ -252,14 +251,48 @@ theorem inv_of_present (h : WeakA3 R) (ζ : A3PositiveRoot):
   exact h_pres
   done
 
+/-- linearity theorems for specific roots -/
+theorem lin_of_α (h : WeakA3 R) : lin_of_root R α := by
+  apply h.h_lin α
+  simp [isPresent] at *
+theorem lin_of_β (h : WeakA3 R) : lin_of_root R β := by
+  apply h.h_lin β
+  simp [isPresent] at *
+theorem lin_of_γ (h : WeakA3 R) : lin_of_root R γ := by
+  apply h.h_lin γ
+  simp [isPresent] at *
+theorem lin_of_αβ (h : WeakA3 R) : lin_of_root R αβ := by
+  apply h.h_lin αβ
+  simp [isPresent] at *
+theorem lin_of_βγ (h : WeakA3 R) : lin_of_root R βγ := by
+  apply h.h_lin βγ
+  simp [isPresent] at *
+
+/-- inverse theorems for specific roots -/
+theorem inv_of_α (h : WeakA3 R) : inv_of_root R α := by
+  apply inv_of_present h α
+  simp [isPresent] at *
+theorem inv_of_β (h : WeakA3 R) : inv_of_root R β := by
+  apply inv_of_present h β
+  simp [isPresent] at *
+theorem inv_of_γ (h : WeakA3 R) : inv_of_root R γ := by
+  apply inv_of_present h γ
+  simp [isPresent] at *
+theorem inv_of_αβ (h : WeakA3 R) : inv_of_root R αβ := by
+  apply inv_of_present h αβ
+  simp [isPresent] at *
+theorem inv_of_βγ (h : WeakA3 R) : inv_of_root R βγ := by
+  apply inv_of_present h βγ
+  simp [isPresent] at *
+
 -- explicit expressions of commutators
 @[simp]
 theorem expr_βγ_as_β_γ_β_γ (h : WeakA3 R) :
     ∀ (i : Deg β.height) (j : Deg γ.height) (t u : R),
       |βγ, (i +' j), (t * u)| = {β, i, t} * {γ, j, u} * {β, i, (-t)} * {γ, j, (-u)} := by
   intro i j t u
-  rw [inv_of_present h β]
-  rw [inv_of_present h γ]
+  rw [inv_of_β h]
+  rw [inv_of_γ h]
   rw [← commutatorElement_def]
   rw [← one_mul (t * u)]
   rw [← h.h_β_γ]
@@ -297,13 +330,12 @@ theorem expr_β_γ_as_γ_βγ_β (h : WeakA3 R)  :
   rw [← h.h_β_γ]
   rw [ReorderMidProp]
   rw [comm_mid_str]
-  rw [← inv_of_present h γ]
+  rw [← inv_of_γ h]
   rw [h.h_β_γ]
-  rw [← inv_of_present h βγ]
+  rw [← inv_of_βγ h]
   simp
   rw [h.h_β_γ]
   simp
-  repeat simp [isPresent] at *
   done
 
 -- rewrites for products of commuting elements
@@ -366,7 +398,7 @@ theorem Interchange (h : WeakA3 R) (i : Deg α.height) (j : Deg β.height) (k : 
     rw [expr_β_αβ_as_αβ_β h]
     simp [← mul_assoc]
     rw [mul_assoc _ |β, j, u|]
-  nth_rewrite 2 [inv_of_present h]
+  rw [inv_of_β h]
   group
   conv =>
     lhs
@@ -382,7 +414,6 @@ theorem Interchange (h : WeakA3 R) (i : Deg α.height) (j : Deg β.height) (k : 
     simp [← mul_assoc]
     repeat rw [inv_of_present h]
   group
-  simp
   done
 
 /-- the whopper: establishing an "αβγ" element as either ⁅α,βγ⁆ or ⁅αβ,γ⁆ -/
@@ -507,8 +538,8 @@ theorem expr_αβγ_as_α_βγ_α_βγ (h : WeakA3 R) :
     ∀ (i : Deg α.height) (j : Deg βγ.height) (t u : R),
       |αβγ, (i +' j), (t * u)| = {α, i, t} * {βγ, j, u} * {α, i, (-t)} * {βγ, j, (-u)} := by
   intro i j t u
-  rw [inv_of_present h α]
-  rw [inv_of_present h βγ]
+  rw [inv_of_α h]
+  rw [inv_of_βγ h]
   rw [← commutatorElement_def]
   rw [← one_mul (t * u)]
   rw [← comm_α_βγ h]
@@ -519,8 +550,8 @@ theorem expr_αβγ_as_αβ_γ_αβ_γ (h : WeakA3 R) :
     ∀ (i : Deg αβ.height) (j : Deg γ.height) (t u : R),
       |αβγ, (i +' j), (t * u)| = {αβ, i, t} * {γ, j, u} * {αβ, i, (-t)} * {γ, j, (-u)} := by
   intro i j t u
-  rw [inv_of_present h αβ]
-  rw [inv_of_present h γ]
+  rw [inv_of_αβ h]
+  rw [inv_of_γ h]
   rw [← commutatorElement_def]
   rw [← one_mul (t * u)]
   rw [← comm_αβ_γ h]
@@ -592,9 +623,8 @@ theorem comm_β_αβγ (R : Type Tv) [Ring R] (h : WeakA3 R) : trivial_commutato
   mul_assoc_l
   rw [mul_assoc _ |βγ, i +' j₂, t * u|]
   rw [mul_neg]
-  rw [inv_of_present h βγ]
+  rw [inv_of_βγ h]
   group
-  simp [isPresent] at *
 
 theorem comm_αβ_αβγ (R : Type Tv) [Ring R] (h : WeakA3 R) : trivial_commutator_of_root_pair R αβ αβγ := by
   intro i j t u
@@ -666,7 +696,7 @@ theorem comm_αβγ_αβγ (R : Type Tv) [Ring R] (h : WeakA3 R) : trivial_commu
   rw [← expr_βγ_αβγ_as_αβγ_βγ h]
   mul_assoc_l
 
-theorem lin_αβγ (R : Type Tv) [Ring R] (h : WeakA3 R) : linearity_of_root R αβγ := by
+theorem lin_αβγ (R : Type Tv) [Ring R] (h : WeakA3 R) : lin_of_root R αβγ := by
   intro i t u
   let ⟨ i₁, i₂, id ⟩ := (decompose α.height βγ.height i)
   rw [id]
@@ -684,15 +714,14 @@ theorem lin_αβγ (R : Type Tv) [Ring R] (h : WeakA3 R) : linearity_of_root R �
   nth_rewrite 1 [← mul_one u]
   rw [expr_αβγ_as_α_βγ_α_βγ h]
   mul_assoc_l
-  rw [h.h_lin]
-  nth_rewrite 1 [inv_of_present h βγ]
+  rw [lin_of_α h]
+  nth_rewrite 1 [inv_of_βγ h]
   group
   rw [mul_assoc _ |α, i₁, -u|]
-  rw [h.h_lin]
+  rw [lin_of_α h]
   have rid : -u + -t = -(t+u) := by simp
   rw [rid]
   rw [← expr_αβγ_as_α_βγ_α_βγ h]
   simp [height] at *
-  repeat simp [isPresent] at *
 
 end A3UnipGen
