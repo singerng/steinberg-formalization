@@ -553,13 +553,43 @@ theorem comm_β_αβγ (R : Type Tv) [Ring R] (h : WeakA3 R) : trivial_commutato
   sorry
 
 theorem comm_αβ_αβγ (R : Type Tv) [Ring R] (h : WeakA3 R) : trivial_commutator_of_root_pair R αβ αβγ := by
-  sorry
+  intro i j t u
+  apply commutes_to_trivial_comm
+  let ⟨ j₁, j₂, id ⟩ := (decompose α.height βγ.height j)
+  rw [id]
+  rw [← one_mul u]
+  rw [expr_αβγ_as_α_βγ_α_βγ h]
+  mul_assoc_l
+  rw [← expr_α_αβ_as_αβ_α h]
+  rw [mul_assoc _ |αβ, i, t|]
+  rw [expr_αβ_βγ_as_βγ_αβ]
+  mul_assoc_l
+  rw [mul_assoc _ |αβ, i, t|]
+  rw [← expr_α_αβ_as_αβ_α h]
+  mul_assoc_l
+  rw [mul_assoc _ |αβ, i, t|]
+  rw [expr_αβ_βγ_as_βγ_αβ]
+  mul_assoc_l
 
 theorem comm_βγ_αβγ (R : Type Tv) [Ring R] (h : WeakA3 R) : trivial_commutator_of_root_pair R βγ αβγ := by
-  sorry
+  intro i j t u
+  apply commutes_to_trivial_comm
+  let ⟨ j₁, j₂, id ⟩ := (decompose αβ.height γ.height j)
+  rw [id]
+  rw [← one_mul u]
+  rw [expr_αβγ_as_αβ_γ_αβ_γ h]
+  mul_assoc_l
+  rw [← expr_αβ_βγ_as_βγ_αβ]
+  rw [mul_assoc _ |βγ, i, t|]
+  rw [← expr_γ_βγ_as_βγ_γ h]
+  mul_assoc_l
+  rw [mul_assoc _ |βγ, i, t|]
+  rw [← expr_αβ_βγ_as_βγ_αβ]
+  mul_assoc_l
+  rw [mul_assoc _ |βγ, i, t|]
+  rw [← expr_γ_βγ_as_βγ_γ h]
+  mul_assoc_l
 
-theorem comm_αβγ_αβγ (R : Type Tv) [Ring R] (h : WeakA3 R) : trivial_commutator_of_root_pair R αβγ αβγ := by
-  sorry
 
 theorem expr_α_αβγ_as_αβγ_α (h : WeakA3 R) :
     ∀ (i : Deg α.height) (j : Deg αβγ.height) (t u : R), CommutesProp {α, i, t} {αβγ, j, u} := by
@@ -572,6 +602,25 @@ theorem expr_βγ_αβγ_as_αβγ_βγ (h : WeakA3 R) :
   intro i j t u
   apply trivial_comm_to_commutes
   rw [comm_βγ_αβγ R h]
+
+theorem comm_αβγ_αβγ (R : Type Tv) [Ring R] (h : WeakA3 R) : trivial_commutator_of_root_pair R αβγ αβγ := by
+  intro i j t u
+  apply commutes_to_trivial_comm
+  let ⟨ j₁, j₂, id ⟩ := (decompose α.height βγ.height j)
+  rw [id]
+  rw [← one_mul u]
+  rw [expr_αβγ_as_α_βγ_α_βγ h]
+  mul_assoc_l
+  rw [← expr_α_αβγ_as_αβγ_α h]
+  rw [mul_assoc _ |αβγ, i, t|]
+  rw [← expr_βγ_αβγ_as_αβγ_βγ h]
+  mul_assoc_l
+  rw [mul_assoc _ |αβγ, i, t|]
+  rw [← expr_α_αβγ_as_αβγ_α h]
+  mul_assoc_l
+  rw [mul_assoc _ |αβγ, i, t|]
+  rw [← expr_βγ_αβγ_as_αβγ_βγ h]
+  mul_assoc_l
 
 theorem lin_αβγ (R : Type Tv) [Ring R] (h : WeakA3 R) : linearity_of_root R αβγ := by
   intro i t u
