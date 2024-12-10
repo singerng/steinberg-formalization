@@ -99,6 +99,30 @@ syntax (name := degAdd) term " +' " term : term
 macro_rules
   | `($x +' $y) => `(⟨($x).val + ($y).val, by first | trivial | omega | simp [height] at *; omega⟩)
 
+/--
+  Decompose a number `0 ≤ i ≤ n + m` into `i₁ + i₂`, where `0 ≤ i₁ ≤ n` and `0 ≤ i₂ ≤ m`.
+ -/
+theorem decompose (n m : ℕ) : ∀ (i : Deg (n + m)), ∃ (i₁ : Deg n) (i₂ : Deg m), i = i₁ +' i₂ := by
+  intro i
+  if h : i.val < n + 1 then (
+    let i₁ : Deg n := Fin.mk i.val h
+    let i₂ : Deg m := 0
+    -- have id : i = i₁ +' i₂ := by simp; omega
+    exists i₁
+    exists i₂
+    -- sorryz
+  ) else (
+    have id₁ : n < n + 1 := by simp;
+    let i₁ : Deg n := Fin.mk n id₁;
+    have id₂ : i.val - n < m + 1 := by omega;
+    let i₂ : Deg m := Fin.mk (i.val - n) id₂;
+    have iddd : i.val ≥ n + 1 := by omega;
+    have id : i = i₁ +' i₂ := by
+      sorry
+    exists i₁
+    exists i₂
+  )
+
 -- "{αβγ t i}" -> ⁅ |α, i, t1|, |βγ, (1 : R), i2| ⁆
 
 @[simp]
@@ -490,9 +514,7 @@ theorem expr_αβγ_as_αβ_γ_αβ_γ (h : WeakA3 R) :
 theorem comm_α_αβγ (R : Type Tv) [Ring R] (h : WeakA3 R) : trivial_commutator_of_root_pair R α αβγ := by
   intro i j t u
   apply commutes_to_trivial_comm
-  let (j₂, j₁) := split_deg3 j
-  have id : j = j₁ +' j₂ := by
-    sorry
+  let ⟨ j₁, j₂, id ⟩ := (decompose αβ.height γ.height j)
   rw [id]
   rw [← one_mul u]
   rw [expr_αβγ_as_αβ_γ_αβ_γ h]
@@ -511,9 +533,7 @@ theorem comm_α_αβγ (R : Type Tv) [Ring R] (h : WeakA3 R) : trivial_commutato
 theorem comm_γ_αβγ (R : Type Tv) [Ring R] (h : WeakA3 R) : trivial_commutator_of_root_pair R γ αβγ := by
   intro i j t u
   apply commutes_to_trivial_comm
-  let (j₁, j₂) := split_deg3 j
-  have id : j = j₁ +' j₂ := by
-    sorry
+  let ⟨ j₁, j₂, id ⟩ := (decompose α.height βγ.height j)
   rw [id]
   rw [← one_mul u]
   rw [expr_αβγ_as_α_βγ_α_βγ h]
@@ -555,9 +575,7 @@ theorem expr_βγ_αβγ_as_αβγ_βγ (h : WeakA3 R) :
 
 theorem lin_αβγ (R : Type Tv) [Ring R] (h : WeakA3 R) : linearity_of_root R αβγ := by
   intro i t u
-  let (i₁, i₂) := split_deg3 i
-  have id : i = i₁ +' i₂ := by
-    sorry
+  let ⟨ i₁, i₂, id ⟩ := (decompose α.height βγ.height i)
   rw [id]
   nth_rewrite 1 [← mul_one t]
   rw [expr_αβγ_as_α_βγ_α_βγ h]
