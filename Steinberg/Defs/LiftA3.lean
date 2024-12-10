@@ -105,20 +105,20 @@ macro_rules
 theorem decompose (n m : ℕ) : ∀ (i : Deg (n + m)), ∃ (i₁ : Deg n) (i₂ : Deg m), i = i₁ +' i₂ := by
   intro i
   if h : i.val < n + 1 then (
-    let i₁ : Deg n := Fin.mk i.val h
+    let i₁ : Deg n := ⟨ i.val, h ⟩
     let i₂ : Deg m := 0
-    -- have id : i = i₁ +' i₂ := by simp; omega
     exists i₁
     exists i₂
-    -- sorryz
   ) else (
     have id₁ : n < n + 1 := by simp;
-    let i₁ : Deg n := Fin.mk n id₁;
+    let i₁ : Deg n := ⟨ n, id₁ ⟩;
     have id₂ : i.val - n < m + 1 := by omega;
-    let i₂ : Deg m := Fin.mk (i.val - n) id₂;
-    have iddd : i.val ≥ n + 1 := by omega;
-    have id : i = i₁ +' i₂ := by
-      sorry
+    let i₂ : Deg m := ⟨ i.val - n, id₂ ⟩;
+    have id₃ : i₁.val + i₂.val < n + m + 1 := by omega;
+    have id₄ : i = ⟨ i₁.val + i₂.val, id₃ ⟩ := by
+      apply Fin.eq_of_val_eq
+      simp
+      omega
     exists i₁
     exists i₂
   )
