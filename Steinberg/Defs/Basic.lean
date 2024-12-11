@@ -39,13 +39,13 @@ def ReorderLeftProp (x y z : G) : Prop :=
 def ReorderMidProp (x y z : G) : Prop :=
   x * y = y * z * x
 
-@[reducible]
-def TrivialCommutatorProp (x y : G) : Prop :=
-  ⁅ x, y ⁆ = 1
+-- @[reducible]
+-- def TrivialCommutatorProp (x y : G) : Prop :=
+--   ⁅ x, y ⁆ = 1
 
-@[reducible]
-def CommutatorProp (x y z : G) : Prop :=
-  ⁅ x, y ⁆ = z
+-- @[reducible]
+-- def CommutatorProp (x y z : G) : Prop :=
+--   ⁅ x, y ⁆ = z
 
 /- groups and rings -/
 @[simp]
