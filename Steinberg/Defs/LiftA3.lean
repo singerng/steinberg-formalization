@@ -160,9 +160,6 @@ scoped notation "{" ζ ", " i ", " t "}" => A3UnipGen.mkOf ζ i t
 -/
 scoped notation "|" ζ ", " i ", " t "|" => A3UnipGen.mkOf ζ i t
 
-scoped notation "triv_commutator" α β => ⁅ α, β ⁆ = 1
-scoped notation "commutes" "( " α ", " β " )" => α * β = β * α
-
 /-
 open Lean in
 set_option hygiene false in
@@ -278,9 +275,13 @@ theorem id₀₁ : (1 : Deg 2) = (0 : Deg 1) +' (1 : Deg 1) := by simp
 theorem id₁₀ : (1 : Deg 2) = (1 : Deg 1) +' (0 : Deg 1) := by simp
 theorem id₁₁ : (2 : Deg 2) = (1 : Deg 1) +' (1 : Deg 1) := by simp
 
-theorem decompose_sum_of_2 : ∀ (i j : Deg 2), (i, j) ≠ (0, 2) ∧ (i, j) ≠ (2, 0) →
+theorem decompose_sum_of_2 : ∀ (i j : Deg 2), (i, j) ≠ (0, 2) → (i, j) ≠ (2, 0) →
   ∃ (i' j' k' : Deg 1), (i = i' +' j') ∧ (j = j' +' k') := by
-  sorry
+  intro i j
+  fin_cases i, j
+  all_goals (repeat simp)
+  done
+
   -- intro i j
   -- match (i, j) with
   -- | (0, 0) => exists (0 : Deg 0) (0 : Deg 0) (0 : Deg 0)
@@ -353,30 +354,27 @@ theorem expr_βγ_as_β_γ_β_γ (h : WeakA3 R) :
 @[simp]
 theorem expr_α_β_as_αβ_β_α (h : WeakA3 R) :
     ∀ (i : Deg α.height) (j : Deg β.height) (t u : R),
-      ReorderLeftProp {α, i, t} {β, j, u} |αβ, (i +' j), (t*u)| := by
+      reorder_left({α, i, t}, {β, j, u}, |αβ, (i +' j), (t*u)|) := by
   intro i j t u
   rw [← one_mul (t * u)]
   rw [← h.h_comm_of_α_β]
-  rw [ReorderLeftProp]
   rw [comm_left_str]
 
 @[simp]
 theorem expr_β_γ_as_βγ_γ_β (h : WeakA3 R)  :
-    ∀ (i : Deg β.height) (j : Deg γ.height) (t u : R), ReorderLeftProp {β, i, t} {γ, j, u} |βγ, (i +' j), (t*u)| := by
+    ∀ (i : Deg β.height) (j : Deg γ.height) (t u : R), reorder_left({β, i, t}, {γ, j, u}, |βγ, (i +' j), (t*u)|) := by
   intro i j t u
   rw [← one_mul (t * u)]
   rw [← h.h_comm_of_β_γ]
-  rw [ReorderLeftProp]
   rw [comm_left_str]
 
 -- there's a simpler proof
 @[simp]
 theorem expr_β_γ_as_γ_βγ_β (h : WeakA3 R)  :
-    ∀ (i : Deg β.height) (j : Deg γ.height) (t u : R), ReorderMidProp {β, i, t} {γ, j, u} |βγ, (i +' j), (t*u)| := by
+    ∀ (i : Deg β.height) (j : Deg γ.height) (t u : R), reorder_mid({β, i, t}, {γ, j, u}, |βγ, (i +' j), (t*u)|) := by
   intro i j t u
   rw [← one_mul (t * u)]
   rw [← h.h_comm_of_β_γ]
-  rw [ReorderMidProp]
   rw [comm_mid_str]
   rw [← inv_of_γ h]
   rw [h.h_comm_of_β_γ]
@@ -411,7 +409,7 @@ theorem expr_γ_βγ_as_βγ_γ (h : WeakA3 R) :
   rw [h.h_comm_of_γ_βγ]
 
 theorem expr_αβ_βγ_as_βγ_αβ (h : WeakA3 R) :
-  ∀ (i : Deg αβ.height) (j : Deg βγ.height) (t u : R), CommutesProp {αβ, i, t} {βγ, j, u} := by
+  ∀ (i : Deg αβ.height) (j : Deg βγ.height) (t u : R), commutes({αβ, i, t}, {βγ, j, u}) := by
   intro i j t u
   apply trivial_comm_to_commutes
   rw [comm_of_αβ_βγ h]
@@ -426,24 +424,26 @@ theorem Interchange (h : WeakA3 R) (i : Deg α.height) (j : Deg β.height) (k : 
     lhs
     rw [expr_βγ_as_β_γ_β_γ h]
     -- Something like this could be added to Macro/Group.lean
-    (
-      simp [← mul_assoc]
-      repeat (
-        first
-        | rw [expr_α_β_as_αβ_β_α h]
-        | rw [mul_assoc]
-      )
-    )
-
-    (
-      simp [← mul_assoc]
-      repeat (
-        first
-        | rw [expr_α_γ_as_γ_α h]
-        | rw [mul_assoc]
-      )
-    )
-
+    -- (
+    --   simp [← mul_assoc]
+    --   repeat (
+    --     first
+    --     | rw [expr_α_β_as_αβ_β_α h]
+    --     | rw [mul_assoc]
+    --   )
+    -- )
+    -- (
+    --   simp [← mul_assoc]
+    --   repeat (
+    --     first
+    --     | rw [expr_α_γ_as_γ_α h]
+    --     | rw [mul_assoc]
+    --   )
+    -- )
+    simp [← mul_assoc]
+    rw [expr_α_β_as_αβ_β_α h]
+    rw [mul_assoc _ |α, i, t|]
+    rw [expr_α_γ_as_γ_α h]
     simp [← mul_assoc]
     rw [mul_assoc _ |α, i, t|]
     rw [expr_α_β_as_αβ_β_α h]
@@ -716,13 +716,13 @@ theorem comm_βγ_αβγ (R : Type Tv) [Ring R] (h : WeakA3 R) : trivial_commuta
   mul_assoc_l
 
 theorem expr_α_αβγ_as_αβγ_α (h : WeakA3 R) :
-    ∀ (i : Deg α.height) (j : Deg αβγ.height) (t u : R), CommutesProp {α, i, t} {αβγ, j, u} := by
+    ∀ (i : Deg α.height) (j : Deg αβγ.height) (t u : R), commutes({α, i, t}, {αβγ, j, u}) := by
   intro i j t u
   apply trivial_comm_to_commutes
   rw [comm_α_αβγ R h]
 
 theorem expr_βγ_αβγ_as_αβγ_βγ (h : WeakA3 R) :
-    ∀ (i : Deg βγ.height) (j : Deg αβγ.height) (t u : R), CommutesProp {βγ, i, t} {αβγ, j, u} := by
+    ∀ (i : Deg βγ.height) (j : Deg αβγ.height) (t u : R), commutes({βγ, i, t}, {αβγ, j, u}) := by
   intro i j t u
   apply trivial_comm_to_commutes
   rw [comm_βγ_αβγ R h]

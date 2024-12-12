@@ -1,6 +1,8 @@
 import Mathlib.Algebra.Group.Commutator
 import Mathlib.Tactic.Group
 
+namespace Steinberg
+
 variable {G : Type Tu} [Group G]
          {R : Type Tv} [Ring R]
 
@@ -31,17 +33,10 @@ abbrev Deg (n : ℕ) := Fin (n + 1)
 
 /- generic forms for propositions -/
 /- group theory -/
-@[reducible]
--- `x * y = y * x`
-def CommutesProp (x y : G) : Prop :=
-  x * y = y * x
 
-@[reducible]
--- `x * y = z * y * x`
-def ReorderLeftProp (x y z : G) : Prop :=
-  x * y = z * y * x
+scoped notation "triv_commutator" x y => ⁅ x, y ⁆ = 1
+scoped notation "commutes" "( " x ", " y " )" => x * y = y * x
+scoped notation "reorder_left" "( " x ", " y ", " z " )" => x * y = z * y * x
+scoped notation "reorder_mid" "( " x ", " y ", " z " )" => x * y = y * z * x
 
-@[reducible]
--- `x * y = z * y * x`
-def ReorderMidProp (x y z : G) : Prop :=
-  x * y = y * z * x
+end Steinberg
