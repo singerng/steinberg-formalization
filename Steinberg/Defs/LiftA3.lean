@@ -4,6 +4,9 @@ import Mathlib.Tactic.Group
 import Mathlib.Tactic.FinCases
 import Mathlib.Algebra.Ring.Defs
 
+-- CC: As an example of macros for theorems
+-- import Init.Data.UInt.Lemmas
+
 import Steinberg.Defs.Basic
 import Steinberg.Macro.Group
 
@@ -157,6 +160,9 @@ scoped notation "{" ζ ", " i ", " t "}" => A3UnipGen.mkOf ζ i t
 -/
 scoped notation "|" ζ ", " i ", " t "|" => A3UnipGen.mkOf ζ i t
 
+scoped notation "triv_commutator" α β => ⁅ α, β ⁆ = 1
+scoped notation "commutes" "( " α ", " β " )" => α * β = β * α
+
 /-
 open Lean in
 set_option hygiene false in
@@ -168,6 +174,10 @@ macro "declare_trivial_commutator" rootOne:ident rootTwo:ident : command => do
         ⁅ { $rootOne, i, t }, { $rootTwo, j, u } ⁆ = 1
   )
   return (mkNullNode cmds) -/
+
+--open Lean in
+--set_option hygiene false in
+--macro "triv_comm" R:term rootOne:term rootTwo:term :
 
 -- types of statements which we assume or want to prove about roots...
 abbrev trivial_commutator_of_root_pair (R : Type Tv) [Ring R] (ζ η : A3PositiveRoot) : Prop :=
@@ -377,25 +387,25 @@ theorem expr_β_γ_as_γ_βγ_β (h : WeakA3 R)  :
 
 -- rewrites for products of commuting elements
 theorem expr_α_γ_as_γ_α (h : WeakA3 R)  :
-    ∀ (i : Deg α.height) (j : Deg γ.height) (t u : R), CommutesProp {α, i, t} {γ, j, u} := by
+    ∀ (i : Deg α.height) (j : Deg γ.height) (t u : R), commutes({α, i, t}, {γ, j, u}) := by
   intro i j t u
   apply trivial_comm_to_commutes
   rw [h.h_comm_of_α_γ]
 
 theorem expr_α_αβ_as_αβ_α (h : WeakA3 R) :
-    ∀ (i : Deg α.height) (j : Deg αβ.height) (t u : R), CommutesProp {α, i, t} {αβ, j, u} := by
+    ∀ (i : Deg α.height) (j : Deg αβ.height) (t u : R), commutes({α, i, t}, {αβ, j, u}) := by
   intro i j t u
   apply trivial_comm_to_commutes
   rw [h.h_comm_of_α_αβ]
 
 theorem expr_β_αβ_as_αβ_β (h : WeakA3 R) :
-    ∀ (i : Deg β.height) (j : Deg αβ.height) (t u : R), CommutesProp {β, i, t} {αβ, j, u} := by
+    ∀ (i : Deg β.height) (j : Deg αβ.height) (t u : R), commutes({β, i, t}, {αβ, j, u}) := by
   intro i j t u
   apply trivial_comm_to_commutes
   rw [h.h_comm_of_β_αβ]
 
 theorem expr_γ_βγ_as_βγ_γ (h : WeakA3 R) :
-    ∀ (i : Deg γ.height) (j : Deg βγ.height) (t u : R), CommutesProp {γ, i, t} {βγ, j, u} := by
+    ∀ (i : Deg γ.height) (j : Deg βγ.height) (t u : R), commutes({γ, i, t}, {βγ, j, u}) := by
   intro i j t u
   apply trivial_comm_to_commutes
   rw [h.h_comm_of_γ_βγ]
@@ -404,7 +414,7 @@ theorem expr_αβ_βγ_as_βγ_αβ (h : WeakA3 R) :
   ∀ (i : Deg αβ.height) (j : Deg βγ.height) (t u : R), CommutesProp {αβ, i, t} {βγ, j, u} := by
   intro i j t u
   apply trivial_comm_to_commutes
-  rw [← comm_of_αβ_βγ h]
+  rw [comm_of_αβ_βγ h]
 
 -- interchange theorem, ⁅α, βγ⁆ = ⁅αβ, γ⁆
 theorem Interchange (h : WeakA3 R) (i : Deg α.height) (j : Deg β.height) (k : Deg γ.height) :
@@ -415,10 +425,25 @@ theorem Interchange (h : WeakA3 R) (i : Deg α.height) (j : Deg β.height) (k : 
   conv =>
     lhs
     rw [expr_βγ_as_β_γ_β_γ h]
-    simp [← mul_assoc]
-    rw [expr_α_β_as_αβ_β_α h]
-    rw [mul_assoc _ |α, i, t|]
-    rw [expr_α_γ_as_γ_α h]
+    -- Something like this could be added to Macro/Group.lean
+    (
+      simp [← mul_assoc]
+      repeat (
+        first
+        | rw [expr_α_β_as_αβ_β_α h]
+        | rw [mul_assoc]
+      )
+    )
+
+    (
+      simp [← mul_assoc]
+      repeat (
+        first
+        | rw [expr_α_γ_as_γ_α h]
+        | rw [mul_assoc]
+      )
+    )
+
     simp [← mul_assoc]
     rw [mul_assoc _ |α, i, t|]
     rw [expr_α_β_as_αβ_β_α h]

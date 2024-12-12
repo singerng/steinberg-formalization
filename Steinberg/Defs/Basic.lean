@@ -29,10 +29,6 @@ theorem comm_on_left {x y z : G} : x * y = z * y * x → ⁅x, y⁆ = z := by
     that do not exceed `n`, i.e., that `Deg n = {0, 1, ..., n}`. -/
 abbrev Deg (n : ℕ) := Fin (n + 1)
 
-syntax (name := degAdd) term " +' " term : term
-macro_rules
-  | `($x +' $y) => `(⟨($x).val + ($y).val, by first | trivial | omega | simp [height] at *; omega⟩)
-
 /- generic forms for propositions -/
 /- group theory -/
 @[reducible]
