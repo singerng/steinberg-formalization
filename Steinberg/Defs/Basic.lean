@@ -48,16 +48,16 @@ theorem inv_of_trivial_comm {x y : G} : ⁅ x , y ⁆ = 1 → ⁅ x⁻¹, y ⁆ 
   exact h
 
 theorem trivial_comm_of_right {x y z : G} : ⁅ x, y ⁆ = 1 → ⁅ x, z ⁆ = 1 → ⁅ x, y * z ⁆ = 1 := by sorry
-theorem trivial_comm_of_left {x y z : G} : ⁅ x, y ⁆ = 1 → ⁅ y, z ⁆ = 1 → ⁅ x * y, z ⁆ = 1 := by sorry
+theorem trivial_comm_of_left {x y z : G} : ⁅ x, z ⁆ = 1 → ⁅ y, z ⁆ = 1 → ⁅ x * y, z ⁆ = 1 := by sorry
 theorem trivial_comm_of_both {x y z w : G} : ⁅ x, z ⁆ = 1 → ⁅ x, w ⁆ = 1 → ⁅ y, z ⁆ = 1 → ⁅ y, w ⁆ = 1 → ⁅ x * y, z * w ⁆ = 1 := by sorry
 
 /- Deduce that two elements commute if one can "embed" them in a larger, trivial commutator where all other pairs commute. -/
-theorem trivial_comm_from_embedded_comm_and_pairs { x y z w : G } : (⁅x * y, z * w⁆ = 1) → (⁅x, w⁆ = 1) →
-    (⁅y, z⁆ = 1) → (⁅y, w⁆ = 1) → (⁅x, z⁆ = 1) := by
-  intro h_all h_xw h_yz h_yw
+-- NS: Annoyingly, the `group` tactic replaces x⁻¹ with x^(-1 : ℤ). Should be some way to make this slightly less verbose...
+theorem trivial_comm_from_embedded_comm_and_pairs { x y z w : G } : (⁅x * y, z * w⁆ = 1) → (⁅x, z⁆ = 1) →
+    (⁅y, z⁆ = 1) → (⁅y, w⁆ = 1) → (⁅z, w⁆ = 1) → (⁅x, w⁆ = 1) := by
+  intro h_all h_xz h_yz h_yw h_zw
   rw [← h_all]
   apply @mul_left_cancel _ _ _ x⁻¹
-  apply @mul_right_cancel _ _ _ _ z
   group
   have : y * z * w * y^(-1 : ℤ) = z * w := by
     have : y * z = z * y := by
@@ -71,16 +71,30 @@ theorem trivial_comm_from_embedded_comm_and_pairs { x y z w : G } : (⁅x * y, z
     rw [this]
     group
   rw [this]
-  apply @mul_left_cancel _ _ _ z⁻¹
-  apply @mul_right_cancel _ _ _ _ w
+  have : z * w = w * z := by
+    apply trivial_comm_to_commutes
+    exact h_zw
+  rw [this]
+  apply @mul_left_cancel _ _ _ w⁻¹
+  group
+  have : z * x^(-1 : ℤ) = x^(-1 : ℤ) * z := by
+    apply trivial_comm_to_commutes
+    apply symm_of_trivial_comm
+    have : x^(-1 : ℤ) = x⁻¹ := by group
+    rw [this]
+    apply inv_of_trivial_comm
+    exact h_xz
+  rw [this]
+  apply @mul_left_cancel _ _ _ x
+  group
+  apply @mul_right_cancel _ _ _ _ z
   group
   apply trivial_comm_to_commutes
-  have : x^(-1 : ℤ) = x⁻¹ := by group
+  have : w^(-1 : ℤ) = w⁻¹ := by group
   rw [this]
   apply inv_of_trivial_comm
-  exact h_xw
-
-  -- group
+  apply symm_of_trivial_comm
+  exact h_zw
 
 /-! ### Notations for theorems involving group elements -/
 

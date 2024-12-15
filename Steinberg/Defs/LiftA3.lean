@@ -234,8 +234,12 @@ abbrev inv_of_root (R : Type Tv) [Ring R] (ζ : A3PositiveRoot) : Prop :=
 def lin_of_present (R : Type Tv) [Ring R] : Prop := ∀ (ζ : A3PositiveRoot),
   ζ.isPresent → lin_of_root R ζ
 
+def mixed_commutes_of_present (R : Type Tv) [Ring R] : Prop := ∀ (ζ : A3PositiveRoot),
+  ζ.isPresent → mixed_commutes_of_root R ζ
+
 structure WeakA3 (R : Type Tv) [Ring R] where
   h_lin_of_present : lin_of_present R
+  h_mixed_commutes_of_present : mixed_commutes_of_present R
   h_comm_of_α_β : single_commutator_of_root_pair R α β αβ 1 (by simp [height] at *)
   h_comm_of_β_γ : single_commutator_of_root_pair R β γ βγ 1 (by simp [height] at *)
   h_comm_of_α_γ : trivial_commutator_of_root_pair R α γ
@@ -244,6 +248,7 @@ structure WeakA3 (R : Type Tv) [Ring R] where
   h_comm_of_β_βγ : trivial_commutator_of_root_pair R β βγ
   h_comm_of_γ_βγ : trivial_commutator_of_root_pair R γ βγ
   h_nonhomog_lift_of_comm_of_αβ_βγ : comm_of_αβ_βγ_nonhomog_lift R
+
 
 /-! ## Analysis of the group -/
 
@@ -302,6 +307,11 @@ theorem inv_of_βγ (h : WeakA3 R) : inv_of_root R βγ := by
   apply inv_of_present h βγ
   simp [isPresent] at *
 
+/-! ### Mixed-degree theorem for specific roots -/
+theorem mixed_commutes_of_βγ (h : WeakA3 R) : mixed_commutes_of_root R βγ := by
+  apply h.h_mixed_commutes_of_present βγ
+  simp [isPresent] at *
+
 /-! ### Derive full commutator for αβ and βγ from nonhomogeneous lift -/
 
 /- Every (i, j) ∈ (Deg 2 × Deg 2) can be written as (i' + j', j' + k') for i', j', k' ∈ Deg 1, except (0, 2) and (2, 0) -/
@@ -358,25 +368,29 @@ theorem homog_lift_of_comm_of_αβ_βγ (h : WeakA3 R) :
     rw [id₂]
     rw [h.h_nonhomog_lift_of_comm_of_αβ_βγ]
 
--- theorem comm_of_αβ_βγ_20 (h : WeakA3 R) : ∀ (t u : R), ⁅ |αβ, 2, t|, |βγ, 0, u| ⁆ = 1 := by
---   intro t u
---   apply @trivial_comm_from_embedded_comm_and_pairs _ _ _ (|αβ, 1, t + 1| * |αβ, 0, 1|) _ (|βγ, 1, u| * |βγ, 0, u|)
---   sorry
---   apply trivial_comm_of_right
---   exact homog_lift_of_comm_of_αβ_βγ h 1 1 0 t u
---   exact homog_lift_of_comm_of_αβ_βγ h 1 1
---   sorry
-  -- rw [← h.h_nonhomog_lift_of_comm_of_αβ_βγ t 1 1 1 0 u]
-  -- repeat simp
-  -- have : |αβ, 2, t| * |αβ, 1, t + 1| * |αβ, 0, 1| = |αβ, 2, t| * (|αβ, 1, t + 1| * |αβ, 0, 1|) := by group
-  -- rw [this]
-  -- have : |βγ, 2, 0| * |βγ, 1, u| * |βγ, 0, u| = |βγ, 0, u| * (|βγ, 2, 0| * |βγ, 1, u|) := by sorry
-  -- rw [this]
+theorem comm_of_αβ_βγ_20 (h : WeakA3 R) : ∀ (t u : R), ⁅ |αβ, 2, t|, |βγ, 0, u| ⁆ = 1 := by
+  intro t u
+  apply @trivial_comm_from_embedded_comm_and_pairs _ _ _ (|αβ, 1, t + 1| * |αβ, 0, 1|) |βγ, 1, u|
+  mul_assoc_l
+  rw [← h.h_nonhomog_lift_of_comm_of_αβ_βγ t 1 1 1 0 u]
+  simp
+  rw [id_of_βγ h] -- NS: maybe should be a simp lemma? we can decide...
+  simp
+  rw [← homog_lift_of_comm_of_αβ_βγ h 1 1 0 t u]
+  simp
+  apply trivial_comm_of_left
+  rw [← homog_lift_of_comm_of_αβ_βγ h 0 1 0 (t+1) u]
+  simp
+  rw [← homog_lift_of_comm_of_αβ_βγ h 0 0 1 1 u]
+  simp
+  apply trivial_comm_of_left
+  rw [← homog_lift_of_comm_of_αβ_βγ h 1 0 0 (t+1) u]
+  simp
+  rw [← homog_lift_of_comm_of_αβ_βγ h 0 0 0 1 u]
+  simp
+  rw [← mixed_commutes_of_βγ h]
 
-
-
-    -- sorry
-
+-- symmetric to prior proof
 theorem comm_of_αβ_βγ_02 (h : WeakA3 R) :
   ∀ (t u : R),
     ⁅ |αβ, 0, t|, |βγ, 2, u| ⁆ = 1 := by sorry
