@@ -370,7 +370,7 @@ theorem homog_lift_of_comm_of_αβ_βγ (h : WeakA3 R) :
 
 theorem comm_of_αβ_βγ_20 (h : WeakA3 R) : ∀ (t u : R), ⁅ |αβ, 2, t|, |βγ, 0, u| ⁆ = 1 := by
   intro t u
-  apply @trivial_comm_from_embedded_comm_and_pairs _ _ _ (|αβ, 1, t + 1| * |αβ, 0, 1|) |βγ, 1, u|
+  apply @trivial_comm_from_embedded_comm_and_pairs _ _ |βγ, 1, u| _ (|αβ, 1, t + 1| * |αβ, 0, 1|)
   mul_assoc_l
   rw [← h.h_nonhomog_lift_of_comm_of_αβ_βγ t 1 1 1 0 u]
   simp
@@ -378,17 +378,16 @@ theorem comm_of_αβ_βγ_20 (h : WeakA3 R) : ∀ (t u : R), ⁅ |αβ, 2, t|, |
   simp
   rw [← homog_lift_of_comm_of_αβ_βγ h 1 1 0 t u]
   simp
-  apply trivial_comm_of_left
+  apply triv_comm_mul_left
   rw [← homog_lift_of_comm_of_αβ_βγ h 0 1 0 (t+1) u]
   simp
   rw [← homog_lift_of_comm_of_αβ_βγ h 0 0 1 1 u]
   simp
-  apply trivial_comm_of_left
+  apply triv_comm_mul_left
   rw [← homog_lift_of_comm_of_αβ_βγ h 1 0 0 (t+1) u]
   simp
   rw [← homog_lift_of_comm_of_αβ_βγ h 0 0 0 1 u]
   simp
-  rw [← mixed_commutes_of_βγ h]
 
 -- symmetric to prior proof
 theorem comm_of_αβ_βγ_02 (h : WeakA3 R) :
@@ -467,35 +466,35 @@ theorem expr_β_γ_as_γ_βγ_β (h : WeakA3 R)  :
 theorem expr_α_γ_as_γ_α (h : WeakA3 R)  :
     ∀ (i : Deg α.height) (j : Deg γ.height) (t u : R), commutes({α, i, t}, {γ, j, u}) := by
   intro i j t u
-  apply trivial_comm_to_commutes
+  apply commutes_of_triv_comm
   rw [h.h_comm_of_α_γ]
 
 /- Rewrite α⬝αβ as αβ⬝α. -/
 theorem expr_α_αβ_as_αβ_α (h : WeakA3 R) :
     ∀ (i : Deg α.height) (j : Deg αβ.height) (t u : R), commutes({α, i, t}, {αβ, j, u}) := by
   intro i j t u
-  apply trivial_comm_to_commutes
+  apply commutes_of_triv_comm
   rw [h.h_comm_of_α_αβ]
 
 /- Rewrite β⬝αβ as αβ⬝β. -/
 theorem expr_β_αβ_as_αβ_β (h : WeakA3 R) :
     ∀ (i : Deg β.height) (j : Deg αβ.height) (t u : R), commutes({β, i, t}, {αβ, j, u}) := by
   intro i j t u
-  apply trivial_comm_to_commutes
+  apply commutes_of_triv_comm
   rw [h.h_comm_of_β_αβ]
 
 /- Rewrite γ⬝βγ as βγ⬝γ. -/
 theorem expr_γ_βγ_as_βγ_γ (h : WeakA3 R) :
     ∀ (i : Deg γ.height) (j : Deg βγ.height) (t u : R), commutes({γ, i, t}, {βγ, j, u}) := by
   intro i j t u
-  apply trivial_comm_to_commutes
+  apply commutes_of_triv_comm
   rw [h.h_comm_of_γ_βγ]
 
 /- Rewrite αβ⬝βγ as βγ⬝αβ. -/
 theorem expr_αβ_βγ_as_βγ_αβ (h : WeakA3 R) :
   ∀ (i : Deg αβ.height) (j : Deg βγ.height) (t u : R), commutes({αβ, i, t}, {βγ, j, u}) := by
   intro i j t u
-  apply trivial_comm_to_commutes
+  apply commutes_of_triv_comm
   rw [comm_of_αβ_βγ h]
 
 /-! ### Interchange theorems between ⁅α,βγ⁆ and ⁅αβ,γ⁆ forms -/
@@ -504,7 +503,7 @@ theorem expr_αβ_βγ_as_βγ_αβ (h : WeakA3 R) :
 theorem Interchange (h : WeakA3 R) (i : Deg α.height) (j : Deg β.height) (k : Deg γ.height) :
     ∀ (t u v : R), ⁅ |α, i, t|, |βγ, (j +' k), (u * v)| ⁆ = ⁅ |αβ, (i +' j), (t * u)|, |γ, k, v| ⁆ := by
   intro t u v
-  apply comm_on_left
+  apply eq_comm_of_reorder_left
   -- phase I: push α to right
   conv =>
     lhs
@@ -717,7 +716,7 @@ theorem expand_αβγ_as_αβ_γ_αβ_γ (h : WeakA3 R) :
    commute with αβ's (expr_α_αβ_as_αβ_α) and γ's (expr_α_γ_as_γ_α) -/
 theorem comm_α_αβγ (R : Type Tv) [Ring R] (h : WeakA3 R) : trivial_commutator_of_root_pair R α αβγ := by
   intro i j t u
-  apply commutes_to_trivial_comm
+  apply triv_comm_of_commutes
   let ⟨ j₁, j₂, id ⟩ := (decompose αβ.height γ.height j)
   rw [id]
   rw [← one_mul u]
@@ -737,7 +736,7 @@ theorem comm_α_αβγ (R : Type Tv) [Ring R] (h : WeakA3 R) : trivial_commutato
 /- γ and αβγ commute. -/
 theorem comm_γ_αβγ (R : Type Tv) [Ring R] (h : WeakA3 R) : trivial_commutator_of_root_pair R γ αβγ := by
   intro i j t u
-  apply commutes_to_trivial_comm
+  apply triv_comm_of_commutes
   let ⟨ j₁, j₂, id ⟩ := (decompose α.height βγ.height j)
   rw [id]
   rw [← one_mul u]
@@ -758,7 +757,7 @@ theorem comm_γ_αβγ (R : Type Tv) [Ring R] (h : WeakA3 R) : trivial_commutato
 -- the only commutator proof where we have to do something 'interesting'
 theorem comm_β_αβγ (R : Type Tv) [Ring R] (h : WeakA3 R) : trivial_commutator_of_root_pair R β αβγ := by
   intro i j t u
-  apply commutes_to_trivial_comm
+  apply triv_comm_of_commutes
   let ⟨ j₁, j₂, id ⟩ := (decompose αβ.height γ.height j)
   rw [id]
   rw [← one_mul u]
@@ -786,7 +785,7 @@ theorem comm_β_αβγ (R : Type Tv) [Ring R] (h : WeakA3 R) : trivial_commutato
 /- αβ and αβγ commute. -/
 theorem comm_αβ_αβγ (R : Type Tv) [Ring R] (h : WeakA3 R) : trivial_commutator_of_root_pair R αβ αβγ := by
   intro i j t u
-  apply commutes_to_trivial_comm
+  apply triv_comm_of_commutes
   let ⟨ j₁, j₂, id ⟩ := (decompose α.height βγ.height j)
   rw [id]
   rw [← one_mul u]
@@ -806,7 +805,7 @@ theorem comm_αβ_αβγ (R : Type Tv) [Ring R] (h : WeakA3 R) : trivial_commuta
 /- βγ and αβγ commute. -/
 theorem comm_βγ_αβγ (R : Type Tv) [Ring R] (h : WeakA3 R) : trivial_commutator_of_root_pair R βγ αβγ := by
   intro i j t u
-  apply commutes_to_trivial_comm
+  apply triv_comm_of_commutes
   let ⟨ j₁, j₂, id ⟩ := (decompose αβ.height γ.height j)
   rw [id]
   rw [← one_mul u]
@@ -827,20 +826,20 @@ theorem comm_βγ_αβγ (R : Type Tv) [Ring R] (h : WeakA3 R) : trivial_commuta
 theorem expr_α_αβγ_as_αβγ_α (h : WeakA3 R) :
     ∀ (i : Deg α.height) (j : Deg αβγ.height) (t u : R), commutes({α, i, t}, {αβγ, j, u}) := by
   intro i j t u
-  apply trivial_comm_to_commutes
+  apply commutes_of_triv_comm
   rw [comm_α_αβγ R h]
 
 /- Rewrite βγ⬝αβγ as αβγ⬝βγ. -/
 theorem expr_βγ_αβγ_as_αβγ_βγ (h : WeakA3 R) :
     ∀ (i : Deg βγ.height) (j : Deg αβγ.height) (t u : R), commutes({βγ, i, t}, {αβγ, j, u}) := by
   intro i j t u
-  apply trivial_comm_to_commutes
+  apply commutes_of_triv_comm
   rw [comm_βγ_αβγ R h]
 
 /- αβγ commutes with itself. -/
 theorem comm_αβγ_αβγ (R : Type Tv) [Ring R] (h : WeakA3 R) : trivial_commutator_of_root_pair R αβγ αβγ := by
   intro i j t u
-  apply commutes_to_trivial_comm
+  apply triv_comm_of_commutes
   let ⟨ j₁, j₂, id ⟩ := (decompose α.height βγ.height j)
   rw [id]
   rw [← one_mul u]
