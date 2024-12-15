@@ -7,7 +7,9 @@ import Mathlib.Algebra.Ring.Defs
 -- CC: As an example of macros for theorems
 -- import Init.Data.UInt.Lemmas
 
-import Steinberg.Defs.Basic
+import Steinberg.Defs.Root
+--import Steinberg.Defs.Deg
+import Steinberg.Defs.Commutator
 import Steinberg.Macro.Group
 
 namespace Steinberg
@@ -49,9 +51,7 @@ inductive A3PositiveRoot
 
 namespace A3PositiveRoot
 
--- CC: Adding the reducible tag lets `simp` peer into the definition,
---     so that you don't have to manually unfold it during proving.
-@[simp]
+@[reducible]
 def height : A3PositiveRoot → Nat
   | α => 1
   | β => 1
@@ -68,14 +68,56 @@ def toString : A3PositiveRoot → String
   | βγ => "β+γ"
   | αβγ => "α+β+γ"
 
-@[simp]
 def isPresent : A3PositiveRoot → Bool
   | αβγ => false
   | _ => true
 
-instance instToString : ToString A3PositiveRoot := ⟨toString⟩
+def add : A3PositiveRoot → A3PositiveRoot → Option A3PositiveRoot
+  | α, β => some αβ
+  | β, γ => some βγ
+  | α, βγ => some αβγ
+  | αβ, γ => some αβγ
+  | _, _ => none
+
+def mul : PNat → A3PositiveRoot → Option A3PositiveRoot := fun _ _ => none
+
+theorem h_add (r₁ r₂ r₃ : A3PositiveRoot) :
+  (add r₁ r₂ = some r₃) → height r₃ = height r₁ + height r₂ := by
+  sorry
+
+theorem h_mul (c : PNat) (r r' : A3PositiveRoot) :
+  (mul c r = r') → height r' = c * height r := by sorry
+
+instance : PositiveRootSystem A3PositiveRoot where
+  height := height
+  isPresent := isPresent
+  add := add
+  mul := mul
+  toString := toString
+  h_add := h_add
+  h_mul := h_mul
 
 end A3PositiveRoot
+
+abbrev Deg (n : ℕ) := Fin (n + 1)
+
+syntax (name := degAdd) term " +' " term : term
+macro_rules
+  | `($x +' $y) => `(⟨($x).val + ($y).val, by first | trivial | omega | simp [A3PositiveRoot.height] at *; omega⟩)
+
+/--
+  Decompose a number `0 ≤ i ≤ n + m` into `i₁ + i₂`, where `0 ≤ i₁ ≤ n` and `0 ≤ i₂ ≤ m`.
+ -/
+theorem Deg.decompose {n m : ℕ} (i : Deg (n + m)) : ∃ (i₁ : Deg n) (i₂ : Deg m), i = i₁ +' i₂ := by
+  have ⟨vi, hi⟩ := i
+  by_cases h_vi : vi ≤ n
+  · use ⟨vi, Nat.lt_succ_of_le h_vi⟩
+    use ⟨0, Nat.zero_lt_succ _⟩
+    simp
+  · use ⟨n, Nat.le_refl _⟩
+    use ⟨vi - n, by omega⟩
+    simp
+    omega
 
 /- Generators of the (weak) A3 group correspond to matrices with a single *monomial* entry above the diagonal. -/
 structure A3UnipGen (R : Type Tv) [Ring R] where
@@ -89,47 +131,9 @@ open A3PositiveRoot
 
 -- NS: This really should go in another file. Having some issues with imports....
 
-/--
-  Syntax for adding two `Deg`s together, and then automatically deriving the
-  proof term needed to show that the resulting value is in range.
-
-  CC: Ideally, we would just use a `Fin` operation, but the closest I could
-      find was `Fin.natAdd`, since `Fin.add` takes two `Fin`s of the same
-      limit and adds their values together, modulo `n`. Since we know that
-      the argument to derive the proof term for the addition probably only
-      depends on height, we do that here.
--/
-syntax (name := degAdd) term " +' " term : term
-macro_rules
-  | `($x +' $y) => `(⟨($x).val + ($y).val, by first | trivial | omega | simp [height] at *; omega⟩)
-
-/--
-  Decompose a number `0 ≤ i ≤ n + m` into `i₁ + i₂`, where `0 ≤ i₁ ≤ n` and `0 ≤ i₂ ≤ m`.
- -/
-theorem decompose (n m : ℕ) : ∀ (i : Deg (n + m)), ∃ (i₁ : Deg n) (i₂ : Deg m), i = i₁ +' i₂ := by
-  intro i
-  if h : i.val < n + 1 then (
-    let i₁ : Deg n := ⟨ i.val, h ⟩
-    let i₂ : Deg m := 0
-    exists i₁
-    exists i₂
-  ) else (
-    have id₁ : n < n + 1 := by simp;
-    let i₁ : Deg n := ⟨ n, id₁ ⟩;
-    have id₂ : i.val - n < m + 1 := by omega;
-    let i₂ : Deg m := ⟨ i.val - n, id₂ ⟩;
-    have id₃ : i₁.val + i₂.val < n + m + 1 := by omega;
-    have id₄ : i = ⟨ i₁.val + i₂.val, id₃ ⟩ := by
-      apply Fin.eq_of_val_eq
-      simp
-      omega
-    exists i₁
-    exists i₂
-  )
-
 /- Arbitrary, fixed way to decompose a Deg 3 into a sum of Deg 1 and a Deg 2. -/
 -- NS: Eventually, this function should maybe be a global parameter?
-@[simp]
+@[reducible]
 def split_deg3 (i : Deg 3) : (Deg 1) × (Deg 2) :=
   match i with
   | 0 => (0, 0)
@@ -196,7 +200,7 @@ abbrev trivial_commutator_of_root_pair (R : Type Tv) [Ring R] (ζ η : A3Positiv
 
 /- Commutator for generators corresponding to two roots which span a single additional root. C is a constant (always 1 in A3). -/
 abbrev single_commutator_of_root_pair (R : Type Tv) [Ring R] (ζ η θ : A3PositiveRoot)
-  (C : R) (h_height : ζ.height + η.height = θ.height) : Prop :=
+  (C : R) (h_height : θ.height = ζ.height + η.height) : Prop :=
   ∀ (i : Deg ζ.height) (j : Deg η.height) (t u : R),
     ⁅ {ζ, i, t}, {η, j, u} ⁆ = |θ, i +' j, C * (t * u)|
 
@@ -354,14 +358,16 @@ theorem homog_lift_of_comm_of_αβ_βγ (h : WeakA3 R) :
         simp [t₀, t₁, u₀, u₁, v₀, v₁]
         repeat rw [id_of_αβ h]
         group
+        try congr
       )
     )
-    have id₂ : |βγ, j +' k, u| = {βγ, 2, u₁ * v₁} * {βγ, 1, u₁ * v₀ + u₀ * v₁} * {βγ, 0, u₀ * v₀} := by (
+    have id₂ : |βγ, j +' k, u| = |βγ, 2, u₁ * v₁| * |βγ, 1, u₁ * v₀ + u₀ * v₁| * |βγ, 0, u₀ * v₀| := by (
       fin_cases i, j, k
       all_goals (
         simp [t₀, t₁, u₀, u₁, v₀, v₁]
         repeat rw [id_of_βγ h]
         group
+        try congr
       )
     )
     rw [id₁]
@@ -378,6 +384,7 @@ theorem comm_of_αβ_βγ_20 (h : WeakA3 R) : ∀ (t u : R), ⁅ |αβ, 2, t|, |
   simp
   rw [← homog_lift_of_comm_of_αβ_βγ h 1 1 0 t u]
   simp
+  congr
   apply triv_comm_mul_left
   rw [← homog_lift_of_comm_of_αβ_βγ h 0 1 0 (t+1) u]
   simp
@@ -656,6 +663,7 @@ theorem comm_α_βγ_12 (h : WeakA3 R) (t u : R) : ⁅ {α, 1, t}, {βγ, 2, u} 
   nth_rewrite 1 [id₁₁]
   rw [← InterchangeRefl h (1 : Deg 1) (1 : Deg 1) (1 : Deg 1)]
   simp [mkOf]
+  congr
 theorem comm_αβ_γ_21 (h : WeakA3 R) (t u : R) : ⁅ {αβ, 2, t}, {γ, 1, u} ⁆ = |αβγ, (2 : Deg 2) +' (1 : Deg 1), 1*(t*u)| := by
   nth_rewrite 1 [id₁₁]
   rw [← InterchangeTrans h (1 : Deg 1) (1 : Deg 1) (1 : Deg 1)]
@@ -717,7 +725,7 @@ theorem expand_αβγ_as_αβ_γ_αβ_γ (h : WeakA3 R) :
 theorem comm_α_αβγ (R : Type Tv) [Ring R] (h : WeakA3 R) : trivial_commutator_of_root_pair R α αβγ := by
   intro i j t u
   apply triv_comm_of_commutes
-  let ⟨ j₁, j₂, id ⟩ := (decompose αβ.height γ.height j)
+  let ⟨ j₁, j₂, id ⟩ := @Deg.decompose αβ.height γ.height j
   rw [id]
   rw [← one_mul u]
   rw [expand_αβγ_as_αβ_γ_αβ_γ h]
@@ -737,7 +745,7 @@ theorem comm_α_αβγ (R : Type Tv) [Ring R] (h : WeakA3 R) : trivial_commutato
 theorem comm_γ_αβγ (R : Type Tv) [Ring R] (h : WeakA3 R) : trivial_commutator_of_root_pair R γ αβγ := by
   intro i j t u
   apply triv_comm_of_commutes
-  let ⟨ j₁, j₂, id ⟩ := (decompose α.height βγ.height j)
+  let ⟨ j₁, j₂, id ⟩ := @Deg.decompose α.height βγ.height j
   rw [id]
   rw [← one_mul u]
   rw [expand_αβγ_as_α_βγ_α_βγ h]
@@ -758,7 +766,7 @@ theorem comm_γ_αβγ (R : Type Tv) [Ring R] (h : WeakA3 R) : trivial_commutato
 theorem comm_β_αβγ (R : Type Tv) [Ring R] (h : WeakA3 R) : trivial_commutator_of_root_pair R β αβγ := by
   intro i j t u
   apply triv_comm_of_commutes
-  let ⟨ j₁, j₂, id ⟩ := (decompose αβ.height γ.height j)
+  let ⟨ j₁, j₂, id ⟩ := @Deg.decompose αβ.height γ.height j
   rw [id]
   rw [← one_mul u]
   rw [expand_αβγ_as_αβ_γ_αβ_γ h]
@@ -786,7 +794,7 @@ theorem comm_β_αβγ (R : Type Tv) [Ring R] (h : WeakA3 R) : trivial_commutato
 theorem comm_αβ_αβγ (R : Type Tv) [Ring R] (h : WeakA3 R) : trivial_commutator_of_root_pair R αβ αβγ := by
   intro i j t u
   apply triv_comm_of_commutes
-  let ⟨ j₁, j₂, id ⟩ := (decompose α.height βγ.height j)
+  let ⟨ j₁, j₂, id ⟩ := @Deg.decompose α.height βγ.height j
   rw [id]
   rw [← one_mul u]
   rw [expand_αβγ_as_α_βγ_α_βγ h]
@@ -806,7 +814,7 @@ theorem comm_αβ_αβγ (R : Type Tv) [Ring R] (h : WeakA3 R) : trivial_commuta
 theorem comm_βγ_αβγ (R : Type Tv) [Ring R] (h : WeakA3 R) : trivial_commutator_of_root_pair R βγ αβγ := by
   intro i j t u
   apply triv_comm_of_commutes
-  let ⟨ j₁, j₂, id ⟩ := (decompose αβ.height γ.height j)
+  let ⟨ j₁, j₂, id ⟩ := @Deg.decompose αβ.height γ.height j
   rw [id]
   rw [← one_mul u]
   rw [expand_αβγ_as_αβ_γ_αβ_γ h]
@@ -840,7 +848,7 @@ theorem expr_βγ_αβγ_as_αβγ_βγ (h : WeakA3 R) :
 theorem comm_αβγ_αβγ (R : Type Tv) [Ring R] (h : WeakA3 R) : trivial_commutator_of_root_pair R αβγ αβγ := by
   intro i j t u
   apply triv_comm_of_commutes
-  let ⟨ j₁, j₂, id ⟩ := (decompose α.height βγ.height j)
+  let ⟨ j₁, j₂, id ⟩ := @Deg.decompose α.height βγ.height j
   rw [id]
   rw [← one_mul u]
   rw [expand_αβγ_as_α_βγ_α_βγ h]
@@ -859,7 +867,7 @@ theorem comm_αβγ_αβγ (R : Type Tv) [Ring R] (h : WeakA3 R) : trivial_commu
 /- Linearity for αβγ. -/
 theorem lin_αβγ (R : Type Tv) [Ring R] (h : WeakA3 R) : lin_of_root R αβγ := by
   intro i t u
-  let ⟨ i₁, i₂, id ⟩ := (decompose α.height βγ.height i)
+  let ⟨ i₁, i₂, id ⟩ := @Deg.decompose α.height βγ.height i
   rw [id]
   nth_rewrite 1 [← mul_one t]
   rw [expand_αβγ_as_α_βγ_α_βγ h]

@@ -1,7 +1,6 @@
 import Mathlib.Algebra.Group.Commutator
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Tactic.Group
-import Init.Data.Nat.Basic
 
 namespace Steinberg
 
@@ -18,6 +17,7 @@ scoped notation "triv_comm" "( " x ", " y " )" => ⁅ x, y ⁆ = 1
 scoped notation "commutes" "( " x ", " y " )" => x * y = y * x
 scoped notation "reorder_left" "( " x ", " y ", " z " )" => x * y = z * y * x
 scoped notation "reorder_mid" "( " x ", " y ", " z " )" => x * y = y * z * x
+scoped notation "reorder_right" "( " x ", " y ", " z " )" => x * y = y * x * z
 
 variable {G : Type Tu} [Group G]
         --  {R : Type Tv} [Ring R]
@@ -25,7 +25,7 @@ variable {G : Type Tu} [Group G]
 
 /-! ### Theorems about commutators (holding in any group) -/
 
-theorem comm_left_str  (x y : G) : x * y = ⁅x, y⁆ * y * x := by group
+theorem comm_left_str  (x y : G) : reorder_left(x, y, ⁅x, y⁆) := by group
 theorem comm_mid_str   (x y : G) : x * y = y * ⁅x, y⁻¹⁆⁻¹ * x := by group
 theorem comm_right_str (x y : G) : x * y = y * x * ⁅x⁻¹, y⁻¹⁆ := by group
 
@@ -84,6 +84,16 @@ theorem inv_triv_comm_iff_triv_comm' : triv_comm(x, y⁻¹) ↔ triv_comm(x, y) 
   simp_rw [@triv_comm_symm _ _ x]
   exact inv_triv_comm_iff_triv_comm
 
+-- @[simp]
+-- theorem inv_triv_comm_iff_triv_comm₁ : triv_comm(x, y⁻¹) ↔ triv_comm(x, y) := by
+--   apply Iff.intro
+--   · intro h
+--     rw [triv_comm_iff_commutes]
+--     apply @mul_right_cancel _ _ _ _ y⁻¹
+--     rw [mul_assoc, mul_inv_cancel, mul_one, mul_assoc, comm_left_str x, h, one_mul, ← mul_assoc, mul_inv_cancel, one_mul]
+--     done
+--   done
+
 -- CC: Better name? Could be `triv_comm_trans_right` or `triv_comm_trans_mul_right`
 theorem triv_comm_mul_right : triv_comm(x, y) → triv_comm(x, z) → triv_comm(x, y * z) := by
   simp_rw [triv_comm_iff_commutes]
@@ -115,11 +125,5 @@ theorem trivial_comm_from_embedded_comm_and_pairs : triv_comm(x * y, w * z) → 
   simp_rw [← mul_assoc]
   rw [← h_xw, mul_assoc, ← h_yz, ← mul_assoc, mul_assoc x, ← h_yw, ← mul_assoc,
     mul_assoc, h_all, ← mul_assoc]
-
-/-! ### Definition of Deg type -/
-
-/-- Degrees `Deg` are the (sub)type of natural numbers (including 0)
-    that do not exceed `n`, i.e., that `Deg n = {0, 1, ..., n}`. -/
-abbrev Deg (n : ℕ) := Fin (n + 1)
 
 end Steinberg
