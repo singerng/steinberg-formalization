@@ -84,16 +84,6 @@ theorem inv_triv_comm_iff_triv_comm' : triv_comm(x, y⁻¹) ↔ triv_comm(x, y) 
   simp_rw [@triv_comm_symm _ _ x]
   exact inv_triv_comm_iff_triv_comm
 
--- @[simp]
--- theorem inv_triv_comm_iff_triv_comm₁ : triv_comm(x, y⁻¹) ↔ triv_comm(x, y) := by
---   apply Iff.intro
---   · intro h
---     rw [triv_comm_iff_commutes]
---     apply @mul_right_cancel _ _ _ _ y⁻¹
---     rw [mul_assoc, mul_inv_cancel, mul_one, mul_assoc, comm_left_str x, h, one_mul, ← mul_assoc, mul_inv_cancel, one_mul]
---     done
---   done
-
 -- CC: Better name? Could be `triv_comm_trans_right` or `triv_comm_trans_mul_right`
 theorem triv_comm_mul_right : triv_comm(x, y) → triv_comm(x, z) → triv_comm(x, y * z) := by
   simp_rw [triv_comm_iff_commutes]

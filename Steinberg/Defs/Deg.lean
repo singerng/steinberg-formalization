@@ -3,6 +3,20 @@ import Mathlib.Tactic.Use
 
 namespace Steinberg
 
+-- NS: For now, we encode an input "i ≤ n" as a pair (i : ℕ) (hi : i ≤ n).
+
+/--
+  Decompose a number `0 ≤ i ≤ n + m` into `i₁ + i₂`, where `0 ≤ i₁ ≤ n` and `0 ≤ i₂ ≤ m`.
+ -/
+theorem decompose (n m i : ℕ) (h : i ≤ (n+m)) : ∃ (i₁ i₂ : ℕ), i = i₁ + i₂ ∧ i₁ ≤ n ∧ i₂ ≤ m := by
+  by_cases i ≤ n
+  · use i, 0
+    omega
+  · use n, i-n
+    omega
+
+#exit
+
 /-! ### Definition of Deg type -/
 
 structure Deg (height : ℕ) where
@@ -20,20 +34,6 @@ protected def hAdd {n m : ℕ} (i : Deg n) (j : Deg m) : Deg (n + m) :=
     have := j.isLe
     omega
   ⟩
-
-/--
-  Decompose a number `0 ≤ i ≤ n + m` into `i₁ + i₂`, where `0 ≤ i₁ ≤ n` and `0 ≤ i₂ ≤ m`.
- -/
-theorem decompose {n m : ℕ} (i : Deg (n + m)) : ∃ (i₁ : Deg n) (i₂ : Deg m), i = Deg.hAdd i₁ i₂ := by
-  have ⟨vi, hi⟩ := i
-  by_cases h_vi : vi ≤ n
-  · use ⟨vi, h_vi⟩
-    use ⟨0, Nat.zero_le _⟩
-    simp [Deg.hAdd]
-  · use ⟨n, Nat.le_refl _⟩
-    use ⟨vi - n, by omega⟩
-    simp [Deg.hAdd]
-    omega
 
 end Deg
 
