@@ -2,6 +2,8 @@ import Mathlib.Algebra.Group.Commutator
 import Mathlib.GroupTheory.PresentedGroup
 import Mathlib.Tactic.Group
 import Mathlib.Tactic.FinCases
+import Mathlib.Data.Finset.Defs
+import Mathlib.Order.Interval.Finset.Defs
 import Mathlib.Algebra.Ring.Defs
 
 -- CC: As an example of macros for theorems
@@ -68,6 +70,7 @@ def toString : A3PositiveRoot → String
   | βγ => "β+γ"
   | αβγ => "α+β+γ"
 
+@[reducible]
 def isPresent : A3PositiveRoot → Bool
   | αβγ => false
   | _ => true
@@ -102,6 +105,7 @@ end A3PositiveRoot
 /- Generators of the (weak) A3 group correspond to matrices with a single *monomial* entry above the diagonal. -/
 structure A3UnipGen (R : Type Tv) [Ring R] where
   ζ : A3PositiveRoot -- NS: really, the type checker should reject making a A3UnipGen with αβγ...
+  hζ : ζ.isPresent
   i : ℕ
   hi : i ≤ ζ.height
   t : R
@@ -110,24 +114,15 @@ namespace A3UnipGen
 
 open A3PositiveRoot
 
--- NS: This really should go in another file. Having some issues with imports....
-
-/- Arbitrary, fixed way to decompose a Deg 3 into a sum of Deg 1 and a Deg 2. -/
+/- Arbitrary, fixed way to decompose a i ≤ 3 into i₁ + i₂, i₁ ≤ 1 and i₂ ≤ 2. -/
 -- NS: Eventually, this function should maybe be a global parameter?
 @[reducible]
-def split_deg3 (i : ℕ) (hi : i ≤ 3) : ℕ × ℕ :=
+def split_of_3_into_1_2 (i : ℕ) (hi : i ≤ 3) : (i₁ : ℕ) × (i₂ : ℕ) ×' (i₁ ≤ 1) ×' (i₂ ≤ 2) ×' (i₁ + i₂ = i):=
   match i with
-  | 0 => (0, 0)
-  | 1 => (0, 1)
-  | 2 => (1, 1)
-  | 3 => (1, 2)
-
-/- Certifies that the previous definition has the desired property. -/
--- theorem split_deg3_sum (i : Deg 3) :
---   let (i₁, i₂) := split_deg3 i
---   i = i₁ + i₂ := by
---     fin_cases i
---     repeat simp
+  | 0 => ⟨ 0, 0, by trivial, by trivial, by trivial ⟩
+  | 1 => ⟨ 0, 1, by trivial, by trivial, by trivial ⟩
+  | 2 => ⟨ 1, 1, by trivial, by trivial, by trivial ⟩
+  | 3 => ⟨ 1, 2, by trivial, by trivial, by trivial ⟩
 
 /-
 Build a generator of the WeakA3 group from a root, a degree, and a coefficient. Importantly,
@@ -136,12 +131,18 @@ of type αβγ cannot form a generator (it is "missing"); instead, we fix some e
 for elements corresponding to this root in terms of the other roots, using the aforementioned
 `split_deg3` function.
 -/
+def pmk (ζ : A3PositiveRoot) (hζ : ζ.isPresent) (i : ℕ) (hi : i ≤ ζ.height) (t : R) : FreeGroup (A3UnipGen R) :=
+  FreeGroup.of <| mk ζ hζ i hi t
+
+@[reducible]
 def mkOf (ζ : A3PositiveRoot) (i : ℕ) (hi : i ≤ ζ.height) (t : R) : FreeGroup (A3UnipGen R) :=
-  match ζ with
+  if hζ : ζ.isPresent then
+    pmk ζ hζ i hi t
+  else
+    match ζ with
     | αβγ =>
-      let (i₁, i₂) := split_deg3 i hi
-      ⁅ mkOf α i₁ (by sorry) t, mkOf βγ i₂ (by sorry) (1 : R) ⁆ -- ⁅  ⁆
-    | ζ => FreeGroup.of <| mk ζ i hi t
+      let ⟨ i₁, i₂, hi₁, hi₂, _ ⟩ := split_of_3_into_1_2 i hi
+      ⁅ mkOf α i₁ hi₁ t, mkOf βγ i₂ hi₂ (1 : R) ⁆ -- ⁅  ⁆
 termination_by ζ.height
 
 set_option hygiene false in
@@ -330,38 +331,33 @@ theorem homog_lift_of_comm_of_αβ_βγ (h : WeakA3 R) (i j k : ℕ) (hi : i ≤
     rw [id₂]
     rw [h.h_nonhomog_lift_of_comm_of_αβ_βγ]
 
-
-example : List.map (fun xyz : ℕ × ℕ × ℕ => let ( x, y, z ) := xyz; (x + y, y + z)) ([0,1] ×ˢ [0,1] ×ˢ [0,1]) = [(0, 0), (0, 1), (1, 1), (1, 2), (1, 0), (1, 1), (2, 1), (2, 2)] := by simp
-
 /- Every (i, j) ∈ (Deg 2 × Deg 2) can be written as (i' + j', j' + k') for i', j', k' ∈ Deg 1, except (0, 2) and (2, 0) -/
--- NS: Need a better way to do this!
-theorem decompose_sum_of_2 (i j : ℕ) (hi : i ≤ 2) (hj : j ≤ 2) :
-  ((i, j) ≠ (2, 0) ∧ (i, j) ≠ (0, 2)) → ∃ (i' j' k' : ℕ), (i' ≤ 1) ∧ (j' ≤ 1) ∧ (k' ≤ 1) ∧
-    (i = i' + j') ∧ (j = j' + k') := by
-  intro h
-  have hf_i : i ∈ [0, 1, 2] := by simp; omega
-  have hf_j : j ∈ [0, 1, 2] := by simp; omega
-  fin_cases hf_i, hf_j
-  all_goals (
-    first
-    | (use 0, 0, 0; trivial)
-    | (use 0, 0, 1; trivial)
-    | (use 0, 1, 0; trivial)
-    | (use 0, 1, 1; trivial)
-    | (use 1, 0, 0; trivial)
-    | (use 1, 0, 1; trivial)
-    | (use 1, 1, 0; trivial)
-    | (use 1, 1, 1)
-  )
+def cube : Finset (ℕ × ℕ × ℕ) := {0, 1} ×ˢ {0, 1} ×ˢ {0, 1}
+theorem bound_of_cube (ijk : ℕ × ℕ × ℕ) (hi : ijk ∈ cube) :
+  let ⟨ i, j, k ⟩ := ijk; i ≤ 1 ∧ j ≤ 1 ∧ k ≤ 1 := by
+  fin_cases hi
+  all_goals (simp)
 
+def f_ij_jk : ℕ × ℕ × ℕ → ℕ × ℕ := (fun ijk' : ℕ × ℕ × ℕ => let ( i', j', k' ) := ijk'; (i' + j', j' + k'))
+def ij_jk_image : Finset (ℕ × ℕ) := {(0, 0), (0, 1), (1, 0), (1, 1), (1, 2), (2, 1), (2, 2)}
+
+theorem correct_of_ij_jk_image : (Finset.image f_ij_jk cube) = ij_jk_image := by decide
 
 theorem image_of_homog_lift_of_comm_of_αβ_βγ (h : WeakA3 R) (i j : ℕ) (hi : i ≤ αβ.height) (hj : j ≤ βγ.height) :
-  ((i, j) ≠ (2, 0) ∧ (i, j) ≠ (0, 2)) → ∀ (t u : R), ⁅ {αβ, i, t}, {βγ, j, u} ⁆ = 1 := by
-  intro h_not_20_02 t u
-  have ⟨ i', j', k', ⟨ hi', hj', hk', h_sum₁, h_sum₂ ⟩ ⟩ := decompose_sum_of_2 i j hi hj h_not_20_02
+  ((i, j) ∈ ij_jk_image) → ∀ (t u : R), ⁅ {αβ, i, t}, {βγ, j, u} ⁆ = 1 := by
+  intro h_in_image t u
+  have : ∃ ijk' : ℕ × ℕ × ℕ, ijk' ∈ cube ∧ f_ij_jk ijk' = (i, j) := by
+    rw [← Finset.mem_image, correct_of_ij_jk_image]; exact h_in_image
+  have ⟨ ijk', ⟨ h_in_cube, h_f ⟩ ⟩ := this
+  have ⟨ hi', hj', hk' ⟩ := bound_of_cube ijk' h_in_cube
+  let ⟨ i', j', k' ⟩ := ijk'
+  have h_f' : i = i' + j' ∧ j = j' + k' := by (
+    rw [← Prod.mk.injEq]
+    rw [← h_f]
+    rw [f_ij_jk]
+  )
   rw [← homog_lift_of_comm_of_αβ_βγ h i' j' k' hi' hj' hk' t u]
-  simp_rw [h_sum₁]
-  simp_rw [h_sum₂]
+  simp [h_f']
 
 theorem comm_of_αβ_βγ_20 (h : WeakA3 R) : ∀ (t u : R), ⁅ {αβ, 2, t}, {βγ, 0, u} ⁆ = 1 := by
   intro t u
@@ -384,12 +380,12 @@ theorem comm_of_αβ_βγ_02 (h : WeakA3 R) :
   ∀ (t u : R),
     ⁅ {αβ, 0, t}, {βγ, 2, u} ⁆ = 1 := by sorry
 
-example : (x, y) = (z, w) → x = z := by
-  simp_all [Prod.mk.injEq]
-
 theorem comm_of_αβ_βγ (h : WeakA3 R) : trivial_commutator_of_root_pair R αβ βγ := by
   intro i j hi hj t u
-  have : (i = 0 ∧ j = 2) ∨ (i = 2 ∧ j = 0) ∨ ((i, j) ≠ (2, 0) ∧ (i, j) ≠ (0, 2)) := by simp; omega
+  have : (i = 0 ∧ j = 2) ∨ (i = 2 ∧ j = 0) ∨ ((i, j) ∈ ij_jk_image) := by
+    rw [ij_jk_image]
+    simp [height] at *
+    omega
   rcases this with hij | hij | hij
   ·
     let ⟨ hd_i, hd_j ⟩ := hij
@@ -555,7 +551,11 @@ theorem InterchangeRefl (h : WeakA3 R) (i j k : ℕ) (hi : i ≤ α.height) (hj 
 theorem comm_α_βγ_00 (h : WeakA3 R) (t u : R) : ⁅ {α, 0, t}, {βγ, 0, u} ⁆ = {αβγ, 0 + 0, 1*(t*u)} := by
   rw [← InterchangeRefl h 0 0 0]
   repeat rw [mkOf]
-  repeat simp
+  simp [isPresent] at *
+  repeat rw [mkOf]
+  simp [isPresent] at *
+  simp [height] at *
+  simp [height] at *
 theorem comm_αβ_γ_00 (h : WeakA3 R) (t u : R) : ⁅ {αβ, 0, t}, {γ, 0, u} ⁆ = {αβγ, 0 + 0, 1*(t*u)} := by
   rw [← InterchangeTrans h 0 0 0]
   rw [comm_α_βγ_00 h]
@@ -565,7 +565,11 @@ theorem comm_αβ_γ_00 (h : WeakA3 R) (t u : R) : ⁅ {αβ, 0, t}, {γ, 0, u} 
 theorem comm_α_βγ_01 (h : WeakA3 R) (t u : R) : ⁅ {α, 0, t}, {βγ, 1, u} ⁆ = {αβγ, 0 + 1, 1*(t*u)} := by
   rw [← InterchangeRefl h 0 0 1]
   repeat rw [mkOf]
-  repeat simp
+  simp [isPresent] at *
+  repeat rw [mkOf]
+  simp [isPresent] at *
+  simp [height] at *
+  simp [height] at *
 theorem comm_αβ_γ_10 (h : WeakA3 R) (t u : R) : ⁅ {αβ, 1, t}, {γ, 0, u} ⁆ = {αβγ, 1 + 0, 1*(t*u)} := by
   rw [← InterchangeTrans h 0 1 0]
   rw [comm_α_βγ_01 h]
@@ -583,7 +587,11 @@ theorem comm_αβ_γ_01 (h : WeakA3 R) (t u : R) : ⁅ {αβ, 0, t}, {γ, 1, u} 
 theorem comm_α_βγ_11 (h : WeakA3 R) (t u : R) : ⁅ {α, 1, t}, {βγ, 1, u} ⁆ = {αβγ, 1 + 1, 1*(t*u)} := by
   rw [← InterchangeRefl h 1 0 1]
   repeat rw [mkOf]
-  repeat simp
+  simp [isPresent] at *
+  repeat rw [mkOf]
+  simp [isPresent] at *
+  simp [height] at *
+  simp [height] at *
 theorem comm_αβ_γ_11 (h : WeakA3 R) (t u : R) : ⁅ {αβ, 1, t}, {γ, 1, u} ⁆ = {αβγ, 1 + 1, 1*(t*u)} := by
   rw [← InterchangeTrans h 1 0 1]
   rw [comm_α_βγ_11 h]
@@ -601,7 +609,11 @@ theorem comm_αβ_γ_20 (h : WeakA3 R) (t u : R) : ⁅ {αβ, 2, t}, {γ, 0, u} 
 theorem comm_α_βγ_12 (h : WeakA3 R) (t u : R) : ⁅ {α, 1, t}, {βγ, 2, u} ⁆ = {αβγ, 1 + 2, 1*(t*u)} := by
   rw [← InterchangeRefl h 1 1 1]
   repeat rw [mkOf]
-  repeat simp
+  simp [isPresent] at *
+  repeat rw [mkOf]
+  simp [isPresent] at *
+  simp [height] at *
+  simp [height] at *
 theorem comm_αβ_γ_21 (h : WeakA3 R) (t u : R) : ⁅ {αβ, 2, t}, {γ, 1, u} ⁆ = {αβγ, 2 + 1, 1*(t*u)} := by
   rw [← InterchangeTrans h 1 1 1]
   rw [comm_α_βγ_12 h]
