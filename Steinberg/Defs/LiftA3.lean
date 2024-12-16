@@ -129,21 +129,16 @@ Build a generator of the WeakA3 group from a root, a degree, and a coefficient. 
 roots of types α, β, γ, αβ, and βγ can form generators (they are "present"), while the root
 of type αβγ cannot form a generator (it is "missing"); instead, we fix some expression
 for elements corresponding to this root in terms of the other roots, using the aforementioned
-`split_deg3` function.
+`split_of_3_into_1_2` function.
 -/
-def pmk (ζ : A3PositiveRoot) (hζ : ζ.isPresent) (i : ℕ) (hi : i ≤ ζ.height) (t : R) : FreeGroup (A3UnipGen R) :=
-  FreeGroup.of <| mk ζ hζ i hi t
-
-@[reducible]
 def mkOf (ζ : A3PositiveRoot) (i : ℕ) (hi : i ≤ ζ.height) (t : R) : FreeGroup (A3UnipGen R) :=
   if hζ : ζ.isPresent then
-    pmk ζ hζ i hi t
+    FreeGroup.of <| mk ζ hζ i hi t
   else
     match ζ with
     | αβγ =>
       let ⟨ i₁, i₂, hi₁, hi₂, _ ⟩ := split_of_3_into_1_2 i hi
-      ⁅ mkOf α i₁ hi₁ t, mkOf βγ i₂ hi₂ (1 : R) ⁆ -- ⁅  ⁆
-termination_by ζ.height
+      ⁅ FreeGroup.of <| mk α (by trivial) i₁ hi₁ t, FreeGroup.of <| mk βγ (by trivial) i₂ hi₂ (1 : R) ⁆
 
 set_option hygiene false in
 /-- Shorthand for building free group elements from a root, degree, and ring element. -/
@@ -550,12 +545,8 @@ theorem InterchangeRefl (h : WeakA3 R) (i j k : ℕ) (hi : i ≤ α.height) (hj 
 -- height 0
 theorem comm_α_βγ_00 (h : WeakA3 R) (t u : R) : ⁅ {α, 0, t}, {βγ, 0, u} ⁆ = {αβγ, 0 + 0, 1*(t*u)} := by
   rw [← InterchangeRefl h 0 0 0]
-  repeat rw [mkOf]
-  simp [isPresent] at *
-  repeat rw [mkOf]
-  simp [isPresent] at *
-  simp [height] at *
-  simp [height] at *
+  simp [mkOf]
+  repeat simp [*] at *
 theorem comm_αβ_γ_00 (h : WeakA3 R) (t u : R) : ⁅ {αβ, 0, t}, {γ, 0, u} ⁆ = {αβγ, 0 + 0, 1*(t*u)} := by
   rw [← InterchangeTrans h 0 0 0]
   rw [comm_α_βγ_00 h]
@@ -564,12 +555,8 @@ theorem comm_αβ_γ_00 (h : WeakA3 R) (t u : R) : ⁅ {αβ, 0, t}, {γ, 0, u} 
 -- height 1
 theorem comm_α_βγ_01 (h : WeakA3 R) (t u : R) : ⁅ {α, 0, t}, {βγ, 1, u} ⁆ = {αβγ, 0 + 1, 1*(t*u)} := by
   rw [← InterchangeRefl h 0 0 1]
-  repeat rw [mkOf]
-  simp [isPresent] at *
-  repeat rw [mkOf]
-  simp [isPresent] at *
-  simp [height] at *
-  simp [height] at *
+  simp [mkOf]
+  repeat simp [*] at *
 theorem comm_αβ_γ_10 (h : WeakA3 R) (t u : R) : ⁅ {αβ, 1, t}, {γ, 0, u} ⁆ = {αβγ, 1 + 0, 1*(t*u)} := by
   rw [← InterchangeTrans h 0 1 0]
   rw [comm_α_βγ_01 h]
@@ -586,12 +573,8 @@ theorem comm_αβ_γ_01 (h : WeakA3 R) (t u : R) : ⁅ {αβ, 0, t}, {γ, 1, u} 
 -- height 2
 theorem comm_α_βγ_11 (h : WeakA3 R) (t u : R) : ⁅ {α, 1, t}, {βγ, 1, u} ⁆ = {αβγ, 1 + 1, 1*(t*u)} := by
   rw [← InterchangeRefl h 1 0 1]
-  repeat rw [mkOf]
-  simp [isPresent] at *
-  repeat rw [mkOf]
-  simp [isPresent] at *
-  simp [height] at *
-  simp [height] at *
+  simp [mkOf]
+  repeat simp [*] at *
 theorem comm_αβ_γ_11 (h : WeakA3 R) (t u : R) : ⁅ {αβ, 1, t}, {γ, 1, u} ⁆ = {αβγ, 1 + 1, 1*(t*u)} := by
   rw [← InterchangeTrans h 1 0 1]
   rw [comm_α_βγ_11 h]
@@ -608,12 +591,8 @@ theorem comm_αβ_γ_20 (h : WeakA3 R) (t u : R) : ⁅ {αβ, 2, t}, {γ, 0, u} 
 -- height 3
 theorem comm_α_βγ_12 (h : WeakA3 R) (t u : R) : ⁅ {α, 1, t}, {βγ, 2, u} ⁆ = {αβγ, 1 + 2, 1*(t*u)} := by
   rw [← InterchangeRefl h 1 1 1]
-  repeat rw [mkOf]
-  simp [isPresent] at *
-  repeat rw [mkOf]
-  simp [isPresent] at *
-  simp [height] at *
-  simp [height] at *
+  simp [mkOf]
+  repeat simp [*] at *
 theorem comm_αβ_γ_21 (h : WeakA3 R) (t u : R) : ⁅ {αβ, 2, t}, {γ, 1, u} ⁆ = {αβγ, 2 + 1, 1*(t*u)} := by
   rw [← InterchangeTrans h 1 1 1]
   rw [comm_α_βγ_12 h]
