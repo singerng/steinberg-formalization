@@ -1,45 +1,98 @@
 import Mathlib.Data.Matrix.Basic
 import Mathlib.Tactic
 
-variable {R : Type*} [Ring R]
-variable {n : ℕ}
+universe u v
 
-def f (i j : Fin n) (t : R) (a b : Fin n) : R :=
+variable {n : Type v} [DecidableEq n]
+variable {R : Type u} [CommRing R]
+
+/-- entries of indicator matrix -/
+def f (i j : n) (t : R) (a b : n) : R :=
   if a = i ∧ b = j then t else 0
 
 /-- indicator matrix -/
-def E (i j : Fin n) (t : R) : Matrix (Fin n) (Fin n) R :=
+def E (i j : n) (t : R) : Matrix n n R :=
   Matrix.of (f i j t)
 
-def M (i j : Fin n) (t : R) : Matrix (Fin n) (Fin n) R :=
+/-- M = 1 + E -/
+def M (i j : n) (t : R) : Matrix n n R :=
   1 + (E i j t)
 
+/- Some useful theorems for sums, here for reference -/
 #check Fintype.sum_eq_zero
-#check Matrix.one_apply_ne
-#check Fintype.sum_eq_add
 #check Fintype.sum_eq_single
+#check Fintype.sum_eq_add
+#check Matrix.one_apply_ne
 
-theorem mul_add_unipotent {i j : Fin n} {t u : R} (hij : i < j)
+/-- Product of indicator matrices, j = k case -/
+theorem E_mul [Fintype n] {i j k : n}
+  : (E i j (1 : R)) * (E j k 1) = E i k 1 := by
+  ext a b
+  simp only [E, Matrix.mul_apply, Matrix.of_apply]
+  rw [f]
+  split_ifs with aibk
+  · have aux : ∀ x, x ≠ j → (f i j 1 a x) * (f j k 1 x b) = (0 : R) :=
+      fun x hxj ↦ by rw [f, f, if_neg (fun h ↦ hxj h.2), zero_mul]
+    rw [Fintype.sum_eq_single j aux, f, f, if_pos ⟨aibk.1, rfl⟩,
+        if_pos ⟨rfl, aibk.2⟩, one_mul]
+  · have aux : ∀ x, f i j 1 a x * f j k 1 x b = (0 : R) := by
+      intro x
+      rw [f, f]
+      split_ifs with aixj xjbk
+      · exact False.elim (aibk ⟨aixj.1, xjbk.2⟩)
+      · rw [mul_zero]
+      · rw [zero_mul]
+      · rw [zero_mul]
+    exact Fintype.sum_eq_zero _ aux
+
+/-- Product of indicator matrices, j ≠ k case -/
+theorem E_mul_eq_zero [Fintype n] {i j k l : n} (hjk : j ≠ k)
+  : (E i j (1 : R)) * (E k l 1) = 0 := by
+  ext a b
+  simp only [E, Matrix.mul_apply, Matrix.of_apply, Matrix.zero_apply]
+  have aux : ∀ x, (f i j (1 : R) a x) * (f k l 1 x b) = 0 := by
+    intro x
+    rw [f, f]
+    split_ifs with aixj xkbl
+    · exact False.elim (hjk (Eq.trans aixj.2.symm xkbl.1))
+    · rw [mul_zero]
+    · rw [zero_mul]
+    · rw [zero_mul]
+  exact Fintype.sum_eq_zero _ aux
+
+theorem E_smul {i j : n} {t : R}
+  : t • (E i j (1 : R)) = E i j t := by
+  ext a b
+  simp only [E, Matrix.of_apply, Matrix.smul_apply, f, smul_eq_mul, mul_ite, mul_one, mul_zero]
+
+/-- Relation A.3, identity -/
+theorem M_zero_eq_one [Fintype n] {i j : n}
+  : M i j (0 : R) = 1 := by
+  ext a b
+  rw [M, E, Matrix.add_apply, Matrix.of_apply, f, ite_self, add_zero]
+
+/-- Relation A.4, linearity -/
+theorem M_mul_add [Fintype n] {i j : n} {t u : R} (hij : i ≠ j)
   : (M i j t) * (M i j u) = M i j (t + u) := by
   ext a b
   simp only [M, E, Matrix.mul_apply, Matrix.add_apply, Matrix.of_apply]
   rw [f]
   split_ifs with aibj
-  · have hab : a ≠ b := fun ab ↦ by rw [aibj.1, aibj.2] at ab; exact ne_of_lt hij ab
+  · have hab : a ≠ b := fun ab ↦ by rw [aibj.1, aibj.2] at ab; exact hij ab
     have aux : ∀ x, x ≠ a ∧ x ≠ b →
-      ((1 : Matrix (Fin n) (Fin n) R) a x + f i j t a x) *
-      ((1 : Matrix (Fin n) (Fin n) R) x b + f i j u x b) = 0 :=
+      ((1 : Matrix n n R) a x + f i j t a x) *
+      ((1 : Matrix n n R) x b + f i j u x b) = 0 :=
       fun x ⟨hxa, hxb⟩ ↦ by rw [f, f, Matrix.one_apply_ne hxa.symm, zero_add,
           if_neg (fun h ↦ by rw [h.2] at hxb; exact hxb (aibj.2.symm)), zero_mul]
     rw [Matrix.one_apply_ne hab, zero_add, Fintype.sum_eq_add a b hab aux]
     simp only [Matrix.one_apply, f, if_pos, if_neg hab, zero_add, if_pos aibj]
-    repeat rw [if_neg (fun h ↦ by rw [←h.1, h.2] at hij; exact (lt_self_iff_false j).1 hij)]
+    repeat rw [if_neg (fun ⟨ai, aj⟩ ↦ hij (Eq.trans ai.symm aj))]
     rw [add_zero, one_mul, mul_one, add_comm]
   cases eq_or_ne a b with
   | inl hab =>
     have aux : ∀ x, x ≠ b →
-      ((1 : Matrix (Fin n) (Fin n) R) b x + f i j t b x) *
-      ((1 : Matrix (Fin n) (Fin n) R) x b + f i j u x b) = 0 := by
+      ((1 : Matrix n n R) b x + f i j t b x) *
+      ((1 : Matrix n n R) x b + f i j u x b) = 0 := by
       intro x hxb
       rw [f, f, Matrix.one_apply_ne hxb, zero_add, Matrix.one_apply_ne hxb.symm, zero_add]
       split_ifs with bixj xibj
@@ -49,13 +102,13 @@ theorem mul_add_unipotent {i j : Fin n} {t u : R} (hij : i < j)
       · rw [zero_mul]
     rw [hab, Matrix.one_apply, if_pos rfl, add_zero, Fintype.sum_eq_single b aux,
         Matrix.one_apply, if_pos rfl, f, f]
-    repeat rw [if_neg (fun h ↦ ne_of_lt hij (Eq.trans h.1.symm h.2))]
+    repeat rw [if_neg (fun ⟨bi, bj⟩ ↦ hij (Eq.trans bi.symm bj))]
     simp only [add_zero, mul_one]
   | inr hab =>
     rw [add_zero, Matrix.one_apply_ne hab]
     have aux : ∀ x,
-      ((1 : Matrix (Fin n) (Fin n) R) a x + f i j t a x) *
-      ((1 : Matrix (Fin n) (Fin n) R) x b + f i j u x b) = 0 := by
+      ((1 : Matrix n n R) a x + f i j t a x) *
+      ((1 : Matrix n n R) x b + f i j u x b) = 0 := by
       intro x
       rw [f, f]
       split_ifs with aixj xibj xibj
@@ -71,3 +124,79 @@ theorem mul_add_unipotent {i j : Fin n} {t u : R} (hij : i < j)
         · simp only [add_zero, mul_one]
         · simp only [add_zero, mul_zero]
     exact Fintype.sum_eq_zero _ aux
+
+-- instance hasMul [Fintype n] : Mul (@TypeAMatrices n _ R _) :=
+--   ⟨fun A B => ⟨A * B, by
+--     rcases A with ⟨A, ⟨i, j, t, hA⟩⟩
+--     rcases B with ⟨B, ⟨k, l, u, hB⟩⟩
+--     cases eq_or_ne j k with
+--     | inl hjk => sorry
+--     | inr hjk => sorry
+--   ⟩⟩
+
+/-- Relation A.5, inverses -/
+theorem M_inv_neg [Fintype n] {i j : n} {t : R} (hij : i ≠ j)
+  : (M i j t) * (M i j (-t)) = 1 := by
+  rw [M_mul_add hij, add_neg_cancel, M_zero_eq_one]
+
+/-- Defs only used in the proof of Relation A.6 -/
+private def X [Fintype n] (i j k l : n) (t u : R) : Matrix n n R :=
+  t • (E i j 1) + u • (E k l 1)
+
+private def Y [Fintype n] (i j k l : n) (t u : R) : Matrix n n R :=
+  (t * u) • (E i j 1) * (E k l 1)
+
+/-- Own definition of commutator -/
+def M_comm [Fintype n] (i j k l : n) (t u : R) : Matrix n n R :=
+  (M i j t) * (M k l u) * (M i j (-t)) * (M k l (-u))
+
+/-- [Mij(t), Mkl(u)] = 1 + 2Y + (X + Y)(-X + Y) -/
+lemma M_commutator_calc [Fintype n] {i j k l : n} {t u : R} (hij : i ≠ j) (hkl : k ≠ l)
+  : M_comm i j k l t u =
+  1 + (2 : R) • (Y i j k l t u) + ((X i j k l t u) + (Y i j k l t u)) * (-(X i j k l t u) + (Y i j k l t u)) := by
+  have h₀ : (M i j t) * (M k l u) = 1 + (X i j k l t u) + (Y i j k l t u) := by
+    rw [M, M, ←E_smul, ←@E_smul _ _ _ _ k, X, Y]
+    simp only [Matrix.mul_add, Matrix.add_mul, mul_one, one_mul]
+    -- is there not automation for this??? :(
+    rw [Matrix.smul_mul, Matrix.mul_smul, smul_smul, Matrix.smul_mul, add_assoc,
+        @add_assoc _ _ 1, add_left_cancel_iff, add_assoc, add_left_cancel_iff, add_left_cancel_iff]
+  have h₁ : (M i j (-t)) * (M k l (-u)) = 1 - (X i j k l t u) + (Y i j k l t u) := by
+    rw [M, M, ←E_smul, ←@E_smul _ _ _ _ k, X, Y]
+    simp only [Matrix.mul_add, Matrix.add_mul, mul_one, one_mul]
+    rw [Matrix.smul_mul, Matrix.mul_smul, smul_smul, Matrix.smul_mul, add_assoc,
+        sub_add_eq_add_sub, ←add_sub, add_left_cancel_iff, neg_mul_neg, ←add_assoc,
+        add_comm, sub_eq_add_neg, add_left_cancel_iff, neg_add, neg_smul, add_left_cancel_iff, neg_smul]
+  -- its trivial on the blackboard, just amounts to a ton of rewrites
+  -- if only something like `by module` existed
+  sorry
+  -- rw [M_comm, h₀, add_assoc, @add_comm _ _ (X i j k l t u), ←add_assoc, mul_assoc, h₁]
+
+theorem M_commutator [Fintype n] {i j k l : n} {t u : R} (hij : i ≠ j) (hkl : k ≠ l) (hjk : j ≠ k) (hil : i ≠ l)
+  : M_comm i j k l t u = 1 := by
+  have Y0 : Y i j k l t u = 0 := by
+    rw [Y, Matrix.smul_mul, E_mul_eq_zero hjk, smul_zero]
+  have X0 : (X i j k l t u) * (X i j k l t u) = 0 := by
+    rw [X, add_mul, mul_add, mul_add]
+    repeat rw [←mul_smul_mul_comm]
+    rw [E_mul_eq_zero hij.symm, E_mul_eq_zero hjk, E_mul_eq_zero hil.symm, E_mul_eq_zero hkl.symm]
+    simp only [smul_zero, add_zero]
+  rw [M_commutator_calc hij hkl, Y0]
+  simp only [smul_zero, add_zero, mul_neg, add_right_eq_self, neg_eq_zero]
+  exact X0
+
+example {a b : R} : a - b = a + -b := sub_eq_add_neg a b
+
+theorem M_commutator' [Fintype n] {i j k : n} {t u : R} (hij : i ≠ j) (hik : i ≠ k) (hjk : j ≠ k)
+  : M_comm i j j k t u  = M i k (t * u) := by
+  have hY : Y i j j k t u = (t * u) • (E i k 1) := by
+    rw [Y, Matrix.smul_mul, E_mul]
+  have : ((X i j j k t u) + (Y i j j k t u)) * (-(X i j j k t u) + (Y i j j k t u)) = (-t * u) • E i k 1 := by
+    rw [X, Y]
+    simp only [mul_add, add_mul, mul_neg, neg_mul]
+    -- need automation
+    sorry
+  -- a • M + b • M = (a + b) • M
+  rw [M_commutator_calc hij hjk, this, M, Y, Matrix.smul_mul, E_mul, ←mul_smul,
+      add_assoc, ←add_smul, add_left_cancel_iff, E_smul]
+  apply congr_arg
+  ring
