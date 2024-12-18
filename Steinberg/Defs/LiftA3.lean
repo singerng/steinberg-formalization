@@ -293,6 +293,8 @@ theorem mixed_commutes_of_βγ (h : WeakGradedA3 R) : mixed_commutes_of_root R �
 
 /-! ### Derive full commutator for αβ and βγ from nonhomogeneous lift -/
 
+-- NS: this section should probably be abstracted for reuse
+
 /- Commutator relation in the case (i,j) is not (0,2) or (2,0) (via the previous theorem). -/
 theorem homog_lift_of_comm_of_αβ_βγ (h : WeakGradedA3 R) (i j k : ℕ) (hi : i ≤ 1) (hj : j ≤ 1) (hk : k ≤ 1) :
   ∀ (t u : R), ⁅ {αβ, (i + j), t}, {βγ, j + k, u} ⁆ = 1 := by
