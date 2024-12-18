@@ -25,13 +25,19 @@ variable {G : Type Tu} [Group G]
 
 /-! ### Theorems about commutators (holding in any group) -/
 
-theorem comm_left_str  (x y : G) : reorder_left(x, y, ⁅x, y⁆) := by group
-theorem comm_mid_str   (x y : G) : x * y = y * ⁅x, y⁻¹⁆⁻¹ * x := by group
-theorem comm_right_str (x y : G) : x * y = y * x * ⁅x⁻¹, y⁻¹⁆ := by group
+theorem comm_left      (x y : G) : x * y = ⁅x, y⁆ * y * x          := by group
+theorem comm_mid       (x y : G) : x * y = y * ⁅x, y⁻¹⁆⁻¹ * x      := by group
+theorem comm_right     (x y : G) : x * y = y * x * ⁅x⁻¹, y⁻¹⁆      := by group
+
+theorem already_have (x y : G) : ⁅x, y⁆⁻¹ = ⁅y, x⁆ := by group
+
+theorem comm_left_rev  (x y : G) : x * y = ⁅y, x⁆⁻¹ * y * x        := by rw [already_have]; exact comm_left x y
+theorem comm_mid_rev   (x y : G) : x * y = y * ⁅y⁻¹, x⁆ * x        := by rw [← already_have]; exact comm_mid x y
+theorem comm_right_rev (x y : G) : x * y = y * x * ⁅y⁻¹, x⁻¹⁆⁻¹    := by rw [already_have]; exact comm_right x y
 
 theorem commutes_of_triv_comm : triv_comm(x, y) → commutes(x, y) := by
   intro h
-  rw [comm_left_str, h, one_mul]
+  rw [comm_left, h, one_mul]
 
 theorem triv_comm_of_commutes : commutes(x, y) → triv_comm(x, y) := by
   intro h
