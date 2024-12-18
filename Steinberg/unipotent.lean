@@ -1,5 +1,25 @@
 import Mathlib.Data.Matrix.Basic
 import Mathlib.Tactic
+import Mathlib.Algebra.Algebra.Defs
+-- import Steinberg.Macro.Algebra
+
+-- tactic, under development, to simplify algebra expressions
+macro (name := algebra) "algebra" : tactic => `(tactic|
+  simp only [
+    -- additive ring structure
+    mul_add, add_mul, neg_add, sub_eq_add_neg, add_zero, zero_add,
+    -- multiplicative ring structure
+    one_mul, mul_one, mul_zero, zero_mul, mul_neg,
+    -- scalar structure
+    smul_smul,              -- t • (u • x) = (t * u) • x
+    mul_smul_comm,          -- x * (t • y) = t • (x * y)
+    smul_mul_assoc,         -- (t • x) * y = t • (x * y)
+    ← neg_one_smul,         -- -x = (-1) • x
+    ← neg_smul,             -- -(r • x) = (-r) • x
+    smul_add,               -- t • (x + y) = t • x + t • y
+    smul_zero
+  ]
+)
 
 universe u v
 
@@ -63,7 +83,9 @@ theorem E_mul_eq_zero [Fintype n] {i j k l : n} (hjk : j ≠ k)
 theorem E_smul {i j : n} {t : R}
   : t • (E i j (1 : R)) = E i j t := by
   ext a b
-  simp only [E, Matrix.of_apply, Matrix.smul_apply, f, smul_eq_mul, mul_ite, mul_one, mul_zero]
+  simp only [E, Matrix.of_apply, Matrix.smul_apply, f]
+  rw [smul_eq_mul]
+  simp only [mul_ite, mul_one, mul_zero]
 
 /-- Relation A.3, identity -/
 theorem M_zero_eq_one [Fintype n] {i j : n}
@@ -151,8 +173,7 @@ def M_comm [Fintype n] (i j k l : n) (t u : R) : Matrix n n R :=
   (M i j t) * (M k l u) * (M i j (-t)) * (M k l (-u))
 
 lemma expand_signed_prod [Fintype n] (_X _Y : Matrix n n R) : (1 + _X + _Y) * (1 - _X + _Y) = 1 + (2 : R) • _Y + (_X + _Y) * (-_X + _Y) := by
-  simp only [Matrix.mul_add, Matrix.mul_sub, Matrix.add_mul, Matrix.sub_mul, mul_one, one_mul] --distribute
-  simp
+  algebra
   module
 
 /-- [Mij(t), Mkl(u)] = 1 + 2Y + (X + Y)(-X + Y) -/
@@ -161,13 +182,12 @@ lemma M_commutator_calc [Fintype n] {i j k l : n} {t u : R} --(hij : i ≠ j) (h
   1 + (2 : R) • (Y i j k l t u) + ((X i j k l t u) + (Y i j k l t u)) * (-(X i j k l t u) + (Y i j k l t u)) := by
   have h₀ : (M i j t) * (M k l u) = 1 + (X i j k l t u) + (Y i j k l t u) := by
     rw [M, M, ←E_smul, ←@E_smul _ _ _ _ k, X, Y]
-    simp only [Matrix.mul_add, Matrix.add_mul, mul_one, one_mul] --distribute
-    rw [Matrix.smul_mul, Matrix.mul_smul, smul_smul, Matrix.smul_mul]
+    algebra
     module
   have h₁ : (M i j (-t)) * (M k l (-u)) = 1 - (X i j k l t u) + (Y i j k l t u) := by
     rw [M, M, ←E_smul, ←@E_smul _ _ _ _ k, X, Y]
-    simp only [Matrix.mul_add, Matrix.add_mul, mul_one, one_mul] --distribute
-    simp
+    algebra
+    simp only [neg_mul_neg]
     module
   rw [M_comm, h₀, mul_assoc, h₁, expand_signed_prod]
 
@@ -176,34 +196,25 @@ theorem M_commutator [Fintype n] {i j k l : n} {t u : R} (hij : i ≠ j) (hkl : 
   have Y0 : Y i j k l t u = 0 := by
     rw [Y, Matrix.smul_mul, E_mul_eq_zero hjk, smul_zero]
   have X0 : (X i j k l t u) * (X i j k l t u) = 0 := by
-    rw [X, add_mul, mul_add, mul_add]
-    repeat rw [←mul_smul_mul_comm]
+    rw [X]
+    algebra
     rw [E_mul_eq_zero hij.symm, E_mul_eq_zero hjk, E_mul_eq_zero hil.symm, E_mul_eq_zero hkl.symm]
     simp only [smul_zero, add_zero]
   rw [M_commutator_calc, Y0]
-  simp only [smul_zero, add_zero, mul_neg, add_right_eq_self, neg_eq_zero]
+  algebra
+  simp only [add_right_eq_self, neg_eq_zero]
   exact X0
-
-example {a b : R} : a - b = a + -b := sub_eq_add_neg a b
 
 theorem M_commutator' [Fintype n] {i j k : n} {t u : R} (hij : i ≠ j) (hik : i ≠ k) (hjk : j ≠ k)
   : M_comm i j j k t u  = M i k (t * u) := by
   have hY : Y i j j k t u = (t * u) • (E i k 1) := by
     rw [Y, Matrix.smul_mul, E_mul]
-  have : ((X i j j k t u) + (Y i j j k t u)) * (-(X i j j k t u) + (Y i j j k t u)) = (-t * u) • E i k 1 := by
+  have : ((X i j j k t u) + (Y i j j k t u)) * (-(X i j j k t u) + (Y i j j k t u)) = -(t * u) • E i k 1 := by
     rw [X, Y]
-    simp only [mul_add, add_mul, mul_neg, neg_mul] --distribute
-    simp only [Algebra.mul_smul_comm, Algebra.smul_mul_assoc]
-    repeat (
-      first
-      | rw [E_mul]
-      | rw [E_mul_eq_zero hik.symm]
-      | rw [E_mul_eq_zero hjk.symm]
-      | rw [E_mul_eq_zero hij.symm]
-    )
+    algebra
+    simp only [E_mul, E_mul_eq_zero hik.symm, E_mul_eq_zero hjk.symm, E_mul_eq_zero hij.symm]
     module
-  -- a • M + b • M = (a + b) • M
-  rw [M_commutator_calc, this, M, Y, Matrix.smul_mul, E_mul, ←mul_smul,
-      add_assoc, ←add_smul, add_left_cancel_iff, E_smul]
-  apply congr_arg
-  ring
+  rw [M_commutator_calc, this, M, Y, Matrix.smul_mul, E_mul]
+  algebra
+  nth_rewrite 3 [← E_smul]
+  module
