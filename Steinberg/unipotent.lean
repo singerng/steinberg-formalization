@@ -187,7 +187,6 @@ lemma M_commutator_calc [Fintype n] {i j k l : n} {t u : R} --(hij : i ≠ j) (h
   have h₁ : (M i j (-t)) * (M k l (-u)) = 1 - (X i j k l t u) + (Y i j k l t u) := by
     rw [M, M, ←E_smul, ←@E_smul _ _ _ _ k, X, Y]
     algebra
-    simp only [neg_mul_neg]
     module
   rw [M_comm, h₀, mul_assoc, h₁, expand_signed_prod]
 
