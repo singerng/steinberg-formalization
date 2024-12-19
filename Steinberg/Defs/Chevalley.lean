@@ -36,18 +36,18 @@ def mkOf (ζ : Φ) (i : ℕ) (hi : i ≤ height ζ) (t : R) : FreeGroup (WeakGra
 
 /- Commutator for generators corresponding to two roots which span no additional roots. -/
 def trivial_commutator_of_root_pair (R : Type Tv) [Ring R] (ζ η : Φ) : Prop :=
-  ∀ (i : ℕ) (j : ℕ) (hi : i ≤ height ζ) (hj : j ≤ height η) (t u : R),
+  ∀ ⦃i j : ℕ⦄ (hi : i ≤ height ζ) (hj : j ≤ height η) (t u : R),
     ⁅ mkOf ζ i hi t, mkOf η j hj u ⁆ = 1
 
 /- Commutator for generators corresponding to two roots which span a single additional root. C is a constant (always 1 in A3). -/
 def single_commutator_of_root_pair (ζ η θ : Φ)
   (C : R) (h_height : height θ = height ζ + height η) : Prop :=
-  ∀ (i : ℕ) (j : ℕ) (hi : i ≤ height ζ) (hj : j ≤ height η) (t u : R),
+  ∀ ⦃i j : ℕ⦄ (hi : i ≤ height ζ) (hj : j ≤ height η) (t u : R),
     ⁅ mkOf ζ i hi t, mkOf η j hj u ⁆ = mkOf θ (i + j) (by omega) (C * (t * u))
 
 /- Linearity of coefficients for products of generators of a single root (with the same degree). -/
 def lin_of_root (R : Type Tv) [Ring R] (ζ : Φ) : Prop :=
-  ∀ (i : ℕ) (hi : i ≤ height ζ) (t u : R), (mkOf ζ i hi t) * (mkOf ζ i hi u) = mkOf ζ i hi (t + u)
+  ∀ ⦃i : ℕ⦄ (hi : i ≤ height ζ) (t u : R), (mkOf ζ i hi t) * (mkOf ζ i hi u) = mkOf ζ i hi (t + u)
 
 /-
 Commutator for generators corresponding to the same root, of two degrees `i` and `j`. This is already implied in the case `i=j`
@@ -58,19 +58,19 @@ def mixed_commutes_of_root (R : Type Tv) [Ring R] (ζ : Φ) : Prop :=
 
 /- Coefficient 0 gives an identity element. -/
 def id_of_root (R : Type Tv) [Ring R] (ζ : Φ) : Prop :=
-  ∀ (i : ℕ) (hi : i ≤ height ζ), mkOf ζ i hi (0 : R) = 1
+  ∀ ⦃i : ℕ⦄ (hi : i ≤ height ζ), mkOf ζ i hi (0 : R) = 1
 
 /- Negating the coefficient inverts the generator. -/
 def inv_of_root (R : Type Tv) [Ring R] (ζ : Φ) : Prop :=
-  ∀ (i : ℕ) (hi : i ≤ height ζ) (t : R), mkOf ζ i hi (-t) = (mkOf ζ i hi t)⁻¹
+  ∀ ⦃i : ℕ⦄ (hi : i ≤ height ζ) (t : R), mkOf ζ i hi (-t) = (mkOf ζ i hi t)⁻¹
 
 /-! ### Assumptions -/
 
-def lin_of_present (R : Type Tv) [Ring R] (Φ : Type u) [PosRootSys Φ] : Prop := ∀ (ζ : Φ),
-  isPresent ζ → lin_of_root R ζ
+def lin_of_present (R : Type Tv) [Ring R] (Φ : Type u) [PosRootSys Φ] : Prop :=
+  ∀ ⦃ζ : Φ⦄, isPresent ζ → lin_of_root R ζ
 
-def mixed_commutes_of_present (R : Type Tv) [Ring R] (Φ : Type u) [PosRootSys Φ] : Prop := ∀ (ζ : Φ),
-  isPresent ζ → mixed_commutes_of_root R ζ
+def mixed_commutes_of_present (R : Type Tv) [Ring R] (Φ : Type u) [PosRootSys Φ] : Prop :=
+  ∀ ⦃ζ : Φ⦄, isPresent ζ → mixed_commutes_of_root R ζ
 
 end WeakGradedGen
 
