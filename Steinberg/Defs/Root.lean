@@ -29,4 +29,10 @@ class PosRootSys (Root : Type u) extends ToString Root where
     | (r₁, i₁, r₂, i₂) =>
       isPresent r₁ ∧ isPresent r₂ ∧ i₁ ≤ height r₁ ∧ i₂ ≤ height r₂ ∧ i₁ + i₂ = i ∧ add r₁ r₂ = r -/
 
+/-- Applies the `add` operation for a `PosRootSys`. -/
+notation r₁ " +? " r₂ => PosRootSys.add r₁ r₂
+
+/-- Applies the `mul` operation for a `PosRootSys`. -/
+notation r₁ " *? " r₂ => PosRootSys.mul r₁ r₂
+
 end Steinberg
