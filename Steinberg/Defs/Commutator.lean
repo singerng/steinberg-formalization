@@ -19,8 +19,7 @@ scoped notation "reorder_left" "( " x ", " y ", " z " )" => x * y = z * y * x
 scoped notation "reorder_mid" "( " x ", " y ", " z " )" => x * y = y * z * x
 scoped notation "reorder_right" "( " x ", " y ", " z " )" => x * y = y * x * z
 
-variable {G : Type Tu} [Group G]
-        --  {R : Type Tv} [Ring R]
+variable {G : Type TG} [Group G]
          {w x y z : G}
 
 /-! ### Theorems about commutators (holding in any group) -/

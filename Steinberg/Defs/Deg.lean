@@ -1,4 +1,6 @@
-import Mathlib.Data.Nat.Defs
+import Mathlib.Data.Finset.Defs
+import Mathlib.Data.Finset.Sigma
+
 import Mathlib.Tactic.Use
 
 namespace Steinberg
@@ -15,117 +17,46 @@ theorem decompose (n m i : ℕ) (h : i ≤ (n+m)) : ∃ (i₁ i₂ : ℕ), i = i
   · use n, i-n
     omega
 
-#exit
-
-/-! ### Definition of Deg type -/
-
-structure Deg (height : ℕ) where
-  val : Nat
-  isLe : val ≤ height
-
-namespace Deg
-
-instance instCoeOutNat (n : ℕ) : CoeOut (Deg n) ℕ := ⟨fun d => d.val⟩
-instance instOfNat (n : outParam ℕ) : OfNat (Deg n) n := ⟨n, Nat.le_refl _⟩
-
-protected def hAdd {n m : ℕ} (i : Deg n) (j : Deg m) : Deg (n + m) :=
-  ⟨i.val + j.val, by
-    have := i.isLe
-    have := j.isLe
-    omega
-  ⟩
-
-end Deg
-
-#exit
-
-open PositiveRootSystem
-
-structure Deg {α : Type u} [CoeOut α ℕ] (a : α) where
-  val : Nat
-  isLe : val ≤ (a : Nat)
-
-instance : CoeOut ℕ ℕ := ⟨id⟩
-
-namespace Deg
-
-def ofNat (n : Nat) : Deg n := ⟨n, Nat.le_refl n⟩
---instance instOfNat (n : Nat) : OfNat (Deg n) := ⟨ofNat⟩
-
-#check HAdd
-
-def add {a : α} {b : β} {c : γ} [CoeOut α ℕ] [CoeOut β ℕ]
-    (d₁ : Deg a) (d₂ : Deg b) (h : a + b = c)
-
-def hAdd {a : α} {b : β} [CoeOut α ℕ] [CoeOut β ℕ]
-    (d₁ : Deg a) (d₂ : Deg b) : Deg ((a : Nat) + (b : Nat)) :=
-      ⟨d₁.val + d₂.val, by
-        have ⟨d, hd⟩ := d₁
-        have ⟨e, he⟩ := d₂
-        simp [*] at *
-        sorry⟩
-
-def hAdd' {a : α} {b : β} {c : outParam γ} [CoeOut α ℕ] [CoeOut β ℕ] [CoeOut γ ℕ]
-    (d₁ : Deg a) (d₂ : Deg b) : Deg c :=
-      ⟨d₁.val + d₂.val, by
-        have ⟨d, hd⟩ := d₁
-        have ⟨e, he⟩ := d₂
-        simp [*] at *
-        sorry⟩
-
-
-bad (2 + 2)
-
-def bad : Fin 6 → Nat := fun _ => 1
-
-end Deg
-
--- structure Deg {α : Type u} [CoeOut α Nat] (a : α) where
---   val : Nat
---   isLe : val ≤ (a : Nat)
-
--- instance : CoeOut Nat Nat := ⟨id⟩
--- instance (n : Nat) : CoeOut (Fin n) Nat := ⟨fun v => v.val⟩
-
--- instance instRootCoeOut : CoeOut (Root) Nat := ⟨height⟩
-
--- namespace Deg
-
--- #check HAdd
--- -- protected
--- def hAdd {α : Type u} [CoeOut α Nat] {a b : α} (d₁ : Deg a) (d₂ : Deg b) : Deg (a + b) :=
---   ⟨d₁.val + d₂.val,
-
--- end Deg
-
-
-
-
--- structure Deg' (n : ℕ) where
---   mk ::
---   val : ℕ
---   h : val ≤ n
-
--- attribute [coe] Deg'.val
-
 /--
-  Syntax for adding two `Deg`s together, and then automatically deriving the
-  proof term needed to show that the resulting value is in range.
-
-  CC: Ideally, we would just use a `Fin` operation, but the closest I could
-      find was `Fin.natAdd`, since `Fin.add` takes two `Fin`s of the same
-      limit and adds their values together, modulo `n`. Since we know that
-      the argument to derive the proof term for the addition probably only
-      depends on height, we do that here.
+  Useful theorem to convert `i ≤ n` to `i ∈ List.range (n+1)`.
 -/
-syntax (name := degAdd) term " +' " term : term
+theorem mem_list_range_iff_le {i n : ℕ} : i ≤ n ↔ i ∈ List.range (n+1) := by
+  constructor
+  · intro h
+    rw [List.mem_range]
+    exact Nat.lt_add_one_of_le h
+  · intro h
+    apply Nat.le_of_lt_add_one
+    exact List.mem_range.mp h
 
--- def deg_add (i₁ : Deg' n) (i₂ : Deg' m) : Deg' (n+m) :=
---   ⟨ (i₁.val+i₂.val), (by omega) ⟩
+theorem mem_finset_range_iff_le {i n : ℕ} : i ≤ n ↔ i ∈ Finset.range (n+1) := by
+  constructor
+  · intro h
+    rw [Finset.mem_range]
+    exact Nat.lt_add_one_of_le h
+  · intro h
+    apply Nat.le_of_lt_add_one
+    exact Finset.mem_range.mp h
 
-macro_rules
-  -- | `($x +' $y) => `(⟨($x).val + ($y).val, by first | trivial | omega | simp [*] at *; omega⟩)
-  | `($x +' $y) => `(deg_add $x $y)
+/- Every (i, j) ∈ (Deg 2 × Deg 2) can be written as (i' + j', j' + k') for i', j', k' ∈ Deg 1, except (0, 2) and (2, 0) -/
+def booleans : Finset ℕ := {0, 1}
+def boolean_cube : Finset (ℕ × ℕ × ℕ) := booleans ×ˢ booleans ×ˢ booleans
 
+def f_ij_jk : ℕ × ℕ × ℕ → ℕ × ℕ := (fun ijk' : ℕ × ℕ × ℕ => let ( i', j', k' ) := ijk'; (i' + j', j' + k'))
+def ij_jk_image : Finset (ℕ × ℕ) := {(0, 0), (0, 1), (1, 0), (1, 1), (1, 2), (2, 1), (2, 2)}
+
+theorem correct_of_ij_jk_image : (Finset.image f_ij_jk boolean_cube) = ij_jk_image := by decide
+
+theorem mem_range_of_boolean_cube (ijk : ℕ × ℕ × ℕ) (hijk_set : ijk ∈ boolean_cube) :
+  let ⟨ i, j, k ⟩ := ijk; i ≤ 1 ∧ j ≤ 1 ∧ k ≤ 1 := by
+  simp only [boolean_cube] at hijk_set
+  constructor
+  · have : ijk.1 ∈ booleans := And.left (Finset.mem_product.mp hijk_set)
+    exact mem_finset_range_iff_le.mpr this
+  · constructor
+    · have : ijk.2.1 ∈ booleans := And.left (Finset.mem_product.mp (And.right (Finset.mem_product.mp hijk_set)))
+      exact mem_finset_range_iff_le.mpr this
+    · have : ijk.2.2 ∈ booleans := And.right (Finset.mem_product.mp (And.right (Finset.mem_product.mp hijk_set)))
+      exact mem_finset_range_iff_le.mpr this
 
 end Steinberg
