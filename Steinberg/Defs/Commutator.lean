@@ -1,5 +1,6 @@
 import Mathlib.Algebra.Group.Commutator
 import Mathlib.Algebra.Group.Defs
+import Mathlib.Algebra.Group.Aut
 import Mathlib.Tactic.Group
 
 namespace Steinberg
@@ -120,5 +121,55 @@ theorem trivial_comm_from_embedded_comm_and_pairs : triv_comm(x * y, w * z) → 
   simp_rw [← mul_assoc]
   rw [← h_xw, mul_assoc, ← h_yz, ← mul_assoc, mul_assoc x, ← h_yw, ← mul_assoc,
     mul_assoc, h_all, ← mul_assoc]
+
+open MulAut -- to access conj function
+
+-- Commutator identities (we can rename these later...)
+theorem CI1 : ⁅x, y * z⁆ = ⁅x, y⁆ * conj y ⁅x, z⁆ := by
+  simp only [conj_apply, commutatorElement_def, mul_inv_rev, ← mul_assoc, inv_mul_cancel_right]
+
+theorem CI2 : ⁅x * y, z⁆ = conj x ⁅y, z⁆ * ⁅x, z⁆ := by
+  simp only [conj_apply, commutatorElement_def, mul_inv_rev, ← mul_assoc, inv_mul_cancel_right]
+
+theorem CI3 : conj x ⁅x⁻¹, y⁆ = ⁅y, x⁆ := by
+  simp only [conj_apply, commutatorElement_def, mul_inv_rev, ← mul_assoc, inv_inv, mul_inv_cancel, one_mul]
+
+theorem CI4 : ⁅y, z⁆ * ⁅x, z⁆ = ⁅x, ⁅y, z⁆⁆⁻¹ * ⁅x * y, z⁆ := by
+  simp only [conj_apply, commutatorElement_def, mul_inv_rev, ← mul_assoc, inv_inv, mul_inv_cancel_right, inv_mul_cancel_right, CI2]
+
+theorem CI5 : ⁅x, z⁆ = 1 → ⁅x, ⁅y, z⁆⁆ = ⁅⁅x, y⁆, conj y z⁆ := by
+  intro h
+  have hc : Commute x z := by
+    apply (commute_iff_eq x z).mpr
+    exact commutes_of_triv_comm h
+  have h1 : Commute x⁻¹ z := by
+    exact Commute.inv_left hc
+  rw [commute_iff_eq] at h1
+  simp [commutatorElement_def, ← mul_assoc, conj_apply]
+  simp [mul_assoc, h1]
+
+theorem CI6 : ⁅y, z⁆ = 1 → ⁅⁅x, y⁆, z⁆ = conj (x * y) ⁅x⁻¹, z⁆ * ⁅x, z⁆ := by
+  intro h
+  have hc : Commute y z := by
+    apply (commute_iff_eq y z).mpr
+    exact commutes_of_triv_comm h
+  have h1 : Commute y⁻¹ z := by
+    exact Commute.inv_left hc
+  rw [commute_iff_eq] at h1
+  simp [commutatorElement_def, ← mul_assoc, conj_apply]
+  simp [mul_assoc, h1]
+
+theorem CI7 : ⁅x, z⁆ = 1 → ⁅⁅x, y⁆, z⁆ = conj x (conj (y * x⁻¹) ⁅y⁻¹, z⁆ * ⁅y, z⁆) := by
+  intro h
+  have hc : Commute x z := by
+    apply (commute_iff_eq x z).mpr
+    exact commutes_of_triv_comm h
+  have h1 : Commute x⁻¹ z := by
+    exact Commute.inv_left hc
+  have h2: Commute x⁻¹ z⁻¹ := by
+    exact Commute.inv_inv_iff.mpr hc
+  rw [commute_iff_eq] at h1 h2 hc
+  simp [commutatorElement_def, ← mul_assoc, conj_apply]
+  simp [mul_assoc, h1, h2, hc]
 
 end Steinberg
