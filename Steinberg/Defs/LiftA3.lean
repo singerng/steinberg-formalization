@@ -373,6 +373,7 @@ theorem expr_β_γ_as_γ_βγ_β (h : WeakGradedA3 R) :
   simp
 
 /- Rewrite α⬝γ as γ⬝α. -/
+@[group_reassoc (attr := simp)]
 theorem expr_α_γ_as_γ_α (h : WeakGradedA3 R) :
     ∀ {i j : ℕ} (hi : i ≤ α.height) (hj : j ≤ γ.height) (t u : R), commutes({α, i, t}, {γ, j, u}) := by
   intro i j hi hj t u
@@ -380,6 +381,7 @@ theorem expr_α_γ_as_γ_α (h : WeakGradedA3 R) :
   rw [h.h_comm_of_α_γ]
 
 /- Rewrite α⬝αβ as αβ⬝α. -/
+@[group_reassoc (attr := simp)]
 theorem expr_α_αβ_as_αβ_α (h : WeakGradedA3 R) :
     ∀ {i j : ℕ} (hi : i ≤ α.height) (hj : j ≤ αβ.height) (t u : R), commutes({α, i, t}, {αβ, j, u}) := by
   intro i j hi hj t u
@@ -594,6 +596,16 @@ theorem expand_αβγ_as_αβ_γ_αβ_γ (h : WeakGradedA3 R) :
 
 /-! ### Commutators of αβγ with other roots -/
 
+#check mul_assoc
+#check AddSemigroup
+#check expr_α_αβ_as_αβ_α
+#check expr_α_αβ_as_αβ_α_assoc
+
+theorem mul_assoc_α : ∀ {i : ℕ} (hi : i ≤ α.height) (t : R) (b c),
+  b * {α, i, t} * c = b * ({α, i, t} * c) := by
+  intro i hi t b c
+  rw [mul_assoc _ {α, i, t}]
+
 /- α and αβγ commute. -/
 /- NS: One should be able to prove this quite simply:  simple proof: we know αβγ is expressible as a product of αβ's and γ's (expand_αβγ_as_αβ_γ_αβ_γ), and we know that α's
    commute with αβ's (expr_α_αβ_as_αβ_α) and γ's (expr_α_γ_as_γ_α) -/
@@ -603,9 +615,36 @@ theorem comm_of_α_αβγ (h : WeakGradedA3 R) : trivial_commutator_of_root_pair
   let ⟨ j₁, j₂, ⟨ h_eq, hj₁, hj₂ ⟩ ⟩ := decompose αβ.height γ.height j (by trivial)
   simp_rw [h_eq]
   rw [← one_mul u]
+  --rw [expand_αβγ_as_αβ_γ_αβ_γ h hj₁ hj₂]
+  --mul_assoc_l
+  --rw [expr_α_αβ_as_αβ_α h hi hj₁]
+
   rw [expand_αβγ_as_αβ_γ_αβ_γ h hj₁ hj₂]
-  mul_assoc_l
+  --mul_assoc_l
+  simp_rw [← mul_assoc, mul_assoc_α]
   rw [expr_α_αβ_as_αβ_α h hi hj₁]
+
+  simp?
+  --mul_assoc_l
+  --rw [expr_α_αβ_as_αβ_α h]
+  --grw [expr_α_γ_as_γ_α h]
+  --rw [mul_assoc _ {α, i, t}]
+
+  -- CC: This works, because the `(mkOf α i hi t)` term correctly
+  --     type-class-infers the group stuff for `mul_assoc`.
+  --     In `grw`, this fails, most likely due to bad `mul_assoc` construction.
+  first
+  | rw [expr_α_γ_as_γ_α h]
+  | try simp only [← mul_assoc, ← add_assoc]
+    rw [expr_α_γ_as_γ_α h]
+  | try simp only [← mul_assoc, ← add_assoc]
+    first
+    | rw [mul_assoc _ (mkOf α i hi t)]
+    | rw [add_assoc _ (mkOf α i hi t)]
+    rw [expr_α_γ_as_γ_α h]
+  --grw [expr_α_γ_as_γ_α h]
+  --grw [expr_α_αβ_as_αβ_α h]
+  stop
   rw [mul_assoc _ {α, i, t}]
   rw [expr_α_γ_as_γ_α h hi hj₂]
   mul_assoc_l
@@ -615,6 +654,8 @@ theorem comm_of_α_αβγ (h : WeakGradedA3 R) : trivial_commutator_of_root_pair
   rw [mul_assoc _ {α, i, t}]
   rw [expr_α_γ_as_γ_α h hi hj₂]
   mul_assoc_l
+
+#exit
 
 /- γ and αβγ commute. -/
 theorem comm_of_γ_αβγ (h : WeakGradedA3 R) : trivial_commutator_of_root_pair R γ αβγ := by
