@@ -4,7 +4,7 @@ namespace Steinberg
 
 #check Add
 
-class PosRootSys (Root : Type u) extends ToString Root where
+class PosRootSys (Root : Type TΦ) extends ToString Root where
   height : Root → Nat
   isPresent : Root → Bool
   add (r₁ r₂ : Root) : Option Root
