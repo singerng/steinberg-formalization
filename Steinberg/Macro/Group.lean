@@ -9,9 +9,11 @@ import Lean.Elab.Declaration
 import Lean.Elab.Tactic.Rewrite
 import Mathlib.Tactic.SimpRw
 import Mathlib.Util.AddRelatedDecl
+import Mathlib.Tactic.CategoryTheory.Reassoc
 
 /- Mathlib mathematics imports -/
 import Mathlib.Algebra.Group.Defs
+import Mathlib.Algebra.Group.Basic
 
 /-!
 
@@ -48,13 +50,13 @@ macro (name := mar) "mar" : tactic => `(tactic|
 
 /- CC: Use these two theorems to generate an automatic new theorem from a commutative theorem. -/
 
-private theorem mul_assoc' {G : Type u} [Semigroup G] {b c d : G} (h : b * c = d) (a : G) :
-    a * b * c = a * d := by
-  rw [mul_assoc, h]
+private theorem mul_assoc' {G : Type u} [Semigroup G] {b c d e : G} (h : b * c = d * e) (a : G) :
+    a * b * c = a * d * e := by
+  rw [mul_assoc, h, ← mul_assoc]
 
-private theorem add_assoc' {G : Type u} [AddSemigroup G] {b c d : G} (h : b + c = d) (a : G) :
-    a + b + c = a + d := by
-  rw [add_assoc, h]
+private theorem add_assoc' {G : Type u} [AddSemigroup G] {b c d e : G} (h : b + c = d + e) (a : G) :
+    a + b + c = a + d + e := by
+  rw [add_assoc, h, ← add_assoc]
 
 /--
   An empty list of `simp` lemmas and terms.
@@ -65,8 +67,8 @@ private theorem add_assoc' {G : Type u} [AddSemigroup G] {b c d : G} (h : b + c 
       `a * 1`, which we often don't want to do in our proofs. If we find
       that we *do* need some lemmas, add them here.
 -/
-def emptySimp (e : Expr) : MetaM Simp.Result :=
-  simpOnlyNames [] e
+def groupSimp (e : Expr) : MetaM Simp.Result :=
+  simpOnlyNames [``mul_left_inj, ``mul_right_inj] e
 
 /- CC: Use these two theorems if constructing a `mul_assoc` term directly without a hole. -/
 
@@ -91,7 +93,7 @@ private theorem add_assoc'' {G : Type u} [AddSemigroup G] (b a c : G) :
   where `*` is the group-theoretic binary operation.
 -/
 def reassocExpr (e : Expr) : MetaM Expr := do
-  mapForallTelescope (fun e => do simpType emptySimp (← mkAppM ``mul_assoc' #[e])) e
+  mapForallTelescope (fun e => do simpType groupSimp (← mkAppM ``mul_assoc' #[e])) e
 
 syntax (name := group_reassoc) "group_reassoc" (" (" &"attr" ":=" Parser.Term.attrInstance,* ")")? : attr
 
@@ -138,7 +140,6 @@ partial def replaceWithAssocName (stx : Syntax) : Option (TSyntax `term) :=
   else if k == ``Lean.Parser.Term.paren then
     replaceWithAssocName stx[1]
   else
-    dbg_trace "none branch"
     none
 
 /--
@@ -174,11 +175,19 @@ elab s:"grw " cfg:optConfig rws:rwRuleSeq l:(location)? : tactic => Elab.Tactic.
         | none => evalTactic <| ← `(tactic| skip)
         | some assoc =>
           let rule := ← do if symm then `(rwRule| ← $assoc:term) else `(rwRule| $assoc:term)
-          evalTactic <| ← `(tactic| rw $cfg [$rule] $l ?; try rw $cfg [← mul_assoc] $l ?)
+          evalTactic <| ← `(tactic|
+            (rw $cfg [$rule] $l ?; try rw $cfg [← mul_assoc] $l ?);
+            (try simp only [mul_assoc, mul_right_inj] $l ?);
+            (try simp only [← mul_assoc, mul_left_inj] $l ?)
+          )
       )
 
       let rwTerm := ← do if symm then `(rwRule| ← $e:term) else `(rwRule| $e:term)
       (evalTactic <| ← `(tactic|
+        -- CC: Try to re-associate and simplify common terms on the right, then the left
+        -- CC: Make this a tactic?
+        (try simp only [mul_assoc, mul_right_inj] $l ?);
+        (try simp only [← mul_assoc, mul_left_inj] $l ?);
         first
         | rw $cfg [$rwTerm] $l ?
         | try simp only [← mul_assoc, ← add_assoc] $l ?
