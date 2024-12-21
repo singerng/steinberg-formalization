@@ -5,7 +5,7 @@ import Mathlib.Tactic.Group
 
 namespace Steinberg
 
-/-! ### Notations for theorems involving group elements -/
+s/-! ### Notations for theorems involving group elements -/
 
 /-
   These notations essentially act like "inline mathematical notation,"
