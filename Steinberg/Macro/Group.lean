@@ -4,7 +4,7 @@ Macros and other convenience keywords when doing proofs on groups.
 
 -/
 
-import Mathlib.Tactic.SimpRw
+/-import Mathlib.Tactic.SimpRw
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Use
 import Mathlib.Algebra.Group.Defs
@@ -15,11 +15,24 @@ import Lean.Meta.MatchUtil
 import Lean.PrettyPrinter.Delaborator.Basic
 import Mathlib.Util.AddRelatedDecl
 import Mathlib.Tactic.CategoryTheory.Reassoc -- <<< Kevin Buzzard's suggestion
+import Lean.Elab.Declaration
+import Lean.Elab.Term
+-/
+
+/- Tactic and metaprogramming imports -/
+import Mathlib.Tactic.SimpRw
+import Lean.Elab.Declaration
+import Mathlib.Util.AddRelatedDecl
+
+/- Mathlib mathematics imports -/
+import Mathlib.Algebra.Group.Defs
+
+
 
 namespace Steinberg.Macro
 
 open Mathlib.Tactic
-open Lean Meta Elab Tactic Parser.Tactic PrettyPrinter
+open Lean Meta Elab Term Tactic Parser.Tactic PrettyPrinter
 
 /-- Shorthand for `simp_rw [← mul_assoc]`, which applies the `mul_assoc` tactic to the left. -/
 macro (name := mul_assoc_l) "mul_assoc_l" : tactic => `(tactic|
@@ -41,6 +54,14 @@ private theorem add_assoc' {G : Type u} [AddSemigroup G] {b c d : G} (h : b + c 
 
 def emptySimp (e : Expr) : MetaM Simp.Result :=
   simpOnlyNames [] e
+
+private theorem mul_assoc'' {G : Type u} [Semigroup G] (b a c : G) :
+    a * b * c = a * (b * c) := by
+  rw [mul_assoc]
+
+private theorem add_assoc'' {G : Type u} [AddSemigroup G] (b a c : G) :
+    a + b + c = a + (b + c) := by
+  rw [add_assoc]
 
 /--
   A copy of `reassocExpr` in `Mathlib.Tactic.CategoryTheory.Reassoc`.
@@ -109,6 +130,76 @@ def examineRwTerm (stx : Syntax) (symm : Bool := false) : TacticM (Option Expr) 
     return localDecl
   examineRwExpr e symm
 
+def toTermArray (arr : Array Syntax) : TSyntaxArray `term :=
+  arr.map (fun x => match x with | `($x:term) => x)
+
+partial def asNameApp (stx : Syntax) : Option (Name × Array Syntax) :=
+  let k := stx.getKind
+  dbg_trace "original kind: {k}"
+  if k == ``Lean.Parser.Term.app then
+    dbg_trace "kind: {stx[0].getKind}"
+    dbg_trace "{stx[0]}"
+    dbg_trace "second kind: {stx[1].getKind}"
+    dbg_trace "second args: {stx[1].getArgs}"
+    dbg_trace "second args mapped: {toTermArray stx[1].getArgs}"
+    (stx[0].getId, stx[1].getArgs)
+  else if k == ``Lean.Parser.Term.proj then
+    asNameApp stx[0]
+  else if k == ``Lean.Parser.Term.paren then
+    asNameApp stx[1]
+  else
+    none
+
+--partial def replaceWithAssocName (stx : Syntax) : Option (TSyntax `term) :=
+open TSyntax.Compat in
+partial def replaceWithAssocName (stx : Syntax) : Option (TSyntax `term) :=
+  let k := stx.getKind
+  dbg_trace "replaceWithAssocName received {stx}"
+  dbg_trace "original kind: {k}"
+  if k == ``Lean.Parser.Term.app then
+    dbg_trace "kind: {stx[0].getKind}"
+    dbg_trace "{stx[0]}"
+    dbg_trace "second kind: {stx[1].getKind}"
+    dbg_trace "second args: {stx[1].getArgs}"
+    dbg_trace "second args mapped: {toTermArray stx[1].getArgs}"
+    let assocName :=
+      match stx[0].getId with
+      | Name.str n s => Name.mkStr n <| s ++ "_assoc"
+      | x => x
+    --some <| mkNode k #[mkIdent assocName, stx[1]]
+    let appNode := mkNode ``Lean.Parser.Term.app #[mkIdent assocName, stx[1]]
+    dbg_trace "constructed {appNode}"
+    let appTerm := mkNode `term #[appNode]
+    dbg_trace "constructed {appTerm}"
+    some <| appNode
+  else if k == ``Lean.Parser.Term.proj then
+    replaceWithAssocName stx[0]
+  else if k == ``Lean.Parser.Term.paren then
+    replaceWithAssocName stx[1]
+  else
+    dbg_trace "none branch"
+    none
+
+syntax (name := getName) "getName" (ppSpace "(" term ")") : tactic
+@[tactic getName]
+def evalGetName : Tactic
+  | `(tactic| getName ($t:term)) => withMainContext do
+    let name? := asNameApp t
+    let replaced? := replaceWithAssocName t
+    dbg_trace "The term is {t}"
+    dbg_trace "The name is {name?}"
+    dbg_trace "The replaced is {replaced?}"
+    evalTactic (← `(tactic| skip))
+  | _ => throwUnsupportedSyntax
+
+theorem testing₁ {a b : Nat} : a > b → b < a := by
+  exact id
+
+theorem testing₂ {a b c : Nat} : a < b → b < c → c > a := by
+  intro h₁ h₂
+  getName (h₁ h₂ 0)
+  stop
+  done
 
 /--
   The main attempt at a `group_rewrite` tactic.
@@ -136,13 +227,27 @@ elab s:"grw " cfg:optConfig rws:rwRuleSeq l:(location)? : tactic => Elab.Tactic.
   withRWRulesSeq s rws fun symm term => do
     match term with
     | `(term| $e:term) => do
-      let cont (isMul : Bool) : TacticM Unit := (do
-        let rwCfg ← elabRewriteConfig cfg
-        let loc := expandOptLocation (mkOptionalNode l)
+      dbg_trace "withRwRules: received {term}"
+      dbg_trace "withRwRules: extracted term expression {e}"
+
+      let cont (_ : Bool) : TacticM Unit := (do
+        let replace? := replaceWithAssocName e
+        dbg_trace "repalceWithAssocName found {replace?}"
+        match replaceWithAssocName e with
+        | none => evalTactic <| ← `(tactic| skip)
+        | some assoc =>
+          let rule := ← do if symm then `(rwRule| ← $assoc:term) else `(rwRule| $assoc:term)
+          --let rules := Lean.Syntax.TSepArray.ofElems #[rule]
+          evalTactic <| ← `(tactic| rw $cfg [$rule, ← mul_assoc] $l ?)
+
+        /-let rwCfg ← elabRewriteConfig cfg
+        let loc := expandOptLocation (mkOptionalNode l) -/
+
+
+        /-
         match (← examineRwTerm term symm) with
         | none => evalTactic <| ← `(tactic| skip)
         | some ext =>
-          dbg_trace "withRwRules: received {term}"
           dbg_trace "extended {ext}"
           dbg_trace "isConst {ext.isConst}"
           dbg_trace ""
@@ -151,7 +256,7 @@ elab s:"grw " cfg:optConfig rws:rwRuleSeq l:(location)? : tactic => Elab.Tactic.
             -- This is largely a copy of `rewriteLocalDecl`,
             -- except the expression has already been calculated
             (fun fvarId => withMainContext do
-              let e ← if isMul then mkAppM ``mul_assoc' #[ext] else mkAppM ``add_assoc' #[ext]
+              let e ← if isMul then mkAppM ``mul_assoc'' #[ext] else mkAppM ``add_assoc'' #[ext]
               let localDecl ← fvarId.getDecl
               let rwResult ← Term.withSynthesize <| withMainContext do
                 (← getMainGoal).rewrite localDecl.type e symm (config := rwCfg)
@@ -161,12 +266,12 @@ elab s:"grw " cfg:optConfig rws:rwRuleSeq l:(location)? : tactic => Elab.Tactic.
 
             -- This is largely a copy of `rewriteTarget`, except with the expression provided
             (Term.withSynthesize <| withMainContext do
-              let e ← if isMul then mkAppM ``mul_assoc' #[ext] else mkAppM ``add_assoc' #[ext]
+              let e ← if isMul then mkAppM ``mul_assoc'' #[ext] else mkAppM ``add_assoc'' #[ext]
               let r ← (← getMainGoal).rewrite (← getMainTarget) e symm (config := rwCfg)
               let mvarId' ← (← getMainGoal).replaceTargetEq r.eNew r.eqProof
               replaceMainGoal (mvarId' :: r.mvarIds)
             )
-            (throwTacticEx `grw · "did not find instance of the pattern in the current goal")
+            (throwTacticEx `grw · "did not find instance of the pattern in the current goal") -/
       )
 
 
