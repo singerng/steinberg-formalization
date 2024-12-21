@@ -124,18 +124,22 @@ theorem trivial_comm_from_embedded_comm_and_pairs : triv_comm(x * y, w * z) → 
 
 open MulAut -- to access conj function
 
--- Commutator identities (we can rename these later...)
+-- Commutator identities
 theorem CI1 : ⁅x, y * z⁆ = ⁅x, y⁆ * conj y ⁅x, z⁆ := by
-  simp only [conj_apply, commutatorElement_def, mul_inv_rev, ← mul_assoc, inv_mul_cancel_right]
+  simp only [conj_apply, commutatorElement_def, mul_inv_rev, ← mul_assoc,
+  inv_mul_cancel_right]
 
 theorem CI2 : ⁅x * y, z⁆ = conj x ⁅y, z⁆ * ⁅x, z⁆ := by
-  simp only [conj_apply, commutatorElement_def, mul_inv_rev, ← mul_assoc, inv_mul_cancel_right]
+  simp only [conj_apply, commutatorElement_def, mul_inv_rev, ← mul_assoc,
+  inv_mul_cancel_right]
 
 theorem CI3 : conj x ⁅x⁻¹, y⁆ = ⁅y, x⁆ := by
-  simp only [conj_apply, commutatorElement_def, mul_inv_rev, ← mul_assoc, inv_inv, mul_inv_cancel, one_mul]
+  simp only [conj_apply, commutatorElement_def, mul_inv_rev, ← mul_assoc,
+  inv_inv, mul_inv_cancel, one_mul]
 
 theorem CI4 : ⁅y, z⁆ * ⁅x, z⁆ = ⁅x, ⁅y, z⁆⁆⁻¹ * ⁅x * y, z⁆ := by
-  simp only [conj_apply, commutatorElement_def, mul_inv_rev, ← mul_assoc, inv_inv, mul_inv_cancel_right, inv_mul_cancel_right, CI2]
+  simp only [conj_apply, commutatorElement_def, mul_inv_rev, ← mul_assoc,
+  inv_inv, mul_inv_cancel_right, inv_mul_cancel_right, CI2]
 
 theorem CI5 : ⁅x, z⁆ = 1 → ⁅x, ⁅y, z⁆⁆ = ⁅⁅x, y⁆, conj y z⁆ := by
   intro h
@@ -171,5 +175,14 @@ theorem CI7 : ⁅x, z⁆ = 1 → ⁅⁅x, y⁆, z⁆ = conj x (conj (y * x⁻¹)
   rw [commute_iff_eq] at h1 h2 hc
   simp [commutatorElement_def, ← mul_assoc, conj_apply]
   simp [mul_assoc, h1, h2, hc]
+
+-- Hall Witt identities
+theorem HW1 : ⁅⁅y, x⁆, conj x z⁆ * ⁅⁅x, z⁆, conj z y⁆ * ⁅⁅z, y⁆, conj y x⁆ = 1 := by
+  simp only [commutatorElement_def, conj_apply, ← mul_assoc, inv_mul_cancel_right, mul_inv_rev,
+    inv_inv, mul_inv_cancel_right, mul_inv_cancel]
+
+theorem HW2 : (conj y ⁅⁅y⁻¹, x⁆, z⁆) * (conj z ⁅⁅z⁻¹, y⁆, x⁆) * (conj x ⁅⁅x⁻¹, z⁆, y⁆) = 1 := by
+  simp only [commutatorElement_def, conj_apply, ← mul_assoc, inv_mul_cancel_right, mul_inv_rev,
+    inv_inv, mul_inv_cancel_right, mul_inv_cancel, one_mul]
 
 end Steinberg
