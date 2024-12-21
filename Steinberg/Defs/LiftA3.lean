@@ -16,6 +16,7 @@ import Steinberg.Defs.Deg
 import Steinberg.Defs.Commutator
 import Steinberg.Macro.Group
 
+import Steinberg.Upstream.FreeGroup
 import Steinberg.Upstream.PresentedGroup
 
 namespace Steinberg
@@ -153,10 +154,12 @@ def weak_rels_sets (R : Type TR) [Ring R] : Set (Set (FreeGroupOnGradedGens A3Po
   rels_of_def_of_αβγ
 }
 
-abbrev WeakGroup (R : Type TR) [Ring R] := PresentedGroup (⋃₀ (weak_rels_sets R))
+abbrev weak_rels (R : Type TR) [Ring R] := (⋃₀ (weak_rels_sets R))
+
+abbrev WeakGroup (R : Type TR) [Ring R] := PresentedGroup (weak_rels R)
 
 def pres_mk {R : Type TR} [Ring R] : FreeGroupOnGradedGens A3PosRoot R →* WeakGroup R :=
-  PresentedGroup.mk (⋃₀ (weak_rels_sets R))
+  PresentedGroup.mk (weak_rels R)
 
 set_option hygiene false in
 /-- Shorthand for building free group elements from a root, degree, and ring element. -/
@@ -278,27 +281,35 @@ theorem def_of_αβγ :
 end UnpackingPresentation
 
 /-- Map a generator to its reflected image in the presented group (used to define the symmetry below). -/
-def pres_group_of_reflect_degree_of_gen (R : Type TR) [Ring R] : (g : GradedGen A3PosRoot R) → WeakGroup R :=
-  pres_mk ∘ free_mk ∘ (refl_deg_of_gen A3PosRoot R)
+def pres_of_refl_deg_of_gen (R : Type TR) [Ring R] (g : GradedGen A3PosRoot R) : WeakGroup R :=
+  pres_mk (free_mk (refl_deg_of_gen A3PosRoot R g))
 
-private theorem help :
-  ∀ S ∈ weak_rels_sets R, ∀ r ∈ S, refl_deg_of_fg A3PosRoot R r ∈ S := by sorry
-
--- FreeGroup.lift (pres_group... R) r = pres_mk (refl_deg_of_fg r)
+-- slightly ugly...
+private theorem reflect_degree_of_weak_rels' :
+  Set.image (FreeGroup.lift (FreeGroup.of ∘ (refl_deg_of_gen A3PosRoot R))) (weak_rels R) ⊆ weak_rels R := by
+  rw [Set.subset_def]
+  intro r
+  rw [Set.mem_image]
+  intro h
+  let ⟨ x, ⟨ h_x, h' ⟩ ⟩ := h
+  rw [← h']
+  rw [lift.hom2]
+  sorry
 
 theorem reflect_degree_of_weak_rels :
-  ∀ r ∈ ⋃₀ weak_rels_sets R, ((FreeGroup.lift (pres_group_of_reflect_degree_of_gen R)) r) = 1 := by
-  intro r h
+  Set.image (FreeGroup.lift (FreeGroup.of ∘ (refl_deg_of_gen A3PosRoot R))) (weak_rels R) ⊆ Subgroup.normalClosure (weak_rels R) := by
+  exact Set.Subset.trans reflect_degree_of_weak_rels' Subgroup.subset_normalClosure
 
-/-- Homomorphism on presented group given by degree-reflection symmetry. -/
-def refl_symm : WeakGroup R →* WeakGroup R :=
-  @PresentedGroup.toGroup _ _ _ ((pres_group_of_reflect_degree_of_gen R)) (⋃₀ (weak_rels_sets R)) reflect_degree_of_weak_rels
+def refl_symm {R : Type TR} [Ring R] : PresentedGroup (weak_rels R) →* PresentedGroup (weak_rels R):=
+  toPresentedGroup (weak_rels R) (weak_rels R) (FreeGroup.of ∘ (refl_deg_of_gen A3PosRoot R)) reflect_degree_of_weak_rels
 
 /- Calculates the image of a generator in the presented group by the degree-reflection homomorphism. -/
 theorem refl_im (ζ : A3PosRoot) (i : ℕ) (hi : i ≤ ζ.height) (t : R) : refl_symm {ζ, i, t} = {ζ, ζ.height - i, t} := by
   simp only [refl_symm, pres_mk, free_mk_mk]
-  rw [← PresentedGroup.of, PresentedGroup.toGroup.of, pres_group_of_reflect_degree_of_gen, refl_deg_of_gen]
-  simp only [pres_mk, free_mk, PosRootSys.height]
+  rw [toPresentedGroup.mk]
+  simp only [FreeGroup.lift.of, Function.comp_apply]
+  rw [refl_deg_of_gen]
+  simp only [PosRootSys.height]
 
 /-! ### Derive full commutator for αβ and βγ from nonhomogeneous lift -/
 
@@ -347,9 +358,7 @@ private lemma homog_lift_of_comm_of_αβ_βγ (i j k : ℕ) (hi : i ≤ 1) (hj :
         simp only [one_mul, mul_one]
       )
     )
-    rw [id₁]
-    rw [id₂]
-    rw [nonhomog_lift_of_comm_of_αβ_βγ]
+    rw [id₁, id₂, nonhomog_lift_of_comm_of_αβ_βγ]
 
 private lemma image_of_homog_lift_of_comm_of_αβ_βγ {i j : ℕ} (hi : i ≤ αβ.height) (hj : j ≤ βγ.height) :
   ((i, j) ∈ ij_jk_image) → ∀ (t u : R), ⁅ {αβ, i, t}, {βγ, j, u} ⁆ = 1 := by
@@ -359,11 +368,7 @@ private lemma image_of_homog_lift_of_comm_of_αβ_βγ {i j : ℕ} (hi : i ≤ �
   have ⟨ ijk', ⟨ h_in_cube, h_f ⟩ ⟩ := this
   have ⟨ hi', hj', hk' ⟩ := mem_range_of_boolean_cube ijk' h_in_cube
   let ⟨ i', j', k' ⟩ := ijk'
-  have h_f' : i = i' + j' ∧ j = j' + k' := by (
-    rw [← Prod.mk.injEq]
-    rw [← h_f]
-    rw [f_ij_jk]
-  )
+  have h_f' : i = i' + j' ∧ j = j' + k' := by rw [← Prod.mk.injEq, ← h_f, f_ij_jk]
   rw [← homog_lift_of_comm_of_αβ_βγ i' j' k' hi' hj' hk' t u]
   simp only [h_f']
 
@@ -422,11 +427,7 @@ theorem expand_βγ_as_β_γ_β_γ :
     ∀ {i j : ℕ} (hi : i ≤ β.height) (hj : j ≤ γ.height) (t u : R),
       {βγ, i + j, (t * u)} = {β, i, t} * {γ, j, u} * {β, i, (-t)} * {γ, j, (-u)} := by
   intro i j hi hj t u
-  rw [inv_of_β]
-  rw [inv_of_γ]
-  rw [← commutatorElement_def]
-  rw [← one_mul (t * u)]
-  rw [← comm_of_β_γ]
+  rw [inv_of_β, inv_of_γ, ← commutatorElement_def, ← one_mul (t * u), ← comm_of_β_γ]
 
 /- Rewrite α⬝β as αβ⬝β⬝α. -/
 @[group_reassoc]
@@ -434,31 +435,21 @@ theorem expr_α_β_as_αβ_β_α :
     ∀ {i j : ℕ} (hi : i ≤ α.height) (hj : j ≤ β.height) (t u : R),
       reorder_left({α, i, t}, {β, j, u}, {αβ, (i + j), (t*u)}) := by
   intro i j hi hj t u
-  rw [← one_mul (t * u)]
-  rw [← comm_of_α_β]
-  rw [comm_left]
+  rw [← one_mul (t * u), ← comm_of_α_β, comm_left]
 
 /- Rewrite β⬝γ as βγ⬝γ⬝β. -/
 @[group_reassoc]
 theorem expr_β_γ_as_βγ_γ_β :
     ∀ {i j : ℕ} (hi : i ≤ β.height) (hj : j ≤ γ.height) (t u : R), reorder_left({β, i, t}, {γ, j, u}, {βγ, (i + j), (t*u)}) := by
   intro i j hi hj t u
-  rw [← one_mul (t * u)]
-  rw [← comm_of_β_γ]
-  rw [comm_left]
+  rw [← one_mul (t * u), ← comm_of_β_γ, comm_left]
 
 /- Rewrite β⬝γ as γ⬝βγ⬝β. -/
 @[group_reassoc]
 theorem expr_β_γ_as_γ_βγ_β :
   ∀ {i j : ℕ} (hi : i ≤ β.height) (hj : j ≤ γ.height) (t u : R), reorder_mid({β, i, t}, {γ, j, u}, {βγ, (i + j), (t*u)}) := by
   intro i j hi hj t u
-  rw [← one_mul (t * u)]
-  rw [← comm_of_β_γ hi hj]
-  rw [comm_mid]
-  rw [← inv_of_γ]
-  rw [comm_of_β_γ]
-  rw [← inv_of_βγ]
-  rw [comm_of_β_γ]
+  rw [← one_mul (t * u), ← comm_of_β_γ hi hj, comm_mid, ← inv_of_γ, comm_of_β_γ, ← inv_of_βγ, comm_of_β_γ]
   congr
   rw [mul_neg, mul_neg, neg_neg]
 
@@ -638,22 +629,14 @@ theorem expand_αβγ_as_α_βγ_α_βγ :
     ∀ {i j : ℕ} (hi : i ≤ α.height) (hj : j ≤ βγ.height) (t u : R),
       {αβγ, (i + j), (t * u)} = {α, i, t} * {βγ, j, u} * {α, i, (-t)} * {βγ, j, (-u)} := by
   intro i j hi hj t u
-  rw [inv_of_α]
-  rw [inv_of_βγ]
-  rw [← commutatorElement_def]
-  rw [← one_mul (t * u)]
-  rw [← comm_of_α_βγ]
+  rw [inv_of_α, inv_of_βγ, ← commutatorElement_def, ← one_mul (t * u), ← comm_of_α_βγ]
 
 /- Expand αβγ as αβ⬝γ⬝αβ⬝γ. -/
 theorem expand_αβγ_as_αβ_γ_αβ_γ :
     ∀ {i j : ℕ} (hi : i ≤ αβ.height) (hj : j ≤ γ.height) (t u : R),
       {αβγ, (i + j), (t * u)} = {αβ, i, t} * {γ, j, u} * {αβ, i, (-t)} * {γ, j, (-u)} := by
   intro i j hi hj t u
-  rw [inv_of_αβ]
-  rw [inv_of_γ]
-  rw [← commutatorElement_def]
-  rw [← one_mul (t * u)]
-  rw [← comm_of_αβ_γ]
+  rw [inv_of_αβ, inv_of_γ, ← commutatorElement_def, ← one_mul (t * u), ← comm_of_αβ_γ]
 
 /-! ### Commutators of αβγ with other roots -/
 
@@ -772,24 +755,6 @@ theorem lin_of_αβγ : lin_of_root R pres_mk αβγ := by
   grw [expand_αβγ_as_α_βγ_α_βγ hi₁ hi₂, lin_of_α]
   nth_rewrite 1 [inv_of_βγ]
   group
-  rw [mul_assoc _ {α, i₁, -u}]
-  rw [lin_of_α]
-  rw [← neg_add u t, add_comm u t]
-  rw [← expand_αβγ_as_α_βγ_α_βγ hi₁ hi₂]
-  rw [mul_one]
-
--- theorem StrongGradedA3_of_WeakGradedA3 : StrongGradedA3 R := by
---   constructor
---   · exact h
---   · exact comm_of_αβ_βγ h
---   · exact comm_of_αβ_γ h
---   · exact comm_of_α_βγ h
---   · exact comm_of_α_αβγ h
---   · exact comm_of_β_αβγ h
---   · exact comm_of_γ_αβγ h
---   · exact comm_of_αβ_αβγ h
---   · exact comm_of_βγ_αβγ h
---   · exact mixed_commutes_of_αβγ h
---   · exact lin_of_αβγ h
+  rw [mul_assoc _ {α, i₁, -u}, lin_of_α, ← neg_add u t, add_comm u t, ← expand_αβγ_as_α_βγ_α_βγ hi₁ hi₂, mul_one]
 
 end A3Proof

@@ -12,6 +12,8 @@ namespace Steinberg
 open PosRootSys
 
 variable {G : Type TG} [Group G]
+         {Φ : Type TΦ} [PosRootSys Φ]
+         {R : Type TR} [Ring R]
 
 /- Generators of the Chevalley subgroup corresponding to a positive root system over a ring with monomial entries. -/
 structure GradedGen (Φ : Type TΦ) [PosRootSys Φ] (R : Type TR) [Ring R] where
@@ -22,9 +24,6 @@ structure GradedGen (Φ : Type TΦ) [PosRootSys Φ] (R : Type TR) [Ring R] where
   t : R
 
 namespace GradedGen
-
-variable {Φ : Type TΦ} [PosRootSys Φ]
-         {R : Type TR} [Ring R]
 
 /-- The free group generatored by `GradedGen` elements. -/
 abbrev FreeGroupOnGradedGens (Φ : Type TΦ) [PosRootSys Φ] (R : Type TR) [Ring R] := FreeGroup (GradedGen Φ R)
@@ -40,10 +39,6 @@ def free_mk_mk (ζ : Φ) (i : ℕ) (hi : i ≤ height ζ) (t : R) : FreeGroupOnG
 /-- "Degree-reflection" map of `GradedGen`s corresponding to swapping degree `i` with `height ζ - i`. (An involution.) -/
 def refl_deg_of_gen (Φ : Type TΦ) [PosRootSys Φ] (R : Type TR) [Ring R] (g : GradedGen Φ R) : GradedGen Φ R :=
   mk g.ζ (height g.ζ - g.i) (by omega) g.t
-
-/-- Extension of `refl_deg_of_gen` to elements of `FreeGroupOnGradedGens Φ R`. -/
-def refl_deg_of_fg (Φ : Type TΦ) [PosRootSys Φ] (R : Type TR) [Ring R] : FreeGroupOnGradedGens Φ R →* FreeGroupOnGradedGens Φ R :=
-  FreeGroup.map (refl_deg_of_gen Φ R)
 
 /-! ### Statements about generators which we assume and/or prove -/
 
@@ -64,7 +59,7 @@ def rels_of_trivial_commutator_of_root_pair (R : Type TR) [Ring R]
 
 /-- Degree-reflection preserves the set of trivial commutator relations for any root pair. -/
 theorem refl_deg_of_rels_of_trivial_commutator_of_root_pair (ζ η : Φ) :
-  ∀ r ∈ rels_of_trivial_commutator_of_root_pair R ζ η, refl_deg_of_fg Φ R r ∈ rels_of_trivial_commutator_of_root_pair R ζ η := by
+  ∀ r ∈ rels_of_trivial_commutator_of_root_pair R ζ η, FreeGroup.map (refl_deg_of_gen Φ R) r ∈ rels_of_trivial_commutator_of_root_pair R ζ η := by
   intro r h
   simp only [rels_of_trivial_commutator_of_root_pair, Set.mem_setOf_eq] at h
   let ⟨ i, j, hi, hj, t, u, h' ⟩ := h
@@ -123,6 +118,18 @@ theorem pres_helper_of_single_commutator_of_root_pair (R : Type TR) [Ring R]
   · rw [rels_of_single_commutator_of_root_pair]
     exists i, j, hi, hj, t, u
 
+/-- Degree-reflection preserves the set of trivial commutator relations for any root pair. -/
+theorem refl_deg_of_rels_of_single_commutator_of_root_pair (ζ η : Φ) (C : R) (h_height : height θ = height ζ + height η) :
+  ∀ r ∈ rels_of_single_commutator_of_root_pair R ζ η θ C h_height, FreeGroup.map (refl_deg_of_gen Φ R) r ∈ rels_of_single_commutator_of_root_pair R ζ η θ C h_height := by
+  intro r h
+  simp only [rels_of_single_commutator_of_root_pair, Set.mem_setOf_eq] at h
+  let ⟨ i, j, hi, hj, t, u, h' ⟩ := h
+  simp only [← h', map_mul, map_commutatorElement, map_inv, refl_deg_of_gen, rels_of_single_commutator_of_root_pair]
+  exists (PosRootSys.height ζ - i), (PosRootSys.height η - j), (by omega), (by omega), t, u
+  congr
+  simp only
+  omega
+
 /-! #### Commutator relation for two generators from the same root -/
 
 /-
@@ -141,6 +148,15 @@ theorem pres_helper_of_mixed_commutes_of_root (R : Type TR) [Ring R]
   (h_S : (rels_of_mixed_commutes_of_root R ζ) ∈ S) :
   mixed_commutes_of_root R (PresentedGroup.mk (⋃₀ S)) ζ :=
   pres_helper_of_trivial_commutator_of_root_pair R ζ ζ S h_S
+
+/-- Degree-reflection preserves the set of mixed-degree commutator relations for any root. -/
+theorem refl_deg_of_rels_of_mixed_commutes_of_root (ζ : Φ) :
+  ∀ r ∈ rels_of_mixed_commutes_of_root R ζ, FreeGroup.map (refl_deg_of_gen Φ R) r ∈ rels_of_mixed_commutes_of_root R ζ := by
+  intro r h
+  simp only [rels_of_mixed_commutes_of_root, Set.mem_setOf_eq] at h
+  let ⟨ i, j, hi, hj, t, u, h' ⟩ := h
+  simp only [← h', map_commutatorElement, refl_deg_of_gen, rels_of_mixed_commutes_of_root]
+  exists (PosRootSys.height ζ - i), (PosRootSys.height ζ - j), (by omega), (by omega), t, u
 
 /-! #### Linearity relation for products of generators from a single root -/
 
@@ -171,6 +187,15 @@ theorem pres_helper_of_lin_of_root (R : Type TR) [Ring R]
   · exact h_S
   · rw [rels_of_lin_of_root]
     exists i, hi, t, u
+
+/-- Degree-reflection preserves the set of trivial commutator relations for any root pair. -/
+theorem refl_deg_of_rels_of_lin_of_root (ζ : Φ) :
+  ∀ r ∈ rels_of_lin_of_root R ζ, FreeGroup.map (refl_deg_of_gen Φ R) r ∈ rels_of_lin_of_root R ζ := by
+  intro r h
+  simp only [rels_of_lin_of_root, Set.mem_setOf_eq] at h
+  let ⟨ i, hi, t, u, h' ⟩ := h
+  simp only [← h', refl_deg_of_gen, rels_of_lin_of_root]
+  exists (PosRootSys.height ζ - i), (by omega), t, u
 
 /-! ### Additional properties implied by linearity and implications therein -/
 

@@ -1,88 +1,46 @@
 import Mathlib.GroupTheory.PresentedGroup
 
-theorem eq_one_of_mem_rels {α : Type u} {rels : Set (FreeGroup α)}
-    {x : FreeGroup α} : x ∈ rels → PresentedGroup.mk rels x = 1 := by
-  intro h_x
-  symm
-  apply QuotientGroup.eq.mpr
-  rw [inv_one, one_mul]
-  exact Subgroup.subset_normalClosure h_x
+import Steinberg.Upstream.FreeGroup
 
-theorem lift.hom (α G : Type) [Group G] (ξ : FreeGroup α →* G) (r : FreeGroup α) :
-  (FreeGroup.lift (ξ ∘ FreeGroup.of)) r = ξ r := by
-  have : (ξ ∘ FreeGroup.of) = FreeGroup.lift.symm ξ := by
-    ext s
-    exact FreeGroup.lift_symm_apply ξ s
-  rw [this]
-  simp only [Equiv.apply_symm_apply, Function.comp_apply]
+theorem eq_one_iff_mem_closure {α : Type u} {rels : Set (FreeGroup α)} {x : FreeGroup α} :
+  PresentedGroup.mk rels x = 1 ↔ x ∈ Subgroup.normalClosure rels := by
+  simp only [PresentedGroup.mk, MonoidHom.coe_mk, OneHom.coe_mk]
+  nth_rewrite 2 [← one_mul x, ← inv_one]
+  sorry
+  -- exact @QuotientGroup.eq (FreeGroup α) _ (Subgroup.normalClosure rels) 1 x
 
-theorem lift.gens (α β : Type) (T : Set (FreeGroup β)) (f : α → β) (r : FreeGroup α):
-  (FreeGroup.lift (PresentedGroup.of ∘ f)) r = ((PresentedGroup.mk T) ∘ (FreeGroup.map f)) r := by
-  have : PresentedGroup.of = (PresentedGroup.mk T) ∘ FreeGroup.of := by
-    ext s
-    simp only [PresentedGroup.of]
-    rfl
-  rw [this]
-  generalize PresentedGroup.mk T = φ
-  have : (⇑φ ∘ FreeGroup.of) ∘ f = ⇑φ ∘ (FreeGroup.of ∘ f) := rfl
-  rw [this]
-  have : ⇑φ ∘ (FreeGroup.of ∘ f) = ⇑φ ∘ (FreeGroup.map f ∘ FreeGroup.of) := rfl
-  rw [this]
-  generalize FreeGroup.map f = ψ
-  have : ⇑φ ∘ ⇑ψ ∘ FreeGroup.of = (⇑φ ∘ ⇑ψ) ∘ FreeGroup.of := rfl
-  rw [this]
-  generalize h : φ.comp ψ = ξ
-  have iddd : (⇑φ ∘ ⇑ψ) = ξ := by subst h; simp_all only [MonoidHom.coe_comp]
-  simp_all
-  have : φ (ψ r) = (φ ∘ ψ) r := by rfl
-  rw [this]
-  rw [lift.hom α (PresentedGroup T) ξ r]
-  rw [iddd]
+theorem eq_one_of_mem_rels {α : Type u} {rels : Set (FreeGroup α)} {x : FreeGroup α} :
+  x ∈ rels → PresentedGroup.mk rels x = 1 := by
+  intro h
+  apply eq_one_iff_mem_closure.mpr
+  exact Subgroup.subset_normalClosure h
 
-theorem lift.homm {α β : Type} (T : Set (FreeGroup β)) (f : α → FreeGroup β) (r : FreeGroup α):
-  (FreeGroup.lift ((PresentedGroup.mk T) ∘ f)) r = FreeGroup.lift ((PresentedGroup.mk T) ∘ f) r := by
-  have : PresentedGroup.of = (PresentedGroup.mk T) ∘ FreeGroup.of := by
-    ext s
-    simp only [PresentedGroup.of]
-    rfl
-  rw [this]
-  generalize PresentedGroup.mk T = φ
-  have : (⇑φ ∘ FreeGroup.of) ∘ f = ⇑φ ∘ (FreeGroup.of ∘ f) := rfl
-  rw [this]
-  have : ⇑φ ∘ (FreeGroup.of ∘ f) = ⇑φ ∘ (FreeGroup.map f ∘ FreeGroup.of) := rfl
-  rw [this]
-  generalize FreeGroup.map f = ψ
-  have : ⇑φ ∘ ⇑ψ ∘ FreeGroup.of = (⇑φ ∘ ⇑ψ) ∘ FreeGroup.of := rfl
-  rw [this]
-  generalize h : φ.comp ψ = ξ
-  have iddd : (⇑φ ∘ ⇑ψ) = ξ := by subst h; simp_all only [MonoidHom.coe_comp]
-  simp_all
-  have : φ (ψ r) = (φ ∘ ψ) r := by rfl
-  rw [this]
-  rw [lift.hom α (PresentedGroup T) ξ r]
-  rw [iddd]
+private theorem helper {α β : Type u} {S : Set (FreeGroup α)} {T : Set (FreeGroup β)} {f : α → FreeGroup β}
+  (h : Set.image (FreeGroup.lift f) S ⊆ Subgroup.normalClosure T)
+  : ∀ r ∈ S, (FreeGroup.lift ((PresentedGroup.mk T) ∘ f)) r = 1 := by
+  intro r h_r
+  rw [lift.hom]
+  simp only [MonoidHom.coe_comp, Function.comp_apply]
+  apply eq_one_iff_mem_closure.mpr
+  rw [Set.subset_def] at h
+  simp only [Set.mem_image, SetLike.mem_coe, forall_exists_index, and_imp,
+    forall_apply_eq_imp_iff₂] at h
+  exact h r h_r
 
-theorem lift.gens2 (α β : Type) (T : Set (FreeGroup β)) (f : α → β) (r : FreeGroup α):
-  (FreeGroup.lift (PresentedGroup.of ∘ f)) r = ((PresentedGroup.mk T) ∘ (FreeGroup.map f)) r := by
-  have : PresentedGroup.of ∘ f = (PresentedGroup.mk T) ∘ FreeGroup.of ∘ f := by sorry
-  rw [this]
-  let x := lifttttttttt T (FreeGroup.of ∘ f) r
-  rw [x]
-  simp_all
-  generalize PresentedGroup.mk T = φ
-  have : ⇑φ ∘ (FreeGroup.of ∘ f) = ⇑φ ∘ (FreeGroup.map f ∘ FreeGroup.of) := rfl
-  rw [this]
-  generalize FreeGroup.map f = ψ
-  have : ⇑φ ∘ ⇑ψ ∘ FreeGroup.of = (⇑φ ∘ ⇑ψ) ∘ FreeGroup.of := rfl
-  rw [this]
-  generalize h : φ.comp ψ = ξ
+def toPresentedGroup {α β : Type u} {S : Set (FreeGroup α)} {T : Set (FreeGroup β)} {f : α → FreeGroup β}
+  (h : Set.image (FreeGroup.lift f) S ⊆ Subgroup.normalClosure T) :=
+  @PresentedGroup.toGroup α (PresentedGroup T) _ (PresentedGroup.mk T ∘ f) S (helper h)
 
+theorem toPresentedGroup.of {α β : Type u} {S : Set (FreeGroup α)} {T : Set (FreeGroup β)} {f : α → FreeGroup β}
+  (h : Set.image (FreeGroup.lift f) S ⊆ Subgroup.normalClosure T) (x : α) :
+  (toPresentedGroup h) (PresentedGroup.of x) = PresentedGroup.mk T (f x) := by
+  rw [toPresentedGroup, PresentedGroup.toGroup.of]
+  simp only [Function.comp_apply]
 
-
-  -- rw [lift.hom]
-
-
-
-
-
-  -- generalize FreeGroup.map f = ψ
+theorem toPresentedGroup.mk {α β : Type u} {S : Set (FreeGroup α)} {T : Set (FreeGroup β)} {f : α → FreeGroup β}
+  (h : Set.image (FreeGroup.lift f) S ⊆ Subgroup.normalClosure T) (x : FreeGroup α) :
+  (toPresentedGroup h).comp (PresentedGroup.mk S) = (PresentedGroup.mk T).comp (FreeGroup.lift f) := by
+  ext a
+  simp only [MonoidHom.coe_comp, Function.comp_apply, FreeGroup.lift.of]
+  rw [← PresentedGroup.of]
+  exact toPresentedGroup.of h a
