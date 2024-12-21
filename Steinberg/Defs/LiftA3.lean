@@ -430,6 +430,7 @@ theorem expr_β_γ_as_γ_βγ_β :
   rw [mul_neg, mul_neg, neg_neg]
 
 /- Rewrite α⬝γ as γ⬝α. -/
+@[group_reassoc]
 theorem expr_α_γ_as_γ_α :
     ∀ {i j : ℕ} (hi : i ≤ α.height) (hj : j ≤ γ.height) (t u : R), commutes({α, i, t}, {γ, j, u}) := by
   intro i j hi hj t u
@@ -437,6 +438,7 @@ theorem expr_α_γ_as_γ_α :
   rw [comm_of_α_γ]
 
 /- Rewrite α⬝αβ as αβ⬝α. -/
+@[group_reassoc]
 theorem expr_α_αβ_as_αβ_α :
     ∀ {i j : ℕ} (hi : i ≤ α.height) (hj : j ≤ αβ.height) (t u : R), commutes({α, i, t}, {αβ, j, u}) := by
   intro i j hi hj t u
@@ -444,6 +446,7 @@ theorem expr_α_αβ_as_αβ_α :
   rw [comm_of_α_αβ]
 
 /- Rewrite β⬝αβ as αβ⬝β. -/
+@[group_reassoc]
 theorem expr_β_αβ_as_αβ_β :
     ∀ {i j : ℕ} (hi : i ≤ β.height) (hj : j ≤ αβ.height) (t u : R), commutes({β, i, t}, {αβ, j, u}) := by
   intro i j hi hj t u
@@ -451,6 +454,7 @@ theorem expr_β_αβ_as_αβ_β :
   rw [comm_of_β_αβ]
 
 /- Rewrite γ⬝βγ as βγ⬝γ. -/
+@[group_reassoc]
 theorem expr_γ_βγ_as_βγ_γ :
     ∀ {i j : ℕ} (hi : i ≤ γ.height) (hj : j ≤ βγ.height) (t u : R), commutes({γ, i, t}, {βγ, j, u}) := by
   intro i j hi hj t u
@@ -458,6 +462,7 @@ theorem expr_γ_βγ_as_βγ_γ :
   rw [comm_of_γ_βγ]
 
 /- Rewrite αβ⬝βγ as βγ⬝αβ. -/
+@[group_reassoc]
 theorem expr_αβ_βγ_as_βγ_αβ :
   ∀ {i j : ℕ} (hi : i ≤ αβ.height) (hj : j ≤ βγ.height) (t u : R), commutes({αβ, i, t}, {βγ, j, u}) := by
   intro i j hi hj t u
@@ -650,6 +655,11 @@ theorem expand_αβγ_as_αβ_γ_αβ_γ :
   rw [← comm_of_αβ_γ]
 
 /-! ### Commutators of αβγ with other roots -/
+
+theorem mul_assoc_α : ∀ {i : ℕ} (hi : i ≤ α.height) (t : R) (b c),
+  b * {α, i, t} * c = b * ({α, i, t} * c) := by
+  intro i hi t b c
+  rw [mul_assoc _ {α, i, t}]
 
 /- α and αβγ commute. -/
 /- NS: One should be able to prove this quite simply:  simple proof: we know αβγ is expressible as a product of αβ's and γ's (expand_αβγ_as_αβ_γ_αβ_γ), and we know that α's
