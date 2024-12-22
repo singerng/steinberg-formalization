@@ -65,7 +65,7 @@ def all_rels {Φ : Type TΦ} [PosRootSys Φ] {R : Type TR} [Ring R] (w : WeakChe
 abbrev group {Φ : Type TΦ} [PosRootSys Φ] {R : Type TR} [Ring R] (w : WeakChevalley Φ R)
   := PresentedGroup (WeakChevalley.all_rels w)
 
-abbrev pres_mk {Φ : Type TΦ} [PosRootSys Φ] {R : Type TR} [Ring R] (w : WeakChevalley Φ R) :
+def pres_mk {Φ : Type TΦ} [PosRootSys Φ] {R : Type TR} [Ring R] (w : WeakChevalley Φ R) :
   FreeGroupOnGradedGens Φ R →* (WeakChevalley.group w) := PresentedGroup.mk (WeakChevalley.all_rels w)
 
 /-! ### Helpers -/

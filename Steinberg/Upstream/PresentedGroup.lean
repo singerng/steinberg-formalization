@@ -10,7 +10,6 @@ theorem eq_one_iff_mem_closure {α : Type u} {rels : Set (FreeGroup α)} {x : Fr
   -- apply @QuotientGroup.eq _ _ _ 1 x
   sorry
 
-
 theorem eq_one_of_mem_rels {α : Type u} {rels : Set (FreeGroup α)} {x : FreeGroup α} :
   x ∈ rels → PresentedGroup.mk rels x = 1 := by
   intro h
