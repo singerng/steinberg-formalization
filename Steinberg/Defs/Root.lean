@@ -6,15 +6,15 @@ namespace Steinberg
 
 class PosRootSys (Root : Type TΦ) extends ToString Root where
   height : Root → Nat
-  add (r₁ r₂ : Root) : Option Root
-  mul : PNat → Root → Option Root
+  -- add (r₁ r₂ : Root) : Option Root
+  -- mul : PNat → Root → Option Root
 
-  -- well-behavedness conditions
-  h_add {ζ η θ : Root} :
-    add ζ η = some θ → height θ = height ζ + height η
+  -- -- well-behavedness conditions
+  -- h_add {ζ η θ : Root} :
+  --   add ζ η = some θ → height θ = height ζ + height η
 
-  h_mul {c : PNat} {ζ ζ' : Root} :
-    mul c ζ = some ζ' → height ζ' = c * height ζ
+  -- h_mul {c : PNat} {ζ ζ' : Root} :
+  --   mul c ζ = some ζ' → height ζ' = c * height ζ
 
 
 -- /-- Applies the `add` operation for a `PosRootSys`. -/
