@@ -35,4 +35,15 @@ theorem need_to_prove (a b : Type) (S : Set (FreeGroup a)) (T : Set (FreeGroup b
   induction' rL with hd tl tl_ih
   . simp only [List.map_nil, List.prod_nil]; trivial
   . simp [List.prod_cons, ← tl_ih]
-    cases' hd.2 with h h; all_goals simp; exact rfl
+    cases' hd.2; all_goals simp; exact rfl
+
+theorem need_to_prove2 (a b : Type) (S : Set (FreeGroup a)) (T : Set (FreeGroup b)) (f : a → b) (r : S):
+  (PresentedGroup.mk T (FreeGroup.map f r) = (FreeGroup.lift ((@PresentedGroup.of _ T) ∘ f)) r) := by
+  rcases r with ⟨r, ppty⟩
+  induction' r with r r rHyp r₁ r₂ r₁Hyp r₂Hyp
+  . exact rfl
+  . exact rfl
+  . exact rfl
+  .
+    -- can probably be proven by induction
+    sorry
