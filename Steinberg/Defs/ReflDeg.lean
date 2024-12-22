@@ -17,14 +17,14 @@ variable {G : Type TG} [Group G]
          {R : Type TR} [Ring R]
 
 /-- "Degree-reflection" map of `GradedGen`s corresponding to swapping degree `i` with `height ζ - i`. (An involution.) -/
-private def refl_deg_of_gen (Φ : Type TΦ) [PosRootSys Φ] (R : Type TR) [Ring R] (g : GradedGen Φ R) : GradedGen Φ R :=
+def refl_deg_of_gen (g : GradedGen Φ R) : GradedGen Φ R :=
   GradedGen.mk g.ζ (height g.ζ - g.i) (by omega) g.t
 
 /-! ### Generic reflection theorems -/
 
 /-- Degree-reflection preserves the set of trivial commutator relations for any root pair. -/
 private theorem refl_deg_of_rels_of_trivial_commutator_of_root_pair (ζ η : Φ) :
-  ∀ r ∈ rels_of_trivial_commutator_of_root_pair R (ζ, η), FreeGroup.map (refl_deg_of_gen Φ R) r ∈ rels_of_trivial_commutator_of_root_pair R (ζ, η) := by
+  ∀ r ∈ rels_of_trivial_commutator_of_root_pair R (ζ, η), FreeGroup.map refl_deg_of_gen r ∈ rels_of_trivial_commutator_of_root_pair R (ζ, η) := by
   intro r h
   simp only [rels_of_trivial_commutator_of_root_pair, Set.mem_setOf_eq] at h
   let ⟨ i, j, hi, hj, t, u, h' ⟩ := h
@@ -33,7 +33,8 @@ private theorem refl_deg_of_rels_of_trivial_commutator_of_root_pair (ζ η : Φ)
 
 /-- Degree-reflection preserves the set of trivial commutator relations for any root pair. -/
 private theorem refl_deg_of_rels_of_single_commutator_of_root_pair (ζ η : Φ) (C : R) (h_height : height θ = height ζ + height η) :
-  ∀ r ∈ rels_of_single_commutator_of_root_pair R ⟨ ζ, η, θ, C, h_height ⟩, FreeGroup.map (refl_deg_of_gen Φ R) r ∈ rels_of_single_commutator_of_root_pair R ⟨ ζ, η, θ, C, h_height ⟩ := by
+  ∀ r ∈ rels_of_single_commutator_of_root_pair R ⟨ ζ, η, θ, C, h_height ⟩,
+    FreeGroup.map refl_deg_of_gen r ∈ rels_of_single_commutator_of_root_pair R ⟨ ζ, η, θ, C, h_height ⟩ := by
   intro r h
   simp only [rels_of_single_commutator_of_root_pair, Set.mem_setOf_eq] at h
   let ⟨ i, j, hi, hj, t, u, h' ⟩ := h
@@ -45,7 +46,8 @@ private theorem refl_deg_of_rels_of_single_commutator_of_root_pair (ζ η : Φ) 
 
 /-- Degree-reflection preserves the set of mixed-degree commutator relations for any root. -/
 private theorem refl_deg_of_rels_of_mixed_commutes_of_root (ζ : Φ) :
-  ∀ r ∈ rels_of_mixed_commutes_of_root R ζ, FreeGroup.map (refl_deg_of_gen Φ R) r ∈ rels_of_mixed_commutes_of_root R ζ := by
+  ∀ r ∈ rels_of_mixed_commutes_of_root R ζ,
+    FreeGroup.map refl_deg_of_gen r ∈ rels_of_mixed_commutes_of_root R ζ := by
   intro r h
   simp only [rels_of_mixed_commutes_of_root, Set.mem_setOf_eq] at h
   let ⟨ i, j, hi, hj, t, u, h' ⟩ := h
@@ -54,16 +56,17 @@ private theorem refl_deg_of_rels_of_mixed_commutes_of_root (ζ : Φ) :
 
 /-- Degree-reflection preserves the set of trivial commutator relations for any root pair. -/
 private theorem refl_deg_of_rels_of_lin_of_root (ζ : Φ) :
-  ∀ r ∈ rels_of_lin_of_root R ζ, FreeGroup.map (refl_deg_of_gen Φ R) r ∈ rels_of_lin_of_root R ζ := by
+  ∀ r ∈ rels_of_lin_of_root R ζ,
+    FreeGroup.map refl_deg_of_gen r ∈ rels_of_lin_of_root R ζ := by
   intro r h
   simp only [rels_of_lin_of_root, Set.mem_setOf_eq] at h
   let ⟨ i, hi, t, u, h' ⟩ := h
-  simp only [← h', refl_deg_of_gen, rels_of_lin_of_root]
+  simp only [← h', rels_of_lin_of_root]
   exists (PosRootSys.height ζ - i), (by omega), t, u
 
 /-- Map a generator to its reflected image in the presented group (used to define the symmetry below). -/
 private def pres_of_refl_deg_of_gen (R : Type TR) [Ring R] (w : WeakChevalley Φ R) (g : GradedGen Φ R) : WeakChevalley.group w :=
-  WeakChevalley.pres_mk w (GradedGen.free_mk (refl_deg_of_gen Φ R g))
+  WeakChevalley.pres_mk w (GradedGen.free_mk (refl_deg_of_gen g))
 
 -- theorem helper {SS : Set (Set (FreeGroupOnGradedGens Φ R))} {f : FreeGroupOnGradedGens Φ R → FreeGroupOnGradedGens Φ R}
 --   : (∀ S ∈ SS, f '' S ⊆ S) → f '' (⋃₀ SS) ⊆ ⋃₀ SS := by
@@ -80,10 +83,10 @@ private def pres_of_refl_deg_of_gen (R : Type TR) [Ring R] (w : WeakChevalley Φ
 --   exact Set.Subset.trans this1 this2
 
 -- slightly ugly...
-private theorem reflect_degree_of_weak_rels' :
-  FreeGroup.map (refl_deg_of_gen Φ R) '' (WeakChevalley.all_rels w) ⊆ (WeakChevalley.all_rels w) := by
+-- private theorem reflect_degree_of_weak_rels' :
+--   FreeGroup.map refl_deg_of_gen '' (WeakChevalley.all_rels w) ⊆ (WeakChevalley.all_rels w) := by
 
-  sorry
+--   sorry
   -- rw [all_rels]
   -- apply helper
   -- intro S h_S
@@ -107,12 +110,12 @@ private theorem reflect_degree_of_weak_rels' :
 --     exact Set.Subset.trans reflect_degree_of_weak_rels' Subgroup.subset_normalClosure
 --   )
 
-def refl_symm (w : WeakChevalley Φ R) : WeakChevalley.group w →* WeakChevalley.group w :=
-  @toPresentedGroup _ _ _ _ (FreeGroup.of ∘ (refl_deg_of_gen Φ R)) (by sorry)
+def refl_symm {w : WeakChevalley Φ R} : WeakChevalley.group w →* WeakChevalley.group w :=
+  @toPresentedGroup _ _ _ _ (FreeGroup.of ∘ refl_deg_of_gen) (by sorry)
 
 /- Calculates the image of a generator in the presented group by the degree-reflection homomorphism. -/
 theorem refl_im (ζ : Φ) (i : ℕ) (hi : i ≤ PosRootSys.height ζ) (t : R) (w : WeakChevalley Φ R) :
-  refl_symm w (WeakChevalley.pres_mk w (GradedGen.free_mk_mk ζ i hi t)) =
+  refl_symm (WeakChevalley.pres_mk w (GradedGen.free_mk_mk ζ i hi t)) =
     (WeakChevalley.pres_mk w (GradedGen.free_mk_mk ζ (PosRootSys.height ζ - i) (by omega) t)) := by
   simp only [refl_symm, pres_mk, GradedGen.free_mk_mk]
   rw [← PresentedGroup.of, toPresentedGroup.of]

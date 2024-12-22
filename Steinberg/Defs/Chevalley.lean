@@ -19,7 +19,7 @@ theorem helper (G : Type TG) [Group G] (x y z : G) : x * y * z⁻¹ = 1 → x * 
   rw [mul_inv_cancel]
   exact h
 
-abbrev SingleSpanRootPair (R : Type TR) [Ring R] (Φ : Type TΦ) [PosRootSys Φ]
+abbrev SingleSpanRootPair (Φ : Type TΦ) [PosRootSys Φ] (R : Type TR) [Ring R]
   := (ζ : Φ) × (η : Φ) × (θ : Φ) × R ×' (PosRootSys.height θ = PosRootSys.height ζ + PosRootSys.height η)
 
 /- Generators of the Chevalley subgroup corresponding to a positive root system over a ring with monomial entries. -/
@@ -69,7 +69,7 @@ def rels_of_trivial_commutator_of_root_pair (R : Type TR) [Ring R]
 
 /- Commutator for generators corresponding to two roots which span a single additional root. C is a constant (always 1 in A3). -/
 def rels_of_single_commutator_of_root_pair (R : Type TR) [Ring R]
-  (p : SingleSpanRootPair R Φ) : Set (FreeGroupOnGradedGens Φ R) :=
+  (p : SingleSpanRootPair Φ R) : Set (FreeGroupOnGradedGens Φ R) :=
   let ⟨ ζ, η, θ, C, h_height ⟩ := p;
   { ⁅ free_mk_mk ζ i hi t, free_mk_mk η j hj u ⁆ * (free_mk_mk θ (i + j) (by omega) (C * (t * u)))⁻¹
     | (i : ℕ) (j : ℕ) (hi : i ≤ height ζ) (hj : j ≤ height η) (t : R) (u : R) }

@@ -98,7 +98,7 @@ end A3PosRoot
 
 namespace A3Proof
 
-open A3PosRoot GradedGen
+open A3PosRoot GradedGen ReflDeg
 
 /-! ### Bundle together assumptions about the A3 generators -/
 
@@ -229,6 +229,27 @@ theorem def_of_αβγ :
   · simp only
     exists t, i, hi
 
+theorem refl_of_nonhomog :
+  ∀ S ∈ def_sets R, ∀r ∈ S, refl_symm (weakA3.pres_mk r) = 1 := by sorry
+
+-- def relations are preserved under reflection
+theorem refl_of_def :
+  ∀ S ∈ def_sets R, ∀ r ∈ S,
+    FreeGroup.map refl_deg_of_gen r ∈ S := by
+  simp only [def_sets, Set.mem_singleton_iff, forall_eq, rels_of_def_of_αβγ, Set.mem_setOf_eq]
+  intro r h
+  rcases h with ⟨ i, hi, t, h ⟩
+  rw [← h]
+  rcases h
+  simp only [map_mul, map_commutatorElement, split_3_into_1_2]
+  exists (αβγ.height - i), (by omega), t
+  -- can this be simplified?
+  match i with
+  | 0 => (simp only; congr)
+  | 1 => (simp only; congr)
+  | 2 => (simp only; congr)
+  | 3 => (simp only; congr)
+
 end UnpackingPresentation
 
 /-! ### Identity theorems for specific roots -/
@@ -336,7 +357,7 @@ private lemma comm_of_αβ_βγ_20 : ∀ (t u : R), ⁅ {αβ, 2, t}, {βγ, 0, 
 -- symmetric to proof of `comm_of_αβ_βγ_20`
 private lemma comm_of_αβ_βγ_02 : ∀ (t u : R), ⁅ {αβ, 0, t}, {βγ, 2, u} ⁆ = 1 := by
   intro t u
-  have : ⁅ {αβ, 0, t}, {βγ, 2, u} ⁆ = ReflDeg.refl_symm weakA3 ⁅ {αβ, 2, t}, {βγ, 0, u} ⁆ := by
+  have : ⁅ {αβ, 0, t}, {βγ, 2, u} ⁆ = ReflDeg.refl_symm ⁅ {αβ, 2, t}, {βγ, 0, u} ⁆ := by
     rw [map_commutatorElement]
     trivial
   rw [this, comm_of_αβ_βγ_20, map_one]
