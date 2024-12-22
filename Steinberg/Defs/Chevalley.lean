@@ -43,10 +43,6 @@ def free_mk : GradedGen Φ R → FreeGroupOnGradedGens Φ R :=
 def free_mk_mk (ζ : Φ) (i : ℕ) (hi : i ≤ height ζ) (t : R) : FreeGroupOnGradedGens Φ R :=
   FreeGroup.of <| (mk ζ i hi t)
 
-/-- "Degree-reflection" map of `GradedGen`s corresponding to swapping degree `i` with `height ζ - i`. (An involution.) -/
-def refl_deg_of_gen (Φ : Type TΦ) [PosRootSys Φ] (R : Type TR) [Ring R] (g : GradedGen Φ R) : GradedGen Φ R :=
-  mk g.ζ (height g.ζ - g.i) (by omega) g.t
-
 end GradedGen
 
 open GradedGen
@@ -69,15 +65,6 @@ def rels_of_trivial_commutator_of_root_pair (R : Type TR) [Ring R]
   { ⁅ free_mk_mk ζ i hi t, free_mk_mk η j hj u ⁆
     | (i : ℕ) (j : ℕ) (hi : i ≤ height ζ) (hj : j ≤ height η) (t : R) (u : R) }
 
-/-- Degree-reflection preserves the set of trivial commutator relations for any root pair. -/
-theorem refl_deg_of_rels_of_trivial_commutator_of_root_pair (ζ η : Φ) :
-  ∀ r ∈ rels_of_trivial_commutator_of_root_pair R (ζ, η), FreeGroup.map (refl_deg_of_gen Φ R) r ∈ rels_of_trivial_commutator_of_root_pair R (ζ, η) := by
-  intro r h
-  simp only [rels_of_trivial_commutator_of_root_pair, Set.mem_setOf_eq] at h
-  let ⟨ i, j, hi, hj, t, u, h' ⟩ := h
-  simp only [← h', map_commutatorElement, refl_deg_of_gen, rels_of_trivial_commutator_of_root_pair]
-  exists (PosRootSys.height ζ - i), (PosRootSys.height η - j), (by omega), (by omega), t, u
-
 /-! #### Commutator for two generators from two roots which span one additional root -/
 
 /- Commutator for generators corresponding to two roots which span a single additional root. C is a constant (always 1 in A3). -/
@@ -92,18 +79,6 @@ def single_commutator_of_root_pair (f : FreeGroupOnGradedGens Φ R →* G) (ζ �
   ∀ ⦃i j : ℕ⦄ (hi : i ≤ height ζ) (hj : j ≤ height η) (t u : R),
     ⁅ f (free_mk_mk ζ i hi t), f (free_mk_mk η j hj u) ⁆ = f (free_mk_mk θ (i + j) (by omega) (C * (t * u)))
 
-/-- Degree-reflection preserves the set of trivial commutator relations for any root pair. -/
-theorem refl_deg_of_rels_of_single_commutator_of_root_pair (ζ η : Φ) (C : R) (h_height : height θ = height ζ + height η) :
-  ∀ r ∈ rels_of_single_commutator_of_root_pair R ⟨ ζ, η, θ, C, h_height ⟩, FreeGroup.map (refl_deg_of_gen Φ R) r ∈ rels_of_single_commutator_of_root_pair R ⟨ ζ, η, θ, C, h_height ⟩ := by
-  intro r h
-  simp only [rels_of_single_commutator_of_root_pair, Set.mem_setOf_eq] at h
-  let ⟨ i, j, hi, hj, t, u, h' ⟩ := h
-  simp only [← h', map_mul, map_commutatorElement, map_inv, refl_deg_of_gen, rels_of_single_commutator_of_root_pair]
-  exists (PosRootSys.height ζ - i), (PosRootSys.height η - j), (by omega), (by omega), t, u
-  congr
-  simp only
-  omega
-
 /-! #### Commutator relation for two generators from the same root -/
 
 /-
@@ -116,15 +91,6 @@ def rels_of_mixed_commutes_of_root (R : Type TR) [Ring R]
 
 def mixed_commutes_of_root (R : Type TR) [Ring R] (f : FreeGroupOnGradedGens Φ R →* G) (ζ : Φ) : Prop :=
   @trivial_commutator_of_root_pair _ _ _ _ _ _ f ζ ζ
-
-/-- Degree-reflection preserves the set of mixed-degree commutator relations for any root. -/
-theorem refl_deg_of_rels_of_mixed_commutes_of_root (ζ : Φ) :
-  ∀ r ∈ rels_of_mixed_commutes_of_root R ζ, FreeGroup.map (refl_deg_of_gen Φ R) r ∈ rels_of_mixed_commutes_of_root R ζ := by
-  intro r h
-  simp only [rels_of_mixed_commutes_of_root, Set.mem_setOf_eq] at h
-  let ⟨ i, j, hi, hj, t, u, h' ⟩ := h
-  simp only [← h', map_commutatorElement, refl_deg_of_gen, rels_of_mixed_commutes_of_root]
-  exists (PosRootSys.height ζ - i), (PosRootSys.height ζ - j), (by omega), (by omega), t, u
 
 /-! #### Linearity relation for products of generators from a single root -/
 
@@ -141,16 +107,6 @@ def lin_of_root (R : Type TR) [Ring R] (f : FreeGroupOnGradedGens Φ R →* G) (
 Helper theorem to prove `lin_of_root` in a `PresentedGroup` where the relations
 include `rels_of_lin_of_root`.
 -/
-
-
-/-- Degree-reflection preserves the set of trivial commutator relations for any root pair. -/
-theorem refl_deg_of_rels_of_lin_of_root (ζ : Φ) :
-  ∀ r ∈ rels_of_lin_of_root R ζ, FreeGroup.map (refl_deg_of_gen Φ R) r ∈ rels_of_lin_of_root R ζ := by
-  intro r h
-  simp only [rels_of_lin_of_root, Set.mem_setOf_eq] at h
-  let ⟨ i, hi, t, u, h' ⟩ := h
-  simp only [← h', refl_deg_of_gen, rels_of_lin_of_root]
-  exists (PosRootSys.height ζ - i), (by omega), t, u
 
 /-! ### Additional properties implied by linearity and implications therein -/
 
