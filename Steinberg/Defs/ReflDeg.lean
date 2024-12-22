@@ -27,7 +27,7 @@ private theorem refl_deg_of_rels_of_trivial_commutator_of_root_pair (ζ η : Φ)
   ∀ r ∈ rels_of_trivial_commutator_of_root_pair R (ζ, η), FreeGroup.map refl_deg_of_gen r ∈ rels_of_trivial_commutator_of_root_pair R (ζ, η) := by
   intro r h
   simp only [rels_of_trivial_commutator_of_root_pair, Set.mem_setOf_eq] at h
-  let ⟨ i, j, hi, hj, t, u, h' ⟩ := h
+  rcases h with ⟨ i, j, hi, hj, t, u, h' ⟩
   simp only [← h', map_commutatorElement, refl_deg_of_gen, rels_of_trivial_commutator_of_root_pair]
   exists (PosRootSys.height ζ - i), (PosRootSys.height η - j), (by omega), (by omega), t, u
 
@@ -37,7 +37,7 @@ private theorem refl_deg_of_rels_of_single_commutator_of_root_pair (ζ η : Φ) 
     FreeGroup.map refl_deg_of_gen r ∈ rels_of_single_commutator_of_root_pair R ⟨ ζ, η, θ, C, h_height ⟩ := by
   intro r h
   simp only [rels_of_single_commutator_of_root_pair, Set.mem_setOf_eq] at h
-  let ⟨ i, j, hi, hj, t, u, h' ⟩ := h
+  rcases h with ⟨ i, j, hi, hj, t, u, h' ⟩
   simp only [← h', map_mul, map_commutatorElement, map_inv, refl_deg_of_gen, rels_of_single_commutator_of_root_pair]
   exists (PosRootSys.height ζ - i), (PosRootSys.height η - j), (by omega), (by omega), t, u
   congr
@@ -50,7 +50,7 @@ private theorem refl_deg_of_rels_of_mixed_commutes_of_root (ζ : Φ) :
     FreeGroup.map refl_deg_of_gen r ∈ rels_of_mixed_commutes_of_root R ζ := by
   intro r h
   simp only [rels_of_mixed_commutes_of_root, Set.mem_setOf_eq] at h
-  let ⟨ i, j, hi, hj, t, u, h' ⟩ := h
+  rcases h with ⟨ i, j, hi, hj, t, u, h' ⟩
   simp only [← h', map_commutatorElement, refl_deg_of_gen, rels_of_mixed_commutes_of_root]
   exists (PosRootSys.height ζ - i), (PosRootSys.height ζ - j), (by omega), (by omega), t, u
 
@@ -60,7 +60,7 @@ private theorem refl_deg_of_rels_of_lin_of_root (ζ : Φ) :
     FreeGroup.map refl_deg_of_gen r ∈ rels_of_lin_of_root R ζ := by
   intro r h
   simp only [rels_of_lin_of_root, Set.mem_setOf_eq] at h
-  let ⟨ i, hi, t, u, h' ⟩ := h
+  rcases h with ⟨ i, hi, t, u, h' ⟩
   simp only [← h', rels_of_lin_of_root]
   exists (PosRootSys.height ζ - i), (by omega), t, u
 
