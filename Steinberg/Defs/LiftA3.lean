@@ -15,6 +15,8 @@ import Steinberg.Defs.Chevalley
 import Steinberg.Defs.Deg
 import Steinberg.Defs.Commutator
 import Steinberg.Defs.WeakChevalley
+import Steinberg.Defs.ReflDeg
+
 import Steinberg.Macro.Group
 
 import Steinberg.Upstream.FreeGroup
@@ -149,12 +151,6 @@ def weakA3 := WeakChevalley.mk
   lin_roots
   (nonhomog_sets R)
   (def_sets R)
-  (by
-  sorry
-  )
-  (by
-  sorry
-  )
 
 abbrev weakA3_rels (R : Type TR) [Ring R] := @weakA3.all_rels A3PosRoot _ R _
 
@@ -340,7 +336,7 @@ private lemma comm_of_αβ_βγ_20 : ∀ (t u : R), ⁅ {αβ, 2, t}, {βγ, 0, 
 -- symmetric to proof of `comm_of_αβ_βγ_20`
 private lemma comm_of_αβ_βγ_02 : ∀ (t u : R), ⁅ {αβ, 0, t}, {βγ, 2, u} ⁆ = 1 := by
   intro t u
-  have : ⁅ {αβ, 0, t}, {βγ, 2, u} ⁆ = weakA3.refl_symm R ⁅ {αβ, 2, t}, {βγ, 0, u} ⁆ := by
+  have : ⁅ {αβ, 0, t}, {βγ, 2, u} ⁆ = ReflDeg.refl_symm weakA3 ⁅ {αβ, 2, t}, {βγ, 0, u} ⁆ := by
     rw [map_commutatorElement]
     trivial
   rw [this, comm_of_αβ_βγ_20, map_one]
