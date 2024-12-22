@@ -72,25 +72,25 @@ def toString : A3PosRoot → String
   | βγ => "β+γ"
   | αβγ => "α+β+γ"
 
-def add : A3PosRoot → A3PosRoot → Option A3PosRoot
-  | α, β => some αβ | β, γ => some βγ | α, βγ => some αβγ | αβ, γ => some αβγ
-  | _, _ => none
+-- def add : A3PosRoot → A3PosRoot → Option A3PosRoot
+--   | α, β => some αβ | β, γ => some βγ | α, βγ => some αβγ | αβ, γ => some αβγ
+--   | _, _ => none
 
-def mul : PNat → A3PosRoot → Option A3PosRoot := fun _ _ => none
+-- def mul : PNat → A3PosRoot → Option A3PosRoot := fun _ _ => none
 
-theorem h_add {ζ η θ : A3PosRoot} :
-  (add ζ η = some θ) → height θ = height ζ + height η := by sorry
+-- theorem h_add {ζ η θ : A3PosRoot} :
+--   (add ζ η = some θ) → height θ = height ζ + height η := by sorry
 
-theorem h_mul {c : PNat} {r r' : A3PosRoot} :
-  (mul c r = r') → height r' = c * height r := by sorry
+-- theorem h_mul {c : PNat} {r r' : A3PosRoot} :
+--   (mul c r = r') → height r' = c * height r := by sorry
 
 instance : PosRootSys A3PosRoot where
   height := height
-  add := add
-  mul := mul
+  -- add := add
+  -- mul := mul
   toString := toString
-  h_add := h_add
-  h_mul := h_mul
+  -- h_add := h_add
+  -- h_mul := h_mul
 
 end A3PosRoot
 
@@ -150,52 +150,15 @@ def weakA3 := WeakChevalley.mk
   (nonhomog_sets R)
   (def_sets R)
   (by
-    rw [nonhomog_sets]
-    simp only [Set.mem_singleton_iff, forall_eq]
-    intro r h
-    simp only [Set.mem_image, Set.mem_setOf_eq, rels_of_nonhomog_lift_of_comm_of_αβ_βγ] at h
-    rcases h with ⟨ x, ⟨ t₁, t₀, u₁, u₀, v₁, v₀, h' ⟩, l2 ⟩
-    simp only [← h', map_commutatorElement, refl_deg_of_gen, rels_of_nonhomog_lift_of_comm_of_αβ_βγ]
-    exists t₀, t₁, u₀, u₁, v₀, v₁
-    rw [← l2]
-    rcases h'
-    rcases l2
-    simp only [map_commutatorElement, map_mul, refl_deg_of_gen, free_mk_mk, FreeGroup.map.of]
-    simp
-    sorry
+  sorry
   )
-
   (by
   sorry
-    -- rw [def_sets]
-    -- simp only [Set.mem_singleton_iff, forall_eq]
-    -- intro r h
-    -- simp only [Set.mem_image, Set.mem_setOf_eq, rels_of_def_of_αβγ] at h
-    -- rcases h with ⟨ x, ⟨ i, hi, t, h' ⟩, l2 ⟩
-    -- simp only [← h', map_commutatorElement, refl_deg_of_gen, rels_of_def_of_αβγ]
-    -- exists 3 - i, (by simp), t
-    -- rw [← l2]
-    -- rcases h'
-    -- rcases l2
-    -- simp only [map_commutatorElement, map_mul, refl_deg_of_gen, free_mk_mk, FreeGroup.map.of]
-    -- simp
-    -- congr
-    -- simp only [split_3_into_1_2, height, PosRootSys.height]
-    -- simp
-    -- split
-    -- · have : i = 3 := by omega
-    --   rw [this]
-    -- -- all_goals (try split; try decide)
-
-
   )
 
 abbrev weakA3_rels (R : Type TR) [Ring R] := @weakA3.all_rels A3PosRoot _ R _
 
 abbrev WeakChevalleyA3Group (R : Type TR) [Ring R] := PresentedGroup (@weakA3.all_rels A3PosRoot _ R _)
-
--- def weakA3.pres_mk {R : Type TR} [Ring R] : FreeGroupOnGradedGens A3PosRoot R →* WeakChevalleyA3Group R :=
---   PresentedGroup.mk (weakA3_rels R)
 
 set_option hygiene false in
 /-- Shorthand for building free group elements from a root, degree, and ring element. -/
