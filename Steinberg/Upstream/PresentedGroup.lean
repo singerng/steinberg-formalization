@@ -4,10 +4,12 @@ import Steinberg.Upstream.FreeGroup
 
 theorem eq_one_iff_mem_closure {α : Type u} {rels : Set (FreeGroup α)} {x : FreeGroup α} :
   PresentedGroup.mk rels x = 1 ↔ x ∈ Subgroup.normalClosure rels := by
-  simp only [PresentedGroup.mk, MonoidHom.coe_mk, OneHom.coe_mk]
+  rw [PresentedGroup.mk]
+  simp only [MonoidHom.coe_mk, OneHom.coe_mk]
   nth_rewrite 2 [← one_mul x, ← inv_one]
+  -- apply @QuotientGroup.eq _ _ _ 1 x
   sorry
-  -- exact @QuotientGroup.eq (FreeGroup α) _ (Subgroup.normalClosure rels) 1 x
+
 
 theorem eq_one_of_mem_rels {α : Type u} {rels : Set (FreeGroup α)} {x : FreeGroup α} :
   x ∈ rels → PresentedGroup.mk rels x = 1 := by
@@ -16,7 +18,7 @@ theorem eq_one_of_mem_rels {α : Type u} {rels : Set (FreeGroup α)} {x : FreeGr
   exact Subgroup.subset_normalClosure h
 
 private theorem helper {α β : Type u} {S : Set (FreeGroup α)} {T : Set (FreeGroup β)} {f : α → FreeGroup β}
-  (h : Set.image (FreeGroup.lift f) S ⊆ Subgroup.normalClosure T)
+  (h : FreeGroup.lift f '' S ⊆ Subgroup.normalClosure T)
   : ∀ r ∈ S, (FreeGroup.lift ((PresentedGroup.mk T) ∘ f)) r = 1 := by
   intro r h_r
   rw [lift.hom]
@@ -28,17 +30,17 @@ private theorem helper {α β : Type u} {S : Set (FreeGroup α)} {T : Set (FreeG
   exact h r h_r
 
 def toPresentedGroup {α β : Type u} {S : Set (FreeGroup α)} {T : Set (FreeGroup β)} {f : α → FreeGroup β}
-  (h : Set.image (FreeGroup.lift f) S ⊆ Subgroup.normalClosure T) :=
+  (h : FreeGroup.lift f '' S ⊆ Subgroup.normalClosure T) :=
   @PresentedGroup.toGroup α (PresentedGroup T) _ (PresentedGroup.mk T ∘ f) S (helper h)
 
 theorem toPresentedGroup.of {α β : Type u} {S : Set (FreeGroup α)} {T : Set (FreeGroup β)} {f : α → FreeGroup β}
-  (h : Set.image (FreeGroup.lift f) S ⊆ Subgroup.normalClosure T) (x : α) :
+  (h : FreeGroup.lift f '' S ⊆ Subgroup.normalClosure T) (x : α) :
   (toPresentedGroup h) (PresentedGroup.of x) = PresentedGroup.mk T (f x) := by
   rw [toPresentedGroup, PresentedGroup.toGroup.of]
   simp only [Function.comp_apply]
 
 theorem toPresentedGroup.mk {α β : Type u} {S : Set (FreeGroup α)} {T : Set (FreeGroup β)} {f : α → FreeGroup β}
-  (h : Set.image (FreeGroup.lift f) S ⊆ Subgroup.normalClosure T) (x : FreeGroup α) :
+  (h : FreeGroup.lift f '' S ⊆ Subgroup.normalClosure T) :
   (toPresentedGroup h).comp (PresentedGroup.mk S) = (PresentedGroup.mk T).comp (FreeGroup.lift f) := by
   ext a
   simp only [MonoidHom.coe_comp, Function.comp_apply, FreeGroup.lift.of]
