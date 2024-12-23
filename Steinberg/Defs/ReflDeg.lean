@@ -69,8 +69,8 @@ private def pres_of_refl_deg_of_gen (R : Type TR) [Ring R] (w : WeakChevalley Φ
   WeakChevalley.pres_mk w (GradedGen.free_mk (refl_deg_of_gen g))
 
 def refl_valid {w : WeakChevalley Φ R} :=
-  (∀ S ∈ w.nonhomog_rels, ∀r ∈ S, w.pres_mk (FreeGroup.map refl_deg_of_gen r) = 1) ∧
-  (∀ S ∈ w.def_rels, ∀ r ∈ S, FreeGroup.map refl_deg_of_gen r ∈ S)
+  (∀ S ∈ w.nonhomog_rels_sets, ∀r ∈ S, w.pres_mk (FreeGroup.map refl_deg_of_gen r) = 1) ∧
+  (∀ S ∈ w.def_rels_sets, ∀ r ∈ S, FreeGroup.map refl_deg_of_gen r ∈ S)
 
 theorem reflect_degree_of_rels {w : WeakChevalley Φ R} (h' : @refl_valid Φ _ R _ w) :
   FreeGroup.lift (FreeGroup.of ∘ refl_deg_of_gen) '' (WeakChevalley.all_rels w) ⊆ Subgroup.normalClosure (WeakChevalley.all_rels w) := by
@@ -79,50 +79,71 @@ theorem reflect_degree_of_rels {w : WeakChevalley Φ R} (h' : @refl_valid Φ _ R
   intro r h_r
   simp only [Set.sUnion_insert, Set.sUnion_singleton, Set.mem_image, Set.mem_union, Set.mem_sUnion] at h_r
   rcases h_r with ⟨ t, ⟨ h_t, h_t_r ⟩ ⟩
-  rw [← h_t_r]
   rcases h_t_r
-  rw [lift.hom2]
-  have aaaa := @Subgroup.subset_normalClosure _ _ (w.all_rels)
-  rw [Set.subset_def] at aaaa
+  rw [lift_of_is_map]
+  have all_rels_to_normal_closure_all_rels := @Subgroup.subset_normalClosure _ _ (w.all_rels)
+  rw [Set.subset_def] at all_rels_to_normal_closure_all_rels
   rcases h_t with h_triv | h_sing | h_mix | h_lin | h_non | h_def
-  · rw [trivial_comm_rels] at h_triv
-    simp at h_triv
+  · apply all_rels_to_normal_closure_all_rels
+    rw [trivial_comm_rels] at h_triv
+    simp only [Set.sUnion_image, Set.mem_iUnion, exists_prop, Prod.exists] at h_triv
     rcases h_triv with ⟨ ζ, η, h_in_pairs, h_t_in_rels ⟩
-    have := @refl_deg_of_rels_of_trivial_commutator_of_root_pair Φ _ R _ ζ η t h_t_in_rels
-    have : (FreeGroup.map refl_deg_of_gen) t ∈ w.trivial_comm_rels := by rw [trivial_comm_rels]; aesop
-    have : (FreeGroup.map refl_deg_of_gen) t ∈ w.all_rels := by rw [all_rels]; aesop
-    exact aaaa (FreeGroup.map refl_deg_of_gen t) this
-  · rw [single_comm_rels] at h_sing
-    simp at h_sing
+    suffices (FreeGroup.map refl_deg_of_gen) t ∈ w.trivial_comm_rels by
+      rw [all_rels]
+      simp only [Set.sUnion_insert, Set.sUnion_singleton, Set.mem_union, Set.mem_sUnion]
+      simp_all only [true_or]
+    rw [trivial_comm_rels]
+    simp only [Set.sUnion_image, Set.mem_iUnion, exists_prop, Prod.exists]
+    use ζ, η, h_in_pairs
+    exact @refl_deg_of_rels_of_trivial_commutator_of_root_pair Φ _ R _ ζ η t h_t_in_rels
+  · apply all_rels_to_normal_closure_all_rels
+    rw [single_comm_rels] at h_sing
+    simp only [Set.sUnion_image, Set.mem_iUnion, exists_prop, Sigma.exists, PProd.exists] at h_sing
     rcases h_sing with ⟨ ζ, η, θ, C, h_height, h_in_pairs, h_t_in_rels ⟩
-    have := @refl_deg_of_rels_of_single_commutator_of_root_pair Φ _ R _ ζ η θ C h_height t h_t_in_rels
-    have : (FreeGroup.map refl_deg_of_gen) t ∈ w.single_comm_rels := by rw [single_comm_rels]; aesop
-    have : (FreeGroup.map refl_deg_of_gen) t ∈ w.all_rels := by rw [all_rels]; aesop
-    exact aaaa (FreeGroup.map refl_deg_of_gen t) this
-  · rw [mixed_commutes_rels] at h_mix
-    simp at h_mix
+    suffices (FreeGroup.map refl_deg_of_gen) t ∈ w.single_comm_rels by
+      rw [all_rels]
+      simp only [Set.sUnion_insert, Set.sUnion_singleton, Set.mem_union, Set.mem_sUnion]
+      simp_all only [true_or, or_true]
+    rw [single_comm_rels]
+    simp only [Set.sUnion_image, Set.mem_iUnion, exists_prop, Prod.exists]
+    use ⟨ ζ, η, θ, C, h_height ⟩, h_in_pairs
+    exact @refl_deg_of_rels_of_single_commutator_of_root_pair Φ _ R _ ζ η θ C h_height t h_t_in_rels
+  · apply all_rels_to_normal_closure_all_rels
+    rw [mixed_commutes_rels] at h_mix
+    simp only [Set.sUnion_image, Set.mem_iUnion, exists_prop, Prod.exists] at h_mix
     rcases h_mix with ⟨ ζ, h_in_pairs, h_t_in_rels ⟩
-    have := @refl_deg_of_rels_of_mixed_commutes_of_root Φ _ R _ ζ t h_t_in_rels
-    have : (FreeGroup.map refl_deg_of_gen) t ∈ w.mixed_commutes_rels := by rw [mixed_commutes_rels]; aesop
-    have : (FreeGroup.map refl_deg_of_gen) t ∈ w.all_rels := by rw [all_rels]; aesop
-    exact aaaa (FreeGroup.map refl_deg_of_gen t) this
-  · rw [lin_rels] at h_lin
-    simp at h_lin
+    suffices (FreeGroup.map refl_deg_of_gen) t ∈ w.mixed_commutes_rels by
+      rw [all_rels]
+      simp only [Set.sUnion_insert, Set.sUnion_singleton, Set.mem_union, Set.mem_sUnion]
+      simp_all only [true_or, or_true]
+    rw [mixed_commutes_rels]
+    simp only [Set.sUnion_image, Set.mem_iUnion, exists_prop, Prod.exists]
+    use ζ, h_in_pairs
+    exact @refl_deg_of_rels_of_mixed_commutes_of_root Φ _ R _ ζ t h_t_in_rels
+  · apply all_rels_to_normal_closure_all_rels
+    rw [lin_rels] at h_lin
+    simp only [Set.sUnion_image, Set.mem_iUnion, exists_prop, Prod.exists] at h_lin
     rcases h_lin with ⟨ ζ, h_in_pairs, h_t_in_rels ⟩
-    have := @refl_deg_of_rels_of_lin_of_root Φ _ R _ ζ t h_t_in_rels
-    have : (FreeGroup.map refl_deg_of_gen) t ∈ w.lin_rels := by rw [lin_rels]; aesop
-    have : (FreeGroup.map refl_deg_of_gen) t ∈ w.all_rels := by rw [all_rels]; aesop
-    exact aaaa (FreeGroup.map refl_deg_of_gen t) this
+    suffices (FreeGroup.map refl_deg_of_gen) t ∈ w.lin_rels by
+      rw [all_rels]
+      simp only [Set.sUnion_insert, Set.sUnion_singleton, Set.mem_union, Set.mem_sUnion]
+      simp_all only [true_or, or_true]
+    rw [lin_rels]
+    simp only [Set.sUnion_image, Set.mem_iUnion, exists_prop, Prod.exists]
+    use ζ, h_in_pairs
+    exact @refl_deg_of_rels_of_lin_of_root Φ _ R _ ζ t h_t_in_rels
   · apply eq_one_iff_mem_closure.mp
     rcases h_non with ⟨ T, ⟨ h_T, h_t_T ⟩ ⟩
     rw [refl_valid] at h'
     exact h'.1 T h_T t h_t_T
-  · rcases h_def with ⟨ T, ⟨ h_T, h_t_T ⟩ ⟩
+  · apply all_rels_to_normal_closure_all_rels
+    rcases h_def with ⟨ T, ⟨ h_T, h_t_T ⟩ ⟩
     rw [refl_valid] at h'
-    have := h'.2 T h_T t h_t_T
-    have : (FreeGroup.map refl_deg_of_gen) t ∈ ⋃₀ w.def_rels := by rw [def_rels]; aesop
-    have : (FreeGroup.map refl_deg_of_gen) t ∈ w.all_rels := by rw [all_rels]; aesop
-    exact aaaa (FreeGroup.map refl_deg_of_gen t) this
+    suffices (FreeGroup.map refl_deg_of_gen) t ∈ ⋃₀ w.def_rels_sets by
+      rw [all_rels]
+      simp only [Set.sUnion_insert, Set.sUnion_singleton, Set.mem_union, Set.mem_sUnion, true_or]
+      simp_all only [Set.mem_sUnion, or_true]
+    use T, h_T, h'.2 T h_T t h_t_T
 
 def refl_symm {w : WeakChevalley Φ R} (h : @refl_valid Φ _ R _ w) : WeakChevalley.group w →* WeakChevalley.group w :=
   @toPresentedGroup _ _ _ _ (FreeGroup.of ∘ refl_deg_of_gen) (reflect_degree_of_rels h)
