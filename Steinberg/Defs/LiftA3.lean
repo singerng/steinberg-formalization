@@ -282,6 +282,12 @@ theorem refl_of_def :
   | 2 => (simp only; congr)
   | 3 => (simp only; congr)
 
+theorem a3_valid : @ReflDeg.refl_valid A3PosRoot _ R _ weakA3 := by
+  constructor
+  · exact refl_of_nonhomog
+  · exact refl_of_def
+
+
 end UnpackingPresentation
 
 /-! ### Identity theorems for specific roots -/
@@ -389,7 +395,7 @@ private lemma comm_of_αβ_βγ_20 : ∀ (t u : R), ⁅ {αβ, 2, t}, {βγ, 0, 
 -- symmetric to proof of `comm_of_αβ_βγ_20`
 private lemma comm_of_αβ_βγ_02 : ∀ (t u : R), ⁅ {αβ, 0, t}, {βγ, 2, u} ⁆ = 1 := by
   intro t u
-  have : ⁅ {αβ, 0, t}, {βγ, 2, u} ⁆ = ReflDeg.refl_symm ⁅ {αβ, 2, t}, {βγ, 0, u} ⁆ := by
+  have : ⁅ {αβ, 0, t}, {βγ, 2, u} ⁆ = ReflDeg.refl_symm a3_valid ⁅ {αβ, 2, t}, {βγ, 0, u} ⁆ := by
     rw [map_commutatorElement]
     trivial
   rw [this, comm_of_αβ_βγ_20, map_one]
