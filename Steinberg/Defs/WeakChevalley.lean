@@ -30,8 +30,8 @@ structure WeakChevalley (Φ : Type TΦ) [PosRootSys Φ] (R : Type TR) [Ring R] w
   lin_roots : Set Φ
 
   -- problem dependent
-  nonhomog_rels : Set (Set (FreeGroupOnGradedGens Φ R))
-  def_rels : Set (Set (FreeGroupOnGradedGens Φ R))
+  nonhomog_rels_sets : Set (Set (FreeGroupOnGradedGens Φ R))
+  def_rels_sets : Set (Set (FreeGroupOnGradedGens Φ R))
 
 namespace WeakChevalley
 
@@ -62,7 +62,7 @@ def lin_rels {Φ : Type TΦ} [PosRootSys Φ] {R : Type TR} [Ring R] (w : WeakChe
   := ⋃₀ (rels_of_lin_of_root R '' w.lin_roots)
 
 def all_rels {Φ : Type TΦ} [PosRootSys Φ] {R : Type TR} [Ring R] (w : WeakChevalley Φ R)
-  := ⋃₀ {trivial_comm_rels w, single_comm_rels w, double_comm_rels w, mixed_commutes_rels w, lin_rels w, ⋃₀ w.nonhomog_rels, ⋃₀ w.def_rels}
+  := ⋃₀ {trivial_comm_rels w, single_comm_rels w,  double_comm_rels w, mixed_commutes_rels w, lin_rels w, ⋃₀ w.nonhomog_rels_sets, ⋃₀ w.def_rels_sets}
 
 /-! ### The group and the embedding -/
 
@@ -162,24 +162,24 @@ theorem lin_helper {Φ : Type TΦ} [PosRootSys Φ] {R : Type TR} [Ring R]
       exists i, hi, t, u
 
 theorem nonhomog_helper {Φ : Type TΦ} [PosRootSys Φ] {R : Type TR} [Ring R] (w : WeakChevalley Φ R) :
-  ∀ S ∈ w.nonhomog_rels, ∀ r ∈ S, WeakChevalley.pres_mk w r = (1 : WeakChevalley.group w) := by
+  ∀ S ∈ w.nonhomog_rels_sets, ∀ r ∈ S, WeakChevalley.pres_mk w r = (1 : WeakChevalley.group w) := by
   intro S h_S
   intro r h_r
   apply eq_one_of_mem_rels
   apply Set.mem_sUnion.mpr
-  use ⋃₀ WeakChevalley.nonhomog_rels w
+  use ⋃₀ nonhomog_rels_sets w
   constructor
   · simp only [Set.mem_insert_iff, Set.mem_singleton_iff, true_or, or_true]
   · apply Set.mem_sUnion.mpr
     use S
 
 theorem def_helper {Φ : Type TΦ} [PosRootSys Φ] {R : Type TR} [Ring R] (w : WeakChevalley Φ R) :
-  ∀ S ∈ w.def_rels, ∀ r ∈ S, WeakChevalley.pres_mk w r = (1 : WeakChevalley.group w) := by
+  ∀ S ∈ w.def_rels_sets, ∀ r ∈ S, WeakChevalley.pres_mk w r = (1 : WeakChevalley.group w) := by
   intro S h_S
   intro r h_r
   apply eq_one_of_mem_rels
   apply Set.mem_sUnion.mpr
-  use ⋃₀ WeakChevalley.def_rels w
+  use ⋃₀ def_rels_sets w
   constructor
   · simp only [Set.mem_insert_iff, Set.mem_singleton_iff, true_or, or_true]
   · apply Set.mem_sUnion.mpr

@@ -4,11 +4,10 @@ import Steinberg.Upstream.FreeGroup
 
 theorem eq_one_iff_mem_closure {α : Type u} {rels : Set (FreeGroup α)} {x : FreeGroup α} :
   PresentedGroup.mk rels x = 1 ↔ x ∈ Subgroup.normalClosure rels := by
-  rw [PresentedGroup.mk]
-  simp only [MonoidHom.coe_mk, OneHom.coe_mk]
   nth_rewrite 2 [← one_mul x, ← inv_one]
-  -- apply @QuotientGroup.eq _ _ _ 1 x
-  sorry
+  apply Iff.trans _ (@QuotientGroup.eq _ _ (Subgroup.normalClosure rels) 1 x)
+  simp only [QuotientGroup.mk_one, PresentedGroup.mk, MonoidHom.coe_mk, OneHom.coe_mk]
+  use Eq.symm, Eq.symm
 
 theorem eq_one_of_mem_rels {α : Type u} {rels : Set (FreeGroup α)} {x : FreeGroup α} :
   x ∈ rels → PresentedGroup.mk rels x = 1 := by

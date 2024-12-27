@@ -1,11 +1,13 @@
 import Mathlib.Algebra.Group.Commutator
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Algebra.Group.Aut
+import Mathlib.Algebra.Group.Commute.Defs
+
 import Mathlib.Tactic.Group
 
 namespace Steinberg
 
-s/-! ### Notations for theorems involving group elements -/
+/-! ### Notations for theorems involving group elements -/
 
 /-
   These notations essentially act like "inline mathematical notation,"
@@ -35,16 +37,12 @@ theorem comm_left_rev  (x y : G) : x * y = ⁅y, x⁆⁻¹ * y * x        := by 
 theorem comm_mid_rev   (x y : G) : x * y = y * ⁅y⁻¹, x⁆ * x        := by rw [← already_have]; exact comm_mid x y
 theorem comm_right_rev (x y : G) : x * y = y * x * ⁅y⁻¹, x⁻¹⁆⁻¹    := by rw [already_have]; exact comm_right x y
 
-theorem commutes_of_triv_comm : triv_comm(x, y) → commutes(x, y) := by
-  intro h
-  rw [comm_left, h, one_mul]
-
-theorem triv_comm_of_commutes : commutes(x, y) → triv_comm(x, y) := by
-  intro h
-  rw [commutatorElement_def, h, mul_inv_cancel_right, mul_inv_cancel]
-
-theorem triv_comm_iff_commutes : triv_comm(x, y) ↔ commutes(x, y) :=
-  ⟨commutes_of_triv_comm, triv_comm_of_commutes⟩
+theorem triv_comm_iff_commutes : triv_comm(x, y) ↔ commutes(x, y) := by
+  constructor
+  · intro h
+    rw [comm_left, h, one_mul]
+  · intro h
+    rw [commutatorElement_def, h, mul_inv_cancel_right, mul_inv_cancel]
 
 theorem eq_comm_of_reorder_left : reorder_left(x, y, z) → ⁅x, y⁆ = z := by
   intro h
@@ -151,7 +149,7 @@ theorem CI7 : ⁅x, z⁆ = 1 → ⁅x, ⁅y, z⁆⁆ = ⁅⁅x, y⁆, conj y z�
   intro h
   have hc : Commute x z := by
     apply (commute_iff_eq x z).mpr
-    exact commutes_of_triv_comm h
+    exact triv_comm_iff_commutes.mp h
   have h1 : Commute x⁻¹ z := by
     exact Commute.inv_left hc
   rw [commute_iff_eq] at h1
@@ -162,7 +160,7 @@ theorem CI8 : ⁅y, z⁆ = 1 → ⁅⁅x, y⁆, z⁆ = conj (x * y) ⁅x⁻¹, z
   intro h
   have hc : Commute y z := by
     apply (commute_iff_eq y z).mpr
-    exact commutes_of_triv_comm h
+    exact triv_comm_iff_commutes.mp h
   have h1 : Commute y⁻¹ z := by
     exact Commute.inv_left hc
   rw [commute_iff_eq] at h1
@@ -173,7 +171,7 @@ theorem CI9 : ⁅x, z⁆ = 1 → ⁅⁅x, y⁆, z⁆ = conj x (conj (y * x⁻¹)
   intro h
   have hc : Commute x z := by
     apply (commute_iff_eq x z).mpr
-    exact commutes_of_triv_comm h
+    exact triv_comm_iff_commutes.mp h
   have h1 : Commute x⁻¹ z := by
     exact Commute.inv_left hc
   have h2: Commute x⁻¹ z⁻¹ := by
