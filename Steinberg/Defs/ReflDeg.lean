@@ -44,6 +44,12 @@ private theorem refl_deg_of_rels_of_single_commutator_of_root_pair (ζ η : Φ) 
   simp only
   omega
 
+private theorem refl_deg_of_rels_of_double_commutator_of_root_pair (ζ η θ₁ θ₂ : Φ) (C₁ C₂ : R)
+  (h₁_height : height θ₁ = height ζ + height η) (h₂_height : height θ₂ = height ζ + 2 * height η) :
+  ∀ r ∈ rels_of_double_commutator_of_root_pair R ⟨ ζ, η, θ₁, θ₂, C₁, C₂, h₁_height, h₂_height⟩,
+    FreeGroup.map refl_deg_of_gen r ∈ rels_of_double_commutator_of_root_pair R ⟨ ζ, η, θ₁, θ₂, C₁, C₂, h₁_height, h₂_height⟩ :=
+    by sorry
+
 /-- Degree-reflection preserves the set of mixed-degree commutator relations for any root. -/
 private theorem refl_deg_of_rels_of_mixed_commutes_of_root (ζ : Φ) :
   ∀ r ∈ rels_of_mixed_commutes_of_root R ζ,

@@ -22,6 +22,11 @@ theorem helper (G : Type TG) [Group G] (x y z : G) : x * y * z⁻¹ = 1 → x * 
 abbrev SingleSpanRootPair (Φ : Type TΦ) [PosRootSys Φ] (R : Type TR) [Ring R]
   := (ζ : Φ) × (η : Φ) × (θ : Φ) × R ×' (PosRootSys.height θ = PosRootSys.height ζ + PosRootSys.height η)
 
+abbrev DoubleSpanRootPair (Φ : Type TΦ) [PosRootSys Φ] (R : Type TR) [Ring R]
+  := (ζ : Φ) × (η : Φ) × (θ₁ : Φ) × (θ₂ : Φ) × R × R ×'
+  (PosRootSys.height θ₁ = PosRootSys.height ζ + PosRootSys.height η) ×'
+  (PosRootSys.height θ₂ = PosRootSys.height ζ + 2 * PosRootSys.height η)
+
 /- Generators of the Chevalley subgroup corresponding to a positive root system over a ring with monomial entries. -/
 structure GradedGen (Φ : Type TΦ) [PosRootSys Φ] (R : Type TR) [Ring R] where
   mk ::
@@ -78,6 +83,22 @@ def single_commutator_of_root_pair (f : FreeGroupOnGradedGens Φ R →* G) (ζ �
   (C : R) (h_height : height θ = height ζ + height η) : Prop :=
   ∀ ⦃i j : ℕ⦄ (hi : i ≤ height ζ) (hj : j ≤ height η) (t u : R),
     ⁅ f (free_mk_mk ζ i hi t), f (free_mk_mk η j hj u) ⁆ = f (free_mk_mk θ (i + j) (by omega) (C * (t * u)))
+
+/-! ### Commutator for two generators from two roots which span two additional roots -/
+
+def double_commutator_of_root_pair (f : FreeGroupOnGradedGens Φ R →* G) (ζ η θ₁ θ₂ : Φ)
+  (C₁ : R) (C₂ : R) (h₁_height : height θ₁ = height ζ + height η) (h₂_height : height θ₂ = height ζ + 2 * height η) : Prop :=
+  ∀ ⦃i j : ℕ⦄ (hi : i ≤ height ζ) (hj : j ≤ height η) (t u : R),
+    ⁅ f (free_mk_mk ζ i hi t), f (free_mk_mk η j hj u) ⁆ = (f (free_mk_mk θ₁ (i + j) (by omega) (C₁ * (t * u)))) * (f (free_mk_mk θ₂ (i + 2 * j) (by omega) (C₂ * (t * u^2))))
+
+def rels_of_double_commutator_of_root_pair (R : Type TR) [Ring R]
+  (p : DoubleSpanRootPair Φ R) : Set (FreeGroupOnGradedGens Φ R) :=
+  let ⟨ ζ, η, θ₁, θ₂, C₁, C₂, h₁_height, h₂_height⟩ := p;
+  { ⁅ free_mk_mk ζ i hi t, free_mk_mk η j hj u ⁆ *
+      ( (free_mk_mk θ₁ (i + j) (by omega) (C₁ * (t * u))) *
+        (free_mk_mk θ₂ (i + 2 * j) (by omega) (C₂ * (t * u^2)))
+      )⁻¹
+    | (i : ℕ) (j : ℕ) (hi : i ≤ height ζ) (hj : j ≤ height η) (t : R) (u : R) }
 
 /-! #### Commutator relation for two generators from the same root -/
 
