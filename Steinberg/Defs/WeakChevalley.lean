@@ -26,6 +26,7 @@ structure WeakChevalley (Φ : Type TΦ) [PosRootSys Φ] (R : Type TR) [Ring R] w
   trivial_comm_root_pairs : Set (Φ × Φ)
   single_comm_root_pairs : Set (SingleSpanRootPair Φ R)
   mixed_commutes_roots : Set Φ
+  double_comm_root_pairs : Set (DoubleSpanRootPair Φ R)
   lin_roots : Set Φ
 
   -- problem dependent
@@ -51,6 +52,9 @@ def trivial_comm_rels {Φ : Type TΦ} [PosRootSys Φ] {R : Type TR} [Ring R] (w 
 def single_comm_rels {Φ : Type TΦ} [PosRootSys Φ] {R : Type TR} [Ring R] (w : WeakChevalley Φ R)
   := ⋃₀ (rels_of_single_commutator_of_root_pair R '' w.single_comm_root_pairs)
 
+def double_comm_rels {Φ : Type TΦ} [PosRootSys Φ] {R : Type TR} [Ring R] (w : WeakChevalley Φ R)
+  := ⋃₀ (rels_of_double_commutator_of_root_pair R '' w.double_comm_root_pairs)
+
 def mixed_commutes_rels {Φ : Type TΦ} [PosRootSys Φ] {R : Type TR} [Ring R] (w : WeakChevalley Φ R)
   := ⋃₀ (rels_of_mixed_commutes_of_root R '' w.mixed_commutes_roots)
 
@@ -58,7 +62,7 @@ def lin_rels {Φ : Type TΦ} [PosRootSys Φ] {R : Type TR} [Ring R] (w : WeakChe
   := ⋃₀ (rels_of_lin_of_root R '' w.lin_roots)
 
 def all_rels {Φ : Type TΦ} [PosRootSys Φ] {R : Type TR} [Ring R] (w : WeakChevalley Φ R)
-  := ⋃₀ {trivial_comm_rels w, single_comm_rels w, mixed_commutes_rels w, lin_rels w, ⋃₀ w.nonhomog_rels, ⋃₀ w.def_rels}
+  := ⋃₀ {trivial_comm_rels w, single_comm_rels w, double_comm_rels w, mixed_commutes_rels w, lin_rels w, ⋃₀ w.nonhomog_rels, ⋃₀ w.def_rels}
 
 /-! ### The group and the embedding -/
 
@@ -109,6 +113,14 @@ theorem single_commutator_helper {Φ : Type TΦ} [PosRootSys Φ] {R : Type TR} [
       use ⟨ ζ, η, θ, C, h_height ⟩
     · rw [rels_of_single_commutator_of_root_pair]
       exists i, j, hi, hj, t, u
+
+theorem double_commutator_helper {Φ : Type TΦ} [PosRootSys Φ] {R : Type TR} [Ring R]
+  (w : WeakChevalley Φ R) (ζ η θ₁ θ₂ : Φ) (C₁ : R) (C₂ : R)
+  (h₁_height : PosRootSys.height θ₁ = PosRootSys.height ζ + PosRootSys.height η)
+  (h₂_height : PosRootSys.height θ₂ = PosRootSys.height ζ + 2 * PosRootSys.height η)
+  (h : ⟨ ζ, η, θ₁, θ₂, C₁, C₂, h₁_height, h₂_height⟩ ∈ w.double_comm_root_pairs) :
+  @double_commutator_of_root_pair (WeakChevalley.group w) _ Φ _ R _
+  (WeakChevalley.pres_mk w) ζ η θ₁ θ₂ C₁ C₂ h₁_height h₂_height := by sorry
 
 theorem mixed_commutes_helper {Φ : Type TΦ} [PosRootSys Φ] {R : Type TR} [Ring R]
   (w : WeakChevalley Φ R) (ζ : Φ) (h : ζ ∈ w.mixed_commutes_roots) :
