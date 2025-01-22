@@ -54,6 +54,15 @@ def toString : B3LargePosRoot → String
   | αβ2ψ => "α+β+2ψ"
   | α2β2ψ => "α+2β+2ψ"
 
+instance : PosRootSys B3LargePosRoot where
+  height := height
+  toString := toString
+
+end B3LargePosRoot
+
+namespace A3Proof
+
+open B3LargePosRoot GradedGen ReflDeg
 
 /-
 In-subgroup relations
