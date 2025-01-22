@@ -60,9 +60,39 @@ instance : PosRootSys B3LargePosRoot where
 
 end B3LargePosRoot
 
-namespace A3Proof
+namespace B3LargeProof
 
 open B3LargePosRoot GradedGen ReflDeg
+
+/-! ### Bundle together assumptions about the B3Large generators -/
+
+/-
+The specific relation arises from "nonhomogeneously lifting" the commutator of αβ and βψ elements. (There is no analogue
+of this relation for other root-pairs, since all other present pairs lie in a common two-dimensional subspace.)
+-/
+def rels_of_nonhomog_lift_of_comm_of_αβ_βψ :=
+   { ⁅ (free_mk_mk αβ 2 (by trivial) (t₁ * u₁)) * (free_mk_mk αβ 1 (by trivial) (t₁ * u₀ + t₀ * u₁)) * (free_mk_mk αβ 0 (by trivial) (t₀ * u₀)),
+       (free_mk_mk βψ 2 (by trivial) (u₁ * v₁)) * (free_mk_mk βψ 1 (by trivial) (u₁ * v₀ + u₀ * v₁)) * (free_mk_mk βψ 0 (by trivial) (u₀ * v₀)) ⁆ |
+    (t₁ : R) (t₀ : R) (u₁ : R) (u₀ : R) (v₁ : R) (v₀ : R) }
+
+def split_3_into_1_2 (i : ℕ) (hi : i ≤ 3) :=
+  match i with
+  | 0 => (0, 0)
+  | 1 => (0, 1)
+  | 2 => (1, 1)
+  | 3 => (1, 2)
+
+theorem correct_of_split_3_into_1_2 (i : ℕ) (hi : i ≤ 3) :
+  (split_3_into_1_2 i hi).1 ≤ 1 ∧ (split_3_into_1_2 i hi).2 ≤ 2 := by
+  simp only [split_3_into_1_2]
+  split
+  all_goals trivial
+
+def rels_of_def_of_αβψ :=
+  { ⁅ (free_mk_mk α (split_3_into_1_2 i hi).1 (correct_of_split_3_into_1_2 i hi).1 t),
+      (free_mk_mk βψ (split_3_into_1_2 i hi).2 (correct_of_split_3_into_1_2 i hi).2 (1 : R)) ⁆
+      * (free_mk_mk αβψ i hi t)⁻¹ | (i : ℕ) (hi : i ≤ αβψ.height) (t : R)
+  }
 
 /-
 In-subgroup relations
