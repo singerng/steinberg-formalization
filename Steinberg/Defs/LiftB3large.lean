@@ -109,7 +109,6 @@ abbrev double_commutator_pairs : Set (DoubleSpanRootPair B3LargePosRoot R) :=
 -- relations 8.75, 8.76, 8.77, 8.78, 8.79, 8.80
 abbrev mixed_commutes_roots : Set (B3LargePosRoot) := {α, β, ψ, αβ, βψ, β2ψ}
 
-
 /-
 In-subgroup relations
 
