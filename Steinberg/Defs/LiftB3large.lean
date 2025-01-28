@@ -102,33 +102,25 @@ abbrev trivial_commutator_pairs : Set (B3LargePosRoot × B3LargePosRoot) := {(α
 abbrev single_commutator_pairs : Set ((ζ : B3LargePosRoot) × (η : B3LargePosRoot) × (θ : B3LargePosRoot) × R ×' (θ.height = ζ.height + η.height))
   := {⟨α, β, αβ, 1, (by simp only [height])⟩, ⟨ψ, βψ, β2ψ, 2, (by simp only [height])⟩}
 
--- relations 8.63
-abbrev double_commutator_pairs : Set (DoubleSpanRootPair B3LargePosRoot R) :=
-    {⟨β, ψ, βψ, β2ψ, 1, 1, (by exact rfl), (by exact rfl)⟩}
+-- relation 8.63 ???
 
 -- relations 8.75, 8.76, 8.77, 8.78, 8.79, 8.80
 abbrev mixed_commutes_roots : Set (B3LargePosRoot) := {α, β, ψ, αβ, βψ, β2ψ}
 
-/-
-In-subgroup relations
+abbrev lin_roots : Set (B3LargePosRoot) := {α, β, ψ, αβ, βψ, β2ψ}
 
-8.59 is 7.1 (from LiftA3.lean)
+def nonhomog_sets (R : Type TR) [Field R] : Set (Set (FreeGroupOnGradedGens B3LargePosRoot R)) := {
+  rels_of_nonhomog_lift_of_comm_of_αβ_βψ
+}
 
-8.60 is 7.2
+def def_sets (R : Type TR) [Field R] : Set (Set (FreeGroupOnGradedGens B3LargePosRoot R)) := {
+  rels_of_def_of_αβψ
+}
 
-8.61 is 7.3
-
-8.62
-
-8.63 is 8.2 (from LiftB3small.lean)
-
-8.64 is 8.3
-
-8.65 is 8.4
-
-8.66 is 8.5
-
-8.67 is 8.6
-
-8.68 is 8.7
--/
+def weakB3Large := WeakChevalley.mk
+  trivial_commutator_pairs
+  single_commutator_pairs
+  mixed_commutes_roots
+  lin_roots
+  (nonhomog_sets R)
+  (def_sets R)
