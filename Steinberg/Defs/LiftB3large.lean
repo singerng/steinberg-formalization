@@ -64,11 +64,13 @@ namespace B3LargeProof
 
 open B3LargePosRoot GradedGen ReflDeg
 
--- Nonhomogenous lift (top of page 61)
+-- Relation 8.81
 def rels_of_nonhomog_lift_of_comm_of_αβ_βψ :=
    { ⁅ (free_mk_mk αβ 2 (by trivial) (t₁ * u₁)) * (free_mk_mk αβ 1 (by trivial) (t₁ * u₀ + t₀ * u₁)) * (free_mk_mk αβ 0 (by trivial) (t₀ * u₀)),
        (free_mk_mk βψ 2 (by trivial) (u₁ * v₁)) * (free_mk_mk βψ 1 (by trivial) (u₁ * v₀ + u₀ * v₁)) * (free_mk_mk βψ 0 (by trivial) (u₀ * v₀)) ⁆ |
     (t₁ : R) (t₀ : R) (u₁ : R) (u₀ : R) (v₁ : R) (v₀ : R) }
+
+-- Relation 8.82 ?
 
 def split_3_into_1_2 (i : ℕ) (hi : i ≤ 3) :=
   match i with
@@ -83,7 +85,7 @@ theorem correct_of_split_3_into_1_2 (i : ℕ) (hi : i ≤ 3) :
   split
   all_goals trivial
 
--- 8.116, second relation (top of page 68)
+-- 8.81, second relation (top of page 68)
 def rels_of_def_of_αβψ :=
   {
     (free_mk_mk βψ (split_3_into_1_2 i hi).2 (correct_of_split_3_into_1_2 i hi).2 (-1/2 : R)) *
@@ -107,6 +109,7 @@ abbrev single_commutator_pairs : Set ((ζ : B3LargePosRoot) × (η : B3LargePosR
 -- relations 8.75, 8.76, 8.77, 8.78, 8.79, 8.80
 abbrev mixed_commutes_roots : Set (B3LargePosRoot) := {α, β, ψ, αβ, βψ, β2ψ}
 
+-- relations 8.69, 8.70, 8.71, 8.72, 8.73, 8.74
 abbrev lin_roots : Set (B3LargePosRoot) := {α, β, ψ, αβ, βψ, β2ψ}
 
 def nonhomog_sets (R : Type TR) [Field R] : Set (Set (FreeGroupOnGradedGens B3LargePosRoot R)) := {
