@@ -1,9 +1,19 @@
-import Mathlib.Algebra.Group.Commutator
-import Mathlib.Algebra.Group.Defs
+/-
+
+LICENSE goes here.
+
+-/
+
 import Mathlib.Algebra.Group.Aut
-import Mathlib.Algebra.Group.Commute.Defs
 
 import Mathlib.Tactic.Group
+import Steinberg.Macro.Group
+
+/-!
+
+  File dox go here.
+
+-/
 
 namespace Steinberg
 
@@ -33,9 +43,9 @@ theorem comm_right     (x y : G) : x * y = y * x * ⁅x⁻¹, y⁻¹⁆      := 
 
 theorem already_have (x y : G) : ⁅x, y⁆⁻¹ = ⁅y, x⁆ := by group
 
-theorem comm_left_rev  (x y : G) : x * y = ⁅y, x⁆⁻¹ * y * x        := by rw [already_have]; exact comm_left x y
-theorem comm_mid_rev   (x y : G) : x * y = y * ⁅y⁻¹, x⁆ * x        := by rw [← already_have]; exact comm_mid x y
-theorem comm_right_rev (x y : G) : x * y = y * x * ⁅y⁻¹, x⁻¹⁆⁻¹    := by rw [already_have]; exact comm_right x y
+theorem comm_left_rev  (x y : G) : x * y = ⁅y, x⁆⁻¹ * y * x      := already_have y _ ▸ comm_left ..
+theorem comm_mid_rev   (x y : G) : x * y = y * ⁅y⁻¹, x⁆ * x      := (already_have x _).symm ▸ comm_mid ..
+theorem comm_right_rev (x y : G) : x * y = y * x * ⁅y⁻¹, x⁻¹⁆⁻¹  := already_have y⁻¹ _ ▸ comm_right ..
 
 theorem triv_comm_iff_commutes : triv_comm(x, y) ↔ commutes(x, y) := by
   constructor
@@ -116,7 +126,7 @@ theorem trivial_comm_from_embedded_comm_and_pairs : triv_comm(x * y, w * z) → 
   -- Add `y` on the right and `w` on the left to maintain relative orders wrt `x` and `z`
   apply @mul_right_cancel _ _ _ _ y
   apply @mul_left_cancel _ _ _ w
-  simp_rw [← mul_assoc]
+  mul_assoc_l
   rw [← h_xw, mul_assoc, ← h_yz, ← mul_assoc, mul_assoc x, ← h_yw, ← mul_assoc,
     mul_assoc, h_all, ← mul_assoc]
 
@@ -131,27 +141,26 @@ theorem CI2 : ⁅y, x⁆ = ⁅x, y⁆⁻¹ := by
 
 theorem CI3 : ⁅x, y * z⁆ = ⁅x, y⁆ * conj y ⁅x, z⁆ := by
   simp only [conj_apply, commutatorElement_def, mul_inv_rev, ← mul_assoc,
-  inv_mul_cancel_right]
+    inv_mul_cancel_right]
 
 theorem CI4 : ⁅x * y, z⁆ = conj x ⁅y, z⁆ * ⁅x, z⁆ := by
   simp only [conj_apply, commutatorElement_def, mul_inv_rev, ← mul_assoc,
-  inv_mul_cancel_right]
+    inv_mul_cancel_right]
 
 theorem CI5 : conj x ⁅x⁻¹, y⁆ = ⁅y, x⁆ := by
   simp only [conj_apply, commutatorElement_def, mul_inv_rev, ← mul_assoc,
-  inv_inv, mul_inv_cancel, one_mul]
+    inv_inv, mul_inv_cancel, one_mul]
 
 theorem CI6 : ⁅y, z⁆ * ⁅x, z⁆ = ⁅x, ⁅y, z⁆⁆⁻¹ * ⁅x * y, z⁆ := by
   simp only [conj_apply, commutatorElement_def, mul_inv_rev, ← mul_assoc,
-  inv_inv, mul_inv_cancel_right, inv_mul_cancel_right, CI2]
+    inv_inv, mul_inv_cancel_right, inv_mul_cancel_right, CI2]
 
 theorem CI7 : ⁅x, z⁆ = 1 → ⁅x, ⁅y, z⁆⁆ = ⁅⁅x, y⁆, conj y z⁆ := by
   intro h
   have hc : Commute x z := by
     apply (commute_iff_eq x z).mpr
     exact triv_comm_iff_commutes.mp h
-  have h1 : Commute x⁻¹ z := by
-    exact Commute.inv_left hc
+  have h1 : Commute x⁻¹ z := Commute.inv_left hc
   rw [commute_iff_eq] at h1
   simp [commutatorElement_def, ← mul_assoc, conj_apply]
   simp [mul_assoc, h1]
@@ -161,8 +170,7 @@ theorem CI8 : ⁅y, z⁆ = 1 → ⁅⁅x, y⁆, z⁆ = conj (x * y) ⁅x⁻¹, z
   have hc : Commute y z := by
     apply (commute_iff_eq y z).mpr
     exact triv_comm_iff_commutes.mp h
-  have h1 : Commute y⁻¹ z := by
-    exact Commute.inv_left hc
+  have h1 : Commute y⁻¹ z := Commute.inv_left hc
   rw [commute_iff_eq] at h1
   simp [commutatorElement_def, ← mul_assoc, conj_apply]
   simp [mul_assoc, h1]
@@ -172,21 +180,19 @@ theorem CI9 : ⁅x, z⁆ = 1 → ⁅⁅x, y⁆, z⁆ = conj x (conj (y * x⁻¹)
   have hc : Commute x z := by
     apply (commute_iff_eq x z).mpr
     exact triv_comm_iff_commutes.mp h
-  have h1 : Commute x⁻¹ z := by
-    exact Commute.inv_left hc
-  have h2: Commute x⁻¹ z⁻¹ := by
-    exact Commute.inv_inv_iff.mpr hc
+  have h1 : Commute x⁻¹ z := Commute.inv_left hc
+  have h2: Commute x⁻¹ z⁻¹ := Commute.inv_inv_iff.mpr hc
   rw [commute_iff_eq] at h1 h2 hc
   simp [commutatorElement_def, ← mul_assoc, conj_apply]
   simp [mul_assoc, h1, h2, hc]
 
 -- Hall Witt identities
 theorem HW1 : ⁅⁅y, x⁆, conj x z⁆ * ⁅⁅x, z⁆, conj z y⁆ * ⁅⁅z, y⁆, conj y x⁆ = 1 := by
-  simp only [commutatorElement_def, conj_apply, ← mul_assoc, inv_mul_cancel_right, mul_inv_rev,
-    inv_inv, mul_inv_cancel_right, mul_inv_cancel]
+  simp only [commutatorElement_def, conj_apply, ← mul_assoc, inv_mul_cancel_right,
+    mul_inv_rev, inv_inv, mul_inv_cancel_right, mul_inv_cancel]
 
 theorem HW2 : (conj y ⁅⁅y⁻¹, x⁆, z⁆) * (conj z ⁅⁅z⁻¹, y⁆, x⁆) * (conj x ⁅⁅x⁻¹, z⁆, y⁆) = 1 := by
-  simp only [commutatorElement_def, conj_apply, ← mul_assoc, inv_mul_cancel_right, mul_inv_rev,
-    inv_inv, mul_inv_cancel_right, mul_inv_cancel, one_mul]
+  simp only [commutatorElement_def, conj_apply, ← mul_assoc, inv_mul_cancel_right,
+    mul_inv_rev, inv_inv, mul_inv_cancel_right, mul_inv_cancel, one_mul]
 
 end Steinberg

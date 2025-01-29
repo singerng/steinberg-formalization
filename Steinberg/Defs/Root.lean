@@ -2,8 +2,6 @@ import Mathlib.Data.PNat.Notation
 
 namespace Steinberg
 
-#check Add
-
 class PosRootSys (Root : Type TΦ) extends ToString Root where
   height : Root → Nat
   -- add (r₁ r₂ : Root) : Option Root

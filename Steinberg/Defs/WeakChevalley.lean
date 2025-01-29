@@ -1,24 +1,30 @@
-import Mathlib.Algebra.Group.Commutator
-import Mathlib.Algebra.Ring.Defs
-import Mathlib.GroupTheory.Commutator.Basic
-import Mathlib.GroupTheory.FreeGroup.Basic
-import Mathlib.GroupTheory.PresentedGroup
+/-
 
-import Steinberg.Defs.Root
+LICENSE goes here.
+
+-/
+
 import Steinberg.Defs.Chevalley
 import Steinberg.Upstream.PresentedGroup
 
+/-!
+
+  File dox go here.
+
+-/
+
 namespace Steinberg
 
-open PosRootSys
+open PosRootSys GradedGen
 
 variable {G : Type TG} [Group G]
          {Φ : Type TΦ} [PosRootSys Φ]
          {R : Type TR} [Ring R]
 
-macro (name := algebra) "simpset" : tactic => `(tactic| (simp only [Set.mem_insert_iff, Set.mem_union, Set.mem_setOf_eq, Set.mem_singleton_iff, true_or, or_true]))
-
-open GradedGen
+macro (name := algebra) "simpset" : tactic => `(tactic|
+    simp only [Set.mem_insert_iff, Set.mem_union, Set.mem_setOf_eq,
+      Set.mem_singleton_iff, true_or, or_true]
+  )
 
 structure WeakChevalley (Φ : Type TΦ) [PosRootSys Φ] (R : Type TR) [Ring R] where
   mk ::
@@ -38,121 +44,117 @@ open Steinberg
 
 open WeakChevalley
 
-private theorem cancel_helper (G : Type TG) [Group G] (x y z : G) : x * y * z⁻¹ = 1 → x * y = z := by
-  intro h
-  apply @mul_right_cancel _ _ _ _ z⁻¹
-  rw [mul_inv_cancel]
-  exact h
-
 /-! ### Sets of relations -/
-def trivial_comm_rels {Φ : Type TΦ} [PosRootSys Φ] {R : Type TR} [Ring R] (w : WeakChevalley Φ R)
-  := ⋃₀ (rels_of_trivial_commutator_of_root_pair R '' w.trivial_comm_root_pairs)
+def trivial_comm_rels (w : WeakChevalley Φ R) :=
+  ⋃₀ (rels_of_trivial_commutator_of_root_pair R '' w.trivial_comm_root_pairs)
 
-def single_comm_rels {Φ : Type TΦ} [PosRootSys Φ] {R : Type TR} [Ring R] (w : WeakChevalley Φ R)
-  := ⋃₀ (rels_of_single_commutator_of_root_pair R '' w.single_comm_root_pairs)
+def single_comm_rels (w : WeakChevalley Φ R) :=
+  ⋃₀ (rels_of_single_commutator_of_root_pair '' w.single_comm_root_pairs)
 
-def mixed_commutes_rels {Φ : Type TΦ} [PosRootSys Φ] {R : Type TR} [Ring R] (w : WeakChevalley Φ R)
-  := ⋃₀ (rels_of_mixed_commutes_of_root R '' w.mixed_commutes_roots)
+def mixed_commutes_rels (w : WeakChevalley Φ R) :=
+  ⋃₀ (rels_of_mixed_commutes_of_root R '' w.mixed_commutes_roots)
 
-def lin_rels {Φ : Type TΦ} [PosRootSys Φ] {R : Type TR} [Ring R] (w : WeakChevalley Φ R)
+def lin_rels (w : WeakChevalley Φ R)
   := ⋃₀ (rels_of_lin_of_root R '' w.lin_roots)
 
-def all_rels {Φ : Type TΦ} [PosRootSys Φ] {R : Type TR} [Ring R] (w : WeakChevalley Φ R)
-  := ⋃₀ {trivial_comm_rels w, single_comm_rels w, mixed_commutes_rels w, lin_rels w, ⋃₀ w.nonhomog_rels_sets, ⋃₀ w.def_rels_sets}
+def all_rels (w : WeakChevalley Φ R) :=
+  ⋃₀ {trivial_comm_rels w, single_comm_rels w, mixed_commutes_rels w,
+      lin_rels w, ⋃₀ w.nonhomog_rels_sets, ⋃₀ w.def_rels_sets}
 
 /-! ### The group and the embedding -/
 
-abbrev group {Φ : Type TΦ} [PosRootSys Φ] {R : Type TR} [Ring R] (w : WeakChevalley Φ R)
-  := PresentedGroup (WeakChevalley.all_rels w)
+abbrev group (w : WeakChevalley Φ R) :=
+  PresentedGroup (WeakChevalley.all_rels w)
 
-def pres_mk {Φ : Type TΦ} [PosRootSys Φ] {R : Type TR} [Ring R] (w : WeakChevalley Φ R) :
-  FreeGroupOnGradedGens Φ R →* (WeakChevalley.group w) := PresentedGroup.mk (WeakChevalley.all_rels w)
+def pres_mk (w : WeakChevalley Φ R) : FreeGroupOnGradedGens Φ R →* group w :=
+  PresentedGroup.mk (WeakChevalley.all_rels w)
 
 /-! ### Helpers -/
 
-theorem trivial_commutator_helper {Φ : Type TΦ} [PosRootSys Φ] {R : Type TR} [Ring R]
-  (w : WeakChevalley Φ R) (ζ η : Φ) (h : (ζ, η) ∈ w.trivial_comm_root_pairs) :
-  @trivial_commutator_of_root_pair (WeakChevalley.group w) _ Φ _ R _ (WeakChevalley.pres_mk w) ζ η := by
+theorem trivial_commutator_helper {w : WeakChevalley Φ R} {ζ η : Φ}
+    (h : (ζ, η) ∈ w.trivial_comm_root_pairs)
+      : trivial_commutator_of_root_pair w.pres_mk ζ η := by
   intro i j hi hj t u
   apply eq_one_of_mem_rels
-  simp only
   apply Set.mem_sUnion.mpr
-  use (w.trivial_comm_rels)
+  use w.trivial_comm_rels
   constructor
   · simpset
   · rw [trivial_comm_rels]
     apply Set.mem_sUnion.mpr
-    use (rels_of_trivial_commutator_of_root_pair R (ζ, η))
+    use rels_of_trivial_commutator_of_root_pair R (ζ, η)
     constructor
     · simp only [Set.mem_image]
       use (ζ, η)
     · rw [rels_of_trivial_commutator_of_root_pair]
       exists i, j, hi, hj, t, u
 
-theorem single_commutator_helper {Φ : Type TΦ} [PosRootSys Φ] {R : Type TR} [Ring R]
-  (w : WeakChevalley Φ R) (ζ η θ : Φ) (C : R) (h_height : PosRootSys.height θ = PosRootSys.height ζ + PosRootSys.height η)
-  (h : ⟨ ζ, η, θ, C, h_height ⟩ ∈ w.single_comm_root_pairs) :
-  @single_commutator_of_root_pair (WeakChevalley.group w) _ Φ _ R _ (WeakChevalley.pres_mk w) ζ η θ C h_height := by
+-- TODO: Move this to a different file?
+theorem helper {x y z : G} : x * y * z⁻¹ = 1 → x * y = z := by
+  intro h
+  apply @mul_right_cancel _ _ _ _ z⁻¹
+  rw [mul_inv_cancel]
+  exact h
+
+theorem single_commutator_helper (w : WeakChevalley Φ R) (ζ η θ : Φ) (C : R)
+  (h_height : height θ = PosRootSys.height ζ + PosRootSys.height η)
+  (h : ⟨ ζ, η, θ, C, h_height ⟩ ∈ w.single_comm_root_pairs)
+    : single_commutator_of_root_pair w.pres_mk ζ η θ C h_height := by
   intro i j hi hj t u
   apply helper
   apply eq_one_of_mem_rels
-  simp only
   apply Set.mem_sUnion.mpr
-  use (w.single_comm_rels)
+  use w.single_comm_rels
   constructor
   · simpset
   · rw [single_comm_rels]
     apply Set.mem_sUnion.mpr
-    use (rels_of_single_commutator_of_root_pair R ⟨ ζ, η, θ, C, h_height ⟩)
+    use (rels_of_single_commutator_of_root_pair ⟨ ζ, η, θ, C, h_height ⟩)
     constructor
     · simp only [Set.mem_image]
       use ⟨ ζ, η, θ, C, h_height ⟩
     · rw [rels_of_single_commutator_of_root_pair]
       exists i, j, hi, hj, t, u
 
-theorem mixed_commutes_helper {Φ : Type TΦ} [PosRootSys Φ] {R : Type TR} [Ring R]
-  (w : WeakChevalley Φ R) (ζ : Φ) (h : ζ ∈ w.mixed_commutes_roots) :
-  @mixed_commutes_of_root (WeakChevalley.group w) _ Φ _ R _ (WeakChevalley.pres_mk w) ζ := by
+theorem mixed_commutes_helper (w : WeakChevalley Φ R)
+  {ζ : Φ} (h : ζ ∈ w.mixed_commutes_roots)
+    : mixed_commutes_of_root w.pres_mk ζ := by
   intro i j hi hj t u
   apply eq_one_of_mem_rels
-  simp only
   apply Set.mem_sUnion.mpr
-  use (w.mixed_commutes_rels)
+  use w.mixed_commutes_rels
   constructor
   · simpset
   · rw [mixed_commutes_rels]
     apply Set.mem_sUnion.mpr
-    use (rels_of_mixed_commutes_of_root R ζ)
+    use rels_of_mixed_commutes_of_root R ζ
     constructor
     · simp only [Set.mem_image]
       use ζ
     · rw [rels_of_mixed_commutes_of_root]
       exists i, j, hi, hj, t, u
 
-theorem lin_helper {Φ : Type TΦ} [PosRootSys Φ] {R : Type TR} [Ring R]
-  (w : WeakChevalley Φ R) (ζ : Φ) (h : ζ ∈ w.lin_roots) :
-  @lin_of_root (WeakChevalley.group w) _ Φ _ R _ (WeakChevalley.pres_mk w) ζ := by
+theorem lin_helper (w : WeakChevalley Φ R) {ζ : Φ} (h : ζ ∈ w.lin_roots)
+    : lin_of_root w.pres_mk ζ := by
   intro i hi t u
   apply helper
   apply eq_one_of_mem_rels
-  simp only
   apply Set.mem_sUnion.mpr
-  use (w.lin_rels)
+  use w.lin_rels
   constructor
   · simpset
   · rw [lin_rels]
     apply Set.mem_sUnion.mpr
-    use (rels_of_lin_of_root R ζ)
+    use rels_of_lin_of_root R ζ
     constructor
     · simp only [Set.mem_image]
       use ζ
     · rw [rels_of_lin_of_root]
       exists i, hi, t, u
 
-theorem nonhomog_helper {Φ : Type TΦ} [PosRootSys Φ] {R : Type TR} [Ring R] (w : WeakChevalley Φ R) :
-  ∀ S ∈ w.nonhomog_rels_sets, ∀ r ∈ S, WeakChevalley.pres_mk w r = (1 : WeakChevalley.group w) := by
-  intro S h_S
-  intro r h_r
+theorem nonhomog_helper (w : WeakChevalley Φ R)
+    : ∀ S ∈ w.nonhomog_rels_sets, ∀ r ∈ S, w.pres_mk r = 1 := by
+  intro S _ _ _
   apply eq_one_of_mem_rels
   apply Set.mem_sUnion.mpr
   use ⋃₀ nonhomog_rels_sets w
@@ -161,10 +163,9 @@ theorem nonhomog_helper {Φ : Type TΦ} [PosRootSys Φ] {R : Type TR} [Ring R] (
   · apply Set.mem_sUnion.mpr
     use S
 
-theorem def_helper {Φ : Type TΦ} [PosRootSys Φ] {R : Type TR} [Ring R] (w : WeakChevalley Φ R) :
-  ∀ S ∈ w.def_rels_sets, ∀ r ∈ S, WeakChevalley.pres_mk w r = (1 : WeakChevalley.group w) := by
-  intro S h_S
-  intro r h_r
+theorem def_helper (w : WeakChevalley Φ R)
+    : ∀ S ∈ w.def_rels_sets, ∀ r ∈ S, w.pres_mk r = 1 := by
+  intro S _ _ _
   apply eq_one_of_mem_rels
   apply Set.mem_sUnion.mpr
   use ⋃₀ def_rels_sets w

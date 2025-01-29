@@ -1,3 +1,9 @@
+/-
+
+LICENSE goes here.
+
+-/
+
 import Mathlib.Data.Finset.Defs
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Order.Interval.Finset.Defs
@@ -10,8 +16,6 @@ import Mathlib.Tactic.DeriveFintype
 import Mathlib.GroupTheory.Commutator.Basic
 import Mathlib.GroupTheory.PresentedGroup
 
-import Steinberg.Defs.Root
-import Steinberg.Defs.Chevalley
 import Steinberg.Defs.Deg
 import Steinberg.Defs.Commutator
 import Steinberg.Defs.WeakChevalley
@@ -21,6 +25,12 @@ import Steinberg.Macro.Group
 
 import Steinberg.Upstream.FreeGroup
 import Steinberg.Upstream.PresentedGroup
+
+/-!
+
+  File dox go here.
+
+-/
 
 namespace Steinberg
 
@@ -135,10 +145,12 @@ abbrev single_commutator_pairs : Set ((ζ : A3PosRoot) × (η : A3PosRoot) × (�
    := {⟨ α, β, αβ, 1, (by simp only [height])⟩, ⟨β, γ, βγ, 1, (by simp only [height])⟩}
 abbrev mixed_commutes_roots : Set (A3PosRoot) := {α, β, γ, αβ, βγ}
 abbrev lin_roots : Set (A3PosRoot) := {α, β, γ, αβ, βγ}
+
 -- lifted commutator of αβ and βγ
 def nonhomog_sets (R : Type TR) [Ring R] : Set (Set (FreeGroupOnGradedGens A3PosRoot R)) := {
   rels_of_nonhomog_lift_of_comm_of_αβ_βγ
 }
+
 -- definition of αβγ
 def def_sets (R : Type TR) [Ring R] : Set (Set (FreeGroupOnGradedGens A3PosRoot R)) := {
   rels_of_def_of_αβγ
@@ -162,152 +174,146 @@ scoped notation (priority:=high) "{" ζ ", " i ", " t "}" => weakA3.pres_mk (fre
 
 section UnpackingPresentation
 
-theorem comm_of_α_γ : trivial_commutator_of_root_pair R weakA3.pres_mk α γ :=
-  weakA3.trivial_commutator_helper α γ (by rw [weakA3, trivial_commutator_pairs]; simp)
+theorem comm_of_α_γ : trivial_commutator_of_root_pair (R := R) weakA3.pres_mk α γ :=
+  weakA3.trivial_commutator_helper (by rw [weakA3, trivial_commutator_pairs]; simp)
 
-theorem comm_of_α_αβ : trivial_commutator_of_root_pair R weakA3.pres_mk α αβ :=
-  weakA3.trivial_commutator_helper α αβ (by rw [weakA3, trivial_commutator_pairs]; simp)
+theorem comm_of_α_αβ : trivial_commutator_of_root_pair (R := R) weakA3.pres_mk α αβ :=
+  weakA3.trivial_commutator_helper (by rw [weakA3, trivial_commutator_pairs]; simp)
 
-theorem comm_of_β_αβ : trivial_commutator_of_root_pair R weakA3.pres_mk β αβ :=
-  weakA3.trivial_commutator_helper β αβ (by rw [weakA3, trivial_commutator_pairs]; simp)
+theorem comm_of_β_αβ : trivial_commutator_of_root_pair (R := R) weakA3.pres_mk β αβ :=
+  weakA3.trivial_commutator_helper (by rw [weakA3, trivial_commutator_pairs]; simp)
 
-theorem comm_of_β_βγ : trivial_commutator_of_root_pair R weakA3.pres_mk β βγ :=
-  weakA3.trivial_commutator_helper β βγ (by rw [weakA3, trivial_commutator_pairs]; simp)
+theorem comm_of_β_βγ : trivial_commutator_of_root_pair (R := R) weakA3.pres_mk β βγ :=
+  weakA3.trivial_commutator_helper (by rw [weakA3, trivial_commutator_pairs]; simp)
 
-theorem comm_of_γ_βγ : trivial_commutator_of_root_pair R weakA3.pres_mk γ βγ :=
-  weakA3.trivial_commutator_helper γ βγ (by rw [weakA3, trivial_commutator_pairs]; simp)
+theorem comm_of_γ_βγ : trivial_commutator_of_root_pair (R := R) weakA3.pres_mk γ βγ :=
+  weakA3.trivial_commutator_helper (by rw [weakA3, trivial_commutator_pairs]; simp)
 
-theorem comm_of_α_β : single_commutator_of_root_pair weakA3.pres_mk α β αβ (1 : R) (by rfl) :=
-  weakA3.single_commutator_helper α β αβ (1 : R) (by rfl) (by rw [weakA3, trivial_commutator_pairs]; simp)
+theorem comm_of_α_β : single_commutator_of_root_pair (R := R) weakA3.pres_mk α β αβ 1 rfl :=
+  weakA3.single_commutator_helper α β αβ 1 rfl (by rw [weakA3, trivial_commutator_pairs]; simp)
 
-theorem comm_of_β_γ : single_commutator_of_root_pair weakA3.pres_mk β γ βγ (1 : R) (by rfl) :=
-  weakA3.single_commutator_helper β γ βγ (1 : R) (by rfl) (by rw [weakA3, trivial_commutator_pairs]; simp)
+theorem comm_of_β_γ : single_commutator_of_root_pair (R := R) weakA3.pres_mk β γ βγ 1 rfl :=
+  weakA3.single_commutator_helper β γ βγ 1 rfl (by rw [weakA3, trivial_commutator_pairs]; simp)
 
 /-! ### Linearity theorems for specific roots -/
 
-theorem lin_of_α : lin_of_root R weakA3.pres_mk α :=
-  weakA3.lin_helper α (by rw [weakA3, trivial_commutator_pairs]; simp)
+theorem lin_of_α : lin_of_root (R := R) weakA3.pres_mk α :=
+  weakA3.lin_helper (by rw [weakA3, trivial_commutator_pairs]; simp)
 
-theorem lin_of_β : lin_of_root R weakA3.pres_mk β :=
-  weakA3.lin_helper β (by rw [weakA3, trivial_commutator_pairs]; simp)
+theorem lin_of_β : lin_of_root (R := R) weakA3.pres_mk β :=
+  weakA3.lin_helper (by rw [weakA3, trivial_commutator_pairs]; simp)
 
-theorem lin_of_γ : lin_of_root R weakA3.pres_mk γ :=
-  weakA3.lin_helper γ (by rw [weakA3, trivial_commutator_pairs]; simp)
+theorem lin_of_γ : lin_of_root (R := R) weakA3.pres_mk γ :=
+  weakA3.lin_helper (by rw [weakA3, trivial_commutator_pairs]; simp)
 
-theorem lin_of_αβ : lin_of_root R weakA3.pres_mk αβ :=
-  weakA3.lin_helper αβ (by rw [weakA3, trivial_commutator_pairs]; simp)
+theorem lin_of_αβ : lin_of_root (R := R) weakA3.pres_mk αβ :=
+  weakA3.lin_helper (by rw [weakA3, trivial_commutator_pairs]; simp)
 
-theorem lin_of_βγ : lin_of_root R weakA3.pres_mk βγ :=
-  weakA3.lin_helper βγ (by rw [weakA3, trivial_commutator_pairs]; simp)
+theorem lin_of_βγ : lin_of_root (R := R) weakA3.pres_mk βγ :=
+  weakA3.lin_helper (by rw [weakA3, trivial_commutator_pairs]; simp)
 
 /-! ### Mixed-degree theorem for specific roots -/
 
-theorem mixed_commutes_of_αβ : mixed_commutes_of_root R weakA3.pres_mk αβ :=
-  weakA3.mixed_commutes_helper αβ (by rw [weakA3, trivial_commutator_pairs]; simp)
+theorem mixed_commutes_of_αβ : mixed_commutes_of_root (R := R) weakA3.pres_mk αβ :=
+  weakA3.mixed_commutes_helper (by rw [weakA3, trivial_commutator_pairs]; simp)
 
-theorem mixed_commutes_of_βγ : mixed_commutes_of_root R weakA3.pres_mk βγ :=
-  weakA3.mixed_commutes_helper βγ (by rw [weakA3, trivial_commutator_pairs]; simp)
+theorem mixed_commutes_of_βγ : mixed_commutes_of_root (R := R) weakA3.pres_mk βγ :=
+  weakA3.mixed_commutes_helper (by rw [weakA3, trivial_commutator_pairs]; simp)
 
 /-! ### Nonhomogeneous lift -/
 
 theorem nonhomog_lift_of_comm_of_αβ_βγ :
-  ∀ (t₁ t₀ u₁ u₀ v₁ v₀ : R), ⁅ {αβ, 2, t₁ * u₁} * {αβ, 1, t₁ * u₀ + t₀ * u₁} * {αβ, 0, t₀ * u₀},
-    {βγ, 2, u₁ * v₁} * {βγ, 1, u₁ * v₀ + u₀ * v₁} * {βγ, 0, u₀ * v₀} ⁆ = 1 := by
+  ∀ (t₁ t₀ u₁ u₀ v₁ v₀ : R),
+    ⁅ {αβ, 2, t₁ * u₁} * {αβ, 1, t₁ * u₀ + t₀ * u₁} * {αβ, 0, t₀ * u₀}
+    , {βγ, 2, u₁ * v₁} * {βγ, 1, u₁ * v₀ + u₀ * v₁} * {βγ, 0, u₀ * v₀} ⁆
+    = 1 := by
   intro t₁ t₀ u₁ u₀ v₁ v₀
-  apply helper
+  apply WeakChevalley.helper
   apply weakA3.nonhomog_helper rels_of_nonhomog_lift_of_comm_of_αβ_βγ
   · simp only [weakA3, nonhomog_sets, Set.mem_singleton_iff]
-  · simp only
-    exists t₁, t₀, u₁, u₀, v₁, v₀
+  · exists t₁, t₀, u₁, u₀, v₁, v₀
 
 /-! ### Definition of missing root -/
 theorem def_of_αβγ :
-  ∀ ⦃i : ℕ⦄ (hi : i ≤ αβγ.height) (t : R), ⁅ weakA3.pres_mk (free_mk_mk α (split_3_into_1_2 i hi).1 (correct_of_split_3_into_1_2 i hi).1 t),
-               weakA3.pres_mk (free_mk_mk βγ (split_3_into_1_2 i hi).2 (correct_of_split_3_into_1_2 i hi).2 (1 : R)) ⁆
-             = {αβγ, i, t} := by
+  ∀ ⦃i : ℕ⦄ (hi : i ≤ αβγ.height) (t : R),
+    ⁅ weakA3.pres_mk (free_mk_mk α (split_3_into_1_2 i hi).1 (correct_of_split_3_into_1_2 i hi).1 t)
+    , weakA3.pres_mk (free_mk_mk βγ (split_3_into_1_2 i hi).2 (correct_of_split_3_into_1_2 i hi).2 1) ⁆
+    = {αβγ, i, t} := by
   intro t i hi
-  apply helper
+  apply WeakChevalley.helper
   apply weakA3.def_helper rels_of_def_of_αβγ
   · simp only [weakA3, def_sets, Set.mem_singleton_iff]
-  · simp only
-    exists t, i, hi
+  · exists t, i, hi
 
 @[group_reassoc]
 theorem expr_αβ_αβ_as_αβ_αβ :
-    ∀ {i j : ℕ} (hi : i ≤ αβ.height) (hj : j ≤ αβ.height) (t u : R), commutes({αβ, i, t}, {αβ, j, u}) := by
+    ∀ ⦃i j : ℕ⦄ (hi : i ≤ αβ.height) (hj : j ≤ αβ.height) (t u : R), commutes({αβ, i, t}, {αβ, j, u}) := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.mp
   rw [mixed_commutes_of_αβ]
 
 @[group_reassoc]
 theorem expr_βγ_βγ_as_βγ_βγ :
-    ∀ {i j : ℕ} (hi : i ≤ βγ.height) (hj : j ≤ βγ.height) (t u : R), commutes({βγ, i, t}, {βγ, j, u}) := by
+    ∀ ⦃i j : ℕ⦄ (hi : i ≤ βγ.height) (hj : j ≤ βγ.height) (t u : R), commutes({βγ, i, t}, {βγ, j, u}) := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.mp
   rw [mixed_commutes_of_βγ]
 
 theorem refl_of_nonhomog :
   ∀ S ∈ nonhomog_sets R,
-    ∀r ∈ S, weakA3.pres_mk (FreeGroup.map refl_deg_of_gen r) = 1 := by
+    ∀ r ∈ S, weakA3.pres_mk (FreeGroup.map refl_deg_of_gen r) = 1 := by
   simp only [nonhomog_sets, Set.mem_singleton_iff, forall_eq, rels_of_nonhomog_lift_of_comm_of_αβ_βγ, Set.mem_setOf_eq]
   intro r h
-  rcases h with ⟨ t₁, t₀, u₁, u₀, v₁, v₀, h' ⟩
-  rcases h'
+  rcases h with ⟨ t₁, t₀, u₁, u₀, v₁, v₀, rfl ⟩
   simp only [map_mul, map_commutatorElement, free_mk_mk, FreeGroup.map.of, refl_deg_of_gen, PosRootSys.height, height]
   simp_arith
   repeat rw [← free_mk_mk]
+  rw [add_comm (t₁ * u₀), add_comm (u₁ * v₀)]
   rw [expr_αβ_αβ_as_αβ_αβ, expr_βγ_βγ_as_βγ_βγ, mul_assoc, mul_assoc,
     expr_αβ_αβ_as_αβ_αβ, expr_βγ_βγ_as_βγ_βγ, ← mul_assoc, ← mul_assoc,
     expr_αβ_αβ_as_αβ_αβ, expr_βγ_βγ_as_βγ_βγ]
-  nth_rewrite 1 [add_comm]
-  nth_rewrite 2 [add_comm]
   exact nonhomog_lift_of_comm_of_αβ_βγ t₀ t₁ u₀ u₁ v₀ v₁
   all_goals trivial
 
 -- def relations are preserved under reflection
-theorem refl_of_def :
-  ∀ S ∈ def_sets R, ∀ r ∈ S,
-    FreeGroup.map refl_deg_of_gen r ∈ S := by
+theorem refl_of_def : ∀ S ∈ def_sets R, ∀ r ∈ S, FreeGroup.map refl_deg_of_gen r ∈ S := by
   simp only [def_sets, Set.mem_singleton_iff, forall_eq, rels_of_def_of_αβγ, Set.mem_setOf_eq]
   intro r h
-  rcases h with ⟨ i, hi, t, h' ⟩
-  rcases h'
+  rcases h with ⟨ i, hi, t, rfl ⟩
   simp only [map_mul, map_commutatorElement, split_3_into_1_2]
   exists (αβγ.height - i), (by omega), t
   split
   all_goals (simp only; congr)
 
-theorem a3_valid : @ReflDeg.refl_valid A3PosRoot _ R _ weakA3 := by
-  constructor
-  · exact refl_of_nonhomog
-  · exact refl_of_def
+theorem a3_valid : ReflDeg.refl_valid (R := R) weakA3 :=
+  ⟨refl_of_nonhomog, refl_of_def⟩
 
-end UnpackingPresentation
+end UnpackingPresentation /- section -/
 
 /-! ### Identity theorems for specific roots -/
 
-theorem id_of_αβ : id_of_root R weakA3.pres_mk αβ := by
-  apply id_of_lin_of_root R lin_of_αβ
+theorem id_of_αβ : id_of_root (R := R) weakA3.pres_mk αβ :=
+  id_of_lin_of_root lin_of_αβ
 
-theorem id_of_βγ : id_of_root R weakA3.pres_mk βγ := by
-  apply id_of_lin_of_root R lin_of_βγ
+theorem id_of_βγ : id_of_root (R := R) weakA3.pres_mk βγ :=
+  id_of_lin_of_root lin_of_βγ
 
 /-! ### Inverse theorems for specific roots -/
 
-theorem inv_of_α : inv_of_root R weakA3.pres_mk α := by
-  apply inv_of_lin_of_root R lin_of_α
+theorem inv_of_α : inv_of_root (R := R) weakA3.pres_mk α :=
+  inv_of_lin_of_root lin_of_α
 
-theorem inv_of_β : inv_of_root R weakA3.pres_mk β := by
-  apply inv_of_lin_of_root R lin_of_β
+theorem inv_of_β : inv_of_root (R := R) weakA3.pres_mk β :=
+  inv_of_lin_of_root lin_of_β
 
-theorem inv_of_γ : inv_of_root R weakA3.pres_mk γ := by
-  apply inv_of_lin_of_root R lin_of_γ
+theorem inv_of_γ : inv_of_root (R := R) weakA3.pres_mk γ :=
+  inv_of_lin_of_root lin_of_γ
 
-theorem inv_of_αβ : inv_of_root R weakA3.pres_mk αβ := by
-  apply inv_of_lin_of_root R lin_of_αβ
+theorem inv_of_αβ : inv_of_root (R := R) weakA3.pres_mk αβ :=
+  inv_of_lin_of_root lin_of_αβ
 
-theorem inv_of_βγ : inv_of_root R weakA3.pres_mk βγ := by
-  apply inv_of_lin_of_root R lin_of_βγ
+theorem inv_of_βγ : inv_of_root (R := R) weakA3.pres_mk βγ :=
+  inv_of_lin_of_root lin_of_βγ
 
 /-! ### Derive full commutator for αβ and βγ from nonhomogeneous lift -/
 
@@ -358,17 +364,16 @@ private lemma homog_lift_of_comm_of_αβ_βγ (i j k : ℕ) (hi : i ≤ 1) (hj :
     )
     rw [id₁, id₂, nonhomog_lift_of_comm_of_αβ_βγ]
 
-private lemma image_of_homog_lift_of_comm_of_αβ_βγ {i j : ℕ} (hi : i ≤ αβ.height) (hj : j ≤ βγ.height) :
-  ((i, j) ∈ ij_jk_image) → ∀ (t u : R), ⁅ {αβ, i, t}, {βγ, j, u} ⁆ = 1 := by
+private lemma image_of_homog_lift_of_comm_of_αβ_βγ {i j : ℕ} (hi : i ≤ αβ.height) (hj : j ≤ βγ.height)
+    : ((i, j) ∈ ij_jk_image) → ∀ (t u : R), ⁅ {αβ, i, t}, {βγ, j, u} ⁆ = 1 := by
   intro h_in_image t u
   have : ∃ ijk' : ℕ × ℕ × ℕ, ijk' ∈ boolean_cube ∧ f_ij_jk ijk' = (i, j) := by
     rw [← Finset.mem_image, correct_of_ij_jk_image]; exact h_in_image
-  have ⟨ ijk', ⟨ h_in_cube, h_f ⟩ ⟩ := this
-  have ⟨ hi', hj', hk' ⟩ := mem_range_of_boolean_cube ijk' h_in_cube
-  let ⟨ i', j', k' ⟩ := ijk'
+  rcases this with ⟨ ⟨i', j', k'⟩, ⟨ h_in_cube, h_f ⟩ ⟩
+  rcases mem_range_of_boolean_cube _ h_in_cube with ⟨ hi', hj', hk' ⟩
   have h_f' : i = i' + j' ∧ j = j' + k' := by rw [← Prod.mk.injEq, ← h_f, f_ij_jk]
+  rcases h_f' with ⟨ rfl, rfl ⟩
   rw [← homog_lift_of_comm_of_αβ_βγ i' j' k' hi' hj' hk' t u]
-  simp only [h_f']
 
 private lemma comm_of_αβ_βγ_20 : ∀ (t u : R), ⁅ {αβ, 2, t}, {βγ, 0, u} ⁆ = 1 := by
   intro t u
@@ -394,32 +399,23 @@ private lemma comm_of_αβ_βγ_02 : ∀ (t u : R), ⁅ {αβ, 0, t}, {βγ, 2, 
     trivial
   rw [this, comm_of_αβ_βγ_20, map_one]
 
-theorem comm_of_αβ_βγ : trivial_commutator_of_root_pair R weakA3.pres_mk αβ βγ := by
+theorem comm_of_αβ_βγ : trivial_commutator_of_root_pair (R := R) weakA3.pres_mk αβ βγ := by
   intro i j hi hj t u
   have : (i = 0 ∧ j = 2) ∨ (i = 2 ∧ j = 0) ∨ ((i, j) ∈ ij_jk_image) := by
     rw [ij_jk_image]
-    simp only [PosRootSys.height] at *
-    simp only [A3PosRoot.height] at *
+    simp only [PosRootSys.height, height] at *
     simp -- should fix
     omega
-  rcases this with hij | hij | hij
-  ·
-    let ⟨ hd_i, hd_j ⟩ := hij
-    simp_rw [hd_i, hd_j]
-    rw [← comm_of_αβ_βγ_02 t u]
-  ·
-    let ⟨ hd_i, hd_j ⟩ := hij
-    simp_rw [hd_i, hd_j]
-    rw [← comm_of_αβ_βγ_20 t u]
-  ·
-    apply image_of_homog_lift_of_comm_of_αβ_βγ hi hj
-    exact hij
+  rcases this with ( ⟨ rfl, rfl ⟩ | ⟨rfl, rfl⟩ | hij )
+  · rw [← comm_of_αβ_βγ_02 t u]
+  · rw [← comm_of_αβ_βγ_20 t u]
+  · exact image_of_homog_lift_of_comm_of_αβ_βγ hi hj hij _ _
 
 /-! ### Further useful identities (roughly GENERIC) -/
 
 /- Expand βγ as β⬝γ⬝β⬝γ. -/
 theorem expand_βγ_as_β_γ_β_γ :
-    ∀ {i j : ℕ} (hi : i ≤ β.height) (hj : j ≤ γ.height) (t u : R),
+    ∀ ⦃i j : ℕ⦄ (hi : i ≤ β.height) (hj : j ≤ γ.height) (t u : R),
       {βγ, i + j, (t * u)} = {β, i, t} * {γ, j, u} * {β, i, (-t)} * {γ, j, (-u)} := by
   intro i j hi hj t u
   rw [inv_of_β, inv_of_γ, ← commutatorElement_def, ← one_mul (t * u), ← comm_of_β_γ]
@@ -427,7 +423,7 @@ theorem expand_βγ_as_β_γ_β_γ :
 /- Rewrite α⬝β as αβ⬝β⬝α. -/
 @[group_reassoc]
 theorem expr_α_β_as_αβ_β_α :
-    ∀ {i j : ℕ} (hi : i ≤ α.height) (hj : j ≤ β.height) (t u : R),
+    ∀ ⦃i j : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ β.height) (t u : R),
       reorder_left({α, i, t}, {β, j, u}, {αβ, (i + j), (t*u)}) := by
   intro i j hi hj t u
   rw [← one_mul (t * u), ← comm_of_α_β, comm_left]
@@ -435,14 +431,14 @@ theorem expr_α_β_as_αβ_β_α :
 /- Rewrite β⬝γ as βγ⬝γ⬝β. -/
 @[group_reassoc]
 theorem expr_β_γ_as_βγ_γ_β :
-    ∀ {i j : ℕ} (hi : i ≤ β.height) (hj : j ≤ γ.height) (t u : R), reorder_left({β, i, t}, {γ, j, u}, {βγ, (i + j), (t*u)}) := by
+    ∀ ⦃i j : ℕ⦄ (hi : i ≤ β.height) (hj : j ≤ γ.height) (t u : R), reorder_left({β, i, t}, {γ, j, u}, {βγ, (i + j), (t*u)}) := by
   intro i j hi hj t u
   rw [← one_mul (t * u), ← comm_of_β_γ, comm_left]
 
 /- Rewrite β⬝γ as γ⬝βγ⬝β. -/
 @[group_reassoc]
 theorem expr_β_γ_as_γ_βγ_β :
-  ∀ {i j : ℕ} (hi : i ≤ β.height) (hj : j ≤ γ.height) (t u : R), reorder_mid({β, i, t}, {γ, j, u}, {βγ, (i + j), (t*u)}) := by
+  ∀ ⦃i j : ℕ⦄ (hi : i ≤ β.height) (hj : j ≤ γ.height) (t u : R), reorder_mid({β, i, t}, {γ, j, u}, {βγ, (i + j), (t*u)}) := by
   intro i j hi hj t u
   rw [← one_mul (t * u), ← comm_of_β_γ hi hj, comm_mid, ← inv_of_γ, comm_of_β_γ, ← inv_of_βγ, comm_of_β_γ]
   congr
@@ -451,7 +447,7 @@ theorem expr_β_γ_as_γ_βγ_β :
 /- Rewrite α⬝γ as γ⬝α. -/
 @[group_reassoc]
 theorem expr_α_γ_as_γ_α :
-    ∀ {i j : ℕ} (hi : i ≤ α.height) (hj : j ≤ γ.height) (t u : R), commutes({α, i, t}, {γ, j, u}) := by
+    ∀ ⦃i j : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ γ.height) (t u : R), commutes({α, i, t}, {γ, j, u}) := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.mp
   rw [comm_of_α_γ]
@@ -459,7 +455,7 @@ theorem expr_α_γ_as_γ_α :
 /- Rewrite α⬝αβ as αβ⬝α. -/
 @[group_reassoc]
 theorem expr_α_αβ_as_αβ_α :
-    ∀ {i j : ℕ} (hi : i ≤ α.height) (hj : j ≤ αβ.height) (t u : R), commutes({α, i, t}, {αβ, j, u}) := by
+    ∀ ⦃i j : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ αβ.height) (t u : R), commutes({α, i, t}, {αβ, j, u}) := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.mp
   rw [comm_of_α_αβ]
@@ -467,7 +463,7 @@ theorem expr_α_αβ_as_αβ_α :
 /- Rewrite β⬝αβ as αβ⬝β. -/
 @[group_reassoc]
 theorem expr_β_αβ_as_αβ_β :
-    ∀ {i j : ℕ} (hi : i ≤ β.height) (hj : j ≤ αβ.height) (t u : R), commutes({β, i, t}, {αβ, j, u}) := by
+    ∀ ⦃i j : ℕ⦄ (hi : i ≤ β.height) (hj : j ≤ αβ.height) (t u : R), commutes({β, i, t}, {αβ, j, u}) := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.mp
   rw [comm_of_β_αβ]
@@ -475,7 +471,7 @@ theorem expr_β_αβ_as_αβ_β :
 /- Rewrite γ⬝βγ as βγ⬝γ. -/
 @[group_reassoc]
 theorem expr_γ_βγ_as_βγ_γ :
-    ∀ {i j : ℕ} (hi : i ≤ γ.height) (hj : j ≤ βγ.height) (t u : R), commutes({γ, i, t}, {βγ, j, u}) := by
+    ∀ ⦃i j : ℕ⦄ (hi : i ≤ γ.height) (hj : j ≤ βγ.height) (t u : R), commutes({γ, i, t}, {βγ, j, u}) := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.mp
   rw [comm_of_γ_βγ]
@@ -483,7 +479,7 @@ theorem expr_γ_βγ_as_βγ_γ :
 /- Rewrite αβ⬝βγ as βγ⬝αβ. -/
 @[group_reassoc]
 theorem expr_αβ_βγ_as_βγ_αβ :
-  ∀ {i j : ℕ} (hi : i ≤ αβ.height) (hj : j ≤ βγ.height) (t u : R), commutes({αβ, i, t}, {βγ, j, u}) := by
+  ∀ ⦃i j : ℕ⦄ (hi : i ≤ αβ.height) (hj : j ≤ βγ.height) (t u : R), commutes({αβ, i, t}, {βγ, j, u}) := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.mp
   rw [comm_of_αβ_βγ]
@@ -621,14 +617,14 @@ theorem comm_of_αβ_γ : single_commutator_of_root_pair weakA3.pres_mk αβ γ 
 
 /- Expand αβγ as α⬝βγ⬝α⬝βγ. -/
 theorem expand_αβγ_as_α_βγ_α_βγ :
-    ∀ {i j : ℕ} (hi : i ≤ α.height) (hj : j ≤ βγ.height) (t u : R),
+    ∀ ⦃i j : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ βγ.height) (t u : R),
       {αβγ, (i + j), (t * u)} = {α, i, t} * {βγ, j, u} * {α, i, (-t)} * {βγ, j, (-u)} := by
   intro i j hi hj t u
   rw [inv_of_α, inv_of_βγ, ← commutatorElement_def, ← one_mul (t * u), ← comm_of_α_βγ]
 
 /- Expand αβγ as αβ⬝γ⬝αβ⬝γ. -/
 theorem expand_αβγ_as_αβ_γ_αβ_γ :
-    ∀ {i j : ℕ} (hi : i ≤ αβ.height) (hj : j ≤ γ.height) (t u : R),
+    ∀ ⦃i j : ℕ⦄ (hi : i ≤ αβ.height) (hj : j ≤ γ.height) (t u : R),
       {αβγ, (i + j), (t * u)} = {αβ, i, t} * {γ, j, u} * {αβ, i, (-t)} * {γ, j, (-u)} := by
   intro i j hi hj t u
   rw [inv_of_αβ, inv_of_γ, ← commutatorElement_def, ← one_mul (t * u), ← comm_of_αβ_γ]
@@ -638,26 +634,22 @@ theorem expand_αβγ_as_αβ_γ_αβ_γ :
 /- α and αβγ commute. -/
 /- NS: One should be able to prove this quite simply:  simple proof: we know αβγ is expressible as a product of αβ's and γ's (expand_αβγ_as_αβ_γ_αβ_γ), and we know that α's
    commute with αβ's (expr_α_αβ_as_αβ_α) and γ's (expr_α_γ_as_γ_α) -/
-theorem comm_of_α_αβγ : trivial_commutator_of_root_pair R weakA3.pres_mk α αβγ := by
+theorem comm_of_α_αβγ : trivial_commutator_of_root_pair (R := R) weakA3.pres_mk α αβγ := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.mpr
-  let ⟨ j₁, j₂, ⟨ h_eq, hj₁, hj₂ ⟩ ⟩ := decompose αβ.height γ.height j hj
-  simp_rw [h_eq]
-  rw [← one_mul u]
-  grw [expand_αβγ_as_αβ_γ_αβ_γ hj₁ hj₂,
+  rcases decompose αβ.height γ.height j hj with ⟨ j₁, j₂, ⟨ rfl, hj₁, hj₂ ⟩ ⟩
+  grw [← one_mul u, expand_αβγ_as_αβ_γ_αβ_γ hj₁ hj₂,
       expr_α_αβ_as_αβ_α hi hj₁,
       expr_α_γ_as_γ_α hi hj₂,
       expr_α_αβ_as_αβ_α hi hj₁,
       expr_α_γ_as_γ_α hi hj₂]
 
 /- γ and αβγ commute. -/
-theorem comm_of_γ_αβγ : trivial_commutator_of_root_pair R weakA3.pres_mk γ αβγ := by
+theorem comm_of_γ_αβγ : trivial_commutator_of_root_pair (R := R) weakA3.pres_mk γ αβγ := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.mpr
-  let ⟨ j₁, j₂, ⟨ h_eq, hj₁, hj₂ ⟩ ⟩ := decompose α.height βγ.height j hj
-  simp_rw [h_eq]
-  rw [← one_mul u]
-  grw [expand_αβγ_as_α_βγ_α_βγ hj₁ hj₂,
+  rcases decompose α.height βγ.height j hj with ⟨ j₁, j₂, ⟨ rfl, hj₁, hj₂ ⟩ ⟩
+  grw [← one_mul u, expand_αβγ_as_α_βγ_α_βγ hj₁ hj₂,
     ← expr_α_γ_as_γ_α hj₁ hi,
     expr_γ_βγ_as_βγ_γ hi hj₂,
     ← expr_α_γ_as_γ_α hj₁ hi,
@@ -665,13 +657,11 @@ theorem comm_of_γ_αβγ : trivial_commutator_of_root_pair R weakA3.pres_mk γ 
 
 /- β and αβγ commute. -/
 -- the only commutator proof where we have to do something 'interesting'
-theorem comm_of_β_αβγ : trivial_commutator_of_root_pair R weakA3.pres_mk β αβγ := by
+theorem comm_of_β_αβγ : trivial_commutator_of_root_pair (R := R) weakA3.pres_mk β αβγ := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.mpr
-  let ⟨ j₁, j₂, ⟨ h_eq, hj₁, hj₂ ⟩ ⟩ := decompose αβ.height γ.height j hj
-  simp_rw [h_eq]
-  rw [← one_mul u]
-  grw [expand_αβγ_as_αβ_γ_αβ_γ hj₁ hj₂,
+  rcases decompose αβ.height γ.height j hj with ⟨ j₁, j₂, ⟨ rfl, hj₁, hj₂ ⟩ ⟩
+  grw [← one_mul u, expand_αβγ_as_αβ_γ_αβ_γ hj₁ hj₂,
       expr_β_αβ_as_αβ_β hi hj₁,
       expr_β_γ_as_γ_βγ_β hi hj₂,
       expr_β_αβ_as_αβ_β hi hj₁,
@@ -681,26 +671,22 @@ theorem comm_of_β_αβγ : trivial_commutator_of_root_pair R weakA3.pres_mk β 
   group
 
 /- αβ and αβγ commute. -/
-theorem comm_of_αβ_αβγ : trivial_commutator_of_root_pair R weakA3.pres_mk αβ αβγ := by
+theorem comm_of_αβ_αβγ : trivial_commutator_of_root_pair (R := R) weakA3.pres_mk αβ αβγ := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.mpr
-  let ⟨ j₁, j₂, ⟨ h_eq, hj₁, hj₂ ⟩ ⟩ := decompose α.height βγ.height j hj
-  simp_rw [h_eq]
-  rw [← one_mul u]
-  grw [expand_αβγ_as_α_βγ_α_βγ hj₁ hj₂,
+  rcases decompose α.height βγ.height j hj with ⟨ j₁, j₂, ⟨ rfl, hj₁, hj₂ ⟩ ⟩
+  grw [← one_mul u, expand_αβγ_as_α_βγ_α_βγ hj₁ hj₂,
     ← expr_α_αβ_as_αβ_α hj₁ hi,
     expr_αβ_βγ_as_βγ_αβ hi hj₂,
     ← expr_α_αβ_as_αβ_α hj₁ hi,
     expr_αβ_βγ_as_βγ_αβ hi hj₂]
 
 /- βγ and αβγ commute. -/
-theorem comm_of_βγ_αβγ : trivial_commutator_of_root_pair R weakA3.pres_mk βγ αβγ := by
+theorem comm_of_βγ_αβγ : trivial_commutator_of_root_pair (R := R) weakA3.pres_mk βγ αβγ := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.mpr
-  let ⟨ j₁, j₂, ⟨ h_eq, hj₁, hj₂ ⟩ ⟩ := decompose αβ.height γ.height j hj
-  simp_rw [h_eq]
-  rw [← one_mul u]
-  grw [expand_αβγ_as_αβ_γ_αβ_γ hj₁ hj₂,
+  rcases decompose αβ.height γ.height j hj with ⟨ j₁, j₂, ⟨ rfl, hj₁, hj₂ ⟩ ⟩
+  grw [← one_mul u, expand_αβγ_as_αβ_γ_αβ_γ hj₁ hj₂,
     ← expr_αβ_βγ_as_βγ_αβ hj₁ hi,
     ← expr_γ_βγ_as_βγ_γ hj₂ hi,
     ← expr_αβ_βγ_as_βγ_αβ hj₁ hi,
@@ -709,7 +695,7 @@ theorem comm_of_βγ_αβγ : trivial_commutator_of_root_pair R weakA3.pres_mk �
 /- Rewrite α⬝αβγ as αβγ⬝α. -/
 @[group_reassoc]
 theorem expr_α_αβγ_as_αβγ_α :
-    ∀ {i j : ℕ} (hi : i ≤ α.height) (hj : j ≤ αβγ.height) (t u : R), commutes({α, i, t}, {αβγ, j, u}) := by
+    ∀ ⦃i j : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ αβγ.height) (t u : R), commutes({α, i, t}, {αβγ, j, u}) := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.mp
   rw [comm_of_α_αβγ]
@@ -717,30 +703,27 @@ theorem expr_α_αβγ_as_αβγ_α :
 /- Rewrite βγ⬝αβγ as αβγ⬝βγ. -/
 @[group_reassoc]
 theorem expr_βγ_αβγ_as_αβγ_βγ :
-    ∀ {i j : ℕ} (hi : i ≤ βγ.height) (hj : j ≤ αβγ.height) (t u : R), commutes({βγ, i, t}, {αβγ, j, u}) := by
+    ∀ ⦃i j : ℕ⦄ (hi : i ≤ βγ.height) (hj : j ≤ αβγ.height) (t u : R), commutes({βγ, i, t}, {αβγ, j, u}) := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.mp
   rw [comm_of_βγ_αβγ]
 
 /- αβγ commutes with itself. -/
-theorem mixed_commutes_of_αβγ : trivial_commutator_of_root_pair R weakA3.pres_mk αβγ αβγ := by
+theorem mixed_commutes_of_αβγ : trivial_commutator_of_root_pair (R := R) weakA3.pres_mk αβγ αβγ := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.mpr
-  let ⟨ j₁, j₂, ⟨ h_eq, hj₁, hj₂ ⟩ ⟩ := decompose α.height βγ.height j (by trivial)
-  simp_rw [h_eq]
-  rw [← one_mul u]
-  grw [expand_αβγ_as_α_βγ_α_βγ hj₁ hj₂,
+  rcases decompose α.height βγ.height j (by trivial) with ⟨ j₁, j₂, ⟨ rfl, hj₁, hj₂ ⟩ ⟩
+  grw [← one_mul u, expand_αβγ_as_α_βγ_α_βγ hj₁ hj₂,
     ← expr_α_αβγ_as_αβγ_α hj₁ hi,
     ← expr_βγ_αβγ_as_αβγ_βγ hj₂ hi,
     ← expr_α_αβγ_as_αβγ_α hj₁ hi,
     ← expr_βγ_αβγ_as_αβγ_βγ hj₂ hi]
 
 /- Linearity for αβγ. -/
-theorem lin_of_αβγ : lin_of_root R weakA3.pres_mk αβγ := by
+theorem lin_of_αβγ : lin_of_root (R := R) weakA3.pres_mk αβγ := by
   intro i hi t u
-  let ⟨ i₁, i₂, ⟨ h_eq, hi₁, hi₂ ⟩ ⟩ := decompose α.height βγ.height i (by trivial)
+  rcases decompose α.height βγ.height i (by trivial) with ⟨ i₁, i₂, ⟨ rfl, hi₁, hi₂ ⟩ ⟩
   have h_eq' : i₁ + i₂ ≤ PosRootSys.height αβγ := by omega
-  simp_rw [h_eq]
   nth_rewrite 1 [← mul_one t]
   grw [expand_αβγ_as_α_βγ_α_βγ hi₁ hi₂,
     expr_βγ_αβγ_as_αβγ_βγ hi₂ h_eq',
