@@ -127,3 +127,68 @@ def weakB3Large := WeakChevalley.mk
   lin_roots
   (nonhomog_sets R)
   (def_sets R)
+
+abbrev weakB3Large_rels (R : Type TR) [Field R] := @weakB3Large.all_rels B3LargePosRoot _ R _
+
+abbrev WeakChevalleyB3LargeGroup (R : Type TR) [Field R] := PresentedGroup (@weakB3Large.all_rels B3LargePosRoot _ R _)
+
+set_option hygiene false in
+/-- Shorthand for building free group elements from a root, degree, and ring element. -/
+scoped notation (priority:=high) "{" ζ ", " i ", " t "}" => weakB3Large.pres_mk (free_mk_mk ζ i (by (try simp only [PosRootSys.height] at *; try simp only [B3LargePosRoot.height] at *; first | trivial | omega)) t)
+
+section UnpackingPresentation
+
+-- Trivial: {(α, αβ), (β, αβ), (α, ψ), (β, βψ), (β, β2ψ), (ψ, β2ψ), (βψ, β2ψ)}
+
+theorem comm_of_α_αβ : trivial_commutator_of_root_pair (R := R) weakB3Large.pres_mk α αβ :=
+  weakB3Large.trivial_commutator_helper (by rw [weakB3Large, trivial_commutator_pairs]; simp)
+
+theorem comm_of_β_αβ : trivial_commutator_of_root_pair (R := R) weakB3Large.pres_mk β αβ :=
+  weakB3Large.trivial_commutator_helper (by rw [weakB3Large, trivial_commutator_pairs]; simp)
+
+theorem comm_of_α_ψ : trivial_commutator_of_root_pair (R := R) weakB3Large.pres_mk α ψ :=
+  weakB3Large.trivial_commutator_helper (by rw [weakB3Large, trivial_commutator_pairs]; simp)
+
+theorem comm_of_β_βψ : trivial_commutator_of_root_pair (R := R) weakB3Large.pres_mk β βψ :=
+  weakB3Large.trivial_commutator_helper (by rw [weakB3Large, trivial_commutator_pairs]; simp)
+
+theorem comm_of_β_β2ψ : trivial_commutator_of_root_pair (R := R) weakB3Large.pres_mk β β2ψ :=
+  weakB3Large.trivial_commutator_helper (by rw [weakB3Large, trivial_commutator_pairs]; simp)
+
+theorem comm_of_ψ_β2ψ : trivial_commutator_of_root_pair (R := R) weakB3Large.pres_mk ψ β2ψ :=
+  weakB3Large.trivial_commutator_helper (by rw [weakB3Large, trivial_commutator_pairs]; simp)
+
+theorem comm_of_βψ_β2ψ : trivial_commutator_of_root_pair (R := R) weakB3Large.pres_mk βψ β2ψ :=
+  weakB3Large.trivial_commutator_helper (by rw [weakB3Large, trivial_commutator_pairs]; simp)
+
+-- Single: {(α, β), (ψ, βψ)}
+
+theorem comm_of_α_β : single_commutator_of_root_pair (R := R) weakB3Large.pres_mk α β αβ 1 rfl :=
+  weakB3Large.single_commutator_helper α β αβ 1 rfl (by rw [weakB3Large, trivial_commutator_pairs]; simp)
+
+theorem comm_of_ψ_βψ : single_commutator_of_root_pair weakB3Large.pres_mk ψ βψ β2ψ (2 : R) (by rfl) :=
+  weakB3Large.single_commutator_helper ψ βψ β2ψ (2 : R) (by rfl) (by rw [weakB3Large, trivial_commutator_pairs]; simp)
+
+-- Double: {(β, ψ)}
+-- ???
+
+/-! ### Linearity theorems for specific roots -/
+-- {α, β, ψ, αβ, βψ, β2ψ}
+
+theorem lin_of_α : lin_of_root (R := R) weakB3Large.pres_mk α :=
+  weakB3Large.lin_helper (by rw [weakB3Large, trivial_commutator_pairs]; simp)
+
+theorem lin_of_β : lin_of_root (R := R) weakB3Large.pres_mk β :=
+  weakB3Large.lin_helper (by rw [weakB3Large, trivial_commutator_pairs]; simp)
+
+theorem lin_of_ψ : lin_of_root (R := R) weakB3Large.pres_mk ψ :=
+  weakB3Large.lin_helper (by rw [weakB3Large, trivial_commutator_pairs]; simp)
+
+theorem lin_of_αβ : lin_of_root (R := R) weakB3Large.pres_mk αβ :=
+  weakB3Large.lin_helper (by rw [weakB3Large, trivial_commutator_pairs]; simp)
+
+theorem lin_of_βψ : lin_of_root (R := R) weakB3Large.pres_mk βψ :=
+  weakB3Large.lin_helper (by rw [weakB3Large, trivial_commutator_pairs]; simp)
+
+theorem lin_of_β2ψ : lin_of_root (R := R) weakB3Large.pres_mk β2ψ :=
+  weakB3Large.lin_helper (by rw [weakB3Large, trivial_commutator_pairs]; simp)
