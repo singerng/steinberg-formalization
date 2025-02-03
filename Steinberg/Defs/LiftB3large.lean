@@ -204,3 +204,27 @@ theorem mixed_commutes_of_βψ : mixed_commutes_of_root (R := R) weakB3Large.pre
 
 theorem mixed_commutes_of_β2ψ : mixed_commutes_of_root (R := R) weakB3Large.pres_mk β2ψ :=
   weakB3Large.mixed_commutes_helper (by rw [weakB3Large, trivial_commutator_pairs]; simp)
+
+/-! ### Nonhomogeneous lift -/
+
+-- 8.81
+theorem nonhomog_lift_of_comm_of_αβ_βψ :
+  ∀ (t₁ t₀ u₁ u₀ v₁ v₀ : R),
+    ⁅ {αβ, 2, t₁ * u₁} * {αβ, 1, t₁ * u₀ + t₀ * u₁} * {αβ, 0, t₀ * u₀}
+    , {βψ, 2, u₁ * v₁} * {βψ, 1, u₁ * v₀ + u₀ * v₁} * {βψ, 0, u₀ * v₀} ⁆
+    = 1 := by
+  intro t₁ t₀ u₁ u₀ v₁ v₀
+  apply WeakChevalley.helper
+  apply weakB3Large.nonhomog_helper rels_of_nonhomog_lift_of_comm_of_αβ_βψ
+  · simp only [weakB3Large, nonhomog_sets, Set.mem_singleton_iff]
+  · exists t₁, t₀, u₁, u₀, v₁, v₀
+
+-- 8.82
+
+theorem nonhomog_lift_of_comm_of_α_α2β2ψ :
+  ∀ (t₁ t₀ u₁ u₀ v₁ v₀ : R),
+    ⁅ {α, 1, t₁} * {α, 0, t₀},
+      ⁅ {αβ, 2, t₁ * u₁} * {αβ, 2, t₁ * u₀ + t₀ * u₁} * {αβ, 0, t₀ * u₀},
+        {β2ψ, 3, t₁ * u₁^2} * {β2ψ, 2, t₀ * u₁^2 + 2 * t₁ * u₀ * u₁} *
+        {β2ψ, 1, t₁ * u₀^2 + 2 * t₀ * u₀ * u₁} * {β2ψ, 0, t₀ * u₀^2} ⁆⁆
+    = 1 := by sorry
