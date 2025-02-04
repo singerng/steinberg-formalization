@@ -216,3 +216,48 @@ theorem def_of_βψω :
   apply weakB3Small.def_helper rels_of_def_of_βψω
   · simp only [weakB3Small, def_sets, Set.mem_singleton_iff]
   · exists t, i, hi
+
+@[group_reassoc]
+theorem expr_βψ_βψ_as_βψ_βψ :
+    ∀ {i j : ℕ} (hi : i ≤ βψ.height) (hj : j ≤ βψ.height) (t u : R), commutes({βψ, i, t}, {βψ, j, u}) := by
+  intro i j hi hj t u
+  apply triv_comm_iff_commutes.mp
+  rw [mixed_commutes_of_βψ]
+
+@[group_reassoc]
+theorem expr_ψω_ψω_as_ψω_ψω :
+    ∀ {i j : ℕ} (hi : i ≤ ψω.height) (hj : j ≤ ψω.height) (t u : R), commutes({ψω, i, t}, {ψω, j, u}) := by
+  intro i j hi hj t u
+  apply triv_comm_iff_commutes.mp
+  rw [mixed_commutes_of_ψω]
+
+theorem refl_of_nonhomog :
+  ∀ S ∈ nonhomog_sets R,
+    ∀ r ∈ S, weakB3Small.pres_mk (FreeGroup.map refl_deg_of_gen r) = 1 := by
+  simp only [nonhomog_sets, Set.mem_singleton_iff, forall_eq, rels_of_nonhomog_lift_of_comm_of_βψ_ψω, Set.mem_setOf_eq]
+  intro r h
+  rcases h with ⟨ t₁, t₀, u₁, u₀, v₁, v₀, rfl ⟩
+  simp only [map_mul, map_commutatorElement, free_mk_mk, FreeGroup.map.of, refl_deg_of_gen, PosRootSys.height, height]
+  simp_arith
+  repeat rw [← free_mk_mk]
+  rw [add_comm (t₁ * u₀), add_comm (u₁ * v₀)]
+  rw [expr_βψ_βψ_as_βψ_βψ, expr_ψω_ψω_as_ψω_ψω, mul_assoc, mul_assoc,
+    expr_βψ_βψ_as_βψ_βψ, expr_ψω_ψω_as_ψω_ψω, ← mul_assoc, ← mul_assoc,
+    expr_βψ_βψ_as_βψ_βψ, expr_ψω_ψω_as_ψω_ψω]
+  exact nonhomog_lift_of_comm_of_βψ_ψω t₀ t₁ u₀ u₁ v₀ v₁
+  all_goals trivial
+
+-- def relations are preserved under reflection
+theorem refl_of_def : ∀ S ∈ def_sets R, ∀ r ∈ S, FreeGroup.map refl_deg_of_gen r ∈ S := by
+  simp only [def_sets, Set.mem_singleton_iff, forall_eq, rels_of_def_of_βψω, Set.mem_setOf_eq]
+  intro r h
+  rcases h with ⟨ i, hi, t, rfl ⟩
+  simp only [map_mul, map_commutatorElement, split_3_into_1_2]
+  exists (βψω.height - i), (by omega), t
+  split
+  all_goals (simp only; congr)
+
+theorem b3small_valid : ReflDeg.refl_valid (R := R) weakB3Small :=
+  ⟨refl_of_nonhomog, refl_of_def⟩
+
+end UnpackingPresentation /- section -/
