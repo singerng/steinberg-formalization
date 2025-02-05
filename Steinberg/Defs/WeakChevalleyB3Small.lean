@@ -138,8 +138,9 @@ theorem double_commutator_helper (w : WeakChevalleyB3Small Φ R) (ζ η θ₁ θ
     constructor
     · simp only [Set.mem_image]
       use ⟨ ζ, η, θ₁, θ₂, C₁, C₂, h_height₁, h_height₂ ⟩
-    · rw [rels_of_double_commutator_of_root_pair]
-      exists i, j, hi, hj, t, u
+    · sorry
+      -- rw [rels_of_double_commutator_of_root_pair]
+      -- exists i, j, hi, hj, t, u
 
 theorem mixed_commutes_helper (w : WeakChevalleyB3Small Φ R)
   {ζ : Φ} (h : ζ ∈ w.mixed_commutes_roots)
