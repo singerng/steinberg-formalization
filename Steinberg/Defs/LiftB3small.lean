@@ -14,7 +14,7 @@ import Steinberg.Defs.Root
 import Steinberg.Defs.Chevalley
 import Steinberg.Defs.Deg
 import Steinberg.Defs.Commutator
-import Steinberg.Defs.WeakChevalley
+import Steinberg.Defs.WeakChevalleyB3Small
 import Steinberg.Defs.ReflDeg
 
 import Steinberg.Macro.Group
@@ -106,6 +106,9 @@ abbrev mixed_commutes_roots : Set (B3SmallPosRoot) := {β, ψ, ω, βψ, ψω, �
 
 abbrev lin_roots : Set (B3SmallPosRoot) := {β, ψ, ω, βψ, ψω, β2ψ}
 
+abbrev double_commutator_pairs : Set (DoubleSpanRootPair B3SmallPosRoot R) :=
+    {⟨β, ψ, βψ, β2ψ, 1, 1, (by exact rfl), (by exact rfl)⟩}
+
 -- lifted commutator of βψ and ψω
 def nonhomog_sets (R : Type TR) [Field R] : Set (Set (FreeGroupOnGradedGens B3SmallPosRoot R)) := {
   rels_of_nonhomog_lift_of_comm_of_βψ_ψω
@@ -116,12 +119,13 @@ def def_sets (R : Type TR) [Field R] : Set (Set (FreeGroupOnGradedGens B3SmallPo
   rels_of_def_of_βψω
 }
 
-def weakB3Small := WeakChevalley.mk
+def weakB3Small := WeakChevalleyB3Small.mk
   trivial_commutator_pairs
   single_commutator_pairs
   -- double_commutator_pairs
   mixed_commutes_roots
   lin_roots
+  double_commutator_pairs
   (nonhomog_sets R)
   (def_sets R)
 
@@ -200,7 +204,7 @@ theorem nonhomog_lift_of_comm_of_βψ_ψω :
     , {ψω, 2, u₁ * v₁} * {ψω, 1, u₁ * v₀ + u₀ * v₁} * {ψω, 0, u₀ * v₀} ⁆
     = 1 := by
   intro t₁ t₀ u₁ u₀ v₁ v₀
-  apply WeakChevalley.helper
+  apply WeakChevalleyB3Small.helper
   apply weakB3Small.nonhomog_helper rels_of_nonhomog_lift_of_comm_of_βψ_ψω
   · simp only [weakB3Small, nonhomog_sets, Set.mem_singleton_iff]
   · exists t₁, t₀, u₁, u₀, v₁, v₀
@@ -212,7 +216,7 @@ theorem def_of_βψω :
     , weakB3Small.pres_mk (free_mk_mk ψω (split_3_into_1_2 i hi).2 (correct_of_split_3_into_1_2 i hi).2 1) ⁆
     = {βψω, i, t} := by
   intro t i hi
-  apply WeakChevalley.helper
+  apply WeakChevalleyB3Small.helper
   apply weakB3Small.def_helper rels_of_def_of_βψω
   · simp only [weakB3Small, def_sets, Set.mem_singleton_iff]
   · exists t, i, hi

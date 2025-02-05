@@ -27,6 +27,12 @@ variable {G : Type TG} [Group G]
 abbrev SingleSpanRootPair (Φ : Type TΦ) [PosRootSys Φ] (R : Type TR) [Ring R] :=
   (ζ : Φ) × (η : Φ) × (θ : Φ) × R ×' (height θ = height ζ + height η)
 
+abbrev DoubleSpanRootPair (Φ : Type TΦ) [PosRootSys Φ] (R : Type TR) [Ring R] := (
+  (ζ : Φ) × (η : Φ) × (θ₁ : Φ) × (θ₂ : Φ)
+  × R × R ×' (PosRootSys.height θ₁ = PosRootSys.height ζ + PosRootSys.height η) ×'
+  (PosRootSys.height θ₂ = PosRootSys.height ζ + 2 * PosRootSys.height η)
+)
+
 /--
   Generators of the Chevalley subgroup corresponding to a positive root system
   over a ring with monomial entries.
