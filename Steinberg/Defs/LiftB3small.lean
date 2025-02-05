@@ -261,3 +261,67 @@ theorem b3small_valid : ReflDeg.refl_valid (R := R) weakB3Small :=
   ⟨refl_of_nonhomog, refl_of_def⟩
 
 end UnpackingPresentation /- section -/
+
+/-! ### Identity theorems : 8.25 - 8.30 -/
+
+/-! # 8.25 -/
+theorem id_of_β : id_of_root (R := R) weakB3Small.pres_mk β :=
+  id_of_lin_of_root lin_of_β
+
+/-! # 8.26 -/
+theorem id_of_ψ : id_of_root (R := R) weakB3Small.pres_mk ψ :=
+  id_of_lin_of_root lin_of_ψ
+
+/-! # 8.27 -/
+theorem id_of_ω : id_of_root (R := R) weakB3Small.pres_mk ω :=
+  id_of_lin_of_root lin_of_ω
+
+/-! # 8.28 -/
+theorem id_of_βψ : id_of_root (R := R) weakB3Small.pres_mk βψ :=
+  id_of_lin_of_root lin_of_βψ
+
+/-! # 8.29 -/
+theorem id_of_ψω : id_of_root (R := R) weakB3Small.pres_mk ψω :=
+  id_of_lin_of_root lin_of_ψω
+
+/-! # 8.30 -/
+theorem id_of_β2ψ : id_of_root (R := R) weakB3Small.pres_mk β2ψ :=
+  id_of_lin_of_root lin_of_β2ψ
+
+
+/-! ### Inverse theorems - 8.31 - 8.36 -/
+
+/-! # 8.31 -/
+theorem inv_of_β : inv_of_root (R := R) weakB3Small.pres_mk β :=
+  inv_of_lin_of_root lin_of_β
+
+/-! # 8.32 -/
+theorem inv_of_ψ : inv_of_root (R := R) weakB3Small.pres_mk ψ :=
+  inv_of_lin_of_root lin_of_ψ
+
+/-! # 8.33 -/
+theorem inv_of_ω : inv_of_root (R := R) weakB3Small.pres_mk ω :=
+  inv_of_lin_of_root lin_of_ω
+
+/-! # 8.34 -/
+theorem inv_of_βψ : inv_of_root (R := R) weakB3Small.pres_mk βψ :=
+  inv_of_lin_of_root lin_of_βψ
+
+/-! # 8.35 -/
+theorem inv_of_ψω : inv_of_root (R := R) weakB3Small.pres_mk ψω :=
+  inv_of_lin_of_root lin_of_ψω
+
+/-! # 8.36 -/
+theorem inv_of_β2ψ : inv_of_root (R := R) weakB3Small.pres_mk β2ψ  :=
+  inv_of_lin_of_root lin_of_β2ψ
+
+
+/-! ### 8.37 -/
+
+theorem expand_βψ_as_ψ_β_ψ_β_ψ :
+    ∀ ⦃i j : ℕ⦄ (hi : i ≤ β.height) (hj : j ≤ ψ.height) (t u : R),
+    {βψ, i + j, 2 * (t * u)} =
+    {ψ, j, (-u)} * {β, i, t} * {ψ, j, 2 * u} * {β, i, (-t)} * {ψ, j, (-u)} := by
+    intro i j hi hj t u
+
+    sorry
