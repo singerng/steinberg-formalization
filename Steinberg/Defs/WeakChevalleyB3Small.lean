@@ -58,9 +58,12 @@ def mixed_commutes_rels (w : WeakChevalleyB3Small Φ R) :=
 def lin_rels (w : WeakChevalleyB3Small Φ R)
   := ⋃₀ (rels_of_lin_of_root R '' w.lin_roots)
 
+def double_comm_rels (w : WeakChevalleyB3Small Φ R) :=
+  ⋃₀ (rels_of_double_commutator_of_root_pair '' w.double_comm_root_pairs)
+
 def all_rels (w : WeakChevalleyB3Small Φ R) :=
   ⋃₀ {trivial_comm_rels w, single_comm_rels w, mixed_commutes_rels w,
-      lin_rels w, ⋃₀ w.nonhomog_rels_sets, ⋃₀ w.def_rels_sets}
+      lin_rels w, double_comm_rels w, ⋃₀ w.nonhomog_rels_sets, ⋃₀ w.def_rels_sets}
 
 /-! ### The group and the embedding -/
 
@@ -115,6 +118,27 @@ theorem single_commutator_helper (w : WeakChevalleyB3Small Φ R) (ζ η θ : Φ)
     · simp only [Set.mem_image]
       use ⟨ ζ, η, θ, C, h_height ⟩
     · rw [rels_of_single_commutator_of_root_pair]
+      exists i, j, hi, hj, t, u
+
+theorem double_commutator_helper (w : WeakChevalleyB3Small Φ R) (ζ η θ₁ θ₂ : Φ) (C₁ C₂ : R)
+  (h_height₁ : height θ₁ = PosRootSys.height ζ + PosRootSys.height η)
+  (h_height₂ : height θ₂ = PosRootSys.height ζ + (2 * PosRootSys.height η))
+  (h : ⟨ ζ, η, θ₁, θ₂, C₁, C₂, h_height₁, h_height₂ ⟩ ∈ w.double_comm_root_pairs)
+    : double_commutator_of_root_pair w.pres_mk ζ η θ₁ θ₂ C₁ C₂ h_height₁ h_height₂ := by
+  intro i j hi hj t u
+  apply helper
+  apply eq_one_of_mem_rels
+  apply Set.mem_sUnion.mpr
+  use w.double_comm_rels
+  constructor
+  · simpset
+  · rw [double_comm_rels]
+    apply Set.mem_sUnion.mpr
+    use (rels_of_double_commutator_of_root_pair ⟨ ζ, η, θ₁, θ₂, C₁, C₂, h_height₁, h_height₂ ⟩)
+    constructor
+    · simp only [Set.mem_image]
+      use ⟨ ζ, η, θ₁, θ₂, C₁, C₂, h_height₁, h_height₂ ⟩
+    · rw [rels_of_double_commutator_of_root_pair]
       exists i, j, hi, hj, t, u
 
 theorem mixed_commutes_helper (w : WeakChevalleyB3Small Φ R)

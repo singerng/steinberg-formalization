@@ -116,6 +116,23 @@ def lin_of_root (f : FreeGroupOnGradedGens Φ R →* G) (ζ : Φ) : Prop :=
   ∀ ⦃i : ℕ⦄ (hi : i ≤ height ζ) (t u : R),
     (f (free_mk_mk ζ i hi t)) * (f (free_mk_mk ζ i hi u)) = f (free_mk_mk ζ i hi (t + u))
 
+/-! #### Commutator for two generators from two roots which span two additional roots -/
+/- Commutator for generators corresponding to two roots which span two additional roots. C is a constant (always 1 in A3). -/
+def rels_of_double_commutator_of_root_pair (p : DoubleSpanRootPair Φ R) : Set (FreeGroupOnGradedGens Φ R) :=
+  let ⟨ ζ, η, θ₁, θ₂, C₁, C₂, h_height₁, h_height₂ ⟩ := p;
+  { ⁅ free_mk_mk ζ i hi t, free_mk_mk η j hj u ⁆
+    * (free_mk_mk θ₁ (i + j) (by omega) (C₁ * (t * u)))⁻¹
+    * (free_mk_mk θ₂ (i + (2 * j)) (by omega) (C₂ * (t * (u * u))))⁻¹
+    | (i : ℕ) (j : ℕ) (hi : i ≤ height ζ) (hj : j ≤ height η) (t : R) (u : R) }
+
+def double_commutator_of_root_pair (f : FreeGroupOnGradedGens Φ R →* G) (ζ η θ₁ θ₂ : Φ)
+    (C₁ C₂ : R) (h_height₁ : height θ₁ = height ζ + height η) (h_height₂ : height θ₂ = height ζ + (2 * height η))
+    : Prop :=
+  ∀ ⦃i j : ℕ⦄ (hi : i ≤ height ζ) (hj : j ≤ height η) (t u : R),
+    ⁅ f (free_mk_mk ζ i hi t), f (free_mk_mk η j hj u) ⁆ =
+    f (free_mk_mk θ₁ (i + j) (by omega) (C₁ * (t * u))) * f (free_mk_mk θ₂ (i + (2 * j)) (by omega) (C₂ * (t * (u * u))))
+
+
 /-
 Helper theorem to prove `lin_of_root` in a `PresentedGroup` where the relations
 include `rels_of_lin_of_root`.

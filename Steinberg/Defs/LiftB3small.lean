@@ -15,7 +15,7 @@ import Steinberg.Defs.Chevalley
 import Steinberg.Defs.Deg
 import Steinberg.Defs.Commutator
 import Steinberg.Defs.WeakChevalleyB3Small
-import Steinberg.Defs.ReflDeg
+import Steinberg.Defs.ReflDegB3Small
 
 import Steinberg.Macro.Group
 
@@ -98,9 +98,6 @@ abbrev trivial_commutator_pairs : Set (B3SmallPosRoot × B3SmallPosRoot) := {(β
 abbrev single_commutator_pairs : Set ((ζ : B3SmallPosRoot) × (η : B3SmallPosRoot) × (θ : B3SmallPosRoot) × R ×' (θ.height = ζ.height + η.height))
    := {⟨ ψ, βψ, β2ψ, 2, (by simp only [height])⟩, ⟨ψ, ω, ψω, 2, (by simp only [height])⟩}
 
--- abbrev double_commutator_pairs : Set (DoubleSpanRootPair B3SmallPosRoot R) :=
---     {⟨β, ψ, βψ, β2ψ, 1, 1, (by exact rfl), (by exact rfl)⟩}
-
 /-! # These are the self-commutation relations -/
 abbrev mixed_commutes_roots : Set (B3SmallPosRoot) := {β, ψ, ω, βψ, ψω, β2ψ}
 
@@ -122,7 +119,6 @@ def def_sets (R : Type TR) [Field R] : Set (Set (FreeGroupOnGradedGens B3SmallPo
 def weakB3Small := WeakChevalleyB3Small.mk
   trivial_commutator_pairs
   single_commutator_pairs
-  -- double_commutator_pairs
   mixed_commutes_roots
   lin_roots
   double_commutator_pairs
