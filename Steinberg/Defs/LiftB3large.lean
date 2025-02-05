@@ -123,6 +123,7 @@ def def_sets (R : Type TR) [Field R] : Set (Set (FreeGroupOnGradedGens B3LargePo
 def weakB3Large := WeakChevalley.mk
   trivial_commutator_pairs
   single_commutator_pairs
+  {}
   mixed_commutes_roots
   lin_roots
   (nonhomog_sets R)

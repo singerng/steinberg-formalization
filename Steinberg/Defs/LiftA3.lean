@@ -143,6 +143,8 @@ def rels_of_def_of_αβγ :=
 abbrev trivial_commutator_pairs : Set (A3PosRoot × A3PosRoot) := {(α, γ), (α, αβ), (β, αβ), (β, βγ), (γ, βγ)}
 abbrev single_commutator_pairs : Set ((ζ : A3PosRoot) × (η : A3PosRoot) × (θ : A3PosRoot) × R ×' (θ.height = ζ.height + η.height))
    := {⟨ α, β, αβ, 1, (by simp only [height])⟩, ⟨β, γ, βγ, 1, (by simp only [height])⟩}
+abbrev double_commutator_pairs : Set ((ζ : A3PosRoot) × (η : A3PosRoot) × (θ₁ : A3PosRoot) × (θ₂ : A3PosRoot) × R × R ×' (θ₁.height = ζ.height + η.height)
+  ×' (θ₂.height = ζ.height + 2 * η.height)) := {}
 abbrev mixed_commutes_roots : Set (A3PosRoot) := {α, β, γ, αβ, βγ}
 abbrev lin_roots : Set (A3PosRoot) := {α, β, γ, αβ, βγ}
 
@@ -159,6 +161,7 @@ def def_sets (R : Type TR) [Ring R] : Set (Set (FreeGroupOnGradedGens A3PosRoot 
 def weakA3 := WeakChevalley.mk
   trivial_commutator_pairs
   single_commutator_pairs
+  double_commutator_pairs
   mixed_commutes_roots
   lin_roots
   (nonhomog_sets R)

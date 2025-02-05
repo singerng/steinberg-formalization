@@ -39,10 +39,10 @@ private theorem refl_deg_of_rels_of_trivial_commutator_of_root_pair (ζ η : Φ)
   intro r h
   simp only [rels_of_trivial_commutator_of_root_pair, mem_setOf_eq] at h
   rcases h with ⟨ i, j, hi, hj, t, u, rfl ⟩
-  simp only [map_commutatorElement, refl_deg_of_gen, rels_of_trivial_commutator_of_root_pair]
+  simp only [map_commutatorElement, refl_deg_of_gen]
   exists (height ζ - i), (height η - j), (by omega), (by omega), t, u
 
-/-- Degree-reflection preserves the set of trivial commutator relations for any root pair. -/
+/-- Degree-reflection preserves the set of single commutator relations for any root pair. -/
 private theorem refl_deg_of_rels_of_single_commutator_of_root_pair
   (ζ η θ : Φ) (C : R) (h_height : height θ = height ζ + height η)
     : ∀ r ∈ rels_of_single_commutator_of_root_pair ⟨ ζ, η, θ, C, h_height ⟩,
@@ -50,9 +50,25 @@ private theorem refl_deg_of_rels_of_single_commutator_of_root_pair
   intro r h
   simp only [rels_of_single_commutator_of_root_pair, mem_setOf_eq] at h
   rcases h with ⟨ i, j, hi, hj, t, u, rfl ⟩
-  simp only [map_mul, map_commutatorElement, map_inv, refl_deg_of_gen, rels_of_single_commutator_of_root_pair]
+  simp only [map_mul, map_commutatorElement, map_inv, refl_deg_of_gen]
   exists (height ζ - i), (height η - j), (by omega), (by omega), t, u
   congr
+  simp only
+  omega
+
+/-- Degree-reflection preserves the set of trivial commutator relations for any root pair. -/
+private theorem refl_deg_of_rels_of_double_commutator_of_root_pair
+  (ζ η θ₁ θ₂ : Φ) (C₁ C₂ : R) (h_height₁ : height θ₁ = height ζ + height η) (h_height₂ : height θ₂ = height ζ + 2 * height η)
+    : ∀ r ∈ rels_of_double_commutator_of_root_pair ⟨ ζ, η, θ₁, θ₂, C₁, C₂, h_height₁, h_height₂ ⟩,
+      FreeGroup.map refl_deg_of_gen r ∈ rels_of_double_commutator_of_root_pair ⟨ ζ, η, θ₁, θ₂, C₁, C₂, h_height₁, h_height₂ ⟩ := by
+  intro r h
+  simp only [rels_of_double_commutator_of_root_pair, mem_setOf_eq] at h
+  rcases h with ⟨ i, j, hi, hj, t, u, rfl ⟩
+  simp only [map_mul, map_commutatorElement, map_inv, refl_deg_of_gen]
+  exists (height ζ - i), (height η - j), (by omega), (by omega), t, u
+  congr
+  simp only
+  omega
   simp only
   omega
 
@@ -63,7 +79,7 @@ private theorem refl_deg_of_rels_of_mixed_commutes_of_root (ζ : Φ) :
   intro r h
   simp only [rels_of_mixed_commutes_of_root, mem_setOf_eq] at h
   rcases h with ⟨ i, j, hi, hj, t, u, rfl ⟩
-  simp only [map_commutatorElement, refl_deg_of_gen, rels_of_mixed_commutes_of_root]
+  simp only [map_commutatorElement, refl_deg_of_gen]
   exists (height ζ - i), (height ζ - j), (by omega), (by omega), t, u
 
 /-- Degree-reflection preserves the set of trivial commutator relations for any root pair. -/
@@ -73,7 +89,6 @@ private theorem refl_deg_of_rels_of_lin_of_root (ζ : Φ) :
   intro r h
   simp only [rels_of_lin_of_root, mem_setOf_eq] at h
   rcases h with ⟨ i, hi, t, u, rfl ⟩
-  simp only [rels_of_lin_of_root]
   exists (height ζ - i), (by omega), t, u
 
 /-- Map a generator to its reflected image in the presented group (used to define the symmetry below). -/
@@ -92,7 +107,7 @@ theorem reflect_degree_of_rels {w : WeakChevalley Φ R} (h' : refl_valid w) :
   rcases h_r with ⟨ t, ⟨ h_t, rfl ⟩ ⟩
   rw [lift_of_is_map]
   have all_rels_to_normal_closure_all_rels := @Subgroup.subset_normalClosure _ _ (w.all_rels)
-  rcases h_t with (h_triv | h_sing | h_mix | h_lin | h_non | h_def)
+  rcases h_t with (h_triv | h_sing | h_doub | h_mix | h_lin | h_non | h_def)
   · apply all_rels_to_normal_closure_all_rels
     simp only [trivial_comm_rels, sUnion_image, mem_iUnion, exists_prop, Prod.exists] at h_triv
     rcases h_triv with ⟨ ζ, η, h_in_pairs, h_t_in_rels ⟩
@@ -112,6 +127,15 @@ theorem reflect_degree_of_rels {w : WeakChevalley Φ R} (h' : refl_valid w) :
     simp only [single_comm_rels, sUnion_image, mem_iUnion, exists_prop, Prod.exists]
     use ⟨ ζ, η, θ, C, h_height ⟩, h_in_pairs
     exact refl_deg_of_rels_of_single_commutator_of_root_pair ζ η θ C h_height t h_t_in_rels
+  · apply all_rels_to_normal_closure_all_rels
+    simp only [double_comm_rels, sUnion_image, mem_iUnion, exists_prop, Sigma.exists, PProd.exists] at h_doub
+    rcases h_doub with ⟨ ζ, η, θ₁, θ₂, ⟨ C₁, C₂, h_height₁, h_height₂ ⟩ , h_in_pairs, h_t_in_rels ⟩
+    suffices (FreeGroup.map refl_deg_of_gen) t ∈ w.double_comm_rels by
+      simp only [all_rels, sUnion_insert, sUnion_singleton, mem_union, mem_sUnion]
+      simp_all only [true_or, or_true]
+    simp only [double_comm_rels, sUnion_image, mem_iUnion, exists_prop, Prod.exists]
+    use ⟨ ζ, η, θ₁, θ₂, C₁, C₂, h_height₁, h_height₂ ⟩, h_in_pairs
+    exact refl_deg_of_rels_of_double_commutator_of_root_pair ζ η θ₁ θ₂ C₁ C₂ h_height₁ h_height₂ t h_t_in_rels
   · apply all_rels_to_normal_closure_all_rels
     simp only [mixed_commutes_rels, sUnion_image, mem_iUnion, exists_prop, Prod.exists] at h_mix
     rcases h_mix with ⟨ ζ, h_in_pairs, h_t_in_rels ⟩
