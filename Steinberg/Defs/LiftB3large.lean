@@ -178,8 +178,7 @@ theorem comm_of_α_β : single_commutator_of_root_pair (R := R) weakB3Large.pres
 theorem comm_of_ψ_βψ : single_commutator_of_root_pair weakB3Large.pres_mk ψ βψ β2ψ (2 : R) (by rfl) :=
   weakB3Large.single_commutator_helper ψ βψ β2ψ (2 : R) (by rfl) (by rw [weakB3Large, trivial_commutator_pairs]; simp)
 
--- Double: {(β, ψ)}
--- ???
+-- Double: {(β, ψ)} ??
 
 /-! ### Linearity theorems for specific roots -/
 -- {α, β, ψ, αβ, βψ, β2ψ}
@@ -203,7 +202,16 @@ theorem lin_of_β2ψ : lin_of_root (R := R) weakB3Large.pres_mk β2ψ :=
   weakB3Large.lin_helper (by rw [weakB3Large, trivial_commutator_pairs]; simp)
 
 /-! ### Mixed-degree theorem for specific roots -/
--- {αβ, βψ, β2ψ} (I think)
+-- {α, β, ψ αβ, βψ, β2ψ}
+
+theorem mixed_commutes_of_α : mixed_commutes_of_root (R := R) weakB3Large.pres_mk α :=
+  weakB3Large.mixed_commutes_helper (by rw [weakB3Large, trivial_commutator_pairs]; simp)
+
+theorem mixed_commutes_of_β : mixed_commutes_of_root (R := R) weakB3Large.pres_mk β :=
+  weakB3Large.mixed_commutes_helper (by rw [weakB3Large, trivial_commutator_pairs]; simp)
+
+theorem mixed_commutes_of_ψ : mixed_commutes_of_root (R := R) weakB3Large.pres_mk ψ :=
+  weakB3Large.mixed_commutes_helper (by rw [weakB3Large, trivial_commutator_pairs]; simp)
 
 theorem mixed_commutes_of_αβ : mixed_commutes_of_root (R := R) weakB3Large.pres_mk αβ :=
   weakB3Large.mixed_commutes_helper (by rw [weakB3Large, trivial_commutator_pairs]; simp)
