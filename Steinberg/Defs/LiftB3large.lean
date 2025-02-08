@@ -251,3 +251,43 @@ theorem nonhomog_lift_of_comm_of_α_α2β2ψ :
     · simp only [weakB3Large, nonhomog_sets]
       exact Set.mem_insert_of_mem rels_of_nonhomog_lift_of_comm_of_αβ_βψ rfl
     · exists t₁, t₀, u₁, u₀, v₁, v₀
+
+/-! ### Identity theorems : 8.96 - 8.101 -/
+
+theorem id_of_α : id_of_root (R := R) weakB3Large.pres_mk α :=
+  id_of_lin_of_root lin_of_α
+
+theorem id_of_β : id_of_root (R := R) weakB3Large.pres_mk β :=
+  id_of_lin_of_root lin_of_β
+
+theorem id_of_ψ : id_of_root (R := R) weakB3Large.pres_mk ψ :=
+  id_of_lin_of_root lin_of_ψ
+
+theorem id_of_αβ : id_of_root (R := R) weakB3Large.pres_mk αβ :=
+  id_of_lin_of_root lin_of_αβ
+
+theorem id_of_βψ : id_of_root (R := R) weakB3Large.pres_mk βψ :=
+  id_of_lin_of_root lin_of_βψ
+
+theorem id_of_β2ψ : id_of_root (R := R) weakB3Large.pres_mk β2ψ :=
+  id_of_lin_of_root lin_of_β2ψ
+
+/-! ### Inverse theorems - 8.102 - 8.107 -/
+
+theorem inv_of_α : inv_of_root (R := R) weakB3Large.pres_mk α :=
+  inv_of_lin_of_root lin_of_α
+
+theorem inv_of_β : inv_of_root (R := R) weakB3Large.pres_mk β :=
+  inv_of_lin_of_root lin_of_β
+
+theorem inv_of_ψ : inv_of_root (R := R) weakB3Large.pres_mk ψ :=
+  inv_of_lin_of_root lin_of_ψ
+
+theorem inv_of_αβ : inv_of_root (R := R) weakB3Large.pres_mk αβ :=
+  inv_of_lin_of_root lin_of_αβ
+
+theorem inv_of_βψ : inv_of_root (R := R) weakB3Large.pres_mk βψ :=
+  inv_of_lin_of_root lin_of_βψ
+
+theorem inv_of_β2ψ : inv_of_root (R := R) weakB3Large.pres_mk β2ψ :=
+  inv_of_lin_of_root lin_of_β2ψ
