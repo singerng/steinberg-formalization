@@ -291,3 +291,33 @@ theorem inv_of_βψ : inv_of_root (R := R) weakB3Large.pres_mk βψ :=
 
 theorem inv_of_β2ψ : inv_of_root (R := R) weakB3Large.pres_mk β2ψ :=
   inv_of_lin_of_root lin_of_β2ψ
+
+-- 8.108
+theorem expand_βψ_as_ψ_β_ψ_β_ψ :
+  ∀ ⦃i j : ℕ⦄ (hi : i ≤ β.height) (hj : j ≤ ψ.height) (t u : R),
+  {βψ, i + j, t * u} = {ψ, i, -t/2} * {β, j, u} * {ψ, i, t} * {β, j, -u} * {ψ, i, -t/2} := by
+  sorry
+
+-- 8.109
+theorem expand_αβ_as_α_β_α_β :
+  ∀ ⦃i j : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ β.height) (t u : R),
+  {αβ, i + j, t * u} = {α, i, t} * {β, j, u} * {α, i, -t} * {β, j, -u} := by
+  sorry
+
+-- 8.110
+theorem expand_β2ψ_as_ψ_βψ_ψ_βψ :
+  ∀ ⦃i j : ℕ⦄ (hi : i ≤ β.height) (hj : j ≤ ψ.height) (t u : R),
+  {β2ψ, i + j, 2 * t * u} = {ψ, i, t} * {βψ, j, u} * {ψ, i, -t} * {βψ, j, -u} := by
+  sorry
+
+-- 8.111
+theorem expr_β_α_as_αβ_α_β :
+  ∀ ⦃i j : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ β.height) (t u : R),
+  {β, j, u} * {α, i, t} = {αβ, i + j, -t * u} * {α, i, t} * {β, j, u} := by
+  sorry
+
+-- 8.112a
+theorem expr_ψ_β_as_β_ψ_βψ_β2ψ :
+  ∀ ⦃i j : ℕ⦄ (hi : i ≤ β.height) (hj : j ≤ ψ.height) (t u : R),
+  {ψ, j, u} * {β, i, t} = {β, i, t} * {ψ, j, u} * {βψ, i + j, -t * u} * {β2ψ, i + 2 * j, t * u^2} := by
+  sorry
