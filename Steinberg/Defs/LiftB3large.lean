@@ -110,16 +110,18 @@ abbrev trivial_commutator_pairs : Set (B3LargePosRoot × B3LargePosRoot) := {(α
 abbrev single_commutator_pairs : Set ((ζ : B3LargePosRoot) × (η : B3LargePosRoot) × (θ : B3LargePosRoot) × R ×' (θ.height = ζ.height + η.height))
   := {⟨α, β, αβ, 1, (by simp only [height])⟩, ⟨ψ, βψ, β2ψ, 2, (by simp only [height])⟩}
 
--- relation 8.63 ???
-
 -- relations 8.75, 8.76, 8.77, 8.78, 8.79, 8.80
 abbrev mixed_commutes_roots : Set (B3LargePosRoot) := {α, β, ψ, αβ, βψ, β2ψ}
 
 -- relations 8.69, 8.70, 8.71, 8.72, 8.73, 8.74
 abbrev lin_roots : Set (B3LargePosRoot) := {α, β, ψ, αβ, βψ, β2ψ}
 
+-- relation 8.63
+abbrev double_commutator_pairs : Set (DoubleSpanRootPair B3LargePosRoot R) :=
+  {⟨β, ψ, βψ, β2ψ, 1, 1, (by exact rfl), (by exact rfl)⟩}
+
 def nonhomog_sets (R : Type TR) [Field R] : Set (Set (FreeGroupOnGradedGens B3LargePosRoot R)) := {
-  rels_of_nonhomog_lift_of_comm_of_αβ_βψ
+  rels_of_nonhomog_lift_of_comm_of_αβ_βψ, rels_of_nonhomog_lift_of_comm_of_α_α2β2ψ
 }
 
 def def_sets (R : Type TR) [Field R] : Set (Set (FreeGroupOnGradedGens B3LargePosRoot R)) := {
@@ -129,7 +131,7 @@ def def_sets (R : Type TR) [Field R] : Set (Set (FreeGroupOnGradedGens B3LargePo
 def weakB3Large := WeakChevalley.mk
   trivial_commutator_pairs
   single_commutator_pairs
-  {}
+  double_commutator_pairs
   mixed_commutes_roots
   lin_roots
   (nonhomog_sets R)
@@ -223,15 +225,21 @@ theorem nonhomog_lift_of_comm_of_αβ_βψ :
   intro t₁ t₀ u₁ u₀ v₁ v₀
   apply WeakChevalley.helper
   apply weakB3Large.nonhomog_helper rels_of_nonhomog_lift_of_comm_of_αβ_βψ
-  · simp only [weakB3Large, nonhomog_sets, Set.mem_singleton_iff]
+  · simp only [weakB3Large, nonhomog_sets]
+    exact Set.mem_insert _ _
   · exists t₁, t₀, u₁, u₀, v₁, v₀
 
 -- 8.82
-
 theorem nonhomog_lift_of_comm_of_α_α2β2ψ :
   ∀ (t₁ t₀ u₁ u₀ v₁ v₀ : R),
     ⁅ {α, 1, t₁} * {α, 0, t₀},
       ⁅ {αβ, 2, t₁ * u₁} * {αβ, 2, t₁ * u₀ + t₀ * u₁} * {αβ, 0, t₀ * u₀},
         {β2ψ, 3, t₁ * u₁^2} * {β2ψ, 2, t₀ * u₁^2 + 2 * t₁ * u₀ * u₁} *
         {β2ψ, 1, t₁ * u₀^2 + 2 * t₀ * u₀ * u₁} * {β2ψ, 0, t₀ * u₀^2} ⁆⁆
-    = 1 := by sorry
+    = 1 := by
+    intro t₁ t₀ u₁ u₀ v₁ v₀
+    apply WeakChevalley.helper
+    apply weakB3Large.nonhomog_helper rels_of_nonhomog_lift_of_comm_of_α_α2β2ψ
+    · simp only [weakB3Large, nonhomog_sets]
+      exact Set.mem_insert_of_mem rels_of_nonhomog_lift_of_comm_of_αβ_βψ rfl
+    · exists t₁, t₀, u₁, u₀, v₁, v₀
