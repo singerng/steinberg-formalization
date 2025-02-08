@@ -70,7 +70,13 @@ def rels_of_nonhomog_lift_of_comm_of_αβ_βψ :=
        (free_mk_mk βψ 2 (by trivial) (u₁ * v₁)) * (free_mk_mk βψ 1 (by trivial) (u₁ * v₀ + u₀ * v₁)) * (free_mk_mk βψ 0 (by trivial) (u₀ * v₀)) ⁆ |
     (t₁ : R) (t₀ : R) (u₁ : R) (u₀ : R) (v₁ : R) (v₀ : R) }
 
--- Relation 8.82 ?
+-- Relation 8.82
+def rels_of_nonhomog_lift_of_comm_of_α_α2β2ψ :=
+  { ⁅ (free_mk_mk α 1 (by trivial) t₁) * (free_mk_mk α 0 (by trivial) t₀),
+      ⁅ (free_mk_mk αβ 2 (by trivial) (t₁ * u₁)) * (free_mk_mk αβ 2 (by trivial) (t₁ * u₀ + t₀ * u₁)) * (free_mk_mk αβ 0 (by trivial) (t₀ * u₀)),
+        (free_mk_mk β2ψ 3 (by trivial) (t₁ * u₁^2)) * (free_mk_mk β2ψ 2 (by trivial) (t₀ * u₁^2 + 2 * t₁ * u₀ * u₁)) * (free_mk_mk β2ψ 1 (by trivial) (t₁ * u₀^2 + 2 * t₀ * u₀ * u₁)) * (free_mk_mk β2ψ 0 (by trivial) (t₀ * u₀^2)) ⁆ ⁆ |
+    (t₁ : R) (t₀ : R) (u₁ : R) (u₀ : R) (v₁ : R) (v₀ : R)
+  }
 
 def split_3_into_1_2 (i : ℕ) (hi : i ≤ 3) :=
   match i with
