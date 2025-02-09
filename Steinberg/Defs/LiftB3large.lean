@@ -321,3 +321,50 @@ theorem expr_ψ_β_as_β_ψ_βψ_β2ψ :
   ∀ ⦃i j : ℕ⦄ (hi : i ≤ β.height) (hj : j ≤ ψ.height) (t u : R),
   {ψ, j, u} * {β, i, t} = {β, i, t} * {ψ, j, u} * {βψ, i + j, -t * u} * {β2ψ, i + 2 * j, t * u^2} := by
   sorry
+
+-- 8.112b
+theorem expr_ψ_β_as_β2ψ_βψ_β_ψ :
+  ∀ ⦃i j : ℕ⦄ (hi : i ≤ β.height) (hj : j ≤ ψ.height) (t u : R),
+  {ψ, j, u} * {β, i, t} = {β2ψ, i + 2 * j, -t * u^2} * {βψ, i + j, -t * u} * {β, i, t} * {ψ, j, u} := by
+  sorry
+
+-- 8.112c
+theorem expr_ψ_β_as_β_β2ψ_βψ_ψ :
+  ∀ ⦃i j : ℕ⦄ (hi : i ≤ β.height) (hj : j ≤ ψ.height) (t u : R),
+  {ψ, j, u} * {β, i, t} = {β, i, t} * {β2ψ, i + 2 * j, -t * u^2} * {βψ, i + j, -t * u} * {ψ, j, u} := by
+  sorry
+
+-- 8.112d
+theorem expr_ψ_β_as_β_βψ_β2ψ_ψ :
+  ∀ ⦃i j : ℕ⦄ (hi : i ≤ β.height) (hj : j ≤ ψ.height) (t u : R),
+  {ψ, j, u} * {β, i, t} = {β, i, t} * {βψ, i + j, -t * u} * {β2ψ, i + 2 * j, -t * u^2} * {ψ, j, u} := by
+  sorry
+
+-- 8.113a
+theorem expr_ψ_βψ_as_βψ_β2ψ :
+  ∀ ⦃i j : ℕ⦄ (hi : i ≤ ψ.height) (hj : j ≤ βψ.height) (t u : R),
+  {ψ, i, t} * {βψ, j, u} = {βψ, j, u} * {β2ψ, i + j, 2 * t * u} * {ψ, i, t} := by
+  sorry
+
+-- 8.113b
+theorem expr_ψ_βψ_as_βψ_ψ_β2ψ :
+  ∀ ⦃i j : ℕ⦄ (hi : i ≤ ψ.height) (hj : j ≤ βψ.height) (t u : R),
+  {ψ, i, t} * {βψ, j, u} = {βψ, j, u} * {ψ, i, t} * {β2ψ, i + j, 2 * t * u} := by
+  sorry
+
+-- 8.114a
+theorem expr_βψ_ψ_as_ψ_β2ψ_βψ :
+  ∀ ⦃i j : ℕ⦄ (hi : i ≤ ψ.height) (hj : j ≤ βψ.height) (t u : R),
+  {βψ, j, u} * {ψ, i, t} = {ψ, i, t} * {β2ψ, i + j, -2 * t * u} * {βψ, j, u} := by
+  sorry
+
+-- 8.114b
+theorem expr_βψ_ψ_as_ψ_βψ_β2ψ :
+  ∀ ⦃i j : ℕ⦄ (hi : i ≤ ψ.height) (hj : j ≤ βψ.height) (t u : R),
+  {βψ, j, u} * {ψ, i, t} = {ψ, i, t} * {βψ, j, u} * {β2ψ, i + j, -2 * t * u} := by
+  sorry
+
+-- 8.115
+theorem trivial_comm_of_αβ_βψ :
+  trivial_commutator_of_root_pair (R := R) weakB3Large.pres_mk αβ βψ := by
+  sorry
