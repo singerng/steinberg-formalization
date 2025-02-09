@@ -368,3 +368,18 @@ theorem expr_βψ_ψ_as_ψ_βψ_β2ψ :
 theorem trivial_comm_of_αβ_βψ :
   trivial_commutator_of_root_pair (R := R) weakB3Large.pres_mk αβ βψ := by
   sorry
+
+-- 8.117 (8.116 defines αβψ)
+theorem trivial_comm_of_α_αβψ :
+  trivial_commutator_of_root_pair (R := R) weakB3Large.pres_mk α αβψ := by
+  sorry
+
+-- 8.118
+theorem trivial_comm_of_αβ_αβψ :
+  trivial_commutator_of_root_pair (R := R) weakB3Large.pres_mk αβ αβψ := by
+  sorry
+
+-- 8.119
+theorem trivial_comm_of_β_αβψ :
+  trivial_commutator_of_root_pair (R := R) weakB3Large.pres_mk β αβψ := by
+  sorry
