@@ -325,6 +325,15 @@ theorem expand_βψ_as_ψ_β_ψ_β_ψ :
     intro i j hi hj t u
     sorry
 
+/-! ### 8.38 -/
+
+theorem expand_β2ψ_as_ψ_βψ_ψ_βψ :
+    ∀ ⦃i j : ℕ⦄ (hi : i ≤ 1) (hj : j ≤ 2) (t u : R),
+    {β2ψ, i + j, 2 * (t * u)} =
+    {ψ, i, t} * {βψ, j, u} * {ψ, i, (-t)} * {βψ, j, (-u)} := by
+
+    sorry
+
 /-! ### Derive full commutator for βψ and ψω from nonhomogeneous lift -/
 
 -- NS: this section should probably be abstracted for reuse
