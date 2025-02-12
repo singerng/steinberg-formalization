@@ -178,7 +178,9 @@ theorem comm_of_α_β : single_commutator_of_root_pair (R := R) weakB3Large.pres
 theorem comm_of_ψ_βψ : single_commutator_of_root_pair weakB3Large.pres_mk ψ βψ β2ψ (2 : R) (by rfl) :=
   weakB3Large.single_commutator_helper ψ βψ β2ψ (2 : R) (by rfl) (by rw [weakB3Large, trivial_commutator_pairs]; simp)
 
--- Double: {(β, ψ)} ??
+-- Double: {(β, ψ)}
+theorem comm_of_β_ψ : double_commutator_of_root_pair (R := R) weakB3Large.pres_mk β ψ βψ β2ψ (1 : R) (1 : R) (by rfl) (by rfl) :=
+  weakB3Large.double_commutator_helper β ψ βψ β2ψ (1 : R) (1 : R) (by rfl) (by rfl) (by rw [weakB3Large, trivial_commutator_pairs]; simp)
 
 /-! ### Linearity theorems for specific roots -/
 -- {α, β, ψ, αβ, βψ, β2ψ}
