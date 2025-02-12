@@ -193,6 +193,11 @@ theorem mixed_commutes_of_ψω : mixed_commutes_of_root (R := R) weakB3Small.pre
 theorem mixed_commutes_of_β2ψ : mixed_commutes_of_root (R := R) weakB3Small.pres_mk β2ψ :=
   weakB3Small.mixed_commutes_helper (by rw [weakB3Small, trivial_commutator_pairs]; simp)
 
+/-! ### Double commutator theorem -/
+
+theorem comm_of_β_ψ : double_commutator_of_root_pair (R := R) weakB3Small.pres_mk β ψ βψ β2ψ (1 : R) (1 : R) (by rfl) (by rfl) :=
+  weakB3Small.double_commutator_helper β ψ βψ β2ψ (1 : R) (1 : R) (by rfl) (by rfl) (by rw [weakB3Small, trivial_commutator_pairs]; simp)
+
 /-! ### Nonhomogeneous lift -/
 theorem nonhomog_lift_of_comm_of_βψ_ψω :
   ∀ (t₁ t₀ u₁ u₀ v₁ v₀ : R),
@@ -323,16 +328,54 @@ theorem expand_βψ_as_ψ_β_ψ_β_ψ :
     {βψ, i + j, 2 * (t * u)} =
     {ψ, j, (-u)} * {β, i, t} * {ψ, j, 2 * u} * {β, i, (-t)} * {ψ, j, (-u)} := by
     intro i j hi hj t u
-    sorry
+    -- start with relation 8.2
+    have base := comm_of_β_ψ (R := R) hi hj t (2 * u)
+    -- commute β + 2 ψ and β + ψ
+    rw [comm_left, comm_of_βψ_β2ψ, one_mul] at base
+    have this : (1 * (t * (2 * u * (2 * u)))) = 2 * (u * (2 * (t * u))) := by group
+    rw [this] at base
+    have this : (1 * (t * (2 * u))) = 2 * (t * u) := by group
+    rw [this] at base
+    -- replace β + 2 ψ with a commutator of ψ and β + ψ elements
+    have this : i + 2 * j = j + (i + j) := by group
+    simp only [this] at base
+    have this := @comm_of_ψ_βψ (R := R) (by infer_instance) j (i + j) hj (
+      by
+      simp only [PosRootSys.height, height] at hi
+      simp only [PosRootSys.height, height] at hj
+      simp only [PosRootSys.height, height]
+      omega
+    ) u (2 * (t * u))
+    rw [← this] at base
+    -- expand the commutator, and cancel with the β + ψ element on the right
+    conv at base =>
+      rhs; rw [commutatorElement_def]
+    rw [inv_mul_cancel_right] at base
+    -- expanding the commutator on the LHS and conjugating by ψ elements gives the relation
+    rw [commutatorElement_def] at base
+    have base := congrArg (HMul.hMul (weakB3Small.pres_mk (free_mk_mk ψ j hj u))⁻¹) base
+    conv at base =>
+      rhs
+      rw [mul_assoc, inv_mul_cancel_left]
+    have base := congrArg (fun x => HMul.hMul x (weakB3Small.pres_mk (free_mk_mk ψ j hj u))) base
+    dsimp at base
+    conv at base =>
+      rhs
+      rw [mul_assoc, inv_mul_cancel, mul_one]
+    rw [← inv_of_β, ← inv_of_ψ, ← inv_of_ψ] at base
+    conv at base =>
+      lhs
+      rw [mul_assoc, mul_assoc, lin_of_ψ (R := R) hj (-(2 * u)) u]
+    have this : -(2 * u) + u = -u := by group
+    rw [this] at base
+    exact id (Eq.symm base)
 
 /-! ### 8.38 -/
 
 theorem expand_β2ψ_as_ψ_βψ_ψ_βψ :
-    ∀ ⦃i j : ℕ⦄ (hi : i ≤ 1) (hj : j ≤ 2) (t u : R),
-    {β2ψ, i + j, 2 * (t * u)} =
-    {ψ, i, t} * {βψ, j, u} * {ψ, i, (-t)} * {βψ, j, (-u)} := by
-
-    sorry
+    ∀ {i j : ℕ} (hi : i ≤ β.height) (hj : j ≤ 2 * ψ.height) (t u : R),
+      {β2ψ, i + j, 2 * (t * u)} = {ψ, i, t} * {βψ, j, u} * {ψ, i, (-t)} *
+      {βψ, j, (-u)} := by sorry
 
 /-! ### Derive full commutator for βψ and ψω from nonhomogeneous lift -/
 
@@ -437,13 +480,6 @@ theorem comm_of_βψ_ψω : trivial_commutator_of_root_pair (R := R) weakB3Small
     exact hij
 
 /-! ### Further useful identities (roughly GENERIC) -/
-
--- 8.38
-
-theorem expand_β2ψ_as_ψ_βψ_ψ_βψ :
-    ∀ {i j : ℕ} (hi : i ≤ β.height) (hj : j ≤ 2 * ψ.height) (t u : R),
-      {β2ψ, i + j, 2 * (t * u)} = {ψ, i, t} * {βψ, j, u} * {ψ, i, (-t)} *
-      {βψ, j, (-u)} := by sorry
 
 -- 8.39 a
 
