@@ -701,3 +701,75 @@ theorem trivial_comm_of_αβ_αβψ :
 theorem trivial_comm_of_β_αβψ :
   trivial_commutator_of_root_pair (R := R) weakB3Large.pres_mk β αβψ := by
   sorry
+
+-- 8.120a
+theorem inv_doub_of_αβψ_a :
+  ∀ ⦃i : ℕ⦄ (hi : i ≤ αβψ.height) (t : R),
+  {αβψ, i, t} * {αβψ, i, -t} = 1 := by
+  sorry
+
+-- 8.120b
+theorem inv_doub_of_αβψ_b :
+  ∀ ⦃i : ℕ⦄ (hi : i ≤ αβψ.height) (t : R),
+  {αβψ, i, t} * {αβψ, i, t} = {αβψ, i, 2 * t} := by
+  sorry
+
+-- 8.121a
+theorem generic_comm_of_αβ_ψ_a :
+  ∀ ⦃i j : ℕ⦄ (hi : i ≤ αβ.height) (hj : j ≤ ψ.height) (t u : R),
+  ⁅{αβ, i, t}, {ψ, j, u}⁆ = {αβψ, i + j, t * u} * ⁅{αβψ, i + j, -t * u}, {ψ, j, u / 2}⁆ := by
+  sorry
+
+-- 8.121b
+theorem generic_comm_of_αβ_ψ_b :
+  ∀ ⦃i j : ℕ⦄ (hi : i ≤ αβ.height) (hj : j ≤ ψ.height) (t u : R),
+  ⁅{αβ, i, t}, {ψ, j, u}⁆ = ⁅{αβψ, i + j, t * u}, {ψ, j, u / 2}⁆⁻¹ * {αβψ, i + j, t * u} := by
+  sorry
+
+-- 8.122a
+theorem generic_comm_of_α_βψ_a :
+  ∀ ⦃i j : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ βψ.height) (t u : R),
+  ⁅{α, i, t}, {βψ, j, u}⁆ = {αβψ, i + j, t * u} * ⁅{αβψ, i + j, -t * u}, {βψ, j, u / 2}⁆ := by
+  sorry
+
+-- 8.122b
+theorem generic_comm_of_α_βψ_b :
+  ∀ ⦃i j : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ βψ.height) (t u : R),
+  ⁅{α, i, t}, {βψ, j, u}⁆ = ⁅{αβψ, i + j, t * u}, {βψ, j, u / 2}⁆⁻¹ * {αβψ, i + j, t * u} := by
+  sorry
+
+-- 8.123
+theorem lift_hom_interchange_of_αβ2ψ :
+  ∀ ⦃i j k : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t u v : R),
+  ⁅{αβψ, i + j + k, t * u}, {ψ, k, v}⁆ = ⁅{α, i, t}, {β2ψ, j + 2 * k, -2 * u * v}⁆ := by
+  sorry
+
+-- 8.124
+theorem lift_hom_comm_of_βψ_α_β2ψ :
+  ∀ ⦃i j k : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t u v : R),
+  ⁅{βψ, j + k, t}, ⁅{α, i, u}, {β2ψ, j + 2 * k, v}⁆⁆ = 1 := by
+  sorry
+
+-- 8.125a
+theorem lift_hom_inv_doub_of_α_β2ψ_a :
+  ∀ ⦃i j : ℕ⦄ (hi :i ≤ α.height) (hj : j ≤ β2ψ.height) (t u : R),
+  ⁅{α, i, t}, {β2ψ, j, u}⁆ = ⁅{α, i, -t}, {β2ψ, j, -u}⁆ := by
+  sorry
+
+-- 8.125b
+theorem lift_hom_inv_doub_of_α_β2ψ_b :
+  ∀ ⦃i j : ℕ⦄ (hi :i ≤ α.height) (hj : j ≤ β2ψ.height) (t u : R),
+  ⁅{α, i, t}, {β2ψ, j, u}⁆ * ⁅{α, i, t}, {β2ψ, j, -u}⁆ = 1 := by
+  sorry
+
+-- 8.125c
+theorem lift_hom_inv_doub_of_α_β2ψ_c :
+  ∀ ⦃i j : ℕ⦄ (hi :i ≤ α.height) (hj : j ≤ β2ψ.height) (t u : R),
+  ⁅{α, i, t}, {β2ψ, j, u}⁆ * ⁅{α, i, t}, {β2ψ, j, u}⁆ = ⁅{α, i, t}, {β2ψ, j, 2 * u}⁆ := by
+  sorry
+
+-- 8.126
+theorem lift_hom_comm_of_β2ψ_αβψ :
+  ∀ ⦃i j k : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t u : R),
+  ⁅{β2ψ, j + 2 * k, t}, {αβψ, i + j + k, u}⁆ = 1 := by
+  sorry
