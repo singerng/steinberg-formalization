@@ -78,6 +78,315 @@ def rels_of_nonhomog_lift_of_comm_of_α_α2β2ψ :=
     (t₁ : R) (t₀ : R) (u₁ : R) (u₀ : R) (v₁ : R) (v₀ : R)
   }
 
+-- Relation 8.83
+def rels_of_hom_lift_of_interchange_of_αβψ :=
+  {
+    (free_mk_mk ψ k hk (-v / 2)) *
+    (free_mk_mk αβ (i + j) (add_le_add hi hj) (t * u)) *
+    (free_mk_mk ψ k hk v) *
+    (free_mk_mk αβ (i + j) (add_le_add hi hj) (-t * u)) *
+    (free_mk_mk ψ k hk (-v / 2)) *
+    (free_mk_mk βψ (j + k) (add_le_add hj hk) (-u * v / 2))⁻¹ *
+    (free_mk_mk α i hi (-t))⁻¹ *
+    (free_mk_mk βψ (j + k) (add_le_add hj hk) (u * v))⁻¹ *
+    (free_mk_mk α i hi t)⁻¹ *
+    (free_mk_mk βψ (j + k) (add_le_add hj hk) (-u * v / 2))⁻¹
+    | (i : ℕ) (j : ℕ) (k : ℕ) (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t : R) (u : R) (v : R)
+  }
+
+-- Relation 8.84
+def rels_of_hom_lift_of_doub_of_αβψ :=
+  {
+    (free_mk_mk ψ k hk (-v / 2)) *
+    (free_mk_mk αβ (i + j) (add_le_add hi hj) (t * u)) *
+    (free_mk_mk ψ k hk v) *
+    (free_mk_mk αβ (i + j) (add_le_add hi hj) (-t * u)) *
+    (free_mk_mk ψ k hk (-v / 2)) *
+    (free_mk_mk ψ k hk (-v / 2)) *
+    (free_mk_mk αβ (i + j) (add_le_add hi hj) (t * u)) *
+    (free_mk_mk ψ k hk v) *
+    (free_mk_mk αβ (i + j) (add_le_add hi hj) (-t * u)) *
+    (free_mk_mk ψ k hk (-v / 2)) *
+    (free_mk_mk ψ k hk (-v))⁻¹ *
+    (free_mk_mk αβ (i + j) (add_le_add hi hj) (-t * u))⁻¹ *
+    (free_mk_mk ψ k hk (2 * v))⁻¹ *
+    (free_mk_mk αβ (i + j) (add_le_add hi hj) (t * u))⁻¹ *
+    (free_mk_mk ψ k hk (-v))⁻¹
+    | (i : ℕ) (j : ℕ) (k : ℕ) (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t : R) (u : R) (v : R)
+  }
+
+-- Relation 8.85
+def rels_of_hom_lift_of_interchange_of_αβ2ψ :=
+  { ⁅
+      (free_mk_mk ψ k hk (-v / 2)) *
+      (free_mk_mk αβ (i + j) (add_le_add hi hj) (t * u)) *
+      (free_mk_mk ψ k hk v) *
+      (free_mk_mk αβ (i + j) (add_le_add hi hj) (-t * u)) *
+      (free_mk_mk ψ k hk (-v / 2)),
+      free_mk_mk ψ k hk v
+    ⁆ * ⁅
+      free_mk_mk α i hi t,
+      free_mk_mk β2ψ (j + 2 * k) (add_le_add hj (mul_le_mul_of_nonneg_left hk (by norm_num))) (-2 * u * v^2)
+    ⁆
+    | (i : ℕ) (j : ℕ) (k : ℕ) (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t : R) (u : R) (v : R)
+  }
+
+-- Relation 8.86
+def rels_of_hom_lift_of_comm_of_βψ_α_β2ψ :=
+  { ⁅
+      free_mk_mk βψ (j + k) (add_le_add hj hk) (u * v),
+      ⁅
+        free_mk_mk α i hi t,
+        free_mk_mk β2ψ (j + 2 * k) (add_le_add hj (mul_le_mul_of_nonneg_left hk (by norm_num))) (u * v^2)
+      ⁆
+    ⁆
+    | (i : ℕ) (j : ℕ) (k : ℕ) (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t : R) (u : R) (v : R)
+  }
+
+-- Relation 8.87a
+def rels_of_hom_lift_of_inv_doub_of_α_β2ψ_a :=
+  { ⁅
+      free_mk_mk α i hi t,
+      free_mk_mk β2ψ (j + 2 * k) (add_le_add hj (mul_le_mul_of_nonneg_left hk (by norm_num))) (u * v^2)
+    ⁆ * ⁅
+      free_mk_mk α i hi (-t),
+      free_mk_mk β2ψ (j + 2 * k) (add_le_add hj (mul_le_mul_of_nonneg_left hk (by norm_num))) (-u * v^2)
+    ⁆⁻¹
+    | (i : ℕ) (j : ℕ) (k : ℕ) (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t : R) (u : R) (v : R)
+  }
+
+-- Relation 8.87b
+def rels_of_hom_lift_of_inv_doub_of_α_β2ψ_b :=
+  { ⁅
+      free_mk_mk α i hi t,
+      free_mk_mk β2ψ (j + 2 * k) (add_le_add hj (mul_le_mul_of_nonneg_left hk (by norm_num))) (u * v^2)
+    ⁆ * ⁅
+      free_mk_mk α i hi (-t),
+      free_mk_mk β2ψ (j + 2 * k) (add_le_add hj (mul_le_mul_of_nonneg_left hk (by norm_num))) (u * v^2)
+    ⁆⁻¹
+    | (i : ℕ) (j : ℕ) (k : ℕ) (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t : R) (u : R) (v : R)
+  }
+
+-- Relation 8.87c
+def rels_of_hom_lift_of_inv_doub_of_α_β2ψ_c :=
+  { ⁅
+      free_mk_mk α i hi t,
+      free_mk_mk β2ψ (j + 2 * k) (add_le_add hj (mul_le_mul_of_nonneg_left hk (by norm_num))) (u * v^2)
+    ⁆ * ⁅
+      free_mk_mk α i hi t,
+      free_mk_mk β2ψ (j + 2 * k) (add_le_add hj (mul_le_mul_of_nonneg_left hk (by norm_num))) (u * v^2)
+    ⁆ * ⁅
+      free_mk_mk α i hi (2 * t),
+      free_mk_mk β2ψ (j + 2 * k) (add_le_add hj (mul_le_mul_of_nonneg_left hk (by norm_num))) (u * v^2)
+    ⁆⁻¹
+    | (i : ℕ) (j : ℕ) (k : ℕ) (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t : R) (u : R) (v : R)
+  }
+
+-- Relation 8.88
+def rels_of_hom_lift_of_comm_of_β2ψ_αβψ :=
+  { ⁅
+      free_mk_mk β2ψ (j + 2 * k) (add_le_add hj (mul_le_mul_of_nonneg_left hk (by norm_num))) (u * v^2),
+      (free_mk_mk ψ k hk (-v / 2)) *
+      (free_mk_mk αβ (i + j) (add_le_add hi hj) (t * u)) *
+      (free_mk_mk ψ k hk v) *
+      (free_mk_mk αβ (i + j) (add_le_add hi hj) (-t * u)) *
+      (free_mk_mk ψ k hk (-v / 2))
+    ⁆
+    | (i : ℕ) (j : ℕ) (k : ℕ) (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t : R) (u : R) (v : R)
+  }
+
+-- Relation 8.89a
+def rels_of_hom_lift_of_interchange_of_α2β2ψ_a :=
+  { ⁅
+      free_mk_mk αβ (i + j) (add_le_add hi hj) (t * u),
+      free_mk_mk β2ψ (j + 2 * k) (add_le_add hj (mul_le_mul_of_nonneg_left hk (by norm_num))) (2 * u * v^2)
+    ⁆ * ⁅
+      (free_mk_mk ψ k hk (-v / 2)) *
+      (free_mk_mk αβ (i + j) (add_le_add hi hj) (t * u)) *
+      (free_mk_mk ψ k hk v) *
+      (free_mk_mk αβ (i + j) (add_le_add hi hj) (-t * u)) *
+      (free_mk_mk ψ k hk (-v / 2)),
+      free_mk_mk βψ (j + k) (add_le_add hj hk) (u * v)
+    ⁆⁻¹
+    | (i : ℕ) (j : ℕ) (k : ℕ) (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t : R) (u : R) (v : R)
+  }
+
+-- Relation 8.89b
+def rels_of_hom_lift_of_interchange_of_α2β2ψ_b :=
+  { ⁅
+      (free_mk_mk ψ k hk (-v / 2)) *
+      (free_mk_mk αβ (i + j) (add_le_add hi hj) (t * u)) *
+      (free_mk_mk ψ k hk v) *
+      (free_mk_mk αβ (i + j) (add_le_add hi hj) (-t * u)) *
+      (free_mk_mk ψ k hk (-v / 2)),
+      free_mk_mk βψ (j + k) (add_le_add hj hk) (u * v)
+    ⁆ * ⁅
+      ⁅free_mk_mk α i hi t, free_mk_mk β2ψ (j + 2 * k) (add_le_add hj (mul_le_mul_of_nonneg_left hk (by norm_num))) (u * v^2)⁆,
+      free_mk_mk β j hj u
+    ⁆⁻¹
+    | (i : ℕ) (j : ℕ) (k : ℕ) (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t : R) (u : R) (v : R)
+  }
+
+-- Relation 8.90
+def rels_of_hom_lift_of_comm_of_ψ_αβ_β2ψ :=
+  { ⁅
+      free_mk_mk ψ k hk v,
+      ⁅
+        free_mk_mk αβ (i + j) (add_le_add hi hj) (t * u),
+        free_mk_mk β2ψ (j + 2 * k) (add_le_add hj (mul_le_mul_of_nonneg_left hk (by norm_num))) (u * v^2)
+      ⁆
+    ⁆
+    | (i : ℕ) (j : ℕ) (k : ℕ) (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t : R) (u : R) (v : R)
+  }
+
+-- Relation 8.91a (s = 1)
+def rels_of_hom_lift_of_comm_of_αβ_αβ_β2ψ_a :=
+  { ⁅
+      free_mk_mk αβ (i + j) (add_le_add hi hj) (t * u),
+      ⁅
+        free_mk_mk αβ (i + j) (add_le_add hi hj) (t * u),
+        free_mk_mk β2ψ (j + 2 * k) (add_le_add hj (mul_le_mul_of_nonneg_left hk (by norm_num))) (u * v^2)
+      ⁆
+    ⁆
+    | (i : ℕ) (j : ℕ) (k : ℕ) (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t : R) (u : R) (v : R)
+  }
+
+-- Relation 8.91b (s = -1)
+def rels_of_hom_lift_of_comm_of_αβ_αβ_β2ψ_b :=
+  { ⁅
+      free_mk_mk αβ (i + j) (add_le_add hi hj) (t * u),
+      ⁅
+        free_mk_mk αβ (i + j) (add_le_add hi hj) (-t * u),
+        free_mk_mk β2ψ (j + 2 * k) (add_le_add hj (mul_le_mul_of_nonneg_left hk (by norm_num))) (u * v^2)
+      ⁆
+    ⁆
+    | (i : ℕ) (j : ℕ) (k : ℕ) (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t : R) (u : R) (v : R)
+  }
+
+-- Relation 8.92a
+def rels_of_hom_lift_of_inv_doub_of_αβ_β2ψ_a :=
+  { ⁅
+      free_mk_mk αβ (i + j) (add_le_add hi hj) (t * u),
+      free_mk_mk β2ψ (j + 2 * k) (add_le_add hj (mul_le_mul_of_nonneg_left hk (by norm_num))) (u * v^2)
+    ⁆ * ⁅
+      free_mk_mk αβ (i + j) (add_le_add hi hj) (-t * u),
+      free_mk_mk β2ψ (j + 2 * k) (add_le_add hj (mul_le_mul_of_nonneg_left hk (by norm_num))) (-u * v^2)
+    ⁆⁻¹
+    | (i : ℕ) (j : ℕ) (k : ℕ) (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t : R) (u : R) (v : R)
+  }
+
+-- Relation 8.92b
+def rels_of_hom_lift_of_inv_doub_of_αβ_β2ψ_b :=
+  { ⁅
+      free_mk_mk αβ (i + j) (add_le_add hi hj) (t * u),
+      free_mk_mk β2ψ (j + 2 * k) (add_le_add hj (mul_le_mul_of_nonneg_left hk (by norm_num))) (u * v^2)
+    ⁆ * ⁅
+      free_mk_mk αβ (i + j) (add_le_add hi hj) (-t * u),
+      free_mk_mk β2ψ (j + 2 * k) (add_le_add hj (mul_le_mul_of_nonneg_left hk (by norm_num))) (u * v^2)
+    ⁆
+    | (i : ℕ) (j : ℕ) (k : ℕ) (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t : R) (u : R) (v : R)
+  }
+
+-- Relation 8.92c
+def rels_of_hom_lift_of_inv_doub_of_αβ_β2ψ_c :=
+  { ⁅
+      free_mk_mk αβ (i + j) (add_le_add hi hj) (t * u),
+      free_mk_mk β2ψ (j + 2 * k) (add_le_add hj (mul_le_mul_of_nonneg_left hk (by norm_num))) (u * v^2)
+    ⁆ * ⁅
+      free_mk_mk αβ (i + j) (add_le_add hi hj) (t * u),
+      free_mk_mk β2ψ (j + 2 * k) (add_le_add hj (mul_le_mul_of_nonneg_left hk (by norm_num))) (u * v^2)
+    ⁆ * ⁅
+      free_mk_mk αβ (i + j) (add_le_add hi hj) (2 * t * u),
+      free_mk_mk β2ψ (j + 2 * k) (add_le_add hj (mul_le_mul_of_nonneg_left hk (by norm_num))) (u * v^2)
+    ⁆⁻¹
+    | (i : ℕ) (j : ℕ) (k : ℕ) (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t : R) (u : R) (v : R)
+  }
+
+-- Relation 8.93a
+def rels_of_hom_lift_of_inv_doub_of_β_αβ2ψ_a :=
+  {
+    ⁅
+      free_mk_mk β i hi t,
+      ⁅
+        free_mk_mk α i hi t,
+        free_mk_mk β2ψ (j + 2 * k) (add_le_add hj (mul_le_mul_of_nonneg_left hk (by norm_num))) (u * v^2)
+      ⁆
+    ⁆ * ⁅
+      free_mk_mk β i hi (-t),
+      ⁅
+        free_mk_mk α i hi (-t),
+        free_mk_mk β2ψ (j + 2 * k) (add_le_add hj (mul_le_mul_of_nonneg_left hk (by norm_num))) (u * v^2)
+      ⁆
+    ⁆⁻¹
+    | (i : ℕ) (j : ℕ) (k : ℕ) (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t : R) (u : R) (v : R)
+  }
+
+-- Relation 8.93b
+def rels_of_hom_lift_of_inv_doub_of_β_αβ2ψ_b :=
+  { ⁅
+      free_mk_mk β i hi t,
+      ⁅
+        free_mk_mk α i hi t,
+        free_mk_mk β2ψ (j + 2 * k) (add_le_add hj (mul_le_mul_of_nonneg_left hk (by norm_num))) (u * v^2)
+      ⁆
+    ⁆ * ⁅
+      free_mk_mk β i hi (-t),
+      ⁅
+        free_mk_mk α i hi t,
+        free_mk_mk β2ψ (j + 2 * k) (add_le_add hj (mul_le_mul_of_nonneg_left hk (by norm_num))) (u * v^2)
+      ⁆
+    ⁆
+    | (i : ℕ) (j : ℕ) (k : ℕ) (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t : R) (u : R) (v : R)
+  }
+
+-- Relation 8.93c
+def rels_of_hom_lift_of_inv_doub_of_β_αβ2ψ_c :=
+  { ⁅
+      free_mk_mk β i hi t,
+      ⁅
+        free_mk_mk α i hi t,
+        free_mk_mk β2ψ (j + 2 * k) (add_le_add hj (mul_le_mul_of_nonneg_left hk (by norm_num))) (u * v^2)
+      ⁆
+    ⁆ * ⁅
+      free_mk_mk β i hi t,
+      ⁅
+        free_mk_mk α i hi t,
+        free_mk_mk β2ψ (j + 2 * k) (add_le_add hj (mul_le_mul_of_nonneg_left hk (by norm_num))) (u * v^2)
+      ⁆
+    ⁆ * ⁅
+      free_mk_mk β i hi (2 * t),
+      ⁅
+        free_mk_mk α i hi t,
+        free_mk_mk β2ψ (j + 2 * k) (add_le_add hj (mul_le_mul_of_nonneg_left hk (by norm_num))) (u * v^2)
+      ⁆
+    ⁆⁻¹
+    | (i : ℕ) (j : ℕ) (k : ℕ) (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t : R) (u : R) (v : R)
+  }
+
+-- Relation 8.94
+def rels_of_hom_lift_of_comm_of_βψ_αβ2ψ :=
+  { ⁅
+      free_mk_mk βψ (j + k) (add_le_add hj hk) (u * v),
+      ⁅
+        free_mk_mk α i hi t,
+        free_mk_mk β2ψ (j + 2 * k) (add_le_add hj (mul_le_mul_of_nonneg_left hk (by norm_num))) (u * v^2)
+      ⁆
+    ⁆
+    | (i : ℕ) (j : ℕ) (k : ℕ) (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t : R) (u : R) (v : R)
+  }
+
+-- Relation 8.95
+def rels_of_hom_lift_of_comm_of_β2ψ_αβ2ψ :=
+  { ⁅
+      free_mk_mk β2ψ (j + 2 * k) (add_le_add hj (mul_le_mul_of_nonneg_left hk (by norm_num))) (u * v^2),
+      ⁅
+        free_mk_mk α i hi t,
+        free_mk_mk β2ψ (j + 2 * k) (add_le_add hj (mul_le_mul_of_nonneg_left hk (by norm_num))) (u * v^2)
+      ⁆
+    ⁆
+    | (i : ℕ) (j : ℕ) (k : ℕ) (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t : R) (u : R) (v : R)
+  }
+
 def split_3_into_1_2 (i : ℕ) (hi : i ≤ 3) :=
   match i with
   | 0 => (0, 0)
@@ -120,8 +429,16 @@ abbrev lin_roots : Set (B3LargePosRoot) := {α, β, ψ, αβ, βψ, β2ψ}
 abbrev double_commutator_pairs : Set (DoubleSpanRootPair B3LargePosRoot R) :=
   {⟨β, ψ, βψ, β2ψ, 1, 1, (by exact rfl), (by exact rfl)⟩}
 
-def nonhomog_sets (R : Type TR) [Field R] : Set (Set (FreeGroupOnGradedGens B3LargePosRoot R)) := {
-  rels_of_nonhomog_lift_of_comm_of_αβ_βψ, rels_of_nonhomog_lift_of_comm_of_α_α2β2ψ
+def homog_and_nonhomog_sets (R : Type TR) [Field R] : Set (Set (FreeGroupOnGradedGens B3LargePosRoot R)) := {
+  rels_of_nonhomog_lift_of_comm_of_αβ_βψ, rels_of_nonhomog_lift_of_comm_of_α_α2β2ψ,
+  rels_of_hom_lift_of_interchange_of_αβψ, rels_of_hom_lift_of_doub_of_αβψ,
+  rels_of_hom_lift_of_interchange_of_αβ2ψ, rels_of_hom_lift_of_comm_of_βψ_α_β2ψ,
+  rels_of_hom_lift_of_inv_doub_of_α_β2ψ_a, rels_of_hom_lift_of_inv_doub_of_α_β2ψ_b, rels_of_hom_lift_of_inv_doub_of_α_β2ψ_c,
+  rels_of_hom_lift_of_comm_of_β2ψ_αβψ, rels_of_hom_lift_of_interchange_of_α2β2ψ_a, rels_of_hom_lift_of_interchange_of_α2β2ψ_b,
+  rels_of_hom_lift_of_comm_of_ψ_αβ_β2ψ, rels_of_hom_lift_of_comm_of_αβ_αβ_β2ψ_a, rels_of_hom_lift_of_comm_of_αβ_αβ_β2ψ_b,
+  rels_of_hom_lift_of_inv_doub_of_αβ_β2ψ_a, rels_of_hom_lift_of_inv_doub_of_αβ_β2ψ_b, rels_of_hom_lift_of_inv_doub_of_αβ_β2ψ_c,
+  rels_of_hom_lift_of_inv_doub_of_β_αβ2ψ_a, rels_of_hom_lift_of_inv_doub_of_β_αβ2ψ_b, rels_of_hom_lift_of_inv_doub_of_β_αβ2ψ_c,
+  rels_of_hom_lift_of_comm_of_βψ_αβ2ψ, rels_of_hom_lift_of_comm_of_β2ψ_αβ2ψ
 }
 
 def def_sets (R : Type TR) [Field R] : Set (Set (FreeGroupOnGradedGens B3LargePosRoot R)) := {
@@ -134,7 +451,7 @@ def weakB3Large := WeakChevalley.mk
   double_commutator_pairs
   mixed_commutes_roots
   lin_roots
-  (nonhomog_sets R)
+  (homog_and_nonhomog_sets R)
   (def_sets R)
 
 abbrev weakB3Large_rels (R : Type TR) [Field R] := @weakB3Large.all_rels B3LargePosRoot _ R _
@@ -235,7 +552,7 @@ theorem nonhomog_lift_of_comm_of_αβ_βψ :
   intro t₁ t₀ u₁ u₀ v₁ v₀
   apply WeakChevalley.helper
   apply weakB3Large.nonhomog_helper rels_of_nonhomog_lift_of_comm_of_αβ_βψ
-  · simp only [weakB3Large, nonhomog_sets]
+  · simp only [weakB3Large, homog_and_nonhomog_sets]
     exact Set.mem_insert _ _
   · exists t₁, t₀, u₁, u₀, v₁, v₀
 
@@ -250,8 +567,7 @@ theorem nonhomog_lift_of_comm_of_α_α2β2ψ :
     intro t₁ t₀ u₁ u₀ v₁ v₀
     apply WeakChevalley.helper
     apply weakB3Large.nonhomog_helper rels_of_nonhomog_lift_of_comm_of_α_α2β2ψ
-    · simp only [weakB3Large, nonhomog_sets]
-      exact Set.mem_insert_of_mem rels_of_nonhomog_lift_of_comm_of_αβ_βψ rfl
+    · simp only [weakB3Large, homog_and_nonhomog_sets, Set.mem_insert_iff, Set.mem_singleton_iff, true_or, or_true]
     · exists t₁, t₀, u₁, u₀, v₁, v₀
 
 /-! ### Identity theorems : 8.96 - 8.101 -/
