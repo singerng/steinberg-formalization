@@ -400,7 +400,21 @@ theorem correct_of_split_3_into_1_2 (i : ℕ) (hi : i ≤ 3) :
   split
   all_goals trivial
 
--- 8.81, second relation (top of page 68)
+def split_4_into_1_3 (i : ℕ) (hi : i ≤ 4) :=
+  match i with
+  | 0 => (0, 0)
+  | 1 => (0, 1)
+  | 2 => (1, 1)
+  | 3 => (1, 2)
+  | 4 => (1, 3)
+
+theorem correct_of_split_4_into_1_3 (i : ℕ) (hi : i ≤ 4) :
+  (split_4_into_1_3 i hi).1 ≤ 1 ∧ (split_4_into_1_3 i hi).2 ≤ 3 := by
+  simp only [split_4_into_1_3]
+  split
+  all_goals trivial
+
+-- 8.116, second relation (top of page 68)
 def rels_of_def_of_αβψ :=
   {
     (free_mk_mk βψ (split_3_into_1_2 i hi).2 (correct_of_split_3_into_1_2 i hi).2 (-1/2 : R)) *
@@ -410,6 +424,15 @@ def rels_of_def_of_αβψ :=
     (free_mk_mk βψ (split_3_into_1_2 i hi).2 (correct_of_split_3_into_1_2 i hi).2 (-1/2 : R)) *
     (free_mk_mk αβψ i hi t)⁻¹
     | (i : ℕ) (hi : i ≤ αβψ.height) (t : R)
+  }
+
+-- 8.135, first relation (page 76)
+def rels_of_def_of_αβ2ψ :=
+  { ⁅
+      (free_mk_mk α (split_4_into_1_3 i hi).1 (correct_of_split_4_into_1_3 i hi).1 t),
+      (free_mk_mk β2ψ (split_4_into_1_3 i hi).2 (correct_of_split_4_into_1_3 i hi).2 (1 : R))
+    ⁆ * (free_mk_mk αβ2ψ i hi t)⁻¹
+    | (i : ℕ) (hi : i ≤ αβ2ψ.height) (t : R)
   }
 
 -- relations 8.60, 8.61, 8.62, 8.64, 8.65, 8.67, 8.68
@@ -442,7 +465,7 @@ def homog_and_nonhomog_sets (R : Type TR) [Field R] : Set (Set (FreeGroupOnGrade
 }
 
 def def_sets (R : Type TR) [Field R] : Set (Set (FreeGroupOnGradedGens B3LargePosRoot R)) := {
-  rels_of_def_of_αβψ
+  rels_of_def_of_αβψ, rels_of_def_of_αβ2ψ
 }
 
 def weakB3Large := WeakChevalley.mk
@@ -773,3 +796,55 @@ theorem lift_hom_comm_of_β2ψ_αβψ :
   ∀ ⦃i j k : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t u : R),
   ⁅{β2ψ, j + 2 * k, t}, {αβψ, i + j + k, u}⁆ = 1 := by
   sorry
+
+-- 8.127
+theorem comm_of_ψ_α_β2ψ :
+  ∀ ⦃i j k : ℕ⦄ (hi : i ≤ ψ.height) (hj : j ≤ α.height) (hk : k ≤ β2ψ.height) (t u v : R),
+  ⁅{ψ, i, t}, ⁅{α, j, u}, {β2ψ, k, v}⁆⁆ = 1 := by
+  sorry
+
+-- 8.128
+theorem comm_of_α_αβψ_ψ :
+  ∀ ⦃i j k : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ αβψ.height) (hk : k ≤ ψ.height) (t u v : R),
+  ⁅{α, i, t}, ⁅{αβψ, j, u}, {ψ, k, v}⁆⁆ = 1 := by
+  sorry
+
+-- 8.129
+theorem comm_of_α_α_β2ψ :
+  ∀ ⦃i j k : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ α.height) (hk : k ≤ β2ψ.height) (t u v : R),
+  ⁅{α, i, t}, ⁅{α, j, u}, {β2ψ, k, v}⁆⁆ = 1 := by
+  sorry
+
+-- Proposition 8.130
+theorem sufficient_conditions_for_comm_of_αβψ_and_ψ :
+  ∀ ⦃i j k : ℕ⦄ (hi : i ≤ 1) (hj : j ≤ 2) (hk : k ≤ 1)
+  (hyp : ∀ t u v : R, ⁅{βψ, j, t}, ⁅{α, i, u}, {β2ψ, j + k, v}⁆⁆ = 1),
+  ∀ t u v : R, ⁅{αβψ, i + j, t * u}, {ψ, k, v}⁆ = ⁅{α, i, t}, {β2ψ, j + k, -2 * u * v}⁆ := by
+  sorry
+
+-- 8.131
+theorem partial_A_interchange_of_αβ2ψ :
+  ∀ t u v : R,
+  ⁅{αβψ, 0, t * u}, {ψ, 1, v}⁆ = ⁅{α, 0, t}, {β2ψ, 1, -2 * u * v}⁆ := by
+  sorry
+
+-- Proposition 8.132
+theorem sufficient_conditions_for_comm_of_βψ_α_β2ψ :
+  ∀ ⦃i j k : ℕ⦄ (hi : i ≤ 2) (hj : j ≤ 1) (hk : k ≤ 3)
+  (hyp : ∀ t u : R, ⁅{αβψ, i + j, t}, {β2ψ, k, u}⁆ = 1),
+  ∀ t u v : R, ⁅{βψ, i, t}, ⁅{α, j, u}, {β2ψ, k, v}⁆⁆ = 1 := by
+  sorry
+
+-- 8.133
+theorem partial_comm_of_βψ_α_β2ψ :
+  ∀ t u v : R,
+  ⁅{βψ, 2, t}, ⁅{α, 0, u}, {β2ψ, 2, v}⁆⁆ = 1 := by
+  sorry
+
+-- 8.134
+theorem partial_B_interchange_of_αβ2ψ :
+  ∀ t u v : R,
+  ⁅{αβψ, 2, t * u}, {ψ, 0, v}⁆ = ⁅{α, 0, t}, {β2ψ, 2, -2 * u * v}⁆ := by
+  sorry
+
+-- 8.135
