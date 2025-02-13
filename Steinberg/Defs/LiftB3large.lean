@@ -127,7 +127,7 @@ def rels_of_hom_lift_of_interchange_of_αβ2ψ :=
     ⁆ * ⁅
       free_mk_mk α i hi t,
       free_mk_mk β2ψ (j + 2 * k) (add_le_add hj (mul_le_mul_of_nonneg_left hk (by norm_num))) (-2 * u * v^2)
-    ⁆
+    ⁆⁻¹
     | (i : ℕ) (j : ℕ) (k : ℕ) (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t : R) (u : R) (v : R)
   }
 
@@ -163,7 +163,7 @@ def rels_of_hom_lift_of_inv_doub_of_α_β2ψ_b :=
     ⁆ * ⁅
       free_mk_mk α i hi (-t),
       free_mk_mk β2ψ (j + 2 * k) (add_le_add hj (mul_le_mul_of_nonneg_left hk (by norm_num))) (u * v^2)
-    ⁆⁻¹
+    ⁆
     | (i : ℕ) (j : ℕ) (k : ℕ) (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t : R) (u : R) (v : R)
   }
 
@@ -568,7 +568,7 @@ theorem mixed_commutes_of_β2ψ : mixed_commutes_of_root (R := R) weakB3Large.pr
 
 -- 8.81
 theorem nonhomog_lift_of_comm_of_αβ_βψ :
-  ∀ (t₁ t₀ u₁ u₀ v₁ v₀ : R),
+  ∀ t₁ t₀ u₁ u₀ v₁ v₀ : R,
     ⁅ {αβ, 2, t₁ * u₁} * {αβ, 1, t₁ * u₀ + t₀ * u₁} * {αβ, 0, t₀ * u₀}
     , {βψ, 2, u₁ * v₁} * {βψ, 1, u₁ * v₀ + u₀ * v₁} * {βψ, 0, u₀ * v₀} ⁆
     = 1 := by
@@ -580,7 +580,7 @@ theorem nonhomog_lift_of_comm_of_αβ_βψ :
 
 -- 8.82
 theorem nonhomog_lift_of_comm_of_α_α2β2ψ :
-  ∀ (t₁ t₀ u₁ u₀ v₁ v₀ : R),
+  ∀ t₁ t₀ u₁ u₀ v₁ v₀ : R,
     ⁅ {α, 1, t₁} * {α, 0, t₀},
       ⁅ {αβ, 2, t₁ * u₁} * {αβ, 2, t₁ * u₀ + t₀ * u₁} * {αβ, 0, t₀ * u₀},
         {β2ψ, 3, t₁ * u₁^2} * {β2ψ, 2, t₀ * u₁^2 + 2 * t₁ * u₀ * u₁} *
@@ -593,6 +593,85 @@ theorem nonhomog_lift_of_comm_of_α_α2β2ψ :
     · exists t₁, t₀, u₁, u₀, v₁, v₀
 
 /-! ### TODO: Homogeneous lift -/
+  -- rels_of_hom_lift_of_inv_doub_of_α_β2ψ_a, rels_of_hom_lift_of_inv_doub_of_α_β2ψ_b, rels_of_hom_lift_of_inv_doub_of_α_β2ψ_c,
+  -- rels_of_hom_lift_of_commutator_of_β2ψ_αβψ, rels_of_hom_lift_of_interchange_of_α2β2ψ_a, rels_of_hom_lift_of_interchange_of_α2β2ψ_b,
+  -- rels_of_hom_lift_of_commutator_of_ψ_αβ_β2ψ, rels_of_hom_lift_of_commutator_of_αβ_αβ_β2ψ_a, rels_of_hom_lift_of_commutator_of_αβ_αβ_β2ψ_b,
+  -- rels_of_hom_lift_of_inv_doub_of_αβ_β2ψ_a, rels_of_hom_lift_of_inv_doub_of_αβ_β2ψ_b, rels_of_hom_lift_of_inv_doub_of_αβ_β2ψ_c,
+  -- rels_of_hom_lift_of_inv_doub_of_β_αβ2ψ_a, rels_of_hom_lift_of_inv_doub_of_β_αβ2ψ_b, rels_of_hom_lift_of_inv_doub_of_β_αβ2ψ_c,
+  -- rels_of_hom_lift_of_commutator_of_βψ_αβ2ψ, rels_of_hom_lift_of_commutator_of_β2ψ_αβ2ψ
+-- 8.83
+theorem hom_lift_of_interchange_of_αβψ :
+  ∀ ⦃i j k : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t u v : R),
+  {ψ, k, -v/2} * {αβ, i + j, t * u} * {ψ, k, v} * {αβ, i + j, -t * u} * {ψ, k, -v/2} =
+  {βψ, j + k, -u * v/2} * {α, i, t} * {βψ, j + k, u * v} * {α, i, -t} * {βψ, j + k, -u * v / 2} := by
+  intro i j k hi hj hk t u v
+  apply WeakChevalley.helper
+  apply weakB3Large.nonhomog_helper rels_of_hom_lift_of_interchange_of_αβψ
+  · simp only [weakB3Large, homog_and_nonhomog_sets, Set.mem_insert_iff, Set.mem_singleton_iff, true_or, or_true]
+  · exists i, j, k, hi, hj, hk, t, u, v
+
+-- 8.84
+theorem hom_lift_of_doub_of_αβψ :
+  ∀ ⦃i j k : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t u v : R),
+  {ψ, k, -v / 2} * {αβ, i + j, t * u} * {ψ, k, v} * {αβ, i + j, -t * u} * {ψ, k, -v / 2} *
+  {ψ, k, -v / 2} * {αβ, i + j, t * u} * {ψ, k, v} * {αβ, i + j, -t * u} * {ψ, k, -v / 2} =
+  {ψ, k, -v} * {αβ, i + j, t * u} * {ψ, k, 2 * v} * {αβ, i + j, -t * u} * {ψ, k, -v} := by
+  intro i j k hi hj hk t u v
+  apply WeakChevalley.helper
+  apply weakB3Large.nonhomog_helper rels_of_hom_lift_of_doub_of_αβψ
+  · simp only [weakB3Large, homog_and_nonhomog_sets, Set.mem_insert_iff, Set.mem_singleton_iff, true_or, or_true]
+  · exists i, j, k, hi, hj, hk, t, u, v
+
+-- 8.85
+theorem hom_lift_of_interchange_of_αβ2ψ :
+  ∀ ⦃i j k : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t u v : R),
+  ⁅{ψ, k, -v / 2} * {αβ, i + j, t * u} * {ψ, k, v} * {αβ, i + j, -t * u} * {ψ, k, -v / 2}, {ψ, k, v}⁆ =
+  ⁅{α, i, t}, {β2ψ, j + 2 * k, -2 * u * v^2}⁆ := by
+  intro i j k hi hj hk t u v
+  apply WeakChevalley.helper
+  apply weakB3Large.nonhomog_helper rels_of_hom_lift_of_interchange_of_αβ2ψ
+  · simp only [weakB3Large, homog_and_nonhomog_sets, Set.mem_insert_iff, Set.mem_singleton_iff, true_or, or_true]
+  · exists i, j, k, hi, hj, hk, t, u, v
+
+-- 8.86
+theorem hom_lift_of_commutator_of_βψ_α_β2ψ :
+  ∀ ⦃i j k : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t u v : R),
+  ⁅{βψ, j + k, u * v}, ⁅{α, i, t}, {β2ψ, j + 2 * k, u * v^2}⁆⁆ = 1 := by
+  intro i j k hi hj hk t u v
+  apply WeakChevalley.helper
+  apply weakB3Large.nonhomog_helper rels_of_hom_lift_of_commutator_of_βψ_α_β2ψ
+  · simp only [weakB3Large, homog_and_nonhomog_sets, Set.mem_insert_iff, Set.mem_singleton_iff, true_or, or_true]
+  · exists i, j, k, hi, hj, hk, t, u, v
+
+-- 8.87a
+theorem hom_lift_of_inv_doub_of_α_β2ψ_a :
+  ∀ ⦃i j k : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t u v : R),
+  ⁅{α, i, t}, {β2ψ, j + 2 * k, u * v^2}⁆ = ⁅{α, i, -t}, {β2ψ, j + 2 * k, -u * v^2}⁆ := by
+  intro i j k hi hj hk t u v
+  apply WeakChevalley.helper
+  apply weakB3Large.nonhomog_helper rels_of_hom_lift_of_inv_doub_of_α_β2ψ_a
+  · simp only [weakB3Large, homog_and_nonhomog_sets, Set.mem_insert_iff, Set.mem_singleton_iff, true_or, or_true]
+  · exists i, j, k, hi, hj, hk, t, u, v
+
+-- 8.87b
+theorem hom_lift_of_inv_doub_of_α_β2ψ_b :
+  ∀ ⦃i j k : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t u v : R),
+  ⁅{α, i, t}, {β2ψ, j + 2 * k, u * v^2}⁆ * ⁅{α, i, -t}, {β2ψ, j + 2 * k, u * v^2}⁆ = 1 := by
+  intro i j k hi hj hk t u v
+  apply WeakChevalley.helper
+  apply weakB3Large.nonhomog_helper rels_of_hom_lift_of_inv_doub_of_α_β2ψ_b
+  · simp only [weakB3Large, homog_and_nonhomog_sets, Set.mem_insert_iff, Set.mem_singleton_iff, true_or, or_true]
+  · exists i, j, k, hi, hj, hk, t, u, v
+
+-- 8.87c
+theorem hom_lift_of_inv_doub_of_α_β2ψ_c :
+  ∀ ⦃i j k : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t u v : R),
+  ⁅{α, i, t} , {β2ψ, j + 2 * k, u * v^2}⁆ * ⁅{α, i, t} , {β2ψ, j + 2 * k, u * v^2}⁆ = ⁅{α, i, 2 * t}, {β2ψ, j + 2 * k, u * v^2}⁆ := by
+  intro i j k hi hj hk t u v
+  apply WeakChevalley.helper
+  apply weakB3Large.nonhomog_helper rels_of_hom_lift_of_inv_doub_of_α_β2ψ_c
+  · simp only [weakB3Large, homog_and_nonhomog_sets, Set.mem_insert_iff, Set.mem_singleton_iff, true_or, or_true]
+  · exists i, j, k, hi, hj, hk, t, u, v
 
 /-! ### Identity theorems : 8.96 - 8.101 -/
 
