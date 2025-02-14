@@ -1481,3 +1481,114 @@ theorem expand_α2β2ψ_as_β2ψ_αβ_β2ψ_αβ :
   ∀ ⦃i j : ℕ⦄ (hi : i ≤ αβ.height) (hj : j ≤ β2ψ.height) (t u : R),
   {α2β2ψ, i + j, -t * u} = {β2ψ, j, -u} * {αβ, i, t} * {β2ψ, j, u} * {αβ, i, -t} := by
   sorry
+
+-- 8.180a
+theorem expr_αβ_β2ψ_as_β2ψ_α2β2ψ_αβ :
+  ∀ ⦃i j : ℕ⦄ (hi : i ≤ αβ.height) (hj : j ≤ β2ψ.height) (t u : R),
+  {αβ, i, t} * {β2ψ, j, u} = {β2ψ, j, u} * {α2β2ψ, i + j, -t * u} * {αβ, i, t} := by
+  sorry
+
+-- 8.180b
+theorem expr_αβ_β2ψ_as_β2ψ_αβ_α2β2ψ :
+  ∀ ⦃i j : ℕ⦄ (hi : i ≤ αβ.height) (hj : j ≤ β2ψ.height) (t u : R),
+  {αβ, i, t} * {β2ψ, j, u} = {β2ψ, j, u} * {αβ, i, t} * {α2β2ψ, i + j, -t * u} := by
+  sorry
+
+-- 8.181a
+theorem expr_β_αβ2ψ_as_αβ2ψ_α2β2ψ_β :
+  ∀ ⦃i j : ℕ⦄ (hi : i ≤ β.height) (hj : j ≤ αβ2ψ.height) (t u : R),
+  {β, i, t} * {αβ2ψ, j, u} = {αβ2ψ, j, u} * {α2β2ψ, i + j, t * u} * {β, i, t} := by
+  sorry
+
+-- 8.181b
+theorem expr_β_αβ2ψ_as_αβ2ψ_β_α2β2ψ :
+  ∀ ⦃i j : ℕ⦄ (hi : i ≤ β.height) (hj : j ≤ αβ2ψ.height) (t u : R),
+  {β, i, t} * {αβ2ψ, j, u} = {αβ2ψ, j, u} * {β, i, t} * {α2β2ψ, i + j, t * u} := by
+  sorry
+
+-- 8.182a
+theorem expr_βψ_αβψ_as_αβψ_α2β2ψ_βψ :
+  ∀ ⦃i j : ℕ⦄ (hi : i ≤ βψ.height) (hj : j ≤ αβψ.height) (t u : R),
+  {βψ, i, t} * {αβψ, j, u} = {αβψ, j, u} * {α2β2ψ, i + j, 2 * t * u} * {βψ, i, t} := by
+  sorry
+
+-- 8.182b
+theorem expr_βψ_αβψ_as_αβψ_βψ_α2β2ψ :
+  ∀ ⦃i j : ℕ⦄ (hi : i ≤ βψ.height) (hj : j ≤ αβψ.height) (t u : R),
+  {βψ, i, t} * {αβψ, j, u} = {αβψ, j, u} * {βψ, i, t} * {α2β2ψ, i + j, 2 * t * u} := by
+  sorry
+
+-- 8.183a
+theorem commutator_of_α_βψ_a :
+  ∀ ⦃i j : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ βψ.height) (t u : R),
+  ⁅{α, i, t}, {βψ, j, u}⁆ = {αβψ, i + j, t * u} * {α2β2ψ, i + 2 * j, t * u^2} := by
+  sorry
+
+-- 8.183b
+theorem commutator_of_α_βψ_b :
+  ∀ ⦃i j : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ βψ.height) (t u : R),
+  ⁅{α, i, t}, {βψ, j, u}⁆ = {α2β2ψ, i + 2 * j, t * u^2} * {αβψ, i + j, t * u} := by
+  sorry
+
+-- 8.184
+theorem sufficient_conditions_for_commutator_of_ψ_and_α2β2ψ :
+  ∀ ⦃i j k : ℕ⦄ (hi : i ≤ 1) (hj : j ≤ 2) (hk : k ≤ 3)
+  (h50a : ∀ t u : R, ⁅{αβψ, i + j, t}, {β2ψ, k, u}⁆ = 1)
+  (h50b : ∀ t u : R, ⁅{αβ2ψ, 2 * i + j, t}, {β2ψ, k, u}⁆ = 1),
+  ∀ t u : R, ⁅{ψ, i, t}, {α2β2ψ, j + k, u}⁆ = 1 := by
+  sorry
+
+-- 8.185
+theorem partial_comm_of_ψ_α2β2ψ :
+  ∀ t u : R, ⁅{ψ, 1, t}, {α2β2ψ, 0, u}⁆ = 1 := by
+  sorry
+
+-- 8.186
+theorem trivial_comm_of_ψ_α2β2ψ :
+  trivial_commutator_of_root_pair (R := R) weakB3Large.pres_mk ψ α2β2ψ := by
+  sorry
+
+-- 8.187
+theorem trivial_comm_of_β2ψ_α2β2ψ :
+  trivial_commutator_of_root_pair (R := R) weakB3Large.pres_mk β2ψ α2β2ψ := by
+  sorry
+
+-- 8.188
+theorem trivial_comm_of_αβψ_α2β2ψ :
+  trivial_commutator_of_root_pair (R := R) weakB3Large.pres_mk αβψ α2β2ψ := by
+  sorry
+
+-- 8.189
+theorem trivial_comm_of_αβ2ψ_α2β2ψ :
+  trivial_commutator_of_root_pair (R := R) weakB3Large.pres_mk αβ2ψ α2β2ψ := by
+  sorry
+
+-- 8.190
+theorem trivial_comm_of_α2β2ψ_α2β2ψ :
+  trivial_commutator_of_root_pair (R := R) weakB3Large.pres_mk α2β2ψ α2β2ψ := by
+  sorry
+
+-- 8.191
+theorem trivial_comm_of_αβψ_β2ψ :
+  trivial_commutator_of_root_pair (R := R) weakB3Large.pres_mk αβψ β2ψ := by
+  sorry
+
+-- 8.192
+theorem trivial_comm_of_βψ_αβ2ψ :
+  trivial_commutator_of_root_pair (R := R) weakB3Large.pres_mk βψ αβ2ψ := by
+  sorry
+
+-- 8.193
+theorem trivial_comm_of_β2ψ_αβ2ψ :
+  trivial_commutator_of_root_pair (R := R) weakB3Large.pres_mk β2ψ αβ2ψ := by
+  sorry
+
+-- 8.194
+theorem trivial_comm_of_αβψ_αβ2ψ :
+  trivial_commutator_of_root_pair (R := R) weakB3Large.pres_mk αβψ αβ2ψ := by
+  sorry
+
+-- 8.195
+theorem trivial_comm_of_αβ2ψ_αβ2ψ :
+  trivial_commutator_of_root_pair (R := R) weakB3Large.pres_mk αβ2ψ αβ2ψ := by
+  sorry
