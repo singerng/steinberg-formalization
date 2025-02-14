@@ -414,6 +414,21 @@ theorem correct_of_split_4_into_1_3 (i : ℕ) (hi : i ≤ 4) :
   split
   all_goals trivial
 
+def split_5_into_2_3 (i : ℕ) (hi : i ≤ 5) :=
+  match i with
+  | 0 => (0, 0)
+  | 1 => (0, 1)
+  | 2 => (1, 1)
+  | 3 => (1, 2)
+  | 4 => (2, 2)
+  | 5 => (2, 3)
+
+theorem correct_of_split_5_into_2_3 (i : ℕ) (hi : i ≤ 5) :
+  (split_5_into_2_3 i hi).1 ≤ 2 ∧ (split_5_into_2_3 i hi).2 ≤ 3 := by
+  simp only [split_5_into_2_3]
+  split
+  all_goals trivial
+
 -- 8.116, second relation (top of page 68)
 def rels_of_def_of_αβψ :=
   {
@@ -433,6 +448,15 @@ def rels_of_def_of_αβ2ψ :=
       (free_mk_mk β2ψ (split_4_into_1_3 i hi).2 (correct_of_split_4_into_1_3 i hi).2 (1 : R))
     ⁆ * (free_mk_mk αβ2ψ i hi t)⁻¹
     | (i : ℕ) (hi : i ≤ αβ2ψ.height) (t : R)
+  }
+
+-- 8.174
+def rels_of_def_of_α2β2ψ :=
+  { ⁅
+      (free_mk_mk αβ (split_5_into_2_3 i hi).1 (correct_of_split_5_into_2_3 i hi).1 t),
+      (free_mk_mk β2ψ (split_5_into_2_3 i hi).2 (correct_of_split_5_into_2_3 i hi).2 (1 : R))
+    ⁆ * (free_mk_mk α2β2ψ i hi (-t))⁻¹
+    | (i : ℕ) (hi : i ≤ α2β2ψ.height) (t : R)
   }
 
 -- relations 8.60, 8.61, 8.62, 8.64, 8.65, 8.67, 8.68
@@ -465,7 +489,7 @@ def homog_and_nonhomog_sets (R : Type TR) [Field R] : Set (Set (FreeGroupOnGrade
 }
 
 def def_sets (R : Type TR) [Field R] : Set (Set (FreeGroupOnGradedGens B3LargePosRoot R)) := {
-  rels_of_def_of_αβψ, rels_of_def_of_αβ2ψ
+  rels_of_def_of_αβψ, rels_of_def_of_αβ2ψ, rels_of_def_of_α2β2ψ
 }
 
 def weakB3Large := WeakChevalley.mk
@@ -595,7 +619,7 @@ theorem nonhomog_lift_of_comm_of_α_α2β2ψ :
 /-! ### Homogeneous lift -/
 
 -- 8.83
-theorem hom_lift_of_interchange_of_αβψ :
+theorem raw_hom_lift_of_interchange_of_αβψ :
   ∀ ⦃i j k : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t u v : R),
   {ψ, k, -v/2} * {αβ, i + j, t * u} * {ψ, k, v} * {αβ, i + j, -t * u} * {ψ, k, -v/2} =
   {βψ, j + k, -u * v/2} * {α, i, t} * {βψ, j + k, u * v} * {α, i, -t} * {βψ, j + k, -u * v / 2} := by
@@ -606,7 +630,7 @@ theorem hom_lift_of_interchange_of_αβψ :
   · exists i, j, k, hi, hj, hk, t, u, v
 
 -- 8.84
-theorem hom_lift_of_doub_of_αβψ :
+theorem raw_hom_lift_of_doub_of_αβψ :
   ∀ ⦃i j k : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t u v : R),
   {ψ, k, -v / 2} * {αβ, i + j, t * u} * {ψ, k, v} * {αβ, i + j, -t * u} * {ψ, k, -v / 2} *
   {ψ, k, -v / 2} * {αβ, i + j, t * u} * {ψ, k, v} * {αβ, i + j, -t * u} * {ψ, k, -v / 2} =
@@ -618,7 +642,7 @@ theorem hom_lift_of_doub_of_αβψ :
   · exists i, j, k, hi, hj, hk, t, u, v
 
 -- 8.85
-theorem hom_lift_of_interchange_of_αβ2ψ :
+theorem raw_hom_lift_of_interchange_of_αβ2ψ :
   ∀ ⦃i j k : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t u v : R),
   ⁅{ψ, k, -v / 2} * {αβ, i + j, t * u} * {ψ, k, v} * {αβ, i + j, -t * u} * {ψ, k, -v / 2}, {ψ, k, v}⁆ =
   ⁅{α, i, t}, {β2ψ, j + 2 * k, -2 * u * v^2}⁆ := by
@@ -629,7 +653,7 @@ theorem hom_lift_of_interchange_of_αβ2ψ :
   · exists i, j, k, hi, hj, hk, t, u, v
 
 -- 8.86
-theorem hom_lift_of_commutator_of_βψ_α_β2ψ :
+theorem raw_hom_lift_of_commutator_of_βψ_α_β2ψ :
   ∀ ⦃i j k : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t u v : R),
   ⁅{βψ, j + k, u * v}, ⁅{α, i, t}, {β2ψ, j + 2 * k, u * v^2}⁆⁆ = 1 := by
   intro i j k hi hj hk t u v
@@ -639,7 +663,7 @@ theorem hom_lift_of_commutator_of_βψ_α_β2ψ :
   · exists i, j, k, hi, hj, hk, t, u, v
 
 -- 8.87a
-theorem hom_lift_of_inv_doub_of_α_β2ψ_a :
+theorem raw_hom_lift_of_inv_doub_of_α_β2ψ_a :
   ∀ ⦃i j k : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t u v : R),
   ⁅{α, i, t}, {β2ψ, j + 2 * k, u * v^2}⁆ = ⁅{α, i, -t}, {β2ψ, j + 2 * k, -u * v^2}⁆ := by
   intro i j k hi hj hk t u v
@@ -649,7 +673,7 @@ theorem hom_lift_of_inv_doub_of_α_β2ψ_a :
   · exists i, j, k, hi, hj, hk, t, u, v
 
 -- 8.87b
-theorem hom_lift_of_inv_doub_of_α_β2ψ_b :
+theorem raw_hom_lift_of_inv_doub_of_α_β2ψ_b :
   ∀ ⦃i j k : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t u v : R),
   ⁅{α, i, t}, {β2ψ, j + 2 * k, u * v^2}⁆ * ⁅{α, i, -t}, {β2ψ, j + 2 * k, u * v^2}⁆ = 1 := by
   intro i j k hi hj hk t u v
@@ -659,7 +683,7 @@ theorem hom_lift_of_inv_doub_of_α_β2ψ_b :
   · exists i, j, k, hi, hj, hk, t, u, v
 
 -- 8.87c
-theorem hom_lift_of_inv_doub_of_α_β2ψ_c :
+theorem raw_hom_lift_of_inv_doub_of_α_β2ψ_c :
   ∀ ⦃i j k : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t u v : R),
   ⁅{α, i, t} , {β2ψ, j + 2 * k, u * v^2}⁆ * ⁅{α, i, t} , {β2ψ, j + 2 * k, u * v^2}⁆ = ⁅{α, i, 2 * t}, {β2ψ, j + 2 * k, u * v^2}⁆ := by
   intro i j k hi hj hk t u v
@@ -669,7 +693,7 @@ theorem hom_lift_of_inv_doub_of_α_β2ψ_c :
   · exists i, j, k, hi, hj, hk, t, u, v
 
 -- 8.88
-theorem hom_lift_of_commutator_of_β2ψ_αβψ :
+theorem raw_hom_lift_of_commutator_of_β2ψ_αβψ :
   ∀ ⦃i j k : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t u v : R),
   ⁅{β2ψ, j + 2 * k, u * v^2}, {ψ, k, -v / 2} * {αβ, i + j, t * u} * {ψ, k, v} * {αβ, i + j, -t * u} * {ψ, k, -v / 2}⁆ = 1 := by
   intro i j k hi hj hk t u v
@@ -679,7 +703,7 @@ theorem hom_lift_of_commutator_of_β2ψ_αβψ :
   · exists i, j, k, hi, hj, hk, t, u, v
 
 -- 8.89a
-theorem hom_lift_of_interchange_of_α2β2ψ_a :
+theorem raw_hom_lift_of_interchange_of_α2β2ψ_a :
   ∀ ⦃i j k : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t u v : R),
   ⁅{αβ, i + j, t * u}, {β2ψ, j + 2 * k, 2 * u * v^2}⁆ = ⁅{ψ, k, -v / 2} * {αβ, i + j, t * u} * {ψ, k, v} * {αβ, i + j, -t * u} * {ψ, k, -v / 2}, {βψ, j + k, u * v}⁆ := by
   intro i j k hi hj hk t u v
@@ -689,7 +713,7 @@ theorem hom_lift_of_interchange_of_α2β2ψ_a :
   · exists i, j, k, hi, hj, hk, t, u, v
 
 -- 8.89b
-theorem hom_lift_of_interchange_of_α2β2ψ_b :
+theorem raw_hom_lift_of_interchange_of_α2β2ψ_b :
   ∀ ⦃i j k : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t u v : R),
   ⁅{ψ, k, -v / 2} * {αβ, i + j, t * u} * {ψ, k, v} * {αβ, i + j, -t * u} * {ψ, k, -v / 2}, {βψ, j + k, u * v}⁆ = ⁅⁅{α, i, t}, {β2ψ, j + 2 * k, u * v^2}⁆, {β, j, u}⁆ := by
   intro i j k hi hj hk t u v
@@ -699,7 +723,7 @@ theorem hom_lift_of_interchange_of_α2β2ψ_b :
   · exists i, j, k, hi, hj, hk, t, u, v
 
 -- 8.90
-theorem hom_lift_of_commutator_of_ψ_αβ_β2ψ :
+theorem raw_hom_lift_of_commutator_of_ψ_αβ_β2ψ :
   ∀ ⦃i j k : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t u v : R),
   ⁅{ψ, k, v}, ⁅{αβ, i + j, t * u}, {β2ψ, j + 2 * k, u * v^2}⁆⁆ = 1 := by
   intro i j k hi hj hk t u v
@@ -709,7 +733,7 @@ theorem hom_lift_of_commutator_of_ψ_αβ_β2ψ :
   · exists i, j, k, hi, hj, hk, t, u, v
 
 -- 8.91a
-theorem hom_lift_of_commutator_of_αβ_αβ_β2ψ_a :
+theorem raw_hom_lift_of_commutator_of_αβ_αβ_β2ψ_a :
   ∀ ⦃i j k : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t u v : R),
   ⁅{αβ, i + j, t * u}, ⁅{αβ, i + j, t * u}, {β2ψ, j + 2 * k, u * v^2}⁆⁆ = 1 := by
   intro i j k hi hj hk t u v
@@ -719,7 +743,7 @@ theorem hom_lift_of_commutator_of_αβ_αβ_β2ψ_a :
   · exists i, j, k, hi, hj, hk, t, u, v
 
 -- 8.91b
-theorem hom_lift_of_commutator_of_αβ_αβ_β2ψ_b :
+theorem raw_hom_lift_of_commutator_of_αβ_αβ_β2ψ_b :
   ∀ ⦃i j k : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t u v : R),
   ⁅{αβ, i + j, t * u}, ⁅{αβ, i + j, -t * u}, {β2ψ, j + 2 * k, u * v^2}⁆⁆ = 1 := by
   intro i j k hi hj hk t u v
@@ -729,7 +753,7 @@ theorem hom_lift_of_commutator_of_αβ_αβ_β2ψ_b :
   · exists i, j, k, hi, hj, hk, t, u, v
 
 -- 8.92a
-theorem hom_lift_of_inv_doub_of_αβ_β2ψ_a :
+theorem raw_hom_lift_of_inv_doub_of_αβ_β2ψ_a :
   ∀ ⦃i j k : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t u v : R),
   ⁅{αβ, i + j, t * u}, {β2ψ, j + 2 * k, u * v^2}⁆ = ⁅{αβ, i + j, -t * u}, {β2ψ, j + 2 * k, -u * v^2}⁆ := by
   intro i j k hi hj hk t u v
@@ -739,7 +763,7 @@ theorem hom_lift_of_inv_doub_of_αβ_β2ψ_a :
   · exists i, j, k, hi, hj, hk, t, u, v
 
 -- 8.92b
-theorem hom_lift_of_inv_doub_of_αβ_β2ψ_b :
+theorem raw_hom_lift_of_inv_doub_of_αβ_β2ψ_b :
   ∀ ⦃i j k : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t u v : R),
   ⁅{αβ, i + j, t * u}, {β2ψ, j + 2 * k, u * v^2}⁆ * ⁅{αβ, i + j, -t * u}, {β2ψ, j + 2 * k, u * v^2}⁆ = 1 := by
   intro i j k hi hj hk t u v
@@ -749,7 +773,7 @@ theorem hom_lift_of_inv_doub_of_αβ_β2ψ_b :
   · exists i, j, k, hi, hj, hk, t, u, v
 
 -- 8.92c
-theorem hom_lift_of_inv_doub_of_αβ_β2ψ_c :
+theorem raw_hom_lift_of_inv_doub_of_αβ_β2ψ_c :
   ∀ ⦃i j k : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t u v : R),
   ⁅{αβ, i + j, t * u}, {β2ψ, j + 2 * k, u * v^2}⁆ * ⁅{αβ, i + j, t * u}, {β2ψ, j + 2 * k, u * v^2}⁆ = ⁅{αβ, i + j, 2 * t * u}, {β2ψ, j + 2 * k, u * v^2}⁆ := by
   intro i j k hi hj hk t u v
@@ -759,7 +783,7 @@ theorem hom_lift_of_inv_doub_of_αβ_β2ψ_c :
   · exists i, j, k, hi, hj, hk, t, u, v
 
 -- 8.93a
-theorem hom_lift_of_inv_doub_of_β_αβ2ψ_a :
+theorem raw_hom_lift_of_inv_doub_of_β_αβ2ψ_a :
   ∀ ⦃i j k : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t u v : R),
   ⁅{β, i, t}, ⁅{α, i, t}, {β2ψ, j + 2 * k, u * v^2}⁆⁆ = ⁅{β, i, -t}, ⁅{α, i, -t}, {β2ψ, j + 2 * k, u * v^2}⁆⁆ := by
   intro i j k hi hj hk t u v
@@ -769,7 +793,7 @@ theorem hom_lift_of_inv_doub_of_β_αβ2ψ_a :
   · exists i, j, k, hi, hj, hk, t, u, v
 
 -- 8.93b
-theorem hom_lift_of_inv_doub_of_β_αβ2ψ_b :
+theorem raw_hom_lift_of_inv_doub_of_β_αβ2ψ_b :
  ∀ ⦃i j k : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t u v : R),
  ⁅{β, i, t}, ⁅{α, i, t}, {β2ψ, j + 2 * k, u * v^2}⁆⁆ * ⁅{β, i, -t}, ⁅{α, i, t}, {β2ψ, j + 2 * k, u * v^2}⁆⁆ = 1 := by
   intro i j k hi hj hk t u v
@@ -779,7 +803,7 @@ theorem hom_lift_of_inv_doub_of_β_αβ2ψ_b :
   · exists i, j, k, hi, hj, hk, t, u, v
 
 -- 8.93c
-theorem hom_lift_of_inv_doub_of_β_αβ2ψ_c :
+theorem raw_hom_lift_of_inv_doub_of_β_αβ2ψ_c :
   ∀ ⦃i j k : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t u v : R),
   ⁅{β, i, t}, ⁅{α, i, t}, {β2ψ, j + 2 * k, u * v^2}⁆⁆ * ⁅{β, i, t}, ⁅{α, i, t}, {β2ψ, j + 2 * k, u * v^2}⁆⁆ = ⁅{β, i, 2 * t}, ⁅{α, i, t}, {β2ψ, j + 2 * k, u * v^2}⁆⁆ := by
   intro i j k hi hj hk t u v
@@ -789,7 +813,7 @@ theorem hom_lift_of_inv_doub_of_β_αβ2ψ_c :
   · exists i, j, k, hi, hj, hk, t, u, v
 
 -- 8.94
-theorem hom_lift_of_commutator_of_βψ_αβ2ψ :
+theorem raw_hom_lift_of_commutator_of_βψ_αβ2ψ :
   ∀ ⦃i j k : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t u v : R),
   ⁅{βψ, j + k, u * v}, ⁅{α, i, t}, {β2ψ, j + 2 * k, u * v^2}⁆⁆ = 1 := by
   intro i j k hi hj hk t u v
@@ -799,7 +823,7 @@ theorem hom_lift_of_commutator_of_βψ_αβ2ψ :
   · exists i, j, k, hi, hj, hk, t, u, v
 
 -- 8.95
-theorem hom_lift_of_commutator_of_β2ψ_αβ2ψ :
+theorem raw_hom_lift_of_commutator_of_β2ψ_αβ2ψ :
   ∀ ⦃i j k : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t u v : R),
   ⁅{β2ψ, j + 2 * k, u * v^2}, ⁅{α, i, t}, {β2ψ, j + 2 * k, u * v^2}⁆⁆ = 1 := by
   intro i j k hi hj hk t u v
@@ -1044,7 +1068,7 @@ theorem partial_A_interchange_of_αβ2ψ :
   sorry
 
 -- Proposition 8.132
-theorem sufficient_conditions_for_commutator_of_βψ_α_β2ψ :
+theorem sufficient_conditions_for_commutator_of_βψ_and_α_β2ψ :
   ∀ ⦃i j k : ℕ⦄ (hi : i ≤ 2) (hj : j ≤ 1) (hk : k ≤ 3)
   (hyp : ∀ t u : R, ⁅{αβψ, i + j, t}, {β2ψ, k, u}⁆ = 1),
   ∀ t u v : R, ⁅{βψ, i, t}, ⁅{α, j, u}, {β2ψ, k, v}⁆⁆ = 1 := by
@@ -1190,4 +1214,270 @@ theorem expr_αβ_ψ_as_αβ2ψ_αβψ_ψ_αβ :
 theorem expr_ψ_αβ_as_αβ_αβ2ψ_αβψ_ψ :
   ∀ ⦃i j : ℕ⦄ (hi : i ≤ αβ.height) (hj : j ≤ ψ.height) (t u : R),
   {ψ, j, u} * {αβ, i, t} = {αβ, i, t} * {αβ2ψ, i + 2 * j, -t * u^2} * {αβψ, i + j, -t * u} * {ψ, j, u} := by
+  sorry
+
+-- 8.147a
+theorem hom_lift_of_interchange_of_α2β2ψ_a :
+  ∀ ⦃i j k : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t u v : R),
+  ⁅{αβ, i + j, t}, {β2ψ, j + 2 * k, 2 * u * v}⁆ = ⁅{αβψ, i + j + k, t * u}, {βψ, j + k, v}⁆ := by
+  sorry
+
+-- 8.147b
+theorem hom_lift_of_interchange_of_α2β2ψ_b :
+  ∀ ⦃i j k : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t u v : R),
+  ⁅{αβψ, i + j + k, t}, {βψ, j + k, u * v}⁆ = ⁅{αβ2ψ, i + j + 2 * k, 2 * t * u}, {β, j, v}⁆ := by
+  sorry
+
+-- 8.148
+theorem hom_lift_of_commutator_ψ_αβ_β2ψ :
+  ∀ ⦃i j k : ℕ⦄ (hi : i ≤ 1) (hj : j ≤ 1) (hk : k ≤ 1) (t u v : R),
+  ⁅{ψ, i, t}, ⁅{αβ, i + j, u}, {β2ψ, j + 2 * k, v}⁆⁆ = 1 := by
+  sorry
+
+-- 8.149a
+theorem hom_lift_of_commutator_αβ_αβ_β2ψ_a :
+  ∀ ⦃i j k : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t u : R),
+  ⁅{αβ, i + j, t}, ⁅{αβ, i + j, t}, {β2ψ, j + 2 * k, u}⁆⁆ = 1 := by
+  sorry
+
+-- 8.149b
+theorem hom_lift_of_commutator_αβ_αβ_β2ψ_b :
+  ∀ ⦃i j k : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t u : R),
+  ⁅{αβ, i + j, t}, ⁅{αβ, i + j, -t}, {β2ψ, j + 2 * k, u}⁆⁆ = 1 := by
+  sorry
+
+-- 8.150a
+theorem hom_lift_of_inv_doub_of_αβ_β2ψ_a :
+  ∀ ⦃i j k : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t u : R),
+  ⁅{αβ, i + j, t}, {β2ψ, j + 2 * k, u}⁆ = ⁅{αβ, i + j, -t}, {β2ψ, j + 2 * k, -u}⁆ := by
+  sorry
+
+-- 8.150b
+theorem hom_lift_of_inv_doub_of_αβ_β2ψ_b :
+  ∀ ⦃i j k : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t u : R),
+  ⁅{αβ, i + j, t}, {β2ψ, j + 2 * k, u}⁆ * ⁅{αβ, i + j, -t}, {β2ψ, j + 2 * k, u}⁆ = 1 := by
+  sorry
+
+-- 8.150c
+theorem hom_lift_of_inv_doub_of_αβ_β2ψ_c :
+  ∀ ⦃i j k : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t u : R),
+  ⁅{αβ, i + j, t}, {β2ψ, j + 2 * k, u}⁆ * ⁅{αβ, i + j, t}, {β2ψ, j + 2 * k, u}⁆ = ⁅{αβ, i + j, 2 * t}, {β2ψ, j + 2 * k, u}⁆ := by
+  sorry
+
+-- 8.151a
+theorem hom_lift_of_inv_doub_of_β_αβ2ψ_a :
+  ∀ ⦃i j k : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t u : R),
+  ⁅{β, i, t}, {αβ2ψ, i + j + 2 * k, u}⁆ = ⁅{β, i, -t}, {αβ2ψ, i + j + 2 * k, -u}⁆ := by
+  sorry
+
+-- 8.151b
+theorem hom_lift_of_inv_doub_of_β_αβ2ψ_b :
+  ∀ ⦃i j k : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t u : R),
+  ⁅{β, i, t}, {αβ2ψ, i + j + 2 * k, u}⁆ * ⁅{β, i, -t}, {αβ2ψ, i + j + 2 * k, u}⁆ = 1 := by
+  sorry
+
+-- 8.151c
+theorem hom_lift_of_inv_doub_of_β_αβ2ψ_c :
+  ∀ ⦃i j k : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t u : R),
+  ⁅{β, i, t}, {αβ2ψ, i + j + 2 * k, u}⁆ * ⁅{β, i, t}, {αβ2ψ, i + j + 2 * k, u}⁆ = ⁅{β, i, 2 * t}, {αβ2ψ, i + j + 2 * k, u}⁆ := by
+  sorry
+
+-- 8.152 TODO: ASK
+theorem hom_lift_of_commutator_βψ_αβ2ψ :
+  ∀ ⦃i j k : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t u : R),
+  ⁅{βψ, j + k, t}, {αβ2ψ, i + j + 2 * k, u}⁆ = 1 := by
+  sorry
+
+-- 8.153
+theorem hom_lift_of_commutator_of_β2ψ_αβ2ψ :
+  ∀ ⦃i j k : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t u : R),
+  ⁅{β2ψ, j + 2 * k, t}, {αβ2ψ, i + j + 2 * k, u}⁆ = 1 := by
+  sorry
+
+-- 8.154
+theorem comm_of_βψ_αβ_β2ψ :
+  ∀ ⦃i j k : ℕ⦄ (hi : i ≤ βψ.height) (hj : j ≤ αβ.height) (hk : k ≤ β2ψ.height) (t u v : R),
+  ⁅{βψ, i, t}, ⁅{αβ, j, u}, {β2ψ, k, v}⁆⁆ = 1 := by
+  sorry
+
+-- 8.155
+theorem comm_of_αβ_βψ_αβψ :
+  ∀ ⦃i j k : ℕ⦄ (hi : i ≤ αβ.height) (hj : j ≤ βψ.height) (hk : k ≤ αβψ.height) (t u v : R),
+  ⁅{αβ, i, t}, ⁅{βψ, j, u}, {αβψ, k, v}⁆⁆ = 1 := by
+  sorry
+
+-- 8.156
+theorem comm_of_β_αβ_β2ψ :
+  ∀ ⦃i j k : ℕ⦄ (hi : i ≤ β.height) (hj : j ≤ αβ.height) (hk : k ≤ β2ψ.height) (t u v : R),
+  ⁅{β, i, t}, ⁅{αβ, j, u}, {β2ψ, k, v}⁆⁆ = 1 := by
+  sorry
+
+-- 8.157
+theorem comm_of_β_αβψ_βψ :
+  ∀ ⦃i j k : ℕ⦄ (hi : i ≤ β.height) (hj : j ≤ αβψ.height) (hk : k ≤ βψ.height) (t u v : R),
+  ⁅{β, i, t}, ⁅{αβψ, j, u}, {βψ, k, v}⁆⁆ = 1 := by
+  sorry
+
+-- 8.158
+theorem sufficient_conditions_for_commutator_of_αβψ_and_βψ :
+  ∀ ⦃i j k : ℕ⦄ (hi : i ≤ 2) (hj : j ≤ 1) (hk : k ≤ 2)
+  (h35a : ∀ t u v : R, ⁅{ψ, j, t}, ⁅{αβ, i, u}, {β2ψ, j + k, v}⁆⁆ = 1)
+  (h35b : ∀ t u v : R, ⁅{αβ, i, t}, ⁅{αβ, i, u}, {β2ψ, j + k, v}⁆⁆ = 1)
+  (h35c : ∀ t u : R, ⁅{αβ, i, t}, {β2ψ, j + k, u}⁆ = ⁅{αβ, i, -t}, {β2ψ, j + k, -u}⁆)
+  (h35d : ∀ t u : R, ⁅{αβ, i, t}, {β2ψ, j + k, u}⁆ * ⁅{αβ, i, t}, {β2ψ, j + k, u}⁆ = ⁅{αβ, i, 2 * t}, {β2ψ, j + k, u}⁆),
+  ∀ t u : R, ⁅{αβψ, i + j, t * u}, {βψ, k, v}⁆ = ⁅{αβ, i, t}, {β2ψ, j + k, 2 * u * v}⁆ := by
+  sorry
+
+-- 8.159a
+theorem partial_A_interchange_of_α2β2ψ_a :
+  ∀ t u v : R,
+  ⁅{αβψ, 0, t * u}, {βψ, 2, v}⁆ = ⁅{αβ, 0, t}, {β2ψ, 2, 2 * u * v}⁆ := by
+  sorry
+
+-- 8.159b
+theorem partial_A_interchange_of_α2β2ψ_b :
+  ∀ t u v : R,
+  ⁅{αβψ, 2, t * u}, {βψ, 0, v}⁆ = ⁅{αβ, 1, t}, {β2ψ, 1, 2 * u * v}⁆ := by
+  sorry
+
+-- 8.160
+theorem more_sufficient_conditions_for_commutator_of_αβψ_and_βψ :
+  ∀ ⦃i j k : ℕ⦄ (hi : i ≤ 3) (hj : j ≤ 1) (hk : k ≤ 1)
+  (h38a : ∀ t u v : R, ⁅{β, k, t}, ⁅{αβ2ψ, i + j, u}, {β, k, v}⁆⁆ = 1)
+  (h38b : ∀ t u v : R, ⁅{ψ, j, t}, ⁅{αβ2ψ, i + j, u}, {β, k, v}⁆⁆ = 1)
+  (h38c : ∀ t u : R, ⁅{β, k, u}, {αβ2ψ, i + j, -t}⁆ = ⁅{αβ2ψ, i + j, t}, {β, k, u}⁆)
+  (h38d : ∀ t u : R, ⁅{αβ2ψ, i + j, t}, {β, k, u}⁆ * ⁅{αβ2ψ, i + j, t}, {β, k, u}⁆ = ⁅{αβ2ψ, i + j, 2 * t}, {β, k, u}⁆),
+  ∀ t u : R, ⁅{αβψ, i, t}, {βψ, j + k, u * v}⁆ = ⁅{αβ2ψ, i + j, 2 * t * u}, {β, k, v}⁆ := by
+  sorry
+
+-- 8.161
+theorem sufficient_conditions_for_commutator_of_αβ2ψ_and_β2ψ :
+  ∀ ⦃i j k : ℕ⦄ (hi : i ≤ 3) (hj : j ≤ 1) (hk : k ≤ 3)
+  (hyp : ∀ t u : R, ⁅{β2ψ, k, t}, {αβ2ψ, i + j, u}⁆ = 1),
+  ∀ t u : R, ⁅{β2ψ, i, t}, {αβ2ψ, j + k, u}⁆ = 1 := by
+  sorry
+
+-- 8.162a
+theorem partial_comm_of_β2ψ_αβ2ψ_a :
+  ∀ t u : R, ⁅{β2ψ, 2, t}, {αβ2ψ, 1, u}⁆ = 1 := by
+  sorry
+
+-- 8.162b
+theorem partial_comm_of_β2ψ_αβ2ψ_b :
+  ∀ t u : R, ⁅{β2ψ, 0, t}, {αβ2ψ, 2, u}⁆ = 1 := by
+  sorry
+
+-- 8.163
+theorem sufficient_conditions_for_commutator_of_ψ_and_αβ2ψ_β :
+  ∀ ⦃i j k : ℕ⦄ (hi : i ≤ 1) (hj : j ≤ 4) (hk : k ≤ 1)
+  (h41a : ∀ t u : R, ⁅{β2ψ, 2 * i + k, t}, {αβ2ψ, j, u}⁆ = 1)
+  (h41b : ∀ t u : R, ⁅{βψ, i + k, t}, {αβ2ψ, j, u}⁆ = 1),
+  ∀ t u v : R, ⁅{ψ, i, t}, ⁅{αβ2ψ, j, u}, {β, k, v}⁆⁆ = 1 := by
+  sorry
+
+-- 8.164
+theorem partial_comm_of_ψ_αβ2ψ_β :
+  ∀ t u v : R, ⁅{ψ, 1, v}, ⁅{αβ2ψ, 1, t}, {β, 0, u}⁆⁆ = 1 := by
+  sorry
+
+-- 8.165
+theorem partial_B_interchange_of_α2β2ψ :
+  ∀ t u v : R, ⁅{αβψ, 0, t}, {βψ, 1, u * v}⁆ = ⁅{αβ2ψ, 1, 2 * t * u}, {β, 0, v}⁆ := by
+  sorry
+
+-- 8.166
+theorem sufficient_conditions_for_commutator_of_αβ_and_β2ψ :
+  ∀ ⦃i j k : ℕ⦄ (hi : i ≤ 2) (hj : j ≤ 1) (hk : k ≤ 2)
+  (h42a : ∀ t u : R, ⁅{αβ2ψ, i + 2 * j, t}, {βψ, k, u}⁆ = 1)
+  (h42b : ∀ t u v : R, ⁅{ψ, j, t}, ⁅{αβψ, i + j, u}, {βψ, k, v}⁆⁆ = 1),
+  ∀ t u v : R, ⁅{αβ, i, t}, {β2ψ, j + k, 2 * u * v}⁆ = ⁅{αβψ, i + j, t * u}, {βψ, k, v}⁆ := by
+  sorry
+
+-- 8.167
+theorem sufficient_conditions_for_commutator_of_αβ2ψ_and_βψ :
+  ∀ ⦃i j k : ℕ⦄ (hi : i ≤ 4) (hj : j ≤ 1) (hk : k ≤ 1)
+  (h44a : ∀ t u v : R, ⁅⁅{αβ2ψ, i, t}, {β, j, u}⁆, {ψ, k, v}⁆ = 1)
+  (h44b : ∀ t u : R, ⁅{β, j, -u}, {αβ2ψ, i, t}⁆ = ⁅{αβ2ψ, i, t}, {β, j, u}⁆)
+  (h44c : ∀ t u : R, ⁅{αβ2ψ, i, t}, {β, j, u}⁆ * ⁅{αβ2ψ, i, -t}, {β, j, u}⁆ = 1),
+  ∀ t u : R, ⁅{αβ2ψ, i, t}, {βψ, j + k, u}⁆ = 1 := by
+  sorry
+
+-- 8.168
+theorem partial_comm_of_βψ_αβ2ψ :
+  ∀ t u : R, ⁅{αβ2ψ, 2, t}, {βψ, 0, u}⁆ = 1 := by
+  sorry
+
+-- 8.169a
+theorem partial_C_interchange_of_α2β2ψ_a :
+  ∀ t u v : R, ⁅{αβ, 0, t}, {β2ψ, 1, u * v}⁆ = ⁅{αβψ, 1, t * u}, {βψ, 0, 2 * v}⁆ := by
+  sorry
+
+-- 8.169b
+theorem partial_C_interchange_of_α2β2ψ_b :
+  ∀ t u v : R, ⁅{αβ, 2, t}, {β2ψ, 0, u * v}⁆ = ⁅{αβψ, 2, t * v}, {βψ, 0, 2 * v}⁆ := by
+  sorry
+
+-- 8.170
+theorem sufficient_conditions_for_commutator_of_αβ2ψ_and_β :
+  ∀ ⦃i j k : ℕ⦄ (hi : i ≤ 3) (hj : j ≤ 1) (hk : k ≤ 1)
+  (h47a : ∀ t u : R, ⁅{αβψ, i, t}, {β2ψ, 2 * j + k, u}⁆ = 1)
+  (h47b : ∀ t u v : R, ⁅⁅{αβψ, i, t}, {βψ, j + k, u}⁆, {ψ, j, v}⁆ = 1)
+  (h47c : ∀ t u : R, ⁅{βψ, j + k, -u}, {αβψ, i, t}⁆ = ⁅{αβψ, i, t}, {βψ, j + k, u}⁆),
+  ∀ t u v : R, ⁅{αβ2ψ, i + j, 2 * t * u}, {β, k, v}⁆ = ⁅{αβψ, i, t}, {βψ, j + k, u * v}⁆ := by
+  sorry
+
+-- 8.171
+theorem sufficient_conditions_for_commutator_of_αβψ_and_β2ψ :
+  ∀ ⦃i j k : ℕ⦄ (hi : i ≤ 1) (hj : j ≤ 2) (hk : k ≤ 3)
+  (hyp : ∀ t u : R, ⁅{αβ2ψ, i + k, u}, {βψ, j, t}⁆ = 1),
+  ∀ t u : R, ⁅{αβψ, i + j, t}, {β2ψ, k, u}⁆ = 1 := by
+  sorry
+
+-- 8.172
+theorem partial_comm_of_αβψ_β2ψ :
+  ∀ t u : R, ⁅{αβψ, 0, t}, {β2ψ, 1, u}⁆ = 1 := by
+  sorry
+
+-- 8.173
+theorem partial_D_interchange_of_α2β2ψ :
+  ∀ t u v : R, ⁅{αβψ, 0, t}, {βψ, 1, u * v}⁆ = ⁅{αβ2ψ, 0, t * u}, {β, 1, 2 * u}⁆ := by
+  sorry
+
+-- 8.175 (8.174 is establishing α2β2ψ)
+theorem trivial_comm_of_β_α2β2ψ :
+  trivial_commutator_of_root_pair (R := R) weakB3Large.pres_mk β α2β2ψ := by
+  sorry
+
+-- 8.176
+theorem trivial_comm_of_αβ_α2β2ψ :
+  trivial_commutator_of_root_pair (R := R) weakB3Large.pres_mk αβ α2β2ψ := by
+  sorry
+
+-- 8.177
+theorem trivial_comm_of_βψ_α2β2ψ :
+  trivial_commutator_of_root_pair (R := R) weakB3Large.pres_mk βψ α2β2ψ := by
+  sorry
+
+-- 8.178a
+theorem inv_doub_of_α2β2ψ_a :
+  ∀ ⦃i : ℕ⦄ (hi : i ≤ α2β2ψ.height) (t : R),
+  {α2β2ψ, i, t} * {α2β2ψ, i, -t} = 1 := by
+  sorry
+
+-- 8.178b
+theorem inv_doub_of_α2β2ψ_b :
+  ∀ ⦃i : ℕ⦄ (hi : i ≤ α2β2ψ.height) (t : R),
+  {α2β2ψ, i, t} * {α2β2ψ, i, t} = {α2β2ψ, i, 2 * t} := by
+  sorry
+
+-- 8.179a
+theorem expand_α2β2ψ_as_αβ_β2ψ_αβ_β2ψ :
+  ∀ ⦃i j : ℕ⦄ (hi : i ≤ αβ.height) (hj : j ≤ β2ψ.height) (t u : R),
+  {α2β2ψ, i + j, -t * u} = {αβ, i, t} * {β2ψ, j, u} * {αβ, i, -t} * {β2ψ, j, -u} := by
+  sorry
+
+-- 8.179b
+theorem expand_α2β2ψ_as_β2ψ_αβ_β2ψ_αβ :
+  ∀ ⦃i j : ℕ⦄ (hi : i ≤ αβ.height) (hj : j ≤ β2ψ.height) (t u : R),
+  {α2β2ψ, i + j, -t * u} = {β2ψ, j, -u} * {αβ, i, t} * {β2ψ, j, u} * {αβ, i, -t} := by
   sorry
