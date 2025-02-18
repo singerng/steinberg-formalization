@@ -4,6 +4,7 @@ import Mathlib.Order.Interval.Finset.Defs
 import Mathlib.Algebra.Ring.Defs
 
 import Mathlib.Tactic.Group
+import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.DeriveFintype
 
@@ -26,7 +27,9 @@ namespace Steinberg
 
 open Steinberg.Macro
 
-variable {R : Type TR} [Field R]
+set_option maxHeartbeats 0
+
+variable {R : Type TR} [Field R] variable {Rchar : (2 : R) ≠ 0}
 
 /-! ### Defining the B3 large positive root system -/
 
@@ -887,11 +890,24 @@ theorem inv_of_βψ : inv_of_root (R := R) weakB3Large.pres_mk βψ :=
 theorem inv_of_β2ψ : inv_of_root (R := R) weakB3Large.pres_mk β2ψ :=
   inv_of_lin_of_root lin_of_β2ψ
 
+
+include Rchar
+
 -- 8.108
 theorem expand_βψ_as_ψ_β_ψ_β_ψ :
-  ∀ ⦃i j : ℕ⦄ (hi : i ≤ β.height) (hj : j ≤ ψ.height) (t u : R),
+  ∀ ⦃i j : ℕ⦄ (hi : i ≤ 1) (hj : j ≤ 1) (t u : R),
   {βψ, i + j, t * u} = {ψ, i, -t/2} * {β, j, u} * {ψ, i, t} * {β, j, -u} * {ψ, i, -t/2} := by
-  sorry
+  intro i j hi hj t u
+  have := calc
+    ⁅{β, j, u}, {ψ, i, t}⁆ = {βψ, i + j, t * u} * {β2ψ, j + 2 * i, u * t^2} := by rw [comm_of_β_ψ (R := R)]; group
+    _ = {β2ψ, j + 2 * i, u * t^2} * {βψ, i + j, t * u} := by rw [comm_left, comm_of_βψ_β2ψ (R := R)]; group
+    _ = ⁅{ψ, i, t / 2}, {βψ, i + j, t * u}⁆ * {βψ, i + j, t * u} := by rw [comm_of_ψ_βψ]; field_simp; group
+    _ = {ψ, i, t / 2} * {βψ, i + j, t * u} * {ψ, i, t / 2}⁻¹ := by group
+  calc
+    {βψ, i + j, t * u} = {ψ, i, t / 2}⁻¹ * ⁅{β, j, u}, {ψ, i, t}⁆ * {ψ, i, t / 2} := by rw [this]; group
+    _ = {ψ, i, t / 2}⁻¹ * {β, j, u} * {ψ, i, t} * {β, j, u}⁻¹ * {ψ, i, t}⁻¹ * {ψ, i, t / 2} := by group
+    _ = {ψ, i, -t / 2} * {β, j, u} * {ψ, i, t} * {β, j, -u} * {ψ, i, -t} * {ψ, i, t / 2} := by rw [←inv_of_ψ, ←inv_of_β, ←inv_of_ψ]; group
+    _ = {ψ, i, -t / 2} * {β, j, u} * {ψ, i, t} * {β, j, -u} * {ψ, i, -t / 2} := by rw [mul_assoc, mul_assoc, mul_assoc, mul_assoc, mul_assoc, lin_of_ψ]; field_simp; group
 
 -- 8.109
 theorem expand_αβ_as_α_β_α_β :
