@@ -58,12 +58,12 @@ def double_comm_rels (w : WeakChevalley Φ R) :=
 def mixed_commutes_rels (w : WeakChevalley Φ R) :=
   ⋃₀ (rels_of_mixed_commutes_of_root R '' w.mixed_commutes_roots)
 
-def lin_rels (w : WeakChevalley Φ R)
-  := ⋃₀ (rels_of_lin_of_root R '' w.lin_roots)
+def lin_rels (w : WeakChevalley Φ R) :=
+  ⋃₀ (rels_of_lin_of_root R '' w.lin_roots)
 
 def all_rels (w : WeakChevalley Φ R) :=
   ⋃₀ {trivial_comm_rels w, single_comm_rels w, double_comm_rels w, mixed_commutes_rels w,
-      lin_rels w, ⋃₀ w.nonhomog_rels_sets, ⋃₀ w.def_rels_sets}
+      lin_rels w, ⋃₀ nonhomog_rels_sets w, ⋃₀ def_rels_sets w}
 
 /-! ### The group and the embedding -/
 
@@ -72,6 +72,33 @@ abbrev group (w : WeakChevalley Φ R) :=
 
 def pres_mk (w : WeakChevalley Φ R) : FreeGroupOnGradedGens Φ R →* group w :=
   PresentedGroup.mk (WeakChevalley.all_rels w)
+
+--open Lean PrettyPrinter Delaborator SubExpr in
+/- Failed implementation of delab. This doesn't work because `pres_mk`
+   is happy once `w` is provided, but we want to drop the string when
+   it's an application to a group element.
+-/
+/-@[delab app.Steinberg.WeakChevalley.pres_mk']
+partial def delab_pres_mk : Delab := do
+  let e ← getExpr
+  guard $ e.isAppOfArity' ``pres_mk 6
+  let arg ← withNaryArg 5 delab
+  `($arg) -/
+
+open Lean PrettyPrinter Delaborator SubExpr in
+/--
+  Delaborator for `pres_mk` when it's an application.
+
+  Note that this will obscure the widgets on the infoview, such that
+  hovering over the group elements won't bring you back to `pres_mk`.
+-/
+@[delab app.DFunLike.coe]
+def delab_pres_mk' : Delab := do
+  withOverApp 6 do
+    let e ← getExpr
+    let mkApp5 (.const ``pres_mk _) _ _ _ _ _ := e.appFn!.appArg!' | failure
+    let f_mk_mk ← withNaryArg 5 delab
+    `($f_mk_mk)
 
 /-! ### Helpers -/
 
@@ -101,7 +128,7 @@ theorem helper {x y z : G} : x * y * z⁻¹ = 1 → x * y = z := by
   exact h
 
 theorem single_commutator_helper (w : WeakChevalley Φ R) (ζ η θ : Φ) (C : R)
-  (h_height : height θ = PosRootSys.height ζ + PosRootSys.height η)
+  (h_height : height θ = height ζ + height η)
   (h : ⟨ ζ, η, θ, C, h_height ⟩ ∈ w.single_comm_root_pairs)
     : single_commutator_of_root_pair w.pres_mk ζ η θ C h_height := by
   intro i j hi hj t u
@@ -121,8 +148,8 @@ theorem single_commutator_helper (w : WeakChevalley Φ R) (ζ η θ : Φ) (C : R
       exists i, j, hi, hj, t, u
 
 theorem double_commutator_helper (w : WeakChevalley Φ R) (ζ η θ₁ θ₂ : Φ) (C₁ C₂ : R)
-  (h_height₁ : height θ₁ = PosRootSys.height ζ + PosRootSys.height η)
-  (h_height₂ : height θ₂ = PosRootSys.height ζ + 2 * PosRootSys.height η)
+  (h_height₁ : height θ₁ = height ζ + height η)
+  (h_height₂ : height θ₂ = height ζ + 2 * height η)
   (h : ⟨ ζ, η, θ₁, θ₂, C₁, C₂, h_height₁, h_height₂ ⟩ ∈ w.double_comm_root_pairs)
     : double_commutator_of_root_pair w.pres_mk ζ η θ₁ θ₂ C₁ C₂ h_height₁ h_height₂ := by
   intro i j hi hj t u

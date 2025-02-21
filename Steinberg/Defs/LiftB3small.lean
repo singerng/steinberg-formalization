@@ -10,11 +10,8 @@ import Mathlib.Tactic.DeriveFintype
 import Mathlib.GroupTheory.Commutator.Basic
 import Mathlib.GroupTheory.PresentedGroup
 
-import Steinberg.Defs.Root
-import Steinberg.Defs.Chevalley
 import Steinberg.Defs.Deg
 import Steinberg.Defs.Commutator
-import Steinberg.Defs.WeakChevalley
 import Steinberg.Defs.ReflDeg
 
 import Steinberg.Macro.Group
