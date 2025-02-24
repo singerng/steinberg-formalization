@@ -891,8 +891,58 @@ theorem inv_of_βψ : inv_of_root (R := R) weakB3Large.pres_mk βψ :=
 theorem inv_of_β2ψ : inv_of_root (R := R) weakB3Large.pres_mk β2ψ :=
   inv_of_lin_of_root lin_of_β2ψ
 
-include Rchar
+/-! ### Helper commute theorems -/
 
+@[group_reassoc]
+theorem expr_α_αβ_as_αβ_α :
+  ∀ ⦃i j : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ αβ.height) (t u : R),
+  {α, i, t} * {αβ, j, u} = {αβ, j, u} * {α, i, t} := by
+  intro i j hi hj t u
+  rw [triv_comm_iff_commutes.1 (comm_of_α_αβ _ _ t u)]
+
+@[group_reassoc]
+theorem expr_β_αβ_as_αβ_β :
+  ∀ ⦃i j : ℕ⦄ (hi : i ≤ β.height) (hj : j ≤ αβ.height) (t u : R),
+  {β, i, t} * {αβ, j, u} = {αβ, j, u} * {β, i, t} := by
+  intro i j hi hj t u
+  rw [triv_comm_iff_commutes.1 (comm_of_β_αβ _ _ t u)]
+
+@[group_reassoc]
+theorem expr_α_ψ_as_ψ_α :
+  ∀ ⦃i j : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ ψ.height) (t u : R),
+  {α, i, t} * {ψ, j, u} = {ψ, j, u} * {α, i, t} := by
+  intro i j hi hj t u
+  rw [triv_comm_iff_commutes.1 (comm_of_α_ψ _ _ t u)]
+
+@[group_reassoc]
+theorem expr_β_βψ_as_βψ_β :
+  ∀ ⦃i j : ℕ⦄ (hi : i ≤ β.height) (hj : j ≤ βψ.height) (t u : R),
+  {β, i, t} * {βψ, j, u} = {βψ, j, u} * {β, i, t} := by
+  intro i j hi hj t u
+  rw [triv_comm_iff_commutes.1 (comm_of_β_βψ _ _ t u)]
+
+@[group_reassoc]
+theorem expr_β_β2ψ_as_β2ψ_β :
+  ∀ ⦃i j : ℕ⦄ (hi : i ≤ β.height) (hj : j ≤ β2ψ.height) (t u : R),
+  {β, i, t} * {β2ψ, j, u} = {β2ψ, j, u} * {β, i, t} := by
+  intro i j hi hj t u
+  rw [triv_comm_iff_commutes.1 (comm_of_β_β2ψ _ _ t u)]
+
+@[group_reassoc]
+theorem expr_ψ_β2ψ_as_β2ψ_ψ :
+  ∀ ⦃i j : ℕ⦄ (hi : i ≤ ψ.height) (hj : j ≤ β2ψ.height) (t u : R),
+  {ψ, i, t} * {β2ψ, j, u} = {β2ψ, j, u} * {ψ, i, t} := by
+  intro i j hi hj t u
+  rw [triv_comm_iff_commutes.1 (comm_of_ψ_β2ψ _ _ t u)]
+
+@[group_reassoc]
+theorem expr_βψ_as_β2ψ :
+  ∀ ⦃i j : ℕ⦄ (hi : i ≤ βψ.height) (hj : j ≤ β2ψ.height) (t u : R),
+  {βψ, i, t} * {β2ψ, j, u} = {β2ψ, j, u} * {βψ, i, t} := by
+  intro i j hi hj t u
+  rw [triv_comm_iff_commutes.1 (comm_of_βψ_β2ψ _ _ t u)]
+
+include Rchar
 -- 8.108
 theorem expand_βψ_as_ψ_β_ψ_β_ψ :
   ∀ ⦃i j : ℕ⦄ (hi : i ≤ 1) (hj : j ≤ 1) (t u : R),
@@ -909,8 +959,9 @@ theorem expand_βψ_as_ψ_β_ψ_β_ψ :
     _ = {ψ, i, -t / 2} * {β, j, u} * {ψ, i, t} * {β, j, -u} * {ψ, i, -t} * {ψ, i, t / 2} := by rw [←inv_of_ψ, ←inv_of_β, ←inv_of_ψ]; group
     _ = {ψ, i, -t / 2} * {β, j, u} * {ψ, i, t} * {β, j, -u} * {ψ, i, -t / 2} := by rw [mul_assoc, mul_assoc, mul_assoc, mul_assoc, mul_assoc, lin_of_ψ]; field_simp; group
 
+omit Rchar
+
 -- 8.109
-omit Rchar in
 theorem expand_αβ_as_α_β_α_β :
   ∀ ⦃i j : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ β.height) (t u : R),
   {αβ, i + j, t * u} = {α, i, t} * {β, j, u} * {α, i, -t} * {β, j, -u} := by
@@ -920,7 +971,6 @@ theorem expand_αβ_as_α_β_α_β :
     _ = {α, i, t} * {β, j, u} * {α, i, -t} * {β, j, -u} := by rw [commutatorElement_def, inv_of_α, inv_of_β]
 
 -- 8.110
-omit Rchar in
 theorem expand_β2ψ_as_ψ_βψ_ψ_βψ :
   ∀ ⦃i j : ℕ⦄ (hi : i ≤ β.height) (hj : j ≤ ψ.height) (t u : R),
   {β2ψ, i + j, 2 * t * u} = {ψ, i, t} * {βψ, j, u} * {ψ, i, -t} * {βψ, j, -u} := by
@@ -930,7 +980,6 @@ theorem expand_β2ψ_as_ψ_βψ_ψ_βψ :
     _ = {ψ, i, t} * {βψ, j, u} * {ψ, i, -t} * {βψ, j, -u} := by rw [commutatorElement_def, inv_of_ψ, inv_of_βψ]
 
 -- 8.111
-omit Rchar in
 theorem expr_β_α_as_αβ_α_β :
   ∀ ⦃i j : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ β.height) (t u : R),
   {β, j, u} * {α, i, t} = {αβ, i + j, -t * u} * {α, i, t} * {β, j, u} := by
@@ -948,7 +997,6 @@ theorem expr_ψ_β_as_β_ψ_βψ_β2ψ :
   sorry
 
 -- 8.112b
-omit Rchar in
 theorem expr_ψ_β_as_β2ψ_βψ_β_ψ :
   ∀ ⦃i j : ℕ⦄ (hi : i ≤ 1) (hj : j ≤ 1) (t u : R),
   {ψ, j, u} * {β, i, t} = {β2ψ, i + 2 * j, -t * u^2} * {βψ, i + j, -t * u} * {β, i, t} * {ψ, j, u} := by
@@ -963,7 +1011,7 @@ theorem expr_ψ_β_as_β2ψ_βψ_β_ψ :
     _ = {β2ψ, i + 2 * j, -t * u^2} * {βψ, i + j, -t * u} * {β, i, t} * {ψ, j, u} := by group
 
 -- 8.112c
-omit Rchar in
+omit Rchar
 theorem expr_ψ_β_as_β_β2ψ_βψ_ψ :
   ∀ ⦃i j : ℕ⦄ (hi : i ≤ 1) (hj : j ≤ 1) (t u : R),
   {ψ, j, u} * {β, i, t} = {β, i, t} * {β2ψ, i + 2 * j, -t * u^2} * {βψ, i + j, -t * u} * {ψ, j, u} := by
@@ -976,7 +1024,6 @@ theorem expr_ψ_β_as_β_β2ψ_βψ_ψ :
     _ = ({β, i, t} * {β2ψ, i + 2 * j, -t * u^2}) * {βψ, i + j, -t * u} * {ψ, j, u} := by rw [triv_comm_iff_commutes.1 (comm_of_β_β2ψ _ _ t (-t * u^2))]
 
 -- 8.112d
-omit Rchar in
 theorem expr_ψ_β_as_β_βψ_β2ψ_ψ :
   ∀ ⦃i j : ℕ⦄ (hi : i ≤ β.height) (hj : j ≤ ψ.height) (t u : R),
   {ψ, j, u} * {β, i, t} = {β, i, t} * {βψ, i + j, -t * u} * {β2ψ, i + 2 * j, -t * u^2} * {ψ, j, u} := by
@@ -987,7 +1034,6 @@ theorem expr_ψ_β_as_β_βψ_β2ψ_ψ :
     _ = {β, i, t} * ({βψ, i + j, -t * u} * {β2ψ, i + 2 * j, -t * u^2}) * {ψ, j, u} := by rw [triv_comm_iff_commutes.1 (comm_of_βψ_β2ψ _ _ (-t * u) (-t * u^2))]
 
 -- 8.113a
-omit Rchar in
 theorem expr_ψ_βψ_as_βψ_β2ψ :
   ∀ ⦃i j : ℕ⦄ (hi : i ≤ ψ.height) (hj : j ≤ βψ.height) (t u : R),
   {ψ, i, t} * {βψ, j, u} = {βψ, j, u} * {β2ψ, i + j, 2 * t * u} * {ψ, i, t} := by
@@ -998,7 +1044,6 @@ theorem expr_ψ_βψ_as_βψ_β2ψ :
     _ = {βψ, j, u} * {β2ψ, i + j, 2 * t * u} * {ψ, i, t} := by group
 
 -- 8.113b
-omit Rchar in
 theorem expr_ψ_βψ_as_βψ_ψ_β2ψ :
   ∀ ⦃i j : ℕ⦄ (hi : i ≤ ψ.height) (hj : j ≤ βψ.height) (t u : R),
   {ψ, i, t} * {βψ, j, u} = {βψ, j, u} * {ψ, i, t} * {β2ψ, i + j, 2 * t * u} := by
@@ -1009,7 +1054,6 @@ theorem expr_ψ_βψ_as_βψ_ψ_β2ψ :
     _ = {βψ, j, u} * ({ψ, i, t} * {β2ψ, i + j, 2 * t * u}) := by rw [triv_comm_iff_commutes.1 (comm_of_ψ_β2ψ _ _ t (2 * t * u))]
 
 -- 8.114a
-omit Rchar in
 theorem expr_βψ_ψ_as_ψ_β2ψ_βψ :
   ∀ ⦃i j : ℕ⦄ (hi : i ≤ ψ.height) (hj : j ≤ βψ.height) (t u : R),
   {βψ, j, u} * {ψ, i, t} = {ψ, i, t} * {β2ψ, i + j, -2 * t * u} * {βψ, j, u} := by
@@ -1022,7 +1066,6 @@ theorem expr_βψ_ψ_as_ψ_β2ψ_βψ :
     _ = {ψ, i, t} * ({β2ψ, i + j, -2 * t * u} * {βψ, j, u}) := by rw [triv_comm_iff_commutes.1 (comm_of_βψ_β2ψ _ _ u (-2 * t * u))]
 
 -- 8.114b
-omit Rchar in
 theorem expr_βψ_ψ_as_ψ_βψ_β2ψ :
   ∀ ⦃i j : ℕ⦄ (hi : i ≤ ψ.height) (hj : j ≤ βψ.height) (t u : R),
   {βψ, j, u} * {ψ, i, t} = {ψ, i, t} * {βψ, j, u} * {β2ψ, i + j, -2 * t * u} := by
@@ -1034,19 +1077,50 @@ theorem expr_βψ_ψ_as_ψ_βψ_β2ψ :
 -- 8.115
 theorem trivial_comm_of_αβ_βψ :
   trivial_commutator_of_root_pair (R := R) weakB3Large.pres_mk αβ βψ := by
-  -- waiting on this since analogous to 7.35
+  -- postponing this proof since its analogous to 7.35
   sorry
 
+@[group_reassoc]
+theorem expr_αβ_βψ_as_βψ_αβ :
+  ∀ ⦃i j : ℕ⦄ (hi : i ≤ αβ.height) (hj : j ≤ βψ.height) (t u : R),
+  {αβ, i, t} * {βψ, j, u} = {βψ, j, u} * {αβ, i, t} := by
+  intro i j hi hj t u
+  rw [triv_comm_iff_commutes.1 (trivial_comm_of_αβ_βψ _ _ t u)]
 
--- 8.117 (8.116 defines αβψ)
+-- 8.116a
+theorem expand_αβψ_as_ψ_αβ_ψ_αβ_ψ :
+  ∀ ⦃i j : ℕ⦄ (hi : i ≤ 2) (hj : j ≤ 1) (t u : R),
+  {αβψ, i + j, t * u} = {ψ, j, -u/2} * {αβ, i, t} * {ψ, j, u} * {αβ, i, -t} * {ψ, j, -u/2} := by
+  sorry
+
+-- 8.116b
+theorem expand_αβψ_as_βψ_α_βψ_α_βψ :
+  ∀ ⦃i j : ℕ⦄ (hj : j ≤ 2) (hi : i ≤ 1)(t u : R),
+  {αβψ, j + i, t * u} = {βψ, j, -u/2} * {α, i, t} * {βψ, j, u} * {α, i, -t} * {βψ, j, -u/2} := by
+  sorry
+
+-- 8.117
 theorem trivial_comm_of_α_αβψ :
   trivial_commutator_of_root_pair (R := R) weakB3Large.pres_mk α αβψ := by
-  sorry
+  intro i j hi hj t u
+  apply triv_comm_iff_commutes.mpr
+  rcases decompose αβ.height ψ.height j hj with ⟨ j₁, j₂, ⟨ rfl, hj₁, hj₂ ⟩ ⟩
+  grw [←one_mul u, expand_αβψ_as_ψ_αβ_ψ_αβ_ψ hj₁ hj₂,
+  expr_α_ψ_as_ψ_α hi hj₂, expr_α_αβ_as_αβ_α hi hj₁,
+  expr_α_ψ_as_ψ_α hi hj₂, expr_α_αβ_as_αβ_α hi hj₁,
+  expr_α_ψ_as_ψ_α hi hj₂]
 
 -- 8.118
 theorem trivial_comm_of_αβ_αβψ :
   trivial_commutator_of_root_pair (R := R) weakB3Large.pres_mk αβ αβψ := by
-  sorry
+  intro i j hi hj t u
+  apply triv_comm_iff_commutes.mpr
+  rcases decompose αβ.height ψ.height j hj with ⟨ j₁, j₂, ⟨ rfl, hj₁, hj₂ ⟩ ⟩
+  grw [←one_mul u, expand_αβψ_as_βψ_α_βψ_α_βψ hj₁ hj₂,
+  expr_αβ_βψ_as_βψ_αβ hi hj₁, ←expr_α_αβ_as_αβ_α hj₂ hi,
+  expr_αβ_βψ_as_βψ_αβ hi hj₁, ←expr_α_αβ_as_αβ_α hj₂ hi,
+  expr_αβ_βψ_as_βψ_αβ hi hj₁]
+
 
 -- 8.119
 theorem trivial_comm_of_β_αβψ :
