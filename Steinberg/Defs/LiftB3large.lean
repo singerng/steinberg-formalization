@@ -101,21 +101,21 @@ def rels_of_hom_lift_of_interchange_of_αβψ :=
 def rels_of_hom_lift_of_doub_of_αβψ :=
   {
     (free_mk_mk ψ k hk (-v / 2)) *
-    (free_mk_mk αβ (i + j) (add_le_add hi hj) (t * u)) *
+    (free_mk_mk αβ i hi (t * u)) *
     (free_mk_mk ψ k hk v) *
-    (free_mk_mk αβ (i + j) (add_le_add hi hj) (-t * u)) *
+    (free_mk_mk αβ i hi (-t * u)) *
     (free_mk_mk ψ k hk (-v / 2)) *
     (free_mk_mk ψ k hk (-v / 2)) *
-    (free_mk_mk αβ (i + j) (add_le_add hi hj) (t * u)) *
+    (free_mk_mk αβ i hi (t * u)) *
     (free_mk_mk ψ k hk v) *
-    (free_mk_mk αβ (i + j) (add_le_add hi hj) (-t * u)) *
+    (free_mk_mk αβ i hi (-t * u)) *
     (free_mk_mk ψ k hk (-v / 2)) *
     (free_mk_mk ψ k hk (-v))⁻¹ *
-    (free_mk_mk αβ (i + j) (add_le_add hi hj) (-t * u))⁻¹ *
+    (free_mk_mk αβ i hi (-t * u))⁻¹ *
     (free_mk_mk ψ k hk (2 * v))⁻¹ *
-    (free_mk_mk αβ (i + j) (add_le_add hi hj) (t * u))⁻¹ *
+    (free_mk_mk αβ i hi (t * u))⁻¹ *
     (free_mk_mk ψ k hk (-v))⁻¹
-    | (i : ℕ) (j : ℕ) (k : ℕ) (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t : R) (u : R) (v : R)
+    | (i : ℕ) (k : ℕ) (hi : i ≤ αβ.height) (hk : k ≤ ψ.height) (t : R) (u : R) (v : R)
   }
 
 -- Relation 8.85
@@ -635,15 +635,15 @@ theorem raw_hom_lift_of_interchange_of_αβψ :
 
 -- 8.84
 theorem raw_hom_lift_of_doub_of_αβψ :
-  ∀ ⦃i j k : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t u v : R),
-  {ψ, k, -v / 2} * {αβ, i + j, t * u} * {ψ, k, v} * {αβ, i + j, -t * u} * {ψ, k, -v / 2} *
-  {ψ, k, -v / 2} * {αβ, i + j, t * u} * {ψ, k, v} * {αβ, i + j, -t * u} * {ψ, k, -v / 2} =
-  {ψ, k, -v} * {αβ, i + j, t * u} * {ψ, k, 2 * v} * {αβ, i + j, -t * u} * {ψ, k, -v} := by
-  intro i j k hi hj hk t u v
+  ∀ ⦃i k : ℕ⦄ (hi : i ≤ αβ.height) (hk : k ≤ ψ.height) (t u v : R),
+  {ψ, k, -v / 2} * {αβ, i, t * u} * {ψ, k, v} * {αβ, i, -t * u} * {ψ, k, -v / 2} *
+  {ψ, k, -v / 2} * {αβ, i, t * u} * {ψ, k, v} * {αβ, i, -t * u} * {ψ, k, -v / 2} =
+  {ψ, k, -v} * {αβ, i, t * u} * {ψ, k, 2 * v} * {αβ, i, -t * u} * {ψ, k, -v} := by
+  intro i k hi hk t u v
   apply WeakChevalley.helper
   apply weakB3Large.nonhomog_helper rels_of_hom_lift_of_doub_of_αβψ
   · simp only [weakB3Large, homog_and_nonhomog_sets, Set.mem_insert_iff, Set.mem_singleton_iff, true_or, or_true]
-  · exists i, j, k, hi, hj, hk, t, u, v
+  · exists i, k, hi, hk, t, u, v
 
 -- 8.85
 theorem raw_hom_lift_of_interchange_of_αβ2ψ :
@@ -980,6 +980,7 @@ theorem expand_β2ψ_as_ψ_βψ_ψ_βψ :
     _ = {ψ, i, t} * {βψ, j, u} * {ψ, i, -t} * {βψ, j, -u} := by rw [commutatorElement_def, inv_of_ψ, inv_of_βψ]
 
 -- 8.111
+@[group_reassoc]
 theorem expr_β_α_as_αβ_α_β :
   ∀ ⦃i j : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ β.height) (t u : R),
   {β, j, u} * {α, i, t} = {αβ, i + j, -t * u} * {α, i, t} * {β, j, u} := by
@@ -991,12 +992,14 @@ theorem expr_β_α_as_αβ_α_β :
   exact this.symm
 
 -- 8.112a
+@[group_reassoc]
 theorem expr_ψ_β_as_β_ψ_βψ_β2ψ :
   ∀ ⦃i j : ℕ⦄ (hi : i ≤ β.height) (hj : j ≤ ψ.height) (t u : R),
   {ψ, j, u} * {β, i, t} = {β, i, t} * {ψ, j, u} * {βψ, i + j, -t * u} * {β2ψ, i + 2 * j, t * u^2} := by
   sorry
 
 -- 8.112b
+@[group_reassoc]
 theorem expr_ψ_β_as_β2ψ_βψ_β_ψ :
   ∀ ⦃i j : ℕ⦄ (hi : i ≤ 1) (hj : j ≤ 1) (t u : R),
   {ψ, j, u} * {β, i, t} = {β2ψ, i + 2 * j, -t * u^2} * {βψ, i + j, -t * u} * {β, i, t} * {ψ, j, u} := by
@@ -1125,24 +1128,52 @@ theorem trivial_comm_of_αβ_αβψ :
 -- 8.119
 theorem trivial_comm_of_β_αβψ :
   trivial_commutator_of_root_pair (R := R) weakB3Large.pres_mk β αβψ := by
-  sorry
+  intro i j hi hj t u
+  apply triv_comm_iff_commutes.mpr
+  rcases decompose αβ.height ψ.height j hj with ⟨ j₁, j₂, ⟨ rfl, hj₁, hj₂ ⟩ ⟩
+  grw [←one_mul u, expand_αβψ_as_βψ_α_βψ_α_βψ hj₁ hj₂, expr_β_βψ_as_βψ_β hi hj₁,
+  expr_β_α_as_αβ_α_β hj₂ hi, expr_β_βψ_as_βψ_β hi hj₁, expr_β_α_as_αβ_α_β hj₂ hi,
+  expr_β_βψ_as_βψ_β hi hj₁, ←expr_α_αβ_as_αβ_α hj₂ (add_le_add hj₂ hi),
+  expr_αβ_βψ_as_βψ_αβ (add_le_add hj₂ hi) hj₁, neg_neg, neg_mul, one_mul, inv_of_αβ,
+  inv_mul_cancel_right]
+
 
 -- 8.120a
 theorem inv_doub_of_αβψ_a :
   ∀ ⦃i : ℕ⦄ (hi : i ≤ αβψ.height) (t : R),
   {αβψ, i, t} * {αβψ, i, -t} = 1 := by
-  sorry
+  intro i hi t
+  rcases decompose αβ.height ψ.height i hi with ⟨ i₁, i₂, ⟨ rfl, hi₁, hi₂ ⟩ ⟩
+  have : (-(1 : R) / 2) = -((1 : R) / 2) := by ring
+  grw [←mul_one t, expand_αβψ_as_ψ_αβ_ψ_αβ_ψ hi₁ hi₂, ←neg_mul, neg_mul_comm, expand_αβψ_as_ψ_αβ_ψ_αβ_ψ hi₁ hi₂,
+  neg_neg, this, inv_of_ψ hi₂ ((1 : R) / 2), inv_mul_cancel_right, inv_of_αβ,
+  inv_mul_cancel_right, inv_of_ψ]
+  simp only [one_div, mul_inv_cancel_right, inv_mul_cancel]
 
 -- 8.120b
+include Rchar
 theorem inv_doub_of_αβψ_b :
   ∀ ⦃i : ℕ⦄ (hi : i ≤ αβψ.height) (t : R),
   {αβψ, i, t} * {αβψ, i, t} = {αβψ, i, 2 * t} := by
-  sorry
+  intros i hi t
+  rcases decompose αβ.height ψ.height i hi with ⟨ i₁, i₂, ⟨ rfl, hi₁, hi₂ ⟩ ⟩
+  grw [←mul_one t, expand_αβψ_as_ψ_αβ_ψ_αβ_ψ hi₁ hi₂]
+  have := raw_hom_lift_of_doub_of_αβψ hi₁ hi₂ t 1 1
+  rw [mul_one, neg_mul, mul_one, mul_one] at this
+  grw [this, mul_one, mul_comm 2 t, expand_αβψ_as_ψ_αβ_ψ_αβ_ψ hi₁ hi₂, neg_div_self Rchar]
+
 
 -- 8.121a
 theorem generic_commutator_of_αβ_ψ_a :
   ∀ ⦃i j : ℕ⦄ (hi : i ≤ αβ.height) (hj : j ≤ ψ.height) (t u : R),
   ⁅{αβ, i, t}, {ψ, j, u}⁆ = {αβψ, i + j, t * u} * ⁅{αβψ, i + j, -t * u}, {ψ, j, u / 2}⁆ := by
+  intro i j hi hj t u
+  let x := {αβ, i, t}
+  let y := {ψ, j, u/2}
+  have xinv : x⁻¹ = {αβ, i, -t} := by rw [inv_of_αβ]
+  have ysquare : y^2 = {ψ, j, u} := by
+    rw [pow_two, lin_of_ψ, ←two_mul, mul_div_left_comm, div_self Rchar, mul_one]
+  have yinv : y⁻¹ = {ψ, j, -(u / 2)} := by rw [inv_of_ψ]
   sorry
 
 -- 8.121b
