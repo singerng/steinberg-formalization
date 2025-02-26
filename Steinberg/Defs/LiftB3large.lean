@@ -1098,8 +1098,8 @@ theorem expand_αβψ_as_ψ_αβ_ψ_αβ_ψ :
 
 -- 8.116b
 theorem expand_αβψ_as_βψ_α_βψ_α_βψ :
-  ∀ ⦃i j : ℕ⦄ (hj : j ≤ 2) (hi : i ≤ 1)(t u : R),
-  {αβψ, j + i, t * u} = {βψ, j, -u/2} * {α, i, t} * {βψ, j, u} * {α, i, -t} * {βψ, j, -u/2} := by
+  ∀ ⦃i j : ℕ⦄ (hi : i ≤ 1) (hj : j ≤ 2) (t u : R),
+  {αβψ, i + j, t * u} = {βψ, j, -u/2} * {α, i, t} * {βψ, j, u} * {α, i, -t} * {βψ, j, -u/2} := by
   sorry
 
 -- 8.117
@@ -1119,7 +1119,9 @@ theorem trivial_comm_of_αβ_αβψ :
   intro i j hi hj t u
   apply triv_comm_iff_commutes.mpr
   rcases decompose αβ.height ψ.height j hj with ⟨ j₁, j₂, ⟨ rfl, hj₁, hj₂ ⟩ ⟩
-  grw [←one_mul u, expand_αβψ_as_βψ_α_βψ_α_βψ hj₁ hj₂,
+  have : {αβψ, j₁ + j₂, u} = {αβψ, j₂ + j₁, u} := by group
+  rw [this]
+  grw [←one_mul u, expand_αβψ_as_βψ_α_βψ_α_βψ hj₂ hj₁,
   expr_αβ_βψ_as_βψ_αβ hi hj₁, ←expr_α_αβ_as_αβ_α hj₂ hi,
   expr_αβ_βψ_as_βψ_αβ hi hj₁, ←expr_α_αβ_as_αβ_α hj₂ hi,
   expr_αβ_βψ_as_βψ_αβ hi hj₁]
@@ -1131,7 +1133,9 @@ theorem trivial_comm_of_β_αβψ :
   intro i j hi hj t u
   apply triv_comm_iff_commutes.mpr
   rcases decompose αβ.height ψ.height j hj with ⟨ j₁, j₂, ⟨ rfl, hj₁, hj₂ ⟩ ⟩
-  grw [←one_mul u, expand_αβψ_as_βψ_α_βψ_α_βψ hj₁ hj₂, expr_β_βψ_as_βψ_β hi hj₁,
+  have : {αβψ, j₁ + j₂, u} = {αβψ, j₂ + j₁, u} := by group
+  rw [this]
+  grw [←one_mul u, expand_αβψ_as_βψ_α_βψ_α_βψ hj₂ hj₁, expr_β_βψ_as_βψ_β hi hj₁,
   expr_β_α_as_αβ_α_β hj₂ hi, expr_β_βψ_as_βψ_β hi hj₁, expr_β_α_as_αβ_α_β hj₂ hi,
   expr_β_βψ_as_βψ_β hi hj₁, ←expr_α_αβ_as_αβ_α hj₂ (add_le_add hj₂ hi),
   expr_αβ_βψ_as_βψ_αβ (add_le_add hj₂ hi) hj₁, neg_neg, neg_mul, one_mul, inv_of_αβ,
@@ -1162,49 +1166,83 @@ theorem inv_doub_of_αβψ_b :
   rw [mul_one, neg_mul, mul_one, mul_one] at this
   grw [this, mul_one, mul_comm 2 t, expand_αβψ_as_ψ_αβ_ψ_αβ_ψ hi₁ hi₂, neg_div_self Rchar]
 
+lemma half_add_half (u : R) : (u / 2) + (u / 2) = u := by
+  have : ((2 : R) / 2) = 1 := (div_eq_one_iff_eq Rchar).mpr rfl
+  rw [←mul_two, div_mul_comm, this, one_mul]
 
--- 8.121a
-theorem generic_commutator_of_αβ_ψ_a :
-  ∀ ⦃i j : ℕ⦄ (hi : i ≤ αβ.height) (hj : j ≤ ψ.height) (t u : R),
-  ⁅{αβ, i, t}, {ψ, j, u}⁆ = {αβψ, i + j, t * u} * ⁅{αβψ, i + j, -t * u}, {ψ, j, u / 2}⁆ := by
+-- 8.121
+theorem generic_commutator_of_αβ_ψ :
+  ∀ ⦃i j : ℕ⦄ (hi : i ≤ 2) (hj : j ≤ 1) (t u : R),
+  ⁅{αβ, i, t}, {ψ, j, u}⁆ = {αβψ, i + j, t * u} * ⁅{αβψ, i + j, -t * u}, {ψ, j, u / 2}⁆
+  ∧ ⁅{αβ, i, t}, {ψ, j, u}⁆ = ⁅{αβψ, i + j, t * u}, {ψ, j, u / 2}⁆⁻¹ * {αβψ, i + j, t * u} := by
   intro i j hi hj t u
-  let x := {αβ, i, t}
-  let y := {ψ, j, u/2}
+  set x := {αβ, i, t} with hx
+  set y := {ψ, j, u/2} with hy
   have xinv : x⁻¹ = {αβ, i, -t} := by rw [inv_of_αβ]
   have ysquare : y^2 = {ψ, j, u} := by
     rw [pow_two, lin_of_ψ, ←two_mul, mul_div_left_comm, div_self Rchar, mul_one]
   have yinv : y⁻¹ = {ψ, j, -(u / 2)} := by rw [inv_of_ψ]
-  sorry
+  have x_star_y : (x ⋆ y) = {αβψ, i + j, t * u} := by
+    unfold star x y
+    grw [expand_αβψ_as_ψ_αβ_ψ_αβ_ψ hi hj, neg_div 2 u, inv_of_ψ, pow_two, inv_of_αβ,
+    lin_of_ψ, half_add_half u]
+    exact Rchar
+  have x_star_y_inv : (x ⋆ y)⁻¹ = {αβψ, i + j, -t * u} := by
+    rw [x_star_y, eq_inv_of_mul_eq_one_left (inv_doub_of_αβψ_a (add_le_add hi hj) (t * u)), inv_inv, neg_mul]
+  rw [←ysquare, ←x_star_y, ←x_star_y_inv]
+  exact ⟨(star_commutator x y).symm, (commutator_star x y).symm⟩
 
--- 8.121b
-theorem generic_commutator_of_αβ_ψ_b :
-  ∀ ⦃i j : ℕ⦄ (hi : i ≤ αβ.height) (hj : j ≤ ψ.height) (t u : R),
-  ⁅{αβ, i, t}, {ψ, j, u}⁆ = ⁅{αβψ, i + j, t * u}, {ψ, j, u / 2}⁆⁻¹ * {αβψ, i + j, t * u} := by
-  sorry
-
--- 8.122a
-theorem generic_commutator_of_α_βψ_a :
-  ∀ ⦃i j : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ βψ.height) (t u : R),
-  ⁅{α, i, t}, {βψ, j, u}⁆ = {αβψ, i + j, t * u} * ⁅{αβψ, i + j, -t * u}, {βψ, j, u / 2}⁆ := by
-  sorry
-
--- 8.122b
-theorem generic_commutator_of_α_βψ_b :
-  ∀ ⦃i j : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ βψ.height) (t u : R),
-  ⁅{α, i, t}, {βψ, j, u}⁆ = ⁅{αβψ, i + j, t * u}, {βψ, j, u / 2}⁆⁻¹ * {αβψ, i + j, t * u} := by
+-- 8.122
+theorem generic_commutator_of_α_βψ :
+  ∀ ⦃i j : ℕ⦄ (hi : i ≤ 1) (hj : j ≤ 2) (t u : R),
+  ⁅{α, i, t}, {βψ, j, u}⁆ = {αβψ, i + j, t * u} * ⁅{αβψ, i + j, -t * u}, {βψ, j, u / 2}⁆
+  ∧ ⁅{α, i, t}, {βψ, j, u}⁆ = ⁅{αβψ, i + j, t * u}, {βψ, j, u / 2}⁆⁻¹ * {αβψ, i + j, t * u} := by
+  intro i j hi hj t u
+  set x := {α, i, t} with hx
+  set y := {βψ, j, u / 2} with hy
+  have ysquare : y^2 = {βψ, j, u} := by
+    rw [pow_two, hy, lin_of_βψ, half_add_half u]
+    exact Rchar
+  have x_star_y : (x ⋆ y) = {αβψ, i + j, t * u} := by
+    unfold star x y
+    grw [expand_αβψ_as_βψ_α_βψ_α_βψ hi hj, neg_div 2 u, inv_of_βψ, pow_two, lin_of_βψ, half_add_half u, inv_of_α]
+    exact Rchar
+  have x_star_y_inv : (x ⋆ y)⁻¹ = {αβψ, i + j, -t * u} := by
+    rw [x_star_y, eq_inv_of_mul_eq_one_left (inv_doub_of_αβψ_a (add_le_add hi hj) (t * u)), inv_inv, neg_mul]
   sorry
 
 -- 8.123
+omit Rchar
 theorem lift_hom_interchange_of_αβ2ψ :
   ∀ ⦃i j k : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t u v : R),
   ⁅{αβψ, i + j + k, t * u}, {ψ, k, v}⁆ = ⁅{α, i, t}, {β2ψ, j + 2 * k, -2 * u * v}⁆ := by
-  sorry
+  intro i j k hi hj hk t u v
+  rcases eq_or_ne v 0 with hv | hv
+  · rw [hv, mul_zero, id_of_ψ, id_of_β2ψ]; group
+  have expand_αβ2ψ := raw_hom_lift_of_interchange_of_αβ2ψ hi hj hk t (u / v) v
+  have : -2 * (u / v) * v^2 = -2 * u * v := by field_simp; group
+  rw [this] at expand_αβ2ψ
+  have expand_αβψ := expand_αβψ_as_ψ_αβ_ψ_αβ_ψ (add_le_add hi hj) hk (t * (u / v)) v
+  have : t * (u / v) * v = t * u := by field_simp
+  rw [this] at expand_αβψ
+  grw [←expand_αβ2ψ, expand_αβψ, neg_mul]
+
 
 -- 8.124
 theorem lift_hom_commutator_of_βψ_α_β2ψ :
   ∀ ⦃i j k : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t u v : R),
   ⁅{βψ, j + k, t}, ⁅{α, i, u}, {β2ψ, j + 2 * k, v}⁆⁆ = 1 := by
-  sorry
+  intro i j k hi hj hk t u v
+  rcases eq_or_ne v 0 with hv | hv
+  · rw [hv, id_of_β2ψ]; group
+  rcases eq_or_ne t 0 with ht | ht
+  · rw [ht, id_of_βψ]; group
+  have hβψ := raw_hom_lift_of_commutator_of_βψ_α_β2ψ hi hj hk u (t^2 / v) (v / t)
+  have : t^2 / v * (v / t) = t := by rw [pow_two]; field_simp
+  rw [this] at hβψ
+  have : t^2 / v * (v / t)^2 = v := by field_simp; group
+  rw [this] at hβψ
+  exact hβψ
 
 -- 8.125a
 theorem lift_hom_inv_doub_of_α_β2ψ_a :
