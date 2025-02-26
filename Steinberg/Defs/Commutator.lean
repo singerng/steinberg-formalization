@@ -195,4 +195,16 @@ theorem HW2 : (conj y ⁅⁅y⁻¹, x⁆, z⁆) * (conj z ⁅⁅z⁻¹, y⁆, x�
   simp only [commutatorElement_def, conj_apply, ← mul_assoc, inv_mul_cancel_right,
     mul_inv_rev, inv_inv, mul_inv_cancel_right, mul_inv_cancel, one_mul]
 
+-- Star operator
+def star (x y : G) := y⁻¹ * x * y^2 * x⁻¹ * y⁻¹
+infix:68 " ⋆ " => star
+
+theorem star_commutator (x y : G) : (x ⋆ y) * ⁅(x ⋆ y)⁻¹, y⁆ = ⁅x, y^2⁆ := by
+  unfold star
+  group
+
+theorem commutator_star (x y : G) : ⁅x ⋆ y, y⁆⁻¹ * (x ⋆ y) = ⁅x, y^2⁆ := by
+  unfold star
+  group
+
 end Steinberg
