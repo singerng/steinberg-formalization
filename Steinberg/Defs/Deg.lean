@@ -17,6 +17,13 @@ theorem decompose (n m i : ℕ) (h : i ≤ (n+m)) : ∃ (i₁ i₂ : ℕ), i = i
   · use n, i-n
     omega
 
+theorem decompose' (i : ℕ) (hi : i ≤ 3) : ∃ (i₁ i₂ : ℕ), i = i₁ + 2 * i₂ ∧ i₁ ≤ 1 ∧ i₂ ≤ 1 := by
+  match i with
+  | 0 => exact ⟨0, 0, by omega⟩
+  | 1 => exact ⟨1, 0, by omega⟩
+  | 2 => exact ⟨0, 1, by omega⟩
+  | 3 => exact ⟨1, 1, by omega⟩
+
 /--
   Useful theorem to convert `i ≤ n` to `i ∈ List.range (n+1)`.
 -/
