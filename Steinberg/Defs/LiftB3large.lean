@@ -1389,12 +1389,22 @@ theorem sufficient_conditions_for_commutator_of_αβψ_and_ψ :
 theorem partial_A_interchange_of_αβ2ψ :
   ∀ t u v : R,
   ⁅{αβψ, 0, t * u}, {ψ, 1, v}⁆ = ⁅{α, 0, t}, {β2ψ, 1, -2 * u * v}⁆ := by
-  sorry
+  apply @sufficient_conditions_for_commutator_of_αβψ_and_ψ _ _ Rchar 0 0 1 (by norm_num) (by norm_num) (by norm_num)
+  intro t u v
+  have h₁ := @lift_hom_interchange_of_αβ2ψ _ _ 1 0 0 (by norm_num) (by norm_num) (by norm_num) u (-v/2) 1
+  have h := @lift_hom_interchange_of_αβ2ψ _ _ 0 1 0 (by norm_num) (by norm_num) (by norm_num) u (-v/2) 1
+  norm_num at h₁
+  norm_num at h
+  rw [h₁] at h
+  have : -(2 * (-v / 2)) = v := by field_simp
+  rw [this] at h
+  have h₁ := @lift_hom_commutator_of_βψ_α_β2ψ _ _ 1 0 0 (by norm_num) (by norm_num) (by norm_num) t u v
+  rwa [h] at h₁
+
 
 -- Proposition 8.132
 theorem sufficient_conditions_for_commutator_of_βψ_and_α_β2ψ :
-  ∀ ⦃i j k : ℕ⦄ (hi : i ≤ 2) (hj : j ≤ 1) (hk : k ≤ 3)
-  (hyp : ∀ t u : R, ⁅{αβψ, i + j, t}, {β2ψ, k, u}⁆ = 1),
+  ∀ ⦃i j k : ℕ⦄ (hi : i ≤ 2) (hj : j ≤ 1) (hk : k ≤ 3) (hyp : ∀ t u : R, ⁅{αβψ, i + j, t}, {β2ψ, k, u}⁆ = 1),
   ∀ t u v : R, ⁅{βψ, i, t}, ⁅{α, j, u}, {β2ψ, k, v}⁆⁆ = 1 := by
   sorry
 
@@ -1402,17 +1412,40 @@ theorem sufficient_conditions_for_commutator_of_βψ_and_α_β2ψ :
 theorem partial_comm_of_βψ_α_β2ψ :
   ∀ t u v : R,
   ⁅{βψ, 2, t}, ⁅{α, 0, u}, {β2ψ, 2, v}⁆⁆ = 1 := by
-  sorry
+  apply @sufficient_conditions_for_commutator_of_βψ_and_α_β2ψ _ _ Rchar 2 0 2 (by norm_num) (by norm_num) Nat.AtLeastTwo.prop
+  intro t u
+  have := triv_comm_iff_commutes.mp (@lift_hom_commutator_of_β2ψ_αβψ _ _ 1 0 1 (by norm_num) (by norm_num) (by norm_num) u t)
+  apply triv_comm_iff_commutes.mpr
+  rw [←this]
 
 -- 8.134
 theorem partial_B_interchange_of_αβ2ψ :
   ∀ t u v : R,
-  ⁅{αβψ, 2, t * u}, {ψ, 0, v}⁆ = ⁅{α, 0, t}, {β2ψ, 2, -2 * u * v}⁆ := by
+  ⁅{αβψ, 2, t * u}, {ψ, 0, v}⁆ = ⁅{α, 0, t}, {β2ψ, 2, -2 * u * v}⁆ :=
+  @sufficient_conditions_for_commutator_of_αβψ_and_ψ _ _ Rchar 0 2 0 (by norm_num) (by norm_num) (by norm_num) (@partial_comm_of_βψ_α_β2ψ _ _ Rchar)
+
+-- 8.135a
+theorem expand_αβ2ψ_as_commutator_of_α_β2ψ :
+  ∀ ⦃i j : ℕ⦄ (hi : i ≤ 1) (hj : j ≤ 3) (t u : R),
+  {αβ2ψ, i + j, t * u} = ⁅{α, i, t}, {β2ψ, j, u}⁆ := by
   sorry
 
--- 8.136 (8.135 is establishing αβ2ψ)
+-- 8.135b
+theorem expand_αβ2ψ_as_commutator_of_αβψ_ψ :
+  ∀ ⦃i j : ℕ⦄ (hi : i ≤ 3) (hj : j ≤ 1) (t u : R),
+  {αβ2ψ, i + j, -2 * t * u} = ⁅{αβψ, i, u}, {ψ, j, t}⁆ := by
+  sorry
+
+-- 8.136
 theorem trivial_comm_of_α_αβ2ψ :
   trivial_commutator_of_root_pair (R := R) weakB3Large.pres_mk α αβ2ψ := by
+  intro i j hi hj t u
+  have : j ≤ 3 ∨ j = 4 := by sorry
+  rcases this with hj | hj
+  · have := @expand_αβ2ψ_as_commutator_of_αβψ_ψ _ _ Rchar j 0 hj (by norm_num) (-1/2) u
+    field_simp at this
+    rw [this]
+    exact @comm_of_α_αβψ_ψ _ _ i j 0 hi hj (by norm_num) t u (-1/2)
   sorry
 
 -- 8.137
