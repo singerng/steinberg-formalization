@@ -195,3 +195,15 @@ elab s:"grw " cfg:optConfig rws:rwRuleSeq l:(location)? : tactic => Elab.Tactic.
       ))
       <|>
       cont
+
+open Term in
+/--
+`reassoc_of% t`, where `t` is
+an equation `f = g` between morphisms `X ⟶ Y` in a category (possibly after a `∀` binder),
+produce the equation `∀ {Z} (h : Y ⟶ Z), f ≫ h = g ≫ h`,
+but with compositions fully right associated and identities removed.
+-/
+elab "greassoc_of% " t:term : term => do
+  reassocExpr (← elabTerm t none)
+
+end Steinberg.Macro
