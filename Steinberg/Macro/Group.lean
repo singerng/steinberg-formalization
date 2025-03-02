@@ -109,8 +109,11 @@ macro (name := mul_inj) "mul_inj" l:(location)? : tactic => `(tactic|
       `a * 1`, which we often don't want to do in our proofs. If we find
       that we *do* need some lemmas, add them here.
 -/
-def groupSimp (e : Expr) : MetaM Simp.Result :=
-  simpOnlyNames [``mul_left_inj, ``mul_right_inj, ``mul_assoc_symm] e
+def groupSimp_left (e : Expr) : MetaM Simp.Result :=
+  simpOnlyNames [``mul_assoc_symm] e
+
+def groupSimp_right (e : Expr) : MetaM Simp.Result :=
+  simpOnlyNames [``mul_assoc] e
 
 /--
   An attribute to automatically generate a new theorem of the same name,
@@ -125,7 +128,7 @@ def groupSimp (e : Expr) : MetaM Simp.Result :=
   where `*` is the group-theoretic binary operation.
 -/
 def reassocExpr_left (e : Expr) : MetaM Expr := do
-  mapForallTelescope (fun e => do simpType groupSimp (← mkAppM ``mul_assoc_left #[e])) e
+  mapForallTelescope (fun e => do simpType groupSimp_left (← mkAppM ``mul_assoc_left #[e])) e
 
 /--
   An attribute to automatically generate a new theorem of the same name,
@@ -140,7 +143,7 @@ def reassocExpr_left (e : Expr) : MetaM Expr := do
   where `*` is the group-theoretic binary operation.
 -/
 def reassocExpr_right (e : Expr) : MetaM Expr := do
-  mapForallTelescope (fun e => do simpType groupSimp (← mkAppM ``mul_assoc_right #[e])) e
+  mapForallTelescope (fun e => do simpType groupSimp_right (← mkAppM ``mul_assoc_right #[e])) e
 
 syntax (name := group_reassoc) "group_reassoc" (" (" &"attr" ":=" Parser.Term.attrInstance,* ")")? : attr
 
