@@ -289,6 +289,7 @@ elab s:"grw " cfg:optConfig rws:rwRuleSeq l:(location)? : tactic => Elab.Tactic.
 
       ((evalTactic <| ← `(tactic|
         (try mul_inj $l ?);
+        (try mal $l ?);
         first
         | rw $cfg [$rwTerm] $l ?
         | rw $cfg [$reassocTerm_l] $l ?
