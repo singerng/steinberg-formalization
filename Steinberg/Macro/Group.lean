@@ -50,13 +50,21 @@ macro (name := mar) "mar" : tactic => `(tactic|
 
 /- CC: Use these two theorems to generate an automatic new theorem from a commutative theorem. -/
 
-private theorem mul_assoc' {G : Type u} [Semigroup G] {b c d : G} (h : b * c = d) (a : G)
+private theorem mul_assoc_left {G : Type u} [Semigroup G] {b c d : G} (h : b * c = d) (a : G)
     : a * b * c = a * d := by
   rw [mul_assoc, h]
 
-private theorem add_assoc' {G : Type u} [AddSemigroup G] {b c d : G} (h : b + c = d) (a : G)
+private theorem mul_assoc_right {G : Type u} [Semigroup G] {b c d : G} (h : b * c = d) (a : G)
+    : b * (c * a) = d * a := by
+  rw [← mul_assoc, h]
+
+private theorem add_assoc_left {G : Type u} [AddSemigroup G] {b c d : G} (h : b + c = d) (a : G)
     : a + b + c = a + d := by
   rw [add_assoc, h]
+
+private theorem add_assoc_right {G : Type u} [AddSemigroup G] {b c d : G} (h : b + c = d) (a : G)
+    : b + (c + a) = d + a := by
+  rw [← add_assoc, h]
 
 private theorem mul_assoc_symm {G : Type u} [Semigroup G] (a b c : G)
     : a * (b * c) = a * b * c := by
@@ -116,8 +124,23 @@ def groupSimp (e : Expr) : MetaM Simp.Result :=
   Only theorems of the form `∀ ..., a * b = c` are allowed,
   where `*` is the group-theoretic binary operation.
 -/
-def reassocExpr (e : Expr) : MetaM Expr := do
-  mapForallTelescope (fun e => do simpType groupSimp (← mkAppM ``mul_assoc' #[e])) e
+def reassocExpr_left (e : Expr) : MetaM Expr := do
+  mapForallTelescope (fun e => do simpType groupSimp (← mkAppM ``mul_assoc_left #[e])) e
+
+/--
+  An attribute to automatically generate a new theorem of the same name,
+  plus a suffix of `_assoc'`.
+
+  Note: This is a copy of `reassocExpr` in `Mathlib.Tactic.CategoryTheory.Reassoc`.
+
+  Essentially, theorems with this attribute automatically generate a proof
+  of that same theorem, modulo associativity. See the `private theorems` above.
+
+  Only theorems of the form `∀ ..., a * b = c` are allowed,
+  where `*` is the group-theoretic binary operation.
+-/
+def reassocExpr_right (e : Expr) : MetaM Expr := do
+  mapForallTelescope (fun e => do simpType groupSimp (← mkAppM ``mul_assoc_right #[e])) e
 
 syntax (name := group_reassoc) "group_reassoc" (" (" &"attr" ":=" Parser.Term.attrInstance,* ")")? : attr
 
@@ -129,8 +152,10 @@ initialize registerBuiltinAttribute {
   | `(attr| group_reassoc $[(attr := $stx?,*)]?) => MetaM.run' do
     if (kind != AttributeKind.global) then
       throwError "`reassoc` can only be used as a global attribute"
-    addRelatedDecl src "_assoc" ref stx? fun type value levels => do
-      pure (← reassocExpr (← mkExpectedTypeHint value type), levels)
+    addRelatedDecl src "_assoc_left" ref stx? fun type value levels => do
+      pure (← reassocExpr_left (← mkExpectedTypeHint value type), levels)
+    addRelatedDecl src "_assoc_right" ref stx? fun type value levels => do
+      pure (← reassocExpr_right (← mkExpectedTypeHint value type), levels)
   | _ => throwUnsupportedSyntax
 }
 
@@ -149,7 +174,24 @@ open Term in
   NOT
 -/
 elab "greassoc_of% " t:term : term => do
-  reassocExpr (← elabTerm t none)
+  reassocExpr_left (← elabTerm t none)
+
+open Term in
+/--
+  A term elaborator `greassoc_of% t`, where `t` is
+  an equation `f = g` on `Semigroup`s (possibly under a `∀` binder),
+  used to reassociate the group equation with a fresh third term to the right.
+
+  To use, place before a proof term or hypothesis name to create a new term
+  that has been reassociated in the other way. For example,
+
+  `rw [greassoc_of% h]` will rewrite with `h` after being reassociated.
+
+  Note that the elaborator creates only one term. Using this with `rw` will
+  NOT
+-/
+elab "greassoc_of_r% " t:term : term => do
+  reassocExpr_right (← elabTerm t none)
 
 /-
   CC: It's very, very hard to get `(rwRule| )` to type check, since it expects
@@ -166,16 +208,21 @@ open TSyntax.Compat in
   For example, if the term is `add_comm h₁ h₂ a b`, then this function
   returns `add_comm_assoc h₁ h₂ a b`.
 -/
-partial def replaceWithAssocName (stx : Syntax) : Option (TSyntax `term) :=
+partial def replaceWithAssocName (stx : Syntax) : Option (TSyntax `term × TSyntax `term) :=
   let k := stx.getKind
   if k == ``Lean.Parser.Term.app then
-    let assocName :=
+    let ⟨assocName_left, assocName_right⟩ :=
       match stx[0].getId with
-      | Name.str n s => Name.mkStr n <| s ++ "_assoc"
-      | x => x
-    let appNode := mkNode ``Lean.Parser.Term.app #[mkIdent assocName, stx[1]]
-    -- let appTerm := mkNode `term #[appNode]
-    some <| appNode
+      | Name.str n s =>
+        let str_left := s ++ "_assoc_left"
+        let str_right := s ++ "_assoc_right"
+        let s_left := Name.mkStr n <| str_left
+        let s_right := Name.mkStr n <| str_right
+        Prod.mk s_left s_right
+      | x => Prod.mk x x
+    let appNode_left := mkNode ``Lean.Parser.Term.app #[mkIdent assocName_left, stx[1]]
+    let appNode_right := mkNode ``Lean.Parser.Term.app #[mkIdent assocName_right, stx[1]]
+    some (appNode_left, appNode_right)
   else if k == ``Lean.Parser.Term.proj then
     replaceWithAssocName stx[0]
   else if k == ``Lean.Parser.Term.paren then
@@ -214,11 +261,15 @@ elab s:"grw " cfg:optConfig rws:rwRuleSeq l:(location)? : tactic => Elab.Tactic.
       let cont : TacticM Unit := (do
         match replaceWithAssocName e with
         | none => evalTactic <| ← `(tactic| skip)
-        | some assoc =>
-          let rule := ← do if symm then `(rwRule| ← $assoc:term) else `(rwRule| $assoc:term)
+        | some ⟨assoc_l, assoc_r⟩ =>
+          let rule_l := ← do if symm then `(rwRule| ← $assoc_l:term) else `(rwRule| $assoc_l:term)
+          let rule_r := ← do if symm then `(rwRule| ← $assoc_r:term) else `(rwRule| $assoc_r:term)
           evalTactic <| ← `(tactic|
-            (rw $cfg [$rule] $l ?);
-            (try mul_inj $l ?)
+            first
+            | (rw $cfg [$rule_l] $l ?);
+              (try mul_inj $l ?)
+            | (rw $cfg [$rule_r] $l ?);
+              (try mul_inj $l ?)
           )
       )
 
@@ -227,14 +278,18 @@ elab s:"grw " cfg:optConfig rws:rwRuleSeq l:(location)? : tactic => Elab.Tactic.
       -- Now try to reassociate the term `e`
       -- This might fail, but it's an okay transformation to make here
       -- because all we're extracting at this point is syntax
-      let reassocTerm ← do
+      let reassocTerm_l ← do
         if symm then `(rwRule | ← greassoc_of% $e:term) else `(rwRule | greassoc_of% $e:term)
+
+      let reassocTerm_r ← do
+        if symm then `(rwRule | ← greassoc_of_r% $e:term) else `(rwRule | greassoc_o_rf% $e:term)
 
       ((evalTactic <| ← `(tactic|
         (try mul_inj $l ?);
         first
         | rw $cfg [$rwTerm] $l ?
-        | rw $cfg [$reassocTerm] $l ?
+        | rw $cfg [$reassocTerm_l] $l ?
+        | rw $cfg [$reassocTerm_r] $l ?
       ))
       <|>
       cont)
