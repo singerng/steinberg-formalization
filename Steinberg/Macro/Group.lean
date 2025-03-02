@@ -50,13 +50,17 @@ macro (name := mar) "mar" : tactic => `(tactic|
 
 /- CC: Use these two theorems to generate an automatic new theorem from a commutative theorem. -/
 
-private theorem mul_assoc' {G : Type u} [Semigroup G] {b c d : G} (h : b * c = d) (a : G) :
-    a * b * c = a * d := by
+private theorem mul_assoc' {G : Type u} [Semigroup G] {b c d : G} (h : b * c = d) (a : G)
+    : a * b * c = a * d := by
   rw [mul_assoc, h]
 
-private theorem add_assoc' {G : Type u} [AddSemigroup G] {b c d : G} (h : b + c = d) (a : G) :
-    a + b + c = a + d := by
+private theorem add_assoc' {G : Type u} [AddSemigroup G] {b c d : G} (h : b + c = d) (a : G)
+    : a + b + c = a + d := by
   rw [add_assoc, h]
+
+private theorem mul_assoc_symm {G : Type u_1} [inst : Semigroup G] (a b c : G)
+    : a * (b * c) = a * b * c := by
+  exact Eq.symm (mul_assoc _ _ _)
 
 /--
   An empty list of `simp` lemmas and terms.
@@ -68,7 +72,7 @@ private theorem add_assoc' {G : Type u} [AddSemigroup G] {b c d : G} (h : b + c 
       that we *do* need some lemmas, add them here.
 -/
 def groupSimp (e : Expr) : MetaM Simp.Result :=
-  simpOnlyNames [``mul_left_inj, ``mul_right_inj] e
+  simpOnlyNames [``mul_left_inj, ``mul_right_inj, ``mul_assoc_symm] e
 
 /--
   An attribute to automatically generate a new theorem of the same name,
