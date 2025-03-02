@@ -94,11 +94,16 @@ private theorem mul_right_inj_assoc_r {G : Type u} [Semigroup G] [IsLeftCancelMu
     : a * b = (a * c) * e ↔ b = c * e := by
   mar; rw [mul_right_inj]
 
-/-- Apply `mul_left_inj` and `mul_right_inj` and their reassociated-verisons. -/
-macro (name := mul_inj) "mul_inj" l:(location)? : tactic => `(tactic|
-  simp only [mul_left_inj, mul_left_inj_assoc, mul_left_inj_assoc_l, mul_left_inj_assoc_r,
-    mul_right_inj, mul_right_inj_assoc, mul_right_inj_assoc_l, mul_right_inj_assoc_r] $l ?
-)
+/--
+  Apply `mul_left_inj` and `mul_right_inj` after reassociating.
+  End with the term reassociated to the left (i.e., `(a * b) * c`).
+-/
+macro (name := mul_inj) "mul_inj" l:(location)? : tactic => `(tactic| (
+  (try simp only [mul_assoc, mul_right_inj,
+    mul_inv_cancel, inv_mul_cancel, one_mul, mul_one] $l ?);
+  (try simp only [← mul_assoc, mul_left_inj,
+    mul_inv_cancel, inv_mul_cancel, one_mul, mul_one] $l ?)
+))
 
 /--
   An empty list of `simp` lemmas and terms.
@@ -269,10 +274,8 @@ elab s:"grw " cfg:optConfig rws:rwRuleSeq l:(location)? : tactic => Elab.Tactic.
           let rule_r := ← do if symm then `(rwRule| ← $assoc_r:term) else `(rwRule| $assoc_r:term)
           evalTactic <| ← `(tactic|
             first
-            | (rw $cfg [$rule_l] $l ?);
-              (try mul_inj $l ?)
-            | (rw $cfg [$rule_r] $l ?);
-              (try mul_inj $l ?)
+            | (rw $cfg [$rule_l] $l ?)
+            | (rw $cfg [$rule_r] $l ?)
           )
       )
 
@@ -288,7 +291,6 @@ elab s:"grw " cfg:optConfig rws:rwRuleSeq l:(location)? : tactic => Elab.Tactic.
         if symm then `(rwRule | ← greassoc_of_r% $e:term) else `(rwRule | greassoc_o_rf% $e:term)
 
       ((evalTactic <| ← `(tactic|
-        (try mul_inj $l ?);
         (try mal $l ?);
         first
         | rw $cfg [$rwTerm] $l ?
@@ -296,6 +298,7 @@ elab s:"grw " cfg:optConfig rws:rwRuleSeq l:(location)? : tactic => Elab.Tactic.
         | rw $cfg [$reassocTerm_r] $l ?
       ))
       <|>
-      cont)
+      cont);
+      (evalTactic <| ← `(tactic| mul_inj))
 
 end Steinberg.Macro
