@@ -58,9 +58,39 @@ private theorem add_assoc' {G : Type u} [AddSemigroup G] {b c d : G} (h : b + c 
     : a + b + c = a + d := by
   rw [add_assoc, h]
 
-private theorem mul_assoc_symm {G : Type u_1} [inst : Semigroup G] (a b c : G)
+private theorem mul_assoc_symm {G : Type u} [Semigroup G] (a b c : G)
     : a * (b * c) = a * b * c := by
   exact Eq.symm (mul_assoc _ _ _)
+
+private theorem mul_left_inj_assoc {G : Type u} [Semigroup G] [IsRightCancelMul G] (a : G) {b c d e : G}
+    : d * (b * a) = e * (c * a) ↔ d * b = e * c := by
+  mal; rw [mul_left_inj]
+
+private theorem mul_left_inj_assoc_l {G : Type u} [Semigroup G] [IsRightCancelMul G] (a : G) {b c d : G}
+    : d * (b * a) = c * a ↔ d * b = c := by
+  mal; rw [mul_left_inj]
+
+private theorem mul_left_inj_assoc_r {G : Type u} [Semigroup G] [IsRightCancelMul G] (a : G) {b c e : G}
+    : b * a = e * (c * a) ↔ b = e * c := by
+  mal; rw [mul_left_inj]
+
+private theorem mul_right_inj_assoc {G : Type u} [Semigroup G] [IsLeftCancelMul G] (a : G) {b c d e : G}
+    : (a * b) * d = (a * c) * e ↔ b * d = c * e := by
+  mar; rw [mul_right_inj]
+
+private theorem mul_right_inj_assoc_l {G : Type u} [Semigroup G] [IsLeftCancelMul G] (a : G) {b c d : G}
+    : (a * b) * d = a * c ↔ b * d = c := by
+  mar; rw [mul_right_inj]
+
+private theorem mul_right_inj_assoc_r {G : Type u} [Semigroup G] [IsLeftCancelMul G] (a : G) {b c e : G}
+    : a * b = (a * c) * e ↔ b = c * e := by
+  mar; rw [mul_right_inj]
+
+/-- Apply `mul_left_inj` and `mul_right_inj` and their reassociated-verisons. -/
+macro (name := mul_inj) "mul_inj" l:(location)? : tactic => `(tactic|
+  simp only [mul_left_inj, mul_left_inj_assoc, mul_left_inj_assoc_l, mul_left_inj_assoc_r,
+    mul_right_inj, mul_right_inj_assoc, mul_right_inj_assoc_l, mul_right_inj_assoc_r] $l ?
+)
 
 /--
   An empty list of `simp` lemmas and terms.
@@ -120,12 +150,6 @@ open Term in
 -/
 elab "greassoc_of% " t:term : term => do
   reassocExpr (← elabTerm t none)
-
-/-- Apply `mul_left_inj` and `mul_right_inj` and their reassociated-verisons. -/
-macro (name := mul_inj) "mul_inj" l:(location)? : tactic => `(tactic|
-  simp only [mul_left_inj, greassoc_of% mul_left_inj,
-    mul_right_inj, greassoc_of% mul_right_inj] $l ?
-)
 
 /-
   CC: It's very, very hard to get `(rwRule| )` to type check, since it expects
@@ -213,9 +237,6 @@ elab s:"grw " cfg:optConfig rws:rwRuleSeq l:(location)? : tactic => Elab.Tactic.
         | rw $cfg [$reassocTerm] $l ?
       ))
       <|>
-      cont);
-      (evalTactic <| ← `(tactic|
-        try mal
-      ))
+      cont)
 
 end Steinberg.Macro
