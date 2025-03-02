@@ -29,18 +29,18 @@ open Mathlib.Tactic
 open Lean Meta Elab Term Tactic Parser.Tactic PrettyPrinter
 
 /-- Shorthand for `simp_rw [← mul_assoc]`, which applies the `mul_assoc` tactic to the left. -/
-macro (name := mul_assoc_l) "mul_assoc_l" : tactic => `(tactic|
-  simp_rw [← mul_assoc]
+macro (name := mul_assoc_l) "mul_assoc_l" l:(location)? : tactic => `(tactic|
+  simp_rw [← mul_assoc] $l ?
 )
 
 @[inherit_doc mul_assoc_l]
-macro (name := mal) "mal" : tactic => `(tactic|
-  mul_assoc_l
+macro (name := mal) "mal" l:(location)? : tactic => `(tactic|
+  mul_assoc_l $l ?
 )
 
 /-- Shorthand for `simp_rw [mul_assoc]`, which applies the `mul_assoc` tactic to the right. -/
-macro (name := mul_assoc_r) "mul_assoc_r" : tactic => `(tactic|
-  simp_rw [mul_assoc]
+macro (name := mul_assoc_r) "mul_assoc_r" l:(location)? : tactic => `(tactic|
+  simp_rw [mul_assoc] $l ?
 )
 
 @[inherit_doc mul_assoc_r]
@@ -50,13 +50,13 @@ macro (name := mar) "mar" : tactic => `(tactic|
 
 /- CC: Use these two theorems to generate an automatic new theorem from a commutative theorem. -/
 
-private theorem mul_assoc' {G : Type u} [Semigroup G] {b c d e : G} (h : b * c = d * e) (a : G) :
-    a * b * c = a * d * e := by
-  rw [mul_assoc, h, ← mul_assoc]
+private theorem mul_assoc' {G : Type u} [Semigroup G] {b c d : G} (h : b * c = d) (a : G) :
+    a * b * c = a * d := by
+  rw [mul_assoc, h]
 
-private theorem add_assoc' {G : Type u} [AddSemigroup G] {b c d e : G} (h : b + c = d + e) (a : G) :
-    a + b + c = a + d + e := by
-  rw [add_assoc, h, ← add_assoc]
+private theorem add_assoc' {G : Type u} [AddSemigroup G] {b c d : G} (h : b + c = d) (a : G) :
+    a + b + c = a + d := by
+  rw [add_assoc, h]
 
 /--
   An empty list of `simp` lemmas and terms.
@@ -69,16 +69,6 @@ private theorem add_assoc' {G : Type u} [AddSemigroup G] {b c d e : G} (h : b + 
 -/
 def groupSimp (e : Expr) : MetaM Simp.Result :=
   simpOnlyNames [``mul_left_inj, ``mul_right_inj] e
-
-/- CC: Use these two theorems if constructing a `mul_assoc` term directly without a hole. -/
-
-private theorem mul_assoc'' {G : Type u} [Semigroup G] (b a c : G) :
-    a * b * c = a * (b * c) := by
-  rw [mul_assoc]
-
-private theorem add_assoc'' {G : Type u} [AddSemigroup G] (b a c : G) :
-    a + b + c = a + (b + c) := by
-  rw [add_assoc]
 
 /--
   An attribute to automatically generate a new theorem of the same name,
@@ -109,6 +99,29 @@ initialize registerBuiltinAttribute {
       pure (← reassocExpr (← mkExpectedTypeHint value type), levels)
   | _ => throwUnsupportedSyntax
 }
+
+open Term in
+/--
+  A term elaborator `greassoc_of% t`, where `t` is
+  an equation `f = g` on `Semigroup`s (possibly under a `∀` binder),
+  used to reassociate the group equation with a fresh third term to the right.
+
+  To use, place before a proof term or hypothesis name to create a new term
+  that has been reassociated in the other way. For example,
+
+  `rw [greassoc_of% h]` will rewrite with `h` after being reassociated.
+
+  Note that the elaborator creates only one term. Using this with `rw` will
+  NOT
+-/
+elab "greassoc_of% " t:term : term => do
+  reassocExpr (← elabTerm t none)
+
+/-- Apply `mul_left_inj` and `mul_right_inj` and their reassociated-verisons. -/
+macro (name := mul_inj) "mul_inj" l:(location)? : tactic => `(tactic|
+  simp only [mul_left_inj, greassoc_of% mul_left_inj,
+    mul_right_inj, greassoc_of% mul_right_inj] $l ?
+)
 
 /-
   CC: It's very, very hard to get `(rwRule| )` to type check, since it expects
@@ -176,34 +189,29 @@ elab s:"grw " cfg:optConfig rws:rwRuleSeq l:(location)? : tactic => Elab.Tactic.
         | some assoc =>
           let rule := ← do if symm then `(rwRule| ← $assoc:term) else `(rwRule| $assoc:term)
           evalTactic <| ← `(tactic|
-            (rw $cfg [$rule] $l ?; try rw $cfg [← mul_assoc] $l ?);
-            (try simp only [mul_assoc, mul_right_inj] $l ?);
-            (try simp only [← mul_assoc, mul_left_inj] $l ?)
+            (rw $cfg [$rule] $l ?);
+            (try mul_inj $l ?)
           )
       )
 
-      let rwTerm := ← do if symm then `(rwRule| ← $e:term) else `(rwRule| $e:term)
-      (evalTactic <| ← `(tactic|
-        -- CC: Try to re-associate and simplify common terms on the right, then the left
-        -- CC: Make this a tactic?
-        (try simp only [mul_assoc, mul_right_inj] $l ?);
-        (try simp only [← mul_assoc, mul_left_inj] $l ?);
+      let rwTerm ← do if symm then `(rwRule| ← $e:term) else `(rwRule| $e:term)
+
+      -- Now try to reassociate the term `e`
+      -- This might fail, but it's an okay transformation to make here
+      -- because all we're extracting at this point is syntax
+      let reassocTerm ← do
+        if symm then `(rwRule | ← greassoc_of% $e:term) else `(rwRule | greassoc_of% $e:term)
+
+      ((evalTactic <| ← `(tactic|
+        (try mul_inj $l ?);
         first
         | rw $cfg [$rwTerm] $l ?
-        | try simp only [← mul_assoc, ← add_assoc] $l ?
-          rw $cfg [$rwTerm] $l ?
+        | rw $cfg [$reassocTerm] $l ?
       ))
       <|>
-      cont
-
-open Term in
-/--
-`reassoc_of% t`, where `t` is
-an equation `f = g` between morphisms `X ⟶ Y` in a category (possibly after a `∀` binder),
-produce the equation `∀ {Z} (h : Y ⟶ Z), f ≫ h = g ≫ h`,
-but with compositions fully right associated and identities removed.
--/
-elab "greassoc_of% " t:term : term => do
-  reassocExpr (← elabTerm t none)
+      cont);
+      (evalTactic <| ← `(tactic|
+        try mal
+      ))
 
 end Steinberg.Macro
