@@ -26,8 +26,14 @@ namespace Steinberg
   or `rw` or supply `simp` lemmas for). Rather, this is shorthand
   for longer expressions that would otherwise take a while to type.
 -/
+
+/-- `triv_comm(x, y)` unfolds to `⁅ x, y ⁆ = 1`.  -/
 scoped notation "triv_comm" "( " x ", " y " )" => ⁅ x, y ⁆ = 1
+
+/-- `commutes(x, y)` unfolds to `x * y = y * x`.  -/
 scoped notation "commutes" "( " x ", " y " )" => x * y = y * x
+
+/-- `reorder_left(x, y, z)` unfolds to `x * y = z * y * x`.  -/
 scoped notation "reorder_left" "( " x ", " y ", " z " )" => x * y = z * y * x
 scoped notation "reorder_mid" "( " x ", " y ", " z " )" => x * y = y * z * x
 scoped notation "reorder_right" "( " x ", " y ", " z " )" => x * y = y * x * z
@@ -37,15 +43,13 @@ variable {G : Type TG} [Group G]
 
 /-! ### Theorems about commutators (holding in any group) -/
 
-theorem comm_left      (x y : G) : x * y = ⁅x, y⁆ * y * x          := by group
-theorem comm_mid       (x y : G) : x * y = y * ⁅x, y⁻¹⁆⁻¹ * x      := by group
-theorem comm_right     (x y : G) : x * y = y * x * ⁅x⁻¹, y⁻¹⁆      := by group
+theorem comm_left      (x y : G) : x * y = ⁅x, y⁆ * y * x       := by group
+theorem comm_mid       (x y : G) : x * y = y * ⁅x, y⁻¹⁆⁻¹ * x   := by group
+theorem comm_right     (x y : G) : x * y = y * x * ⁅x⁻¹, y⁻¹⁆   := by group
 
-theorem already_have (x y : G) : ⁅x, y⁆⁻¹ = ⁅y, x⁆ := by group
-
-theorem comm_left_rev  (x y : G) : x * y = ⁅y, x⁆⁻¹ * y * x      := already_have y _ ▸ comm_left ..
-theorem comm_mid_rev   (x y : G) : x * y = y * ⁅y⁻¹, x⁆ * x      := (already_have x _).symm ▸ comm_mid ..
-theorem comm_right_rev (x y : G) : x * y = y * x * ⁅y⁻¹, x⁻¹⁆⁻¹  := already_have y⁻¹ _ ▸ comm_right ..
+theorem comm_left_rev  (x y : G) : x * y = ⁅y, x⁆⁻¹ * y * x     := commutatorElement_inv y _ ▸ comm_left ..
+theorem comm_mid_rev   (x y : G) : x * y = y * ⁅y⁻¹, x⁆ * x     := (commutatorElement_inv x _).symm ▸ comm_mid ..
+theorem comm_right_rev (x y : G) : x * y = y * x * ⁅y⁻¹, x⁻¹⁆⁻¹ := commutatorElement_inv y⁻¹ _ ▸ comm_right ..
 
 theorem triv_comm_iff_commutes : triv_comm(x, y) ↔ commutes(x, y) := by
   constructor
@@ -63,6 +67,7 @@ theorem reorder_left_of_eq_comm : ⁅x, y⁆ = z → reorder_left(x, y, z) := by
   rintro rfl
   simp_rw [inv_mul_cancel_right]
 
+@[simp]
 theorem reorder_left_iff_eq_comm : reorder_left(x, y, z) ↔ ⁅x, y⁆ = z :=
   ⟨eq_comm_of_reorder_left, reorder_left_of_eq_comm⟩
 

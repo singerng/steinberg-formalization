@@ -14,19 +14,47 @@ import Mathlib.Tactic.CategoryTheory.Reassoc
 /- Mathlib mathematics imports -/
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Algebra.Group.Basic
+import Mathlib.Algebra.Ring.Defs
+import Mathlib.Algebra.Group.Hom.Defs
+import Mathlib.GroupTheory.Commutator.Basic
+
+import Steinberg.Macro.Attr
 
 /-!
 
 See:
   - Associating: `mul_assoc_l`, `mal`, `mul_assoc_r`, `mar`
+  - Chevalley simp automation: `chev_simp`
   - Group rewrite: `grw`
 
 -/
 
-namespace Steinberg.Macro
+namespace Steinberg
 
 open Mathlib.Tactic
 open Lean Meta Elab Term Tactic Parser.Tactic PrettyPrinter
+
+attribute [chev_simps] neg_add_cancel add_neg_cancel
+  one_mul mul_one zero_mul mul_zero mul_neg neg_neg
+  zero_add add_zero
+  map_one map_zero map_mul map_add map_neg map_commutatorElement
+  commutatorElement_inv
+
+/-- A macro for a common simplification when rewriting with ghost component equations. -/
+syntax (name := chevSimp) "chev_simp" (simpArgs)? (location)? : tactic
+
+macro_rules
+  --| `(tactic| chev_simp $[at $loc]?) => do
+  --  `(tactic| simp only [chev_simps] $[at $loc]?)
+  | `(tactic| chev_simp $[[$simpArgs,*]]? $[at $loc]?) => do
+    let args := simpArgs.map (·.getElems) |>.getD #[]
+    `(tactic| simp only [chev_simps, $args,*] $[at $loc]?)
+
+--macro (name := chev_simp) "chev_simp" args:simpArgs l:(location)? : tactic => `(tactic|
+--  simp only [chev_simps] $l ?
+--)
+
+namespace Macro
 
 /-- Shorthand for `simp_rw [← mul_assoc]`, which applies the `mul_assoc` tactic to the left. -/
 macro (name := mul_assoc_l) "mul_assoc_l" l:(location)? : tactic => `(tactic|
@@ -299,6 +327,9 @@ elab s:"grw " cfg:optConfig rws:rwRuleSeq l:(location)? : tactic => Elab.Tactic.
       ))
       <|>
       cont);
-      (evalTactic <| ← `(tactic| mul_inj))
+      (evalTactic <| ← `(tactic| mul_inj $l ?));
+      (evalTactic <| ← `(tactic| try chev_simp [] $l ?))
 
-end Steinberg.Macro
+end Macro
+
+end Steinberg

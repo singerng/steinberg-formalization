@@ -70,6 +70,10 @@ set_option hygiene false in
 scoped notation (priority:=1000) "{" ζ ", " i ", " t "}" =>
   free_mk_mk ζ i (by (first | trivial | assumption | omega)) t
 
+/-- `free_mk_mk` but with an explicit proof term provided. -/
+scoped notation (priority:=1000) "{" ζ ", " i ", " t "}'" h =>
+  free_mk_mk ζ i h t
+
 
 open Lean PrettyPrinter Delaborator SubExpr in
 /--
@@ -85,6 +89,12 @@ def delab_free_mk_mk : Delab := do
   let i ← withNaryArg 5 delab
   let t ← withNaryArg 7 delab
   `({ $(ζ):term, $(i):term, $(t):term })
+
+/-- Injected group elements can commute on their root heights `i` and `j`.  -/
+theorem h_add_comm (ζ : Φ) (i j : ℕ) (h : i + j ≤ height ζ) (t : R)
+    : {ζ, i + j, t} = {ζ, j + i, t} := by
+  congr 1
+  exact add_comm i j
 
 end GradedGen
 
@@ -153,34 +163,62 @@ def rels_of_lin_of_root (R : Type TR) [Ring R] (ζ : Φ) : Set (FreeGroupOnGrade
   { {ζ, i, t} * {ζ, i, u} * {ζ, i, t + u}⁻¹
     | (i : ℕ) (hi : i ≤ height ζ) (t : R) (u : R) }
 
-def lin_of_root (f : FreeGroupOnGradedGens Φ R →* G) (ζ : Φ) : Prop :=
-  ∀ ⦃i : ℕ⦄ (hi : i ≤ height ζ) (t u : R),
-    f {ζ, i, t} * f {ζ, i, u} = f {ζ, i, t + u}
-
 
 /-! ### Additional properties implied by linearity and implications therein -/
 
-/- Coefficient 0 gives an identity element. -/
-def id_of_root (f : FreeGroupOnGradedGens Φ R →* G) (ζ : Φ) : Prop :=
-  ∀ ⦃i : ℕ⦄ (hi : i ≤ height ζ), f {ζ, i, 0} = 1
+section ofRoot
 
--- /- Negating the coefficient inverts the generator. -/
-def inv_of_root (f : FreeGroupOnGradedGens Φ R →* G) (ζ : Φ) : Prop :=
-  ∀ ⦃i : ℕ⦄ (hi : i ≤ height ζ) (t : R),
-    f {ζ, i, -t} = (f {ζ, i, t})⁻¹
+set_option quotPrecheck false
+
+/--
+  Linearity of group elements on a particular root.
+
+  Equivalent to `∀ (i : ℕ) (hi : i ≤ height ζ) (t u), f {ζ, i, t} * f {ζ, i, u} = f {ζ, i, t + u}`.
+
+  `(f : FreeGroupOnGradedGens Φ R →* G)`
+  `(ζ : Φ)`
+-/
+scoped notation "lin_of_root" "(" f ", " ζ ")" =>
+  ∀ (i : ℕ) (hi : i ≤ height ζ) (t u),
+    f {ζ, i, t} * f {ζ, i, u} = f {ζ, i, t + u}
+
+/--
+  Ring coefficient 0 gives an identity element.
+
+  Equivalent to `∀ (i : ℕ) (hi : i ≤ height ζ), f {ζ, i, 0} = 1`.
+
+  `(f : FreeGroupOnGradedGens Φ R →* G)`
+  `(ζ : Φ)`
+-/
+scoped notation "id_of_root" "(" f ", " ζ ")" =>
+  ∀ (i : ℕ) (hi : i ≤ height ζ),
+    f {ζ, i, 0} = 1
+/--
+  Negating the coefficient inverts the generator.
+
+  Equivalent to `∀ (i : ℕ) (hi : i ≤ height ζ) (t : R), (f {ζ, i, t})⁻¹ = 1`.
+
+  `(f : FreeGroupOnGradedGens Φ R →* G)`
+  `(ζ : Φ)`
+-/
+scoped notation "inv_of_root" "(" f ", " ζ ")" =>
+  ∀ (i : ℕ) (hi : i ≤ height ζ) (t),
+    (f {ζ, i, t})⁻¹ = f {ζ, i, -t}
 
 /- Linearity implies identity (essentially a standard fact about group homomorphisms). -/
 theorem id_of_lin_of_root {f : FreeGroupOnGradedGens Φ R →* G} {ζ : Φ}
-    : lin_of_root f ζ → id_of_root f ζ := by
+    : lin_of_root(f, ζ) → id_of_root(f, ζ) := by
   intro h_lin i hi
   apply @mul_left_cancel _ _ _ (f {ζ, i, 0})
   rw [mul_one, h_lin, add_zero]
 
 /- Linearity implies inverse-ness (essentially a standard fact about group homomorphisms). -/
 theorem inv_of_lin_of_root {f : FreeGroupOnGradedGens Φ R →* G} {ζ : Φ}
-    : lin_of_root f ζ → inv_of_root f ζ := by
+    : lin_of_root(f, ζ) → inv_of_root(f, ζ) := by
   intro h_lin i hi t
   apply @mul_left_cancel _ _ _ (f {ζ, i, t})
   rw [mul_inv_cancel, h_lin, add_neg_cancel, id_of_lin_of_root h_lin]
+
+end ofRoot /- section -/
 
 end Steinberg

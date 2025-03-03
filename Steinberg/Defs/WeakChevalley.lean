@@ -5,7 +5,10 @@ LICENSE goes here.
 -/
 
 import Steinberg.Defs.Chevalley
+import Steinberg.Defs.Commutator
 import Steinberg.Upstream.PresentedGroup
+import Steinberg.Macro.Group
+import Steinberg.Macro.Syntax
 
 /-!
 
@@ -72,18 +75,6 @@ abbrev group (w : WeakChevalley Φ R) :=
 
 def pres_mk (w : WeakChevalley Φ R) : FreeGroupOnGradedGens Φ R →* group w :=
   PresentedGroup.mk (WeakChevalley.all_rels w)
-
---open Lean PrettyPrinter Delaborator SubExpr in
-/- Failed implementation of delab. This doesn't work because `pres_mk`
-   is happy once `w` is provided, but we want to drop the string when
-   it's an application to a group element.
--/
-/-@[delab app.Steinberg.WeakChevalley.pres_mk']
-partial def delab_pres_mk : Delab := do
-  let e ← getExpr
-  guard $ e.isAppOfArity' ``pres_mk 6
-  let arg ← withNaryArg 5 delab
-  `($arg) -/
 
 open Lean PrettyPrinter Delaborator SubExpr in
 /--
@@ -187,7 +178,7 @@ theorem mixed_commutes_helper (w : WeakChevalley Φ R)
       exists i, j, hi, hj, t, u
 
 theorem lin_helper (w : WeakChevalley Φ R) {ζ : Φ} (h : ζ ∈ w.lin_roots)
-    : lin_of_root w.pres_mk ζ := by
+    : lin_of_root(w.pres_mk, ζ) := by
   intro i hi t u
   apply helper
   apply eq_one_of_mem_rels
@@ -225,5 +216,105 @@ theorem def_helper (w : WeakChevalley Φ R)
   · simp only [Set.mem_insert_iff, Set.mem_singleton_iff, true_or, or_true]
   · apply Set.mem_sUnion.mpr
     use S
+
+section declareThms
+
+open Lean Parser.Tactic
+set_option hygiene false
+
+macro "declare_triv_comm_of_root_pair_thms" w:ident R:term:arg r₁:term:arg r₂:term:arg : command => do
+  let commOf := TSyntax.mapIdent₂ r₁ r₂ (fun s₁ s₂ => "comm_of_" ++ s₁ ++ "_" ++ s₂)
+  let cmds ← Syntax.getArgs <$> `(
+    section
+
+    theorem $commOf : trivial_commutator_of_root_pair ($w $R).pres_mk $r₁ $r₂ :=
+      ($w $R).trivial_commutator_helper (by unfold $w; simp)
+
+    end
+  )
+  return ⟨mkNullNode cmds⟩
+
+macro "declare_single_comm_of_root_pair_thms" w:ident R:term:arg r₁:term:arg r₂:term:arg r₃:term:arg n:term:arg : command => do
+  let commOf := TSyntax.mapIdent₂ r₁ r₂ (fun s₁ s₂ => "comm_of_" ++ s₁ ++ "_" ++ s₂)
+  let cmds ← Syntax.getArgs <$> `(
+    section
+
+    theorem $commOf : single_commutator_of_root_pair ($w $R).pres_mk $r₁ $r₂ $r₃ $n rfl :=
+      ($w $R).single_commutator_helper $r₁ $r₂ $r₃ $n rfl (by unfold $w; simp)
+
+    end
+  )
+  return ⟨mkNullNode cmds⟩
+
+macro "declare_lin_id_inv_thms" w:ident R:term:arg root:term:arg : command => do
+  let linOf := root.mapIdent ("lin_of_" ++ ·)
+  let idOf := root.mapIdent ("id_of_" ++ ·)
+  let invOf := root.mapIdent ("inv_of_" ++ ·)
+  let cmds ← Syntax.getArgs <$> `(
+    section
+
+    @[group_reassoc (attr := simp, chev_simps)]
+    theorem $linOf : lin_of_root(($w $R).pres_mk, $root) :=
+      WeakChevalley.lin_helper ($w $R)
+        (by unfold $w; simp [trivial_commutator_pairs])
+
+    @[simp, chev_simps]
+    theorem $idOf : id_of_root(($w $R).pres_mk, $root) :=
+      id_of_lin_of_root $linOf
+
+    @[simp, chev_simps]
+    theorem $invOf : inv_of_root(($w $R).pres_mk, $root) :=
+      inv_of_lin_of_root $linOf
+
+    end
+  )
+  return ⟨mkNullNode cmds⟩
+
+macro "declare_expr_as_thm" w:ident R:term:arg r₁:term:arg r₂:term:arg : command => do
+  let thmName := TSyntax.mapIdent₂ r₁ r₂
+    (fun s₁ s₂ => "expr_" ++ s₁ ++ "_" ++ s₂ ++ "_as_" ++ s₂ ++ "_" ++ s₁)
+  let rwName := TSyntax.mapIdent₂ r₁ r₂
+    (fun s₁ s₂ => "comm_of_" ++ s₁ ++ "_" ++ s₂)
+  let rwThm ← `(rwRule| $rwName:term)
+  let mut cmds ← Syntax.getArgs <$> `(
+    section
+
+    @[group_reassoc] theorem $thmName
+       : ∀ ⦃i j : ℕ⦄ (hi : i ≤ height $r₁) (hj : j ≤ height $r₂) (t u : $R),
+        commutes(($w $R).pres_mk {$r₁:term, i, t},
+                 ($w $R).pres_mk {$r₂:term, j, u}) := by
+      intro i j hi hj t u
+      apply triv_comm_iff_commutes.mp
+      rw [$rwThm]
+
+    end
+  )
+  return ⟨mkNullNode cmds⟩
+
+macro "declare_mixed_comm_thms" w:ident R:term:arg r:term:arg : command => do
+  let mixedName := r.mapIdent ("mixed_commutes_of_" ++ ·)
+  let mixedRw ← `(rwRule| $mixedName:term)
+  let exprName := r.mapIdent (fun s => "expr_" ++ s ++ "_" ++ s ++ "_as_" ++ s ++ "_" ++ s)
+  let mut cmds ← Syntax.getArgs <$> `(
+    section
+
+    theorem $mixedName : mixed_commutes_of_root ($w $R).pres_mk $r :=
+      WeakChevalley.mixed_commutes_helper ($w $R)
+        (by unfold $w; simp [trivial_commutator_pairs])
+
+    @[group_reassoc]
+    theorem $exprName :
+        ∀ ⦃i j : ℕ⦄ (hi : i ≤ height $r) (hj : j ≤ height $r) (t u : $R),
+          commutes(($w $R).pres_mk {$r:term, i, t},
+                   ($w $R).pres_mk {$r:term, j, u}) := by
+      intro i j hi hj t u
+      apply triv_comm_iff_commutes.mp
+      rw [$mixedRw]
+
+    end
+  )
+  return ⟨mkNullNode cmds⟩
+
+end declareThms /- section -/
 
 end WeakChevalley
