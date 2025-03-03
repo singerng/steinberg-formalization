@@ -590,6 +590,21 @@ declare_B3Large_mixed_comm_thms αβ
 declare_B3Large_mixed_comm_thms βψ
 declare_B3Large_mixed_comm_thms β2ψ
 
+theorem def_of_αβψ :
+  ∀ ⦃i : ℕ⦄ (hi : i ≤ αβψ.height) (t : F),
+  ({βψ, (split_3_into_1_2 i hi).2, -1/2}'(correct_of_split_3_into_1_2 i hi).2) *
+  ({α, (split_3_into_1_2 i hi).1, t}'(correct_of_split_3_into_1_2 i hi).1) *
+  ({βψ, (split_3_into_1_2 i hi).2, 1}'(correct_of_split_3_into_1_2 i hi).2) *
+  ({α, (split_3_into_1_2 i hi).1, -t}'(correct_of_split_3_into_1_2 i hi).1) *
+  ({βψ, (split_3_into_1_2 i hi).2, -1/2}'(correct_of_split_3_into_1_2 i hi).2)
+  = {αβψ, i, t} := by
+  intro i hi t
+  apply WeakChevalley.helper
+  apply (weakB3Large F).def_helper rels_of_def_of_αβψ
+  · simp only [weakB3Large, def_sets]
+    exact Set.mem_insert rels_of_def_of_αβψ _
+  · exists i, hi, t
+
 /-! ### Nonhomogeneous lift -/
 
 -- 8.81
