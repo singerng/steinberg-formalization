@@ -197,7 +197,7 @@ def rels_of_hom_lift_of_interchange_of_α2β2ψ_b :=
 
 -- Relation 8.90
 def rels_of_hom_lift_of_commutator_of_ψ_αβ_β2ψ :=
-  { ⁅ {ψ, i, v},
+  { ⁅ {ψ, k, v},
       ⁅ {αβ, i + j, t * u}'(add_le_add hi hj),
         {β2ψ, j + 2 * k, u * v^2}'(add_le_add hj (mul_le_mul_of_nonneg_left hk (by trivial))) ⁆ ⁆
     | (i : ℕ) (j : ℕ) (k : ℕ)
@@ -642,7 +642,7 @@ theorem raw_hom_lift_of_interchange_of_α2β2ψ_b :
 -- 8.90
 theorem raw_hom_lift_of_commutator_of_ψ_αβ_β2ψ :
   forall_ijk_tuv,
-    ⁅ {ψ, i, v}, ⁅ {αβ, i + j, t * u}, {β2ψ, j + 2 * k, u * v^2} ⁆ ⁆ = 1 := by
+    ⁅ {ψ, k, v}, ⁅ {αβ, i + j, t * u}, {β2ψ, j + 2 * k, u * v^2} ⁆ ⁆ = 1 := by
   raw_hom_tac rels_of_hom_lift_of_commutator_of_ψ_αβ_β2ψ [i, j, k, hi, hj, hk, t, u, v]
 
 -- 8.91a
@@ -1816,7 +1816,7 @@ theorem hom_lift_of_interchange_of_α2β2ψ_b :
 omit Fchar
 theorem hom_lift_of_commutator_ψ_αβ_β2ψ :
   ∀ ⦃i j k : ℕ⦄ (hi : i ≤ 1) (hj : j ≤ 1) (hk : k ≤ 1) (t u v : F),
-  ⁅{ψ, i, t}, ⁅{αβ, i + j, u}, {β2ψ, j + 2 * k, v}⁆⁆ = 1 := by
+  ⁅{ψ, k, t}, ⁅{αβ, i + j, u}, {β2ψ, j + 2 * k, v}⁆⁆ = 1 := by
   intro i j k hi hj hk t u v
   rcases eq_or_ne t 0 with ht | ht
   · rw [ht, id_of_ψ]; group
@@ -1997,35 +1997,69 @@ theorem sufficient_conditions_for_commutator_of_αβψ_and_βψ :
   ∀ (t u v : F), ⁅{αβψ, i + j, t * u}, {βψ, k, v}⁆ = ⁅{αβ, i, t}, {β2ψ, j + k, 2 * u * v}⁆ := by
   sorry
 
+lemma interchange_of_α2β2ψ_aux :
+  ∀ (t u : F), ⁅{αβ, 1, t}, {β2ψ, 1, u}⁆ = ⁅{αβ, 0, t}, {β2ψ, 2, u}⁆ := by
+    intro t u
+    have := @hom_lift_of_interchange_of_α2β2ψ_a F _ Fchar 0 1 0 (by norm_num) (by norm_num) (by norm_num)
+    norm_num at this
+    have this' := @hom_lift_of_interchange_of_α2β2ψ_a F _ Fchar 0 0 1 (by norm_num) (by norm_num) (by norm_num)
+    norm_num at this'
+    specialize this t (u/2) 1; norm_num at this; field_simp at this
+    specialize this' t (u/2) 1; norm_num at this'; field_simp at this'
+    exact Eq.trans this (Eq.symm this')
+
 -- 8.159a
 theorem partial_A_interchange_of_α2β2ψ_a :
   ∀ (t u v : F),
   ⁅{αβψ, 0, t * u}, {βψ, 2, v}⁆ = ⁅{αβ, 0, t}, {β2ψ, 2, 2 * u * v}⁆ := by
-  have h1 := @hom_lift_of_commutator_ψ_αβ_β2ψ F _ 0 0 1 (by norm_num) (by norm_num) (by norm_num)
+  have h1 := @hom_lift_of_commutator_ψ_αβ_β2ψ F _ 0 1 0 (by norm_num) (by norm_num) (by norm_num)
   have h2 := @hom_lift_of_commutator_αβ_αβ_β2ψ F _ 0 0 1 (by norm_num) (by norm_num) (by norm_num)
   have h3 := @hom_lift_of_inv_doub_of_αβ_β2ψ F _ 0 0 1 (by norm_num) (by norm_num) (by norm_num)
   have h4 := @hom_lift_of_interchange_of_α2β2ψ_a F _ Fchar 0 0 1 (by norm_num) (by norm_num) (by norm_num)
   have := @sufficient_conditions_for_commutator_of_αβψ_and_βψ _ _ Fchar 0 0 2 (by norm_num) (by norm_num) (by norm_num)
   norm_num at this
   apply this
-  exact h1
-  exact h2
-  exact fun t u ↦ (h3 t u).left
-  intro t u
-  have h4a := h4 t 1 u; norm_num at h4a
-  have h4b := h4 (2*t) (1/2) u; norm_num at h4b; field_simp at h4b
-  specialize h3 t u
-  grw [h3.right.right, h4a, h4b]
+  · intro t u v
+    have := @interchange_of_α2β2ψ_aux _ _ Fchar u v
+    rw [← this]
+    specialize h1 t u v; norm_num at h1; exact h1
+  · exact h2
+  · exact fun t u ↦ (h3 t u).left
+  · intro t u
+    have h4a := h4 t 1 u; norm_num at h4a
+    have h4b := h4 (2*t) (1/2) u; norm_num at h4b; field_simp at h4b
+    specialize h3 t u
+    grw [h3.right.right, h4a, h4b]
 
 -- 8.159b
 theorem partial_A_interchange_of_α2β2ψ_b :
   ∀ (t u v : F),
   ⁅{αβψ, 2, t * u}, {βψ, 0, v}⁆ = ⁅{αβ, 1, t}, {β2ψ, 1, 2 * u * v}⁆ := by
   have := @sufficient_conditions_for_commutator_of_αβψ_and_βψ _ _ Fchar 1 1 0 (by norm_num) (by norm_num) (by norm_num)
+  have h := @interchange_of_α2β2ψ_aux _ _ Fchar
+  have h1 := @hom_lift_of_commutator_ψ_αβ_β2ψ F _ 0 0 1 (by norm_num) (by norm_num) (by norm_num)
+  have h2 := @hom_lift_of_commutator_αβ_αβ_β2ψ F _ 0 1 0 (by norm_num) (by norm_num) (by norm_num)
+  have h3 := @hom_lift_of_inv_doub_of_αβ_β2ψ F _ 0 0 1 (by norm_num) (by norm_num) (by norm_num)
+  have h4 := @hom_lift_of_interchange_of_α2β2ψ_a F _ Fchar 0 0 1 (by norm_num) (by norm_num) (by norm_num)
   norm_num at this
   apply this
-  intro t u v
-  sorry
+  · intro t u v
+    rw [h u v]
+    specialize h1 t u v; norm_num at h1; exact h1
+  · exact h2
+  · intro t u
+    have h1a := h t u
+    have h1b := h (-t) (-u)
+    grw [h1a, h1b]
+    exact (h3 t u).left
+  · intro t u
+    specialize h3 t u; norm_num at h3
+    rw [h t u]
+    grw [h3.right.right]
+    rw [h t (2*u)]
+    have h4a := h4 t 1 u; norm_num at h4a
+    have h4b := h4 (2*t) (1/2) u; norm_num at h4b; field_simp at h4b
+    grw [h4a, h4b]
 
 -- 8.160
 include Fchar
