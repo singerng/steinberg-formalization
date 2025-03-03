@@ -1953,9 +1953,9 @@ theorem comm_of_β_αβψ_βψ :
   grw [commutatorElement_def, ←inv_of_αβψ hj, ←inv_of_βψ, expr_β_αβψ_as_αβψ_β hi hj, expr_β_βψ_as_βψ_β hi hk,
   expr_β_αβψ_as_αβψ_β hi hj, expr_β_βψ_as_βψ_β hi hk]
 
--- 8.158
+-- 8.158 (THIS STATEMENT IS INCORRECT)
 include Fchar
-theorem sufficient_conditions_for_commutator_of_αβψ_and_βψ :
+theorem OLD_sufficient_conditions_for_commutator_of_αβψ_and_βψ :
   ∀ ⦃i j k : ℕ⦄ (hi : i ≤ 2) (hj : j ≤ 1) (hk : k ≤ 2)
   (h35a : ∀ (t u v : F), ⁅{ψ, j, t}, ⁅{αβ, i, u}, {β2ψ, j + k, v}⁆⁆ = 1)
   (h35b : ∀ (t u v : F), ⁅{αβ, i, t}, ⁅{αβ, i, u}, {β2ψ, j + k, v}⁆⁆ = 1)
@@ -1987,21 +1987,44 @@ theorem sufficient_conditions_for_commutator_of_αβψ_and_βψ :
       grw [h35d, expand_αβψ_as_ψ_αβ_ψ_αβ_ψ hi hj]
   exact eq_comm_of_reorder_left this
 
+-- 8.158 (revised)
+theorem sufficient_conditions_for_commutator_of_αβψ_and_βψ :
+  ∀ ⦃i j k : ℕ⦄ (hi : i ≤ 2) (hj : j ≤ 1) (hk : k ≤ 2)
+  (h35a : ∀ (t u v : F), ⁅{ψ, j, t}, ⁅{αβ, i, u}, {β2ψ, j + k, v}⁆⁆ = 1)
+  (h35b : ∀ (t u : F), ⁅{αβ, i, t}, ⁅{αβ, i, t}, {β2ψ, j + k, u}⁆⁆ = 1 ∧ ⁅{αβ, i, t}, ⁅{αβ, i, -t}, {β2ψ, j + k, u}⁆⁆ = 1)
+  (h35c : ∀ (t u : F), ⁅{αβ, i, t}, {β2ψ, j + k, u}⁆ = ⁅{αβ, i, -t}, {β2ψ, j + k, -u}⁆)
+  (h35d : ∀ (t u : F), ⁅{αβ, i, t}, {β2ψ, j + k, u}⁆ * ⁅{αβ, i, t}, {β2ψ, j + k, u}⁆ = ⁅{αβ, i, t}, {β2ψ, j + k, 2 * u}⁆),
+  ∀ (t u v : F), ⁅{αβψ, i + j, t * u}, {βψ, k, v}⁆ = ⁅{αβ, i, t}, {β2ψ, j + k, 2 * u * v}⁆ := by
+  sorry
 
 -- 8.159a
 theorem partial_A_interchange_of_α2β2ψ_a :
   ∀ (t u v : F),
   ⁅{αβψ, 0, t * u}, {βψ, 2, v}⁆ = ⁅{αβ, 0, t}, {β2ψ, 2, 2 * u * v}⁆ := by
-  intro t u v
-  have := @sufficient_conditions_for_commutator_of_αβψ_and_βψ _ _ Fchar 0 0 2 (by trivial) (by trivial) (by trivial)
+  have h1 := @hom_lift_of_commutator_ψ_αβ_β2ψ F _ 0 0 1 (by norm_num) (by norm_num) (by norm_num)
+  have h2 := @hom_lift_of_commutator_αβ_αβ_β2ψ F _ 0 0 1 (by norm_num) (by norm_num) (by norm_num)
+  have h3 := @hom_lift_of_inv_doub_of_αβ_β2ψ F _ 0 0 1 (by norm_num) (by norm_num) (by norm_num)
+  have h4 := @hom_lift_of_interchange_of_α2β2ψ_a F _ Fchar 0 0 1 (by norm_num) (by norm_num) (by norm_num)
+  have := @sufficient_conditions_for_commutator_of_αβψ_and_βψ _ _ Fchar 0 0 2 (by norm_num) (by norm_num) (by norm_num)
   norm_num at this
-  --apply this
-  sorry
+  apply this
+  exact h1
+  exact h2
+  exact fun t u ↦ (h3 t u).left
+  intro t u
+  have h4a := h4 t 1 u; norm_num at h4a
+  have h4b := h4 (2*t) (1/2) u; norm_num at h4b; field_simp at h4b
+  specialize h3 t u
+  grw [h3.right.right, h4a, h4b]
 
 -- 8.159b
 theorem partial_A_interchange_of_α2β2ψ_b :
   ∀ (t u v : F),
   ⁅{αβψ, 2, t * u}, {βψ, 0, v}⁆ = ⁅{αβ, 1, t}, {β2ψ, 1, 2 * u * v}⁆ := by
+  have := @sufficient_conditions_for_commutator_of_αβψ_and_βψ _ _ Fchar 1 1 0 (by norm_num) (by norm_num) (by norm_num)
+  norm_num at this
+  apply this
+  intro t u v
   sorry
 
 -- 8.160
