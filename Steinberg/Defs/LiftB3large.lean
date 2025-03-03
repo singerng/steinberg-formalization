@@ -1049,7 +1049,7 @@ theorem expr_ψ_β_as_β_βψ_β2ψ_ψ :
 
 -- 8.113a
 @[group_reassoc]
-theorem expr_ψ_βψ_as_βψ_β2ψ :
+theorem expr_ψ_βψ_as_βψ_β2ψ_ψ :
   ∀ ⦃i j : ℕ⦄ (hi : i ≤ ψ.height) (hj : j ≤ βψ.height) (t u : R),
   {ψ, i, t} * {βψ, j, u} = {βψ, j, u} * {β2ψ, i + j, 2 * t * u} * {ψ, i, t} := by
   intro i j hi hj t u
@@ -1065,7 +1065,7 @@ theorem expr_ψ_βψ_as_βψ_ψ_β2ψ :
   {ψ, i, t} * {βψ, j, u} = {βψ, j, u} * {ψ, i, t} * {β2ψ, i + j, 2 * t * u} := by
   intro i j hi hj t u
   calc
-    {ψ, i, t} * {βψ, j, u} = {βψ, j, u} * {β2ψ, i + j, 2 * t * u} * {ψ, i, t} := expr_ψ_βψ_as_βψ_β2ψ hi hj t u
+    {ψ, i, t} * {βψ, j, u} = {βψ, j, u} * {β2ψ, i + j, 2 * t * u} * {ψ, i, t} := expr_ψ_βψ_as_βψ_β2ψ_ψ hi hj t u
     _ = {βψ, j, u} * ({β2ψ, i + j, 2 * t * u} * {ψ, i, t}) := rfl
     _ = {βψ, j, u} * ({ψ, i, t} * {β2ψ, i + j, 2 * t * u}) := by rw [triv_comm_iff_commutes.1 (comm_of_ψ_β2ψ _ _ t (2 * t * u))]
 
@@ -1888,10 +1888,6 @@ theorem hom_lift_of_interchange_of_α2β2ψ_b :
   rw [this] at aux
   have : -(t / (u * v)) * v = -(t / u) := by sorry
   rw [this] at aux
-  have : ⁅{αβψ, i + j + k, t / u * u}, {βψ, j + k, v * u}⁆ = ⁅{αβψ, i + j + k, t}, {βψ, j + k, u * v}⁆ := by ring_nf; field_simp
-  rw [←expand_αβψ_as_ψ_αβ_ψ_αβ_ψ, this] at aux
-  have aux' := @expand_αβ2ψ_as_commutator_of_α_β2ψ _ _ Rchar i (j + 2 * k) hi (by linarith) t u
-  rw [aux]
   sorry
 
 
@@ -2003,6 +1999,12 @@ theorem comm_of_βψ_αβ_β2ψ :
   grw [commutatorElement_def, ←inv_of_αβ, ←inv_of_β2ψ, ←expr_αβ_βψ_as_βψ_αβ hj hi, expr_βψ_β2ψ_as_β2ψ_βψ hi hk,
   ←expr_αβ_βψ_as_βψ_αβ hj hi, expr_βψ_β2ψ_as_β2ψ_βψ hi hk]
 
+theorem expr_βψ_comm_αβ_β2ψ_as_comm_αβ_β2ψ_βψ :
+  ∀ ⦃i j k : ℕ⦄ (hi : i ≤ βψ.height) (hj : j ≤ αβ.height) (hk : k ≤ β2ψ.height) (t u v : R),
+  {βψ, i, t} * ⁅{αβ, j, u}, {β2ψ, k, v}⁆ = ⁅{αβ, j, u}, {β2ψ, k, v}⁆ * {βψ, i, t} := by
+  intro i j k hi hj hk t u v
+  exact triv_comm_iff_commutes.1 (comm_of_βψ_αβ_β2ψ hi hj hk t u v)
+
 -- 8.155
 theorem comm_of_αβ_βψ_αβψ :
   ∀ ⦃i j k : ℕ⦄ (hi : i ≤ αβ.height) (hj : j ≤ βψ.height) (hk : k ≤ αβψ.height) (t u v : R),
@@ -2031,19 +2033,48 @@ theorem comm_of_β_αβψ_βψ :
   expr_β_αβψ_as_αβψ_β hi hj, expr_β_βψ_as_βψ_β hi hk]
 
 -- 8.158
+include Rchar
 theorem sufficient_conditions_for_commutator_of_αβψ_and_βψ :
   ∀ ⦃i j k : ℕ⦄ (hi : i ≤ 2) (hj : j ≤ 1) (hk : k ≤ 2)
   (h35a : ∀ t u v : R, ⁅{ψ, j, t}, ⁅{αβ, i, u}, {β2ψ, j + k, v}⁆⁆ = 1)
   (h35b : ∀ t u v : R, ⁅{αβ, i, t}, ⁅{αβ, i, u}, {β2ψ, j + k, v}⁆⁆ = 1)
   (h35c : ∀ t u : R, ⁅{αβ, i, t}, {β2ψ, j + k, u}⁆ = ⁅{αβ, i, -t}, {β2ψ, j + k, -u}⁆)
-  (h35d : ∀ t u : R, ⁅{αβ, i, t}, {β2ψ, j + k, u}⁆ * ⁅{αβ, i, t}, {β2ψ, j + k, u}⁆ = ⁅{αβ, i, 2 * t}, {β2ψ, j + k, u}⁆),
-  ∀ t u : R, ⁅{αβψ, i + j, t * u}, {βψ, k, v}⁆ = ⁅{αβ, i, t}, {β2ψ, j + k, 2 * u * v}⁆ := by
-  sorry
+  (h35d : ∀ t u : R, ⁅{αβ, i, t}, {β2ψ, j + k, u}⁆ * ⁅{αβ, i, t}, {β2ψ, j + k, u}⁆ = ⁅{αβ, i, t}, {β2ψ, j + k, 2 * u}⁆),
+  ∀ t u v : R, ⁅{αβψ, i + j, t * u}, {βψ, k, v}⁆ = ⁅{αβ, i, t}, {β2ψ, j + k, 2 * u * v}⁆ := by
+  intro i j k hi hj hk h35a h35b h35c h35d t u v
+  have h35a' := fun t' u' v' ↦ triv_comm_iff_commutes.1 (h35a t' u' v')
+  have h35b' := fun t' u' v' ↦ triv_comm_iff_commutes.1 (h35b t' u' v')
+  have aux₀ : 2 * (-u / 2) * v = -u * v := by ring_nf; field_simp
+  have eq36 : {β2ψ, j + k, -u * v} * {αβ, i, t} = {αβ, i, t} * ⁅{αβ, i, t}, {β2ψ, j + k, u * v}⁆ * {β2ψ, j + k, -u * v} := by calc
+    {β2ψ, j + k, -u * v} * {αβ, i, t} = {αβ, i, t} * ⁅{αβ, i, -t}, {β2ψ, j + k, -u * v}⁆ * {β2ψ, j + k, -u * v} := by
+      grw [inv_of_αβ, neg_mul, inv_of_β2ψ]; group
+    _ = {αβ, i, t} * ⁅{αβ, i, t}, {β2ψ, j + k, u * v}⁆ * {β2ψ, j + k, -u * v} := by grw [h35c]; ring_nf
+  have eq37 : {αβ, i, -t} * {β2ψ, j + k, -u * v} = {β2ψ, j + k, -u * v} * {αβ, i, -t} * ⁅{αβ, i, t}, {β2ψ, j + k, u * v}⁆ := by
+    grw [inv_of_αβ, neg_mul, inv_of_β2ψ]; group
+  have := calc
+    {αβψ, i + j, t * u} * {βψ, k, v} = {ψ, j, -u/2} * {αβ, i, t} * {ψ, j, u} * {αβ, i, -t} * {ψ, j, -u/2} * {βψ, k, v} := by rw [expand_αβψ_as_ψ_αβ_ψ_αβ_ψ hi hj]
+    _ = {βψ, k, v} * {ψ, j, -u/2} * {β2ψ, j + k, -u * v} * {αβ, i, t} * {β2ψ, j + k, 2 * u * v} * {ψ, j, u} * {αβ, i, -t} * {β2ψ, j + k, -u * v} * {ψ, j, -u/2} := by
+      grw [expr_ψ_βψ_as_βψ_β2ψ_ψ hj hk, aux₀, expr_αβ_βψ_as_βψ_αβ hi hk, expr_ψ_βψ_as_βψ_β2ψ_ψ hj hk, expr_αβ_βψ_as_βψ_αβ hi hk, expr_ψ_βψ_as_βψ_ψ_β2ψ hj hk, aux₀]
+    _ = {βψ, k, v} * {ψ, j, -u/2} * ⁅{αβ, i, t}, {β2ψ, j + k, u * v}⁆ * {αβ, i, t} * {β2ψ, j + k, -u * v} * {β2ψ, j + k, 2 * u * v} * {ψ, j, u} * {β2ψ, j + k, -u * v} * {αβ, i, -t} * ⁅{αβ, i, t}, {β2ψ, j + k, u * v}⁆ * {ψ, j, -u/2} := by
+      grw [eq36, eq37, h35b']
+    _ = {βψ, k, v} * {ψ, j, -u/2} * ⁅{αβ, i, t}, {β2ψ, j + k, u * v}⁆ * {αβ, i, t} * {ψ, j, u} * {αβ, i, -t} * ⁅{αβ, i, t}, {β2ψ, j + k, u * v}⁆ * {ψ, j, -u/2} := by
+      grw [lin_of_β2ψ, lin_of_β2ψ, expr_ψ_β2ψ_as_β2ψ_ψ hj (add_le_add hj hk), lin_of_β2ψ]; ring_nf
+      rw [id_of_β2ψ, one_mul]
+    _ = ⁅{αβ, i, t}, {β2ψ, j + k, u * v}⁆ * ⁅{αβ, i, t}, {β2ψ, j + k, u * v}⁆ * {βψ, k, v} * {ψ, j, -u/2} * {αβ, i, t} * {ψ, j, u} * {αβ, i, -t} * {ψ, j, -u/2} := by
+      grw [h35a', expr_βψ_comm_αβ_β2ψ_as_comm_αβ_β2ψ_βψ hk hi (add_le_add hj hk), h35b', h35a', h35b', h35a', expr_βψ_comm_αβ_β2ψ_as_comm_αβ_β2ψ_βψ hk hi (add_le_add hj hk)]
+    _ = ⁅{αβ, i, t}, {β2ψ, j + k, 2 * u * v}⁆ * {βψ, k, v} * {αβψ, i + j, t * u} := by
+      grw [h35d, expand_αβψ_as_ψ_αβ_ψ_αβ_ψ hi hj]
+  exact eq_comm_of_reorder_left this
+
 
 -- 8.159a
 theorem partial_A_interchange_of_α2β2ψ_a :
   ∀ t u v : R,
   ⁅{αβψ, 0, t * u}, {βψ, 2, v}⁆ = ⁅{αβ, 0, t}, {β2ψ, 2, 2 * u * v}⁆ := by
+  intro t u v
+  have := @sufficient_conditions_for_commutator_of_αβψ_and_βψ _ _ Rchar 0 0 2 (by norm_num) (by norm_num) (by norm_num)
+  norm_num at this
+  --apply this
   sorry
 
 -- 8.159b
