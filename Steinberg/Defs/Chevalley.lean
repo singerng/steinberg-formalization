@@ -71,9 +71,8 @@ scoped notation (priority:=1000) "{" ζ ", " i ", " t "}" =>
   free_mk_mk ζ i (by (first | trivial | assumption | omega)) t
 
 /-- `free_mk_mk` but with an explicit proof term provided. -/
-scoped notation (priority:=1000) "{" ζ ", " i ", " t "}'" h =>
+scoped notation (priority:=1000) "{" ζ ", " i ", " t "}'" h:max =>
   free_mk_mk ζ i h t
-
 
 open Lean PrettyPrinter Delaborator SubExpr in
 /--

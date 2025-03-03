@@ -4,11 +4,6 @@ LICENSE goes here.
 
 -/
 
-import Mathlib.Data.Finset.Defs
-import Mathlib.Data.Fintype.Basic
-import Mathlib.Order.Interval.Finset.Defs
-import Mathlib.Algebra.Ring.Defs
-
 import Mathlib.Tactic.Group
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.DeriveFintype
@@ -16,8 +11,6 @@ import Mathlib.Tactic.DeriveFintype
 import Steinberg.Defs.Deg
 import Steinberg.Defs.Commutator
 import Steinberg.Defs.ReflDeg
-
-import Steinberg.Macro.Syntax
 
 import Steinberg.Upstream.FreeGroup
 
@@ -97,9 +90,9 @@ The specific relation arises from "nonhomogeneously lifting" the commutator of �
 of this relation for other root-pairs, since all other present pairs lie in a common two-dimensional subspace.)
 -/
 def rels_of_nonhomog_lift_of_comm_of_αβ_βγ :=
-   { ⁅ {αβ, 2, t₁ * u₁} * {αβ, 1, t₁ * u₀ + t₀ * u₁} * {αβ, 0, t₀ * u₀},
-       {βγ, 2, u₁ * v₁} * {βγ, 1, u₁ * v₀ + u₀ * v₁} * {βγ, 0, u₀ * v₀} ⁆ |
-    (t₁ : R) (t₀ : R) (u₁ : R) (u₀ : R) (v₁ : R) (v₀ : R) }
+  { ⁅ {αβ, 2, t₁ * u₁} * {αβ, 1, t₁ * u₀ + t₀ * u₁} * {αβ, 0, t₀ * u₀},
+      {βγ, 2, u₁ * v₁} * {βγ, 1, u₁ * v₀ + u₀ * v₁} * {βγ, 0, u₀ * v₀} ⁆
+    | (t₁ : R) (t₀ : R) (u₁ : R) (u₀ : R) (v₁ : R) (v₀ : R) }
 
 def split_3_into_1_2 (i : ℕ) (hi : i ≤ 3) :=
   match i with
@@ -115,28 +108,33 @@ theorem correct_of_split_3_into_1_2 (i : ℕ) (hi : i ≤ 3) :
   all_goals trivial
 
 def rels_of_def_of_αβγ :=
-  { ⁅ (free_mk_mk α (split_3_into_1_2 i hi).1 (correct_of_split_3_into_1_2 i hi).1 t),
-      (free_mk_mk βγ (split_3_into_1_2 i hi).2 (correct_of_split_3_into_1_2 i hi).2 (1 : R)) ⁆
-      * (free_mk_mk αβγ i hi t)⁻¹ | (i : ℕ) (hi : i ≤ αβγ.height) (t : R)
-  }
+  { ⁅ {α, (split_3_into_1_2 i hi).1, t}'(correct_of_split_3_into_1_2 i hi).1,
+      {βγ, (split_3_into_1_2 i hi).2, 1}'(correct_of_split_3_into_1_2 i hi).2 ⁆
+      * {αβγ, i, t}⁻¹
+    | (i : ℕ) (hi : i ≤ αβγ.height) (t : R) }
 
-abbrev trivial_commutator_pairs : Set (A3PosRoot × A3PosRoot) := {(α, γ), (α, αβ), (β, αβ), (β, βγ), (γ, βγ)}
-abbrev single_commutator_pairs : Set ((ζ : A3PosRoot) × (η : A3PosRoot) × (θ : A3PosRoot) × R ×' (θ.height = ζ.height + η.height))
-   := {⟨ α, β, αβ, 1, (by simp only [height])⟩, ⟨β, γ, βγ, 1, (by simp only [height])⟩}
+abbrev trivial_commutator_pairs : Set (A3PosRoot × A3PosRoot) :=
+  {(α, γ), (α, αβ), (β, αβ), (β, βγ), (γ, βγ)}
+
+abbrev single_commutator_pairs : Set ((ζ : A3PosRoot) × (η : A3PosRoot) × (θ : A3PosRoot) × R ×' (θ.height = ζ.height + η.height)) :=
+  {⟨ α, β, αβ, 1, (by simp only [height])⟩, ⟨β, γ, βγ, 1, (by simp only [height])⟩}
+
 abbrev double_commutator_pairs : Set ((ζ : A3PosRoot) × (η : A3PosRoot) × (θ₁ : A3PosRoot) × (θ₂ : A3PosRoot) × R × R ×' (θ₁.height = ζ.height + η.height)
   ×' (θ₂.height = ζ.height + 2 * η.height)) := {}
-abbrev mixed_commutes_roots : Set (A3PosRoot) := {α, β, γ, αβ, βγ}
-abbrev lin_roots : Set (A3PosRoot) := {α, β, γ, αβ, βγ}
+
+abbrev mixed_commutes_roots : Set (A3PosRoot) :=
+  {α, β, γ, αβ, βγ}
+
+abbrev lin_roots : Set (A3PosRoot) :=
+  {α, β, γ, αβ, βγ}
 
 -- lifted commutator of αβ and βγ
-def nonhomog_sets (R : Type TR) [Ring R] : Set (Set (FreeGroupOnGradedGens A3PosRoot R)) := {
-  rels_of_nonhomog_lift_of_comm_of_αβ_βγ
-}
+def nonhomog_sets (R : Type TR) [Ring R] : Set (Set (FreeGroupOnGradedGens A3PosRoot R)) :=
+  { rels_of_nonhomog_lift_of_comm_of_αβ_βγ }
 
 -- definition of αβγ
-def def_sets (R : Type TR) [Ring R] : Set (Set (FreeGroupOnGradedGens A3PosRoot R)) := {
-  rels_of_def_of_αβγ
-}
+def def_sets (R : Type TR) [Ring R] : Set (Set (FreeGroupOnGradedGens A3PosRoot R)) :=
+  { rels_of_def_of_αβγ }
 
 def weakA3 (R : Type TR) [Ring R] := WeakChevalley.mk
   trivial_commutator_pairs
@@ -177,7 +175,7 @@ scoped notation (priority:=high) "{" ζ ", " i ", " t "}" =>
 set_option hygiene false in
 /-- Shorthand for building free group elements from a root, degree, and ring element. -/
 scoped notation (priority:=high) "{" ζ ", " i ", " t "}'" h =>
-  (weakA3 R).pres_mk (free_mk_mk ζ i h t)
+  (weakA3 R).pres_mk ({ζ, i, t}'h)
 
 section UnpackingPresentation
 
