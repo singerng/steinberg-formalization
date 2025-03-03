@@ -2139,14 +2139,27 @@ theorem sufficient_conditions_for_commutator_of_αβ2ψ_and_β2ψ :
   sorry
 
 -- 8.162a
+include Fchar
 theorem partial_comm_of_β2ψ_αβ2ψ_a :
   ∀ (t u : F), ⁅{β2ψ, 2, t}, {αβ2ψ, 1, u}⁆ = 1 := by
-  sorry
+  have := @sufficient_conditions_for_commutator_of_αβ2ψ_and_β2ψ F _ 2 0 1 (by omega) (by norm_num) (by norm_num)
+  norm_num at this
+  apply this
+  have := @hom_lift_of_commutator_of_β2ψ_αβ2ψ F _ Fchar 1 1 0 (by omega) (by norm_num) (by norm_num)
+  norm_num at this
+  exact this
 
 -- 8.162b
 theorem partial_comm_of_β2ψ_αβ2ψ_b :
   ∀ (t u : F), ⁅{β2ψ, 0, t}, {αβ2ψ, 2, u}⁆ = 1 := by
-  sorry
+  have := @sufficient_conditions_for_commutator_of_αβ2ψ_and_β2ψ F _ 0 1 1 (by norm_num) (by norm_num) (by norm_num)
+  norm_num at this
+  apply this
+  have := @hom_lift_of_commutator_of_β2ψ_αβ2ψ F _ Fchar 0 1 0 (by norm_num) (by norm_num) (by norm_num)
+  norm_num at this
+  exact this
+
+omit Fchar
 
 -- 8.163
 theorem sufficient_conditions_for_commutator_of_ψ_and_αβ2ψ_β :
