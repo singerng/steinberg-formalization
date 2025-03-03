@@ -2084,6 +2084,7 @@ theorem partial_A_interchange_of_α2β2ψ_b :
   sorry
 
 -- 8.160
+include Rchar
 theorem more_sufficient_conditions_for_commutator_of_αβψ_and_βψ :
   ∀ ⦃i j k : ℕ⦄ (hi : i ≤ 3) (hj : j ≤ 1) (hk : k ≤ 1)
   (h38a : ∀ t u v : R, ⁅{β, k, t}, ⁅{αβ2ψ, i + j, u}, {β, k, v}⁆⁆ = 1)
@@ -2091,7 +2092,64 @@ theorem more_sufficient_conditions_for_commutator_of_αβψ_and_βψ :
   (h38c : ∀ t u : R, ⁅{β, k, u}, {αβ2ψ, i + j, -t}⁆ = ⁅{αβ2ψ, i + j, t}, {β, k, u}⁆)
   (h38d : ∀ t u : R, ⁅{αβ2ψ, i + j, t}, {β, k, u}⁆ * ⁅{αβ2ψ, i + j, t}, {β, k, u}⁆ = ⁅{αβ2ψ, i + j, 2 * t}, {β, k, u}⁆),
   ∀ t u : R, ⁅{αβψ, i, t}, {βψ, j + k, u * v}⁆ = ⁅{αβ2ψ, i + j, 2 * t * u}, {β, k, v}⁆ := by
-  sorry
+  intro i j k hi hj hk h38a h38b h38c h38d t u
+  have h39 : {αβ2ψ, i + j, t * u} * {β, k, v} = ⁅{αβ2ψ, i + j, t * u}, {β, k, v}⁆ * {β, k, v} * {αβ2ψ, i + j, t * u} := by group
+  have h40 : {β, k, -v} * {αβ2ψ, i + j, t * u}  = {αβ2ψ, i + j, t * u} * {β, k, -v} * ⁅{αβ2ψ, i + j, t * u}, {β, k, v}⁆ := by
+    simp [← h38c, commutatorElement_def, inv_of_β]
+    have h1 : {β, k, v}⁻¹ = {β, k, -v} := by grw [inv_of_β]
+    have h2 : {αβ2ψ, i + j, t * u}⁻¹ = {αβ2ψ, i + j, -(t * u)} := by
+      grw [inv_of_αβ2ψ]
+      exact Rchar
+      linarith
+    rw [← h1, ← h2]
+    group
+  have h : i + j ≤ αβ2ψ.height := by linarith
+  have : {αβψ, i, t} * {βψ, j + k, u * v} = ⁅{αβ2ψ, i + j, 2 * t * u}, {β, k, v}⁆ * {βψ, j + k, u * v} * {αβψ, i, t} := by
+    nth_rw 1 [expand_βψ_as_ψ_β_ψ_β_ψ]
+    grw [expr_αβψ_ψ_as_ψ_αβ2ψ_αβψ,
+         ← expr_β_αβψ_as_αβψ_β,
+         expr_αβψ_ψ_as_αβ2ψ_ψ_αβψ,
+         ← expr_β_αβψ_as_αβψ_β]
+    grw [expr_αβψ_ψ_as_αβ2ψ_ψ_αβψ]
+    field_simp [add_comm, mul_comm, ← mul_assoc]
+    grw [h39, h40]
+    have : {ψ, j, u} * {αβ2ψ, i + j, t * u} = {αβ2ψ, i + j, t * u} * {ψ, j, u} := by
+      rw [triv_comm_iff_commutes.1]
+      rw [trivial_comm_of_ψ_αβ2ψ]
+      exact Rchar
+    grw [this]
+    have : {αβ2ψ, i + j, t * u} * {αβ2ψ, i + j, -(t * u * 2)} * {αβ2ψ, i + j, t * u} = 1 := by
+      have : -(t * u * 2) = 2 * (-t * u) := by ring
+      rw [this, ← doub_of_αβ2ψ Rchar h]
+      group
+      rw [inv_of_αβ2ψ]
+      simp
+      exact Rchar
+      linarith
+    grw [this]
+    grw [h38a, h38b]
+    have h1 : {ψ, j, -u / 2} * ⁅{αβ2ψ, i + j, t * u}, {β, k, v}⁆ = ⁅{αβ2ψ, i + j, t * u}, {β, k, v}⁆ * {ψ, j, -u / 2} := by
+      rw [triv_comm_iff_commutes.1]
+      exact h38b (-u / 2) (t * u) v
+    have h2 : {ψ, j, u} * ⁅{αβ2ψ, i + j, t * u}, {β, k, v}⁆ = ⁅{αβ2ψ, i + j, t * u}, {β, k, v}⁆ * {ψ, j, u} := by
+      rw [triv_comm_iff_commutes.1]
+      exact h38b u (t * u) v
+    have h3 : {β, k, -v} * ⁅{αβ2ψ, i + j, t * u}, {β, k, v}⁆ = ⁅{αβ2ψ, i + j, t * u}, {β, k, v}⁆ * {β, k, -v} := by
+      rw [triv_comm_iff_commutes.1]
+      exact h38a (-v) (t * u) v
+    have h4 : {β, k, v} * ⁅{αβ2ψ, i + j, t * u}, {β, k, v}⁆ = ⁅{αβ2ψ, i + j, t * u}, {β, k, v}⁆ * {β, k, v} := by
+      rw [triv_comm_iff_commutes.1]
+      exact h38a v (t * u) v
+    grw [h1, h2, h3, h2, h4, h1, h38d]
+    have : {βψ, j + k, v * u} = {ψ, j, -u / 2} * {β, k, v} * {ψ, j, u} * {β, k, -v} * {ψ, j, -u / 2} := by
+      rw [← expand_βψ_as_ψ_β_ψ_β_ψ Rchar hj hk u v, mul_comm]
+    have h5 : 2 * t * u = t * u * 2 := by
+      ring
+    grw [this, h5]
+    repeat assumption
+  exact reorder_left_iff_eq_comm.mp this
+omit Rchar
+
 
 -- 8.161
 theorem sufficient_conditions_for_commutator_of_αβ2ψ_and_β2ψ :
