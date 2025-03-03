@@ -189,7 +189,7 @@ def rels_of_hom_lift_of_interchange_of_α2β2ψ_b :=
       {ψ, k, -v / 2},
       {βψ, j + k, u * v}'(add_le_add hj hk) ⁆
     * ⁅ ⁅ {α, i, t},
-          {β2ψ, j + 2 * k, u * v^2}'(add_le_add hj (mul_le_mul_of_nonneg_left hk (by trivial))) ⁆,
+          {β2ψ, j + 2 * k, 2 * u * v^2}'(add_le_add hj (mul_le_mul_of_nonneg_left hk (by trivial))) ⁆,
         {β, j, u} ⁆⁻¹
     | (i : ℕ) (j : ℕ) (k : ℕ)
       (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height)
@@ -636,7 +636,7 @@ theorem raw_hom_lift_of_interchange_of_α2β2ψ_b :
   forall_ijk_tuv,
     ⁅ {ψ, k, -v / 2} * {αβ, i + j, t * u} * {ψ, k, v} * {αβ, i + j, -t * u} * {ψ, k, -v / 2},
       {βψ, j + k, u * v} ⁆
-      = ⁅ ⁅ {α, i, t}, {β2ψ, j + 2 * k, u * v^2} ⁆, {β, j, u} ⁆ := by
+      = ⁅ ⁅ {α, i, t}, {β2ψ, j + 2 * k, 2 * u * v^2} ⁆, {β, j, u} ⁆ := by
   raw_hom_tac rels_of_hom_lift_of_interchange_of_α2β2ψ_b [i, j, k, hi, hj, hk, t, u, v]
 
 -- 8.90
@@ -989,17 +989,139 @@ theorem expr_αβ_βψ_as_βψ_αβ :
   intro i j hi hj t u
   rw [triv_comm_iff_commutes.1 (trivial_comm_of_αβ_βψ _ _ t u)]
 
+private lemma interchange_αβψ_refl_v :
+  forall_ijk_tu 1 1 1,
+  {ψ, k, -1/2} * {αβ, i + j, t * u} * {ψ, k, 1} * {αβ, i + j, -t * u} * {ψ, k, -1/2} = {βψ, j + k, -u/2} * {α, i, t} * {βψ, j + k, u} * {α, i, -t} * {βψ, j + k, -u/2} := by
+  intro i j k hi hj hk t u
+  rw [raw_hom_lift_of_interchange_of_αβψ hi hj hk t u 1]
+  simp only [mul_one]
+
+private lemma interchange_αβψ_refl_u :
+  forall_ijk_tu 1 1 1,
+  {ψ, k, -u/2} * {αβ, i + j, t} * {ψ, k, u} * {αβ, i + j, -t} * {ψ, k, -u/2} = {βψ, j + k, -u/2} * {α, i, t} * {βψ, j + k, u} * {α, i, -t} * {βψ, j + k, -u/2} := by
+  intro i j k hi hj hk t u
+  rw [←mul_one t, ←neg_mul, raw_hom_lift_of_interchange_of_αβψ hi hj hk t 1 u]
+  simp only [neg_mul, one_mul, mul_one]
+
+private lemma interchange_αβψ_trans_βψ_α :
+  forall_ijk_tu 1 1 1,
+  {βψ, j + k, -1/2} * {α, i, t * u} * {βψ, j + k, 1} * {α, i, -t * u} * {βψ, j + k, -1/2} = {βψ, j + k, -u/2} * {α, i, t} * {βψ, j + k, u} * {α, i, -t} * {βψ, j + k, -u/2} := by
+  intro i j k hi hj hk t u
+  have aux₁ := raw_hom_lift_of_interchange_of_αβψ hi hj hk t u 1
+  have aux₂ := raw_hom_lift_of_interchange_of_αβψ hi hj hk (t * u) 1 1
+  simp only [one_mul, mul_one] at aux₁
+  simp only [one_mul, mul_one, ←neg_mul] at aux₂
+  rwa [aux₂] at aux₁
+
+private lemma interchange_αβψ_trans_ψ_αβ :
+  forall_ijk_tu 1 1 1,
+  {ψ, k, -1 / 2} * {αβ, i + j, t * u} * {ψ, k, 1} * {αβ, i + j, -t * u} * {ψ, k, -1 / 2} = {ψ, k, -u / 2} * {αβ, i + j, t} * {ψ, k, u} * {αβ, i + j, -t} * {ψ, k, -u / 2} := by
+  intro i j k hi hj hk t u
+  have aux₁ := raw_hom_lift_of_interchange_of_αβψ hi hj hk 1 t u
+  have aux₂ := raw_hom_lift_of_interchange_of_αβψ hi hj hk 1 (t * u) 1
+  simp only [one_mul, mul_one, neg_mul] at aux₁
+  simp only [one_mul, mul_one, neg_mul] at aux₂
+  rwa [←aux₁, ←neg_mul] at aux₂
+
+-- height 0
+private lemma expand_αβψ_as_βψ_α_βψ_α_βψ_00 :
+  ∀ t u : F, {αβψ, 0, t * u} = {βψ, 0, -u/2} * {α, 0, t} * {βψ, 0, u} * {α, 0, -t} * {βψ, 0, -u/2} := by
+  intro t u
+  have := @def_of_αβψ _ _ 0 (by trivial) (t * u)
+  unfold split_3_into_1_2 at this
+  rw [←this, ←neg_mul, @interchange_αβψ_trans_βψ_α _ _ 0 0 0 (by trivial) (by trivial) (by trivial)]
+
+private lemma expand_αβψ_as_ψ_αβ_ψ_αβ_ψ_00 :
+  ∀ t u : F, {αβψ, 0, t * u} = {ψ, 0, -u/2} * {αβ, 0, t} * {ψ, 0, u} * {αβ, 0, -t} * {ψ, 0, -u/2} := by
+  intro t u
+  rw [expand_αβψ_as_βψ_α_βψ_α_βψ_00, ←@interchange_αβψ_refl_v _ _ 0 0 0 (by trivial) (by trivial) (by trivial),
+  interchange_αβψ_trans_ψ_αβ (by trivial) (by trivial) (by trivial)]
+
+-- height 1
+private lemma expand_αβψ_as_βψ_α_βψ_α_βψ_01 :
+  ∀ t u : F, {αβψ, 1, t * u} = {βψ, 1, -u/2} * {α, 0, t} * {βψ, 1, u} * {α, 0, -t} * {βψ, 1, -u/2} := by
+  intro t u
+  have := @def_of_αβψ _ _ 1 (by trivial) (t * u)
+  unfold split_3_into_1_2 at this
+  rw [←this, ←neg_mul, @interchange_αβψ_trans_βψ_α _ _ 0 1 0 (by trivial) (by trivial) (by trivial)]
+
+private lemma expand_αβψ_as_ψ_αβ_ψ_αβ_ψ_01 :
+  ∀ t u : F, {αβψ, 1, t * u} = {ψ, 1, -u/2} * {αβ, 0, t} * {ψ, 1, u} * {αβ, 0, -t} * {ψ, 1, -u/2} := by
+  intro t u
+  rw [expand_αβψ_as_βψ_α_βψ_α_βψ_01, @interchange_αβψ_refl_u _ _ 0 0 1 (by trivial) (by trivial) (by trivial)]
+
+private lemma expand_αβψ_as_ψ_αβ_ψ_αβ_ψ_10 :
+  ∀ t u : F, {αβψ, 1, t * u} = {ψ, 0, -u/2} * {αβ, 1, t} * {ψ, 0, u} * {αβ, 1, -t} * {ψ, 0, -u/2} := by
+  intro t u
+  rw [expand_αβψ_as_βψ_α_βψ_α_βψ_01, ←@interchange_αβψ_refl_v _ _ 0 1 0 (by trivial) (by trivial) (by trivial),
+  interchange_αβψ_trans_ψ_αβ (by trivial) (by trivial) (by trivial)]
+
+private lemma expand_αβψ_as_βψ_α_βψ_α_βψ_10 :
+  ∀ t u : F, {αβψ, 1, t * u} = {βψ, 0, -u/2} * {α, 1, t} * {βψ, 0, u} * {α, 1, -t} * {βψ, 0, -u/2} := by
+  intro t u
+  rw [expand_αβψ_as_ψ_αβ_ψ_αβ_ψ_10, @interchange_αβψ_refl_u _ _ 1 0 0 (by trivial) (by trivial) (by trivial)]
+
+-- height 2
+private lemma expand_αβψ_as_βψ_α_βψ_α_βψ_11 :
+  ∀ t u : F, {αβψ, 2, t * u} = {βψ, 1, -u/2} * {α, 1, t} * {βψ, 1, u} * {α, 1, -t} * {βψ, 1, -u/2} := by
+  intro t u
+  have := @def_of_αβψ _ _ 2 (by trivial) (t * u)
+  unfold split_3_into_1_2 at this
+  rw [←this, ←neg_mul, @interchange_αβψ_trans_βψ_α _ _ 1 1 0 (by trivial) (by trivial) (by trivial)]
+
+private lemma expand_αβψ_as_ψ_αβ_ψ_αβ_ψ_20 :
+  ∀ t u : F, {αβψ, 2, t * u} = {ψ, 0, -u/2} * {αβ, 2, t} * {ψ, 0, u} * {αβ, 2, -t} * {ψ, 0, -u/2} := by
+  intro t u
+  rw [expand_αβψ_as_βψ_α_βψ_α_βψ_11, @interchange_αβψ_refl_u _ _ 1 1 0 (by trivial) (by trivial) (by trivial)]
+
+private lemma expand_αβψ_as_ψ_αβ_ψ_αβ_ψ_11 :
+  ∀ t u : F, {αβψ, 2, t * u} = {ψ, 1, -u/2} * {αβ, 1, t} * {ψ, 1, u} * {αβ, 1, -t} * {ψ, 1, -u/2} := by
+  intro t u
+  rw [expand_αβψ_as_βψ_α_βψ_α_βψ_11, @interchange_αβψ_refl_u _ _ 1 0 1 (by trivial) (by trivial) (by trivial)]
+
+private lemma expand_αβψ_as_βψ_α_βψ_α_βψ_02 :
+  ∀ t u : F, {αβψ, 2, t * u} = {βψ, 2, -u/2} * {α, 0, t} * {βψ, 2, u} * {α, 0, -t} * {βψ, 2, -u/2} := by
+  intro t u
+  rw [expand_αβψ_as_ψ_αβ_ψ_αβ_ψ_11, @interchange_αβψ_refl_u _ _ 0 1 1 (by trivial) (by trivial) (by trivial)]
+
+-- height 3
+private lemma expand_αβψ_as_βψ_α_βψ_α_βψ_12 :
+  ∀ t u : F, {αβψ, 3, t * u} = {βψ, 2, -u/2} * {α, 1, t} * {βψ, 2, u} * {α, 1, -t} * {βψ, 2, -u/2} := by
+  intro t u
+  have := @def_of_αβψ _ _ 3 (by trivial) (t * u)
+  unfold split_3_into_1_2 at this
+  rw [←this, ←neg_mul, @interchange_αβψ_trans_βψ_α _ _ 1 1 1 (by trivial) (by trivial) (by trivial)]
+
+private lemma expand_αβψ_as_ψ_αβ_ψ_αβ_ψ_21 :
+  ∀ t u : F, {αβψ, 3, t * u} = {ψ, 1, -u/2} * {αβ, 2, t} * {ψ, 1, u} * {αβ, 2, -t} * {ψ, 1, -u/2} := by
+  intro t u
+  rw [expand_αβψ_as_βψ_α_βψ_α_βψ_12, @interchange_αβψ_refl_u _ _ 1 1 1 (by trivial) (by trivial) (by trivial)]
+
 -- 8.116a
 theorem expand_αβψ_as_ψ_αβ_ψ_αβ_ψ :
   forall_ij_tu 2 1,
     {αβψ, i + j, t * u} = {ψ, j, -u/2} * {αβ, i, t} * {ψ, j, u} * {αβ, i, -t} * {ψ, j, -u/2} := by
-  sorry
+  intro i j hi hj t u
+  match i, j with
+  | 0, 0 => rw [expand_αβψ_as_ψ_αβ_ψ_αβ_ψ_00]
+  | 1, 0 => rw [expand_αβψ_as_ψ_αβ_ψ_αβ_ψ_10]
+  | 0, 1 => rw [expand_αβψ_as_ψ_αβ_ψ_αβ_ψ_01]
+  | 2, 0 => rw [expand_αβψ_as_ψ_αβ_ψ_αβ_ψ_20]
+  | 1, 1 => rw [expand_αβψ_as_ψ_αβ_ψ_αβ_ψ_11]
+  | 2, 1 => rw [expand_αβψ_as_ψ_αβ_ψ_αβ_ψ_21]
 
 -- 8.116b
 theorem expand_αβψ_as_βψ_α_βψ_α_βψ :
   forall_ij_tu 1 2,
   {αβψ, i + j, t * u} = {βψ, j, -u/2} * {α, i, t} * {βψ, j, u} * {α, i, -t} * {βψ, j, -u/2} := by
-  sorry
+  intro i j hi hj t u
+  match i, j with
+  | 0, 0 => rw [expand_αβψ_as_βψ_α_βψ_α_βψ_00]
+  | 1, 0 => rw [expand_αβψ_as_βψ_α_βψ_α_βψ_10]
+  | 0, 1 => rw [expand_αβψ_as_βψ_α_βψ_α_βψ_01]
+  | 0, 2 => rw [expand_αβψ_as_βψ_α_βψ_α_βψ_02]
+  | 1, 1 => rw [expand_αβψ_as_βψ_α_βψ_α_βψ_11]
+  | 1, 2 => rw [expand_αβψ_as_βψ_α_βψ_α_βψ_12]
 
 -- 8.117
 theorem trivial_comm_of_α_αβψ :
