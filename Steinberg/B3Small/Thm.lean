@@ -8,6 +8,7 @@ import Steinberg.B3Small.Basic
 
 import Mathlib.Tactic.Group
 import Mathlib.Tactic.FinCases
+import Mathlib.Tactic.FieldSimp
 
 import Steinberg.Defs.Deg
 import Steinberg.Defs.Commutator
@@ -19,7 +20,7 @@ namespace Steinberg.B3Small
 
 open Steinberg B3SmallPosRoot GradedGen ReflDeg
 
-variable {F : Type TF} [Field F]
+variable {F : Type TF} [Field F] (Fchar : (2 : F) ≠ 0)
 
 /-! ### Double commutator theorem -/
 
@@ -262,25 +263,129 @@ theorem trivial_comm_of_βψ_ψω :
 /-! ### Establishing βψω -/
 
 -- 8.43
-
 theorem trivial_comm_of_β2ψ_ψω :
     trivial_commutator_of_root_pair (weakB3Small F).pres_mk β2ψ ψω := by sorry
 
 -- 8.44
-
 theorem Interchange :
     ∀ {i j k : ℕ} (hi : i ≤ β.height) (hj : j ≤ ψ.height) (hk : k ≤ ω.height) (t u v : F),
-      ⁅ {βψ, i + j, t * u}, {ω, k, v} ⁆ = ⁅ {β, i , t}, {ψω, j + k, 2 * (u * v)} ⁆ := by sorry
+      ⁅ {βψ, i + j, t * u}, {ω, k, v} ⁆ = ⁅ {β, i , t}, {ψω, j + k, 2 * u * v} ⁆ := by sorry
+
+private lemma βt_ψω2u_to_βψt_ωu :
+  forall_ijk_tu 1 1 1, ⁅{β, i, t}, {ψω, j + k, 2 * u}⁆ = ⁅{βψ, i + j, t}, {ω, k, u}⁆ := by
+  intro i j k hi hj hk t u
+  have := Interchange hi hj hk t 1 u
+  field_simp at this
+  exact this.symm
+
+include Fchar in
+private lemma βtu_ψω1_to_βt_ψωu :
+  forall_ijk_tu 1 1 1, ⁅{β, i, t * u}, {ψω, j + k, 1}⁆ = ⁅{β, i, t}, {ψω, j + k, u}⁆ := by
+  intro i j k hi hj hk t u
+  have aux₁ := Interchange hi hj hk (t * u) 1 (1 / 2)
+  have aux₂ := Interchange hi hj hk t u (1 / 2)
+  field_simp at aux₁
+  field_simp at aux₂
+  rwa [aux₁] at aux₂
+
+private lemma rewrite_2tu (t u : F) : 2 * t * u = t * (2 * u) := by ring
+include Fchar
+private lemma rewrite_tu (t u : F) : t * u = 2 * t * (u / 2) := by ring_nf; field_simp
+
+-- height 0
+private lemma expand_βψω_as_commutator_of_β_ψω_00 :
+  ∀ t u : F, {βψω, 0, t * u} = ⁅{β, 0, t}, {ψω, 0, u}⁆ := by
+  intro t u
+  have := @def_of_βψω _ _ 0 (by trivial) (t * u)
+  unfold split_3_into_1_2 at this
+  rw [←this, @βtu_ψω1_to_βt_ψωu _ _ Fchar 0 0 0 (by trivial) (by trivial) (by trivial)]
+
+private lemma expand_βψω_as_commutator_of_βψ_ω_00 :
+  ∀ t u : F, {βψω, 0, 2 * t * u} = ⁅{βψ, 0, t}, {ω, 0, u}⁆ := by
+  intro t u
+  rw [rewrite_2tu, expand_βψω_as_commutator_of_β_ψω_00 Fchar, @βt_ψω2u_to_βψt_ωu _ _ 0 0 0 (by trivial) (by trivial) (by trivial)]
+
+-- height 1
+private lemma expand_βψω_as_commutator_of_β_ψω_01 :
+  ∀ t u : F, {βψω, 1, t * u} = ⁅{β, 0, t}, {ψω, 1, u}⁆ := by
+  intro t u
+  have := @def_of_βψω _ _ 1 (by trivial) (t * u)
+  unfold split_3_into_1_2 at this
+  rw [←this, @βtu_ψω1_to_βt_ψωu _ _ Fchar 0 1 0 (by trivial) (by trivial) (by trivial)]
+
+private lemma expand_βψω_as_commutator_of_βψ_ω_01 :
+  ∀ t u : F, {βψω, 1, 2 * t * u} = ⁅{βψ, 0, t}, {ω, 1, u}⁆ := by
+  intro t u
+  rw [rewrite_2tu, expand_βψω_as_commutator_of_β_ψω_01 Fchar, @βt_ψω2u_to_βψt_ωu _ _ 0 0 1 (by trivial) (by trivial) (by trivial)]
+
+private lemma expand_βψω_as_commutator_of_βψ_ω_10 :
+  ∀ t u : F, {βψω, 1, 2 * t * u} = ⁅{βψ, 1, t}, {ω, 0, u}⁆ := by
+  intro t u
+  rw [rewrite_2tu, expand_βψω_as_commutator_of_β_ψω_01 Fchar, @βt_ψω2u_to_βψt_ωu _ _ 0 1 0 (by trivial) (by trivial) (by trivial)]
+
+private lemma expand_βψω_as_commutator_of_β_ψω_10 :
+  ∀ t u : F, {βψω, 1, t * u} = ⁅{β, 1, t}, {ψω, 0, u}⁆ := by
+  intro t u
+  rw [rewrite_tu Fchar, expand_βψω_as_commutator_of_βψ_ω_10 Fchar, ←@βt_ψω2u_to_βψt_ωu _ _ 1 0 0 (by trivial) (by trivial) (by trivial)]
+  field_simp
+
+-- height 2 (reflection of height 1)
+private lemma expand_βψω_as_commutator_of_β_ψω_11 :
+  ∀ t u : F, {βψω, 2, t * u} = ⁅{β, 1, t}, {ψω, 1, u}⁆ := by
+  sorry
+
+private lemma expand_βψω_as_commutator_of_β_ψω_02 :
+  ∀ t u : F, {βψω, 2, t * u} = ⁅{β, 0, t}, {ψω, 2, u}⁆ := by
+  sorry
+
+private lemma expand_βψω_as_commutator_of_βψ_ω_20 :
+  ∀ t u : F, {βψω, 2, 2 * t * u} = ⁅{βψ, 2, t}, {ω, 0, u}⁆ := by
+  sorry
+
+private lemma expand_βψω_as_commutator_of_βψ_ω_11 :
+  ∀ t u : F, {βψω, 2, 2 * t * u} = ⁅{βψ, 1, t}, {ω, 1, u}⁆ := by
+  sorry
+
+-- height 3 (reflection of height 0)
+private lemma expand_βψω_as_commutator_of_β_ψω_12 :
+  ∀ t u : F, {βψω, 3, t * u} = ⁅{β, 1, t}, {ψω, 2, u}⁆ := by
+  sorry
+
+private lemma expand_βψω_as_commutator_of_βψ_ω_21 :
+  ∀ t u : F, {βψω, 3, 2 * t * u} = ⁅{βψ, 2, t}, {ω, 1, u}⁆ := by
+  sorry
+
+-- 8.45a
+theorem expand_βψω_as_commutator_of_βψ_ω :
+  forall_ij_tu 2 1, {βψω, i + j, 2 * t * u} = ⁅{βψ, i, t}, {ω, j, u}⁆ := by
+  intro i j hi hj t u
+  match i, j with
+  | 0, 0 => rw [expand_βψω_as_commutator_of_βψ_ω_00 Fchar]
+  | 0, 1 => rw [expand_βψω_as_commutator_of_βψ_ω_01 Fchar]
+  | 1, 0 => rw [expand_βψω_as_commutator_of_βψ_ω_10 Fchar]
+  | 1, 1 => rw [expand_βψω_as_commutator_of_βψ_ω_11 Fchar]
+  | 2, 0 => rw [expand_βψω_as_commutator_of_βψ_ω_20 Fchar]
+  | 2, 1 => rw [expand_βψω_as_commutator_of_βψ_ω_21 Fchar]
+
+-- 8.45b
+theorem expand_βψω_as_commutator_of_β_ψω :
+  forall_ij_tu 1 2, {βψω, i + j, t * u} = ⁅{β, i, t}, {ψω, j, u}⁆ := by
+  intro i j hi hj t u
+  match i, j with
+  | 0, 0 => rw [expand_βψω_as_commutator_of_β_ψω_00 Fchar]
+  | 0, 1 => rw [expand_βψω_as_commutator_of_β_ψω_01 Fchar]
+  | 0, 2 => rw [expand_βψω_as_commutator_of_β_ψω_02 Fchar]
+  | 1, 0 => rw [expand_βψω_as_commutator_of_β_ψω_10 Fchar]
+  | 1, 1 => rw [expand_βψω_as_commutator_of_β_ψω_11 Fchar]
+  | 1, 2 => rw [expand_βψω_as_commutator_of_β_ψω_12 Fchar]
 
 -- 8.46
-
 theorem expr_βψω_as_βψ_ω_βψ_ω :
     ∀ {i j : ℕ} (hi : i ≤ βψ.height) (hj : j ≤ ω.height) (t u : F),
       {βψω, i + j, 2 * (t * u)} = {βψ, i, t} * {ω, j, u} * {βψ, i, -t} *
       {ω, j, -u} := by sorry
 
 -- 8.47
-
 theorem expr_βψω_as_β_ψω_β_ψω :
     ∀ {i j : ℕ} (hi : i ≤ β.height) (hj : j ≤ ψω.height) (t u : F),
       {βψω, i + j, t * u} = {β, i, t} * {ψω, j, u} * {β, i, -t} * {ψω, j, -u} := by sorry

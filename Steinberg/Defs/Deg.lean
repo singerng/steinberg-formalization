@@ -24,6 +24,21 @@ theorem decompose' (i : ℕ) (hi : i ≤ 3) : ∃ (i₁ i₂ : ℕ), i = i₁ + 
   | 2 => exact ⟨0, 1, by omega⟩
   | 3 => exact ⟨1, 1, by omega⟩
 
+theorem decompose'' (a b : ℕ) (ha : a ≤ 2) (hb : b ≤ 3) : ∃ (i j k : ℕ), a = i + j ∧ b = j + 2 * k ∧ i ≤ 1 ∧ j ≤ 1 ∧ k ≤ 1 := by
+  match a, b with
+  | 0, 0 => exact ⟨0, 0, 0, by omega, by omega, by omega⟩
+  | 0, 1 => exact ⟨0, 1, 0, by omega, by omega, by omega⟩
+  | 0, 2 => exact ⟨0, 0, 0, by omega, by omega, by omega⟩
+  | 0, 3 => exact ⟨0, 0, 0, by omega, by omega, by omega⟩
+  | 1, 0 => exact ⟨0, 0, 0, by omega, by omega, by omega⟩
+  | 1, 1 => exact ⟨0, 0, 0, by omega, by omega, by omega⟩
+  | 1, 2 => exact ⟨0, 0, 0, by omega, by omega, by omega⟩
+  | 1, 3 => exact ⟨0, 0, 0, by omega, by omega, by omega⟩
+  | 2, 0 => exact ⟨0, 0, 0, by omega, by omega, by omega⟩
+  | 2, 1 => exact ⟨0, 0, 0, by omega, by omega, by omega⟩
+  | 2, 2 => exact ⟨0, 0, 0, by omega, by omega, by omega⟩
+  | 2, 3 => exact ⟨0, 0, 0, by omega, by omega, by omega⟩
+
 theorem decompose_4_into_3_1 (i : ℕ) (hi : i ≤ 4) : ∃ (i₁ i₂ : ℕ), i = i₁ + i₂ ∧ i₁ ≤ 3 ∧ i₂ ≤ 1 := by
   match i with
   | 0 => exact ⟨0, 0, by omega⟩
@@ -31,6 +46,7 @@ theorem decompose_4_into_3_1 (i : ℕ) (hi : i ≤ 4) : ∃ (i₁ i₂ : ℕ), i
   | 2 => exact ⟨2, 0, by omega⟩
   | 3 => exact ⟨3, 0, by omega⟩
   | 4 => exact ⟨3, 1, by omega⟩
+
 
 /--
   Useful theorem to convert `i ≤ n` to `i ∈ List.range (n+1)`.
