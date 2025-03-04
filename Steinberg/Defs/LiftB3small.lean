@@ -53,6 +53,9 @@ instance : PosRootSys B3SmallPosRoot where
   height := height
   toString := toString
 
+instance instCoeNat : Coe B3SmallPosRoot Nat where
+  coe r := height r
+
 end B3SmallPosRoot
 
 namespace B3SmallProof
@@ -129,19 +132,22 @@ def weakB3Small (F : Type TR) [Field F] := WeakChevalley.mk
 /- Instantiate the `declare_thms` macros from `WeakChevalley.lean`. -/
 
 -- CC: TODO: Make this a macro to declare all at once for A3.
---     Something like: `declare_thms A3 weakA3 R`
+--     Something like: `declare_thms A3 weakB3Small F`
+
+macro "declare_B3Small_triv_expr_thm" r₁:term:arg r₂:term:arg : command =>
+  `(command| declare_triv_expr_thm weakB3Small F $r₁ $r₂)
 
 macro "declare_B3Small_triv_comm_of_root_pair_thms" r₁:term:arg r₂:term:arg : command =>
   `(command| declare_triv_comm_of_root_pair_thms weakB3Small F $r₁ $r₂)
 
-macro "declare_B3Small_single_comm_of_root_pair_thms" r₁:term:arg r₂:term:arg r₃:term:arg : command =>
-  `(command| declare_single_comm_of_root_pair_thms weakB3Small F $r₁ $r₂ $r₃ 2)
+macro "declare_B3Small_single_expr_thms" r₁:term:arg r₂:term:arg r₃:term:arg n:num : command =>
+  `(command| declare_single_expr_thms weakB3Small F $r₁ $r₂ $r₃ $n)
+
+macro "declare_B3Small_single_comm_of_root_pair_thms" r₁:term:arg r₂:term:arg r₃:term:arg n:num : command =>
+  `(command| declare_single_comm_of_root_pair_thms weakB3Small F $r₁ $r₂ $r₃ $n)
 
 macro "declare_B3Small_lin_id_inv_thms" root:term:arg : command =>
   `(command| declare_lin_id_inv_thms weakB3Small F $root)
-
-macro "declare_B3Small_expr_as_thm" r₁:term:arg r₂:term:arg : command =>
-  `(command| declare_expr_as_thm weakB3Small F $r₁ $r₂)
 
 macro "declare_B3Small_mixed_comm_thms" r:term:arg : command =>
   `(command| declare_mixed_comm_thms weakB3Small F $r)
@@ -150,18 +156,61 @@ set_option hygiene false in
 /-- Shorthand for building free group elements from a root, degree, and ring element. -/
 scoped notation (priority:=high) "{" ζ ", " i ", " t "}" =>
   (weakB3Small F).pres_mk (free_mk_mk ζ i (by
-    try simp only [PosRootSys.height] at *
-    try simp only [B3SmallPosRoot.height] at *; first | trivial | omega) t)
+    try simp only [PosRootSys.height, height] at *
+    first | assumption | trivial | omega) t)
 
 set_option hygiene false in
 /-- Shorthand for building free group elements from a root, degree, and ring element. -/
-scoped notation (priority:=high) "{" ζ ", " i ", " t "}'" h =>
+scoped notation (priority:=high) "{" ζ ", " i ", " t "}'" h:max =>
   (weakB3Small F).pres_mk (free_mk_mk ζ i h t)
+
+section forallNotation
+
+set_option hygiene false
+
+scoped notation "forall_i_t" h:max "," e =>
+  ∀ ⦃i : ℕ⦄ (hi : i ≤ h) (t : F), e
+
+scoped notation "forall_ij_tu" h₁:max h₂:max "," e =>
+  ∀ ⦃i j : ℕ⦄ (hi : i ≤ h₁) (hk : j ≤ h₂) (t u : F), e
+
+scoped notation "forall_ik_tuv" h₁:max h₂:max "," e =>
+  ∀ ⦃i k : ℕ⦄ (hi : i ≤ h₁) (hk : k ≤ h₂) (t u v : F), e
+
+scoped notation "forall_ijk_tu" h₁:max h₂:max h₃:max "," e =>
+  ∀ ⦃i j k : ℕ⦄ (hi : i ≤ h₁) (hj : j ≤ h₂) (hk : k ≤ h₃) (t u : F), e
+
+scoped notation "forall_ijk_tuv" h₁:max h₂:max h₃:max "," e =>
+  ∀ ⦃i j k : ℕ⦄ (hi : i ≤ h₁) (hj : j ≤ h₂) (hk : k ≤ h₃) (t u v : F), e
+
+scoped notation "forall_ijk_tuv" "," e =>
+  ∀ ⦃i j k : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t u v : F), e
+
+end forallNotation
+
+macro "hom_tac " rel:ident " [" intros:ident,* "]" : tactic => `(tactic|
+  ( intros $intros*;
+    apply WeakChevalley.helper;
+    apply (weakB3Small F).nonhomog_helper $rel;
+    simp only [weakB3Small, nonhomog_sets, Set.mem_insert_iff,
+      Set.mem_singleton_iff, true_or, or_true];
+    exists $intros,* ))
+
+/-- A simple tactic to solve `PosRootSys` height equations. Uses `omega`. -/
+macro "ht" : tactic =>
+  `(tactic| (simp only [PosRootSys.height, B3SmallPosRoot.height] at *; omega))
 
 abbrev WeakChevalleyB3SmallGroup (F : Type TR) [Field F] :=
   PresentedGroup (weakB3Small F).all_rels
 
 section UnpackingPresentation
+
+declare_B3Small_lin_id_inv_thms β
+declare_B3Small_lin_id_inv_thms ψ
+declare_B3Small_lin_id_inv_thms ω
+declare_B3Small_lin_id_inv_thms βψ
+declare_B3Small_lin_id_inv_thms ψω
+declare_B3Small_lin_id_inv_thms β2ψ
 
 declare_B3Small_triv_comm_of_root_pair_thms β βψ
 declare_B3Small_triv_comm_of_root_pair_thms β β2ψ
@@ -171,19 +220,8 @@ declare_B3Small_triv_comm_of_root_pair_thms β ω
 declare_B3Small_triv_comm_of_root_pair_thms ψ ψω
 declare_B3Small_triv_comm_of_root_pair_thms ω ψω
 
-declare_B3Small_single_comm_of_root_pair_thms ψ ω ψω
-declare_B3Small_single_comm_of_root_pair_thms ψ βψ β2ψ
-
-/-! ### Linearity theorems for specific roots -/
-/-! ### Identity theorems : 8.25 - 8.30 -/
-/-! ### Inverse theorems - 8.31 - 8.36 -/
-
-declare_B3Small_lin_id_inv_thms β
-declare_B3Small_lin_id_inv_thms ψ
-declare_B3Small_lin_id_inv_thms ω
-declare_B3Small_lin_id_inv_thms βψ
-declare_B3Small_lin_id_inv_thms ψω
-declare_B3Small_lin_id_inv_thms β2ψ
+declare_B3Small_single_comm_of_root_pair_thms ψ ω ψω 2
+declare_B3Small_single_comm_of_root_pair_thms ψ βψ β2ψ 2
 
 /-! ### Mixed-degree theorem for specific roots -/
 
@@ -203,18 +241,14 @@ theorem nonhomog_lift_of_comm_of_βψ_ψω :
     ⁅ {βψ, 2, t₁ * u₁} * {βψ, 1, t₁ * u₀ + t₀ * u₁} * {βψ, 0, t₀ * u₀}
     , {ψω, 2, u₁ * v₁} * {ψω, 1, u₁ * v₀ + u₀ * v₁} * {ψω, 0, u₀ * v₀} ⁆
     = 1 := by
-  intro t₁ t₀ u₁ u₀ v₁ v₀
-  apply WeakChevalley.helper
-  apply (weakB3Small F).nonhomog_helper rels_of_nonhomog_lift_of_comm_of_βψ_ψω
-  · simp only [weakB3Small, nonhomog_sets, Set.mem_singleton_iff]
-  · exists t₁, t₀, u₁, u₀, v₁, v₀
+  hom_tac rels_of_nonhomog_lift_of_comm_of_βψ_ψω [t₁, t₀, u₁, u₀, v₁, v₀]
 
 /-! ### Definition of missing root -/
 theorem def_of_βψω :
-  ∀ ⦃i : ℕ⦄ (hi : i ≤ βψω.height) (t : F),
+  forall_i_t βψω,
     ⁅ {β, (split_3_into_1_2 i hi).1, t}'(correct_of_split_3_into_1_2 i hi).1
     , {ψω, (split_3_into_1_2 i hi).2, 1}'(correct_of_split_3_into_1_2 i hi).2 ⁆
-    = {βψω, i, t} := by
+      = {βψω, i, t} := by
   intro t i hi
   apply WeakChevalley.helper
   apply (weakB3Small F).def_helper rels_of_def_of_βψω
@@ -227,13 +261,12 @@ theorem refl_of_nonhomog :
   simp only [nonhomog_sets, Set.mem_singleton_iff, forall_eq, rels_of_nonhomog_lift_of_comm_of_βψ_ψω, Set.mem_setOf_eq]
   intro r h
   rcases h with ⟨ t₁, t₀, u₁, u₀, v₁, v₀, rfl ⟩
-  simp only [map_mul, map_commutatorElement, free_mk_mk, FreeGroup.map.of, refl_deg_of_gen, PosRootSys.height, height]
-  simp_arith
+  simp only [free_mk_mk, map_commutatorElement, map_mul, FreeGroup.map.of, refl_deg_of_gen,
+    PosRootSys.height, height, tsub_self, Nat.add_one_sub_one, tsub_zero]
   repeat rw [← free_mk_mk]
-  rw [add_comm (t₁ * u₀), add_comm (u₁ * v₀)]
-  rw [expr_βψ_βψ_as_βψ_βψ, expr_ψω_ψω_as_ψω_ψω, mul_assoc, mul_assoc,
-    expr_βψ_βψ_as_βψ_βψ, expr_ψω_ψω_as_ψω_ψω, ← mul_assoc, ← mul_assoc,
-    expr_βψ_βψ_as_βψ_βψ, expr_ψω_ψω_as_ψω_ψω]
+  rw [add_comm, add_comm (u₁ * v₀)]
+  grw [expr_βψ_βψ_as_βψ_βψ, expr_βψ_βψ_as_βψ_βψ (i := 0), expr_βψ_βψ_as_βψ_βψ,
+    expr_ψω_ψω_as_ψω_ψω, expr_ψω_ψω_as_ψω_ψω (i := 0), expr_ψω_ψω_as_ψω_ψω]
   exact nonhomog_lift_of_comm_of_βψ_ψω t₀ t₁ u₀ u₁ v₀ v₁
 
 -- def relations are preserved under reflection
@@ -241,10 +274,9 @@ theorem refl_of_def : ∀ S ∈ def_sets F, ∀ r ∈ S, FreeGroup.map refl_deg_
   simp only [def_sets, Set.mem_singleton_iff, forall_eq, rels_of_def_of_βψω, Set.mem_setOf_eq]
   intro r h
   rcases h with ⟨ i, hi, t, rfl ⟩
-  simp only [map_mul, map_commutatorElement, split_3_into_1_2]
+  chev_simp [split_3_into_1_2]
   exists (βψω.height - i), (by omega), t
-  split
-  all_goals (simp only; congr)
+  split <;> congr
 
 theorem b3small_valid : ReflDeg.refl_valid (weakB3Small F) :=
   ⟨refl_of_nonhomog, refl_of_def⟩
@@ -253,59 +285,38 @@ end UnpackingPresentation /- section -/
 
 /-! ### 8.37 -/
 
-theorem expand_βψ_as_ψ_β_ψ_β_ψ :
-    ∀ ⦃i j : ℕ⦄ (hi : i ≤ β.height) (hj : j ≤ ψ.height) (t u : F),
-    {βψ, i + j, 2 * (t * u)} =
-    {ψ, j, (-u)} * {β, i, t} * {ψ, j, 2 * u} * {β, i, (-t)} * {ψ, j, (-u)} := by
-    intro i j hi hj t u
-    -- start with relation 8.2
-    have base := comm_of_β_ψ hi hj t (2 * u)
-    -- commute β + 2 ψ and β + ψ
-    rw [comm_left, comm_of_βψ_β2ψ, one_mul] at base
-    have this : (1 * (t * (2 * u * (2 * u)))) = 2 * (u * (2 * (t * u))) := by group
-    rw [this] at base
-    have this : (1 * (t * (2 * u))) = 2 * (t * u) := by group
-    rw [this] at base
-    -- replace β + 2 ψ with a commutator of ψ and β + ψ elements
-    have this : i + 2 * j = j + (i + j) := by group
-    simp only [this] at base
-    have this := @comm_of_ψ_βψ _ _ j (i + j) hj (
-      by
-      simp only [PosRootSys.height, height] at hi
-      simp only [PosRootSys.height, height] at hj
-      simp only [PosRootSys.height, height]
-      omega
-    ) u (2 * (t * u))
-    rw [← this] at base
-    -- expand the commutator, and cancel with the β + ψ element on the right
-    conv at base =>
-      rhs; rw [commutatorElement_def]
-    rw [inv_mul_cancel_right] at base
-    -- expanding the commutator on the LHS and conjugating by ψ elements gives the relation
-    rw [commutatorElement_def] at base
-    have base := congrArg (HMul.hMul {ψ, j, u}⁻¹) base
-    conv at base =>
-      rhs
-      rw [mul_assoc, inv_mul_cancel_left]
-    have base := congrArg (fun x => HMul.hMul x {ψ, j, u}) base
-    dsimp at base
-    conv at base =>
-      rhs
-      rw [mul_assoc, inv_mul_cancel, mul_one]
-    rw [inv_of_β, inv_of_ψ, inv_of_ψ] at base
-    conv at base =>
-      lhs
-      rw [mul_assoc, mul_assoc, lin_of_ψ j hj (-(2 * u)) u]
-    have this : -(2 * u) + u = -u := by group
-    rw [this] at base
-    exact id (Eq.symm base)
-
-/-! ### 8.38 -/
-
-theorem expand_β2ψ_as_ψ_βψ_ψ_βψ :
-    ∀ {i j : ℕ} (hi : i ≤ β.height) (hj : j ≤ 2 * ψ.height) (t u : F),
-      {β2ψ, i + j, 2 * (t * u)} = {ψ, i, t} * {βψ, j, u} * {ψ, i, (-t)} *
-      {βψ, j, (-u)} := by sorry
+theorem exprw_βψ_as_ψ_β_ψ_β_ψ :
+  forall_ij_tu β ψ,
+    {βψ, i + j, 2 * t * u} =
+    {ψ, j, -u} * {β, i, t} * {ψ, j, 2 * u} * {β, i, -t} * {ψ, j, -u} := by
+  intro i j hi hj t u
+  have hi' : i ≤ βψ.height := by ht
+  have hij : i + j ≤ βψ.height := by ht
+  have hi2j : i + 2 * j ≤ PosRootSys.height β2ψ := by
+    simp only [PosRootSys.height, height] at hi hj ⊢; omega
+  rw [← mul_inv_eq_iff_eq_mul]
+  mar; rw [← inv_mul_eq_iff_eq_mul]
+  chev_simp; mal
+  rw [expr_ψ_βψ_as_β2ψ_βψ_ψ (i := j) (j := i + j) hj hij u (2 * t * u)]
+  grw [expr_β2ψ_as_ψ_βψ_ψ_βψ (i := j) (j := i + j) hj hij u (2 * t * u)]
+  have h_comm := comm_of_β_ψ hi hj t (2 * u)
+  chev_simp at h_comm
+  rw [expr_βψ_β2ψ_as_β2ψ_βψ] at h_comm
+  rw [eq_of_h_eq β2ψ (i + 2 * j) _ (j + (i + j)) (by omega)] at h_comm
+  rw [eq_of_R_eq β2ψ _ _ _ (2 * u * (2 * t * u)) (by ring)] at h_comm
+  clear hi2j
+  grw [expr_β2ψ_as_ψ_βψ_ψ_βψ hj hij u (2 * t * u)] at h_comm
+  grw [lin_of_βψ] at h_comm
+  ring_nf at h_comm
+  grw [id_of_βψ, commutatorElement_def] at h_comm
+  rw [← inv_of_ψ _ (u * 2), mul_inv_eq_iff_eq_mul] at h_comm
+  mar at h_comm
+  rw [lin_of_ψ] at h_comm
+  ring_nf at h_comm
+  mal at h_comm
+  rw [eq_of_R_eq βψ _ _ _ (2 * t * u)] at h_comm
+  grw [← h_comm, mul_comm]
+  ring
 
 /-! ### Derive full commutator for βψ and ψω from nonhomogeneous lift -/
 
@@ -409,13 +420,19 @@ theorem comm_of_βψ_ψω : trivial_commutator_of_root_pair (weakB3Small F).pres
     apply image_of_homog_lift_of_comm_of_βψ_ψω hi hj
     exact hij
 
+declare_B3Small_triv_expr_thm βψ ψω
+
 /-! ### Further useful identities (roughly GENERIC) -/
 
 -- 8.39 a
 
 theorem expr_ψ_ω_as_ω_ψω_ψ :
-    ∀ {i j : ℕ} (hi : i ≤ ψ.height) (hj : j ≤ ω.height) (t u : F),
-      {ψ, i, t} * {ω, j, u} = {ω, j, u} * {ψω, i + j, 2 * (t * u)} * {ψ, i, t} := by sorry
+  forall_ij_tu ψ ω,
+    {ψ, i, t} * {ω, j, u} = {ω, j, u} * {ψω, i + j, 2 * t * u} * {ψ, i, t} := by
+  intro i j hi hj t u
+  grw [expr_ψ_ω_as_ψω_ω_ψ]
+  stop
+  done
 
 -- 8.39 b
 

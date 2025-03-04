@@ -95,6 +95,14 @@ theorem h_add_comm (ζ : Φ) (i j : ℕ) (h : i + j ≤ height ζ) (t : R)
   congr 1
   exact add_comm i j
 
+theorem eq_of_h_eq (ζ : Φ) (i : ℕ) (hi : i ≤ height ζ)
+    : ∀ (j : ℕ) (hij : i = j) (t : R), {ζ, i, t} = {ζ, j, t} := by
+  intros; congr 1
+
+theorem eq_of_R_eq (ζ : Φ) (i : ℕ) (hi : i ≤ height ζ)
+    : ∀ (t u : R) (hij : t = u), {ζ, i, t} = {ζ, i, u} := by
+  intros; congr 1
+
 end GradedGen
 
 open GradedGen
@@ -122,26 +130,26 @@ def rels_of_trivial_commutator_of_root_pair (R : Type TR) [Ring R] (ζη : Φ ×
 
 def rels_of_single_commutator_of_root_pair (p : SingleSpanRootPair Φ R) : Set (FreeGroupOnGradedGens Φ R) :=
   let ⟨ ζ, η, θ, C, h_height ⟩ := p;
-  { ⁅ {ζ, i, t}, {η, j, u} ⁆ * {θ, i + j, C * (t * u)}⁻¹
+  { ⁅ {ζ, i, t}, {η, j, u} ⁆ * {θ, i + j, C * t * u}⁻¹
     | (i : ℕ) (j : ℕ) (hi : i ≤ height ζ) (hj : j ≤ height η) (t : R) (u : R) }
 
 def single_commutator_of_root_pair (f : FreeGroupOnGradedGens Φ R →* G) (ζ η θ : Φ)
     (C : R) (h_height : height θ = height ζ + height η) : Prop :=
   ∀ ⦃i j : ℕ⦄ (hi : i ≤ height ζ) (hj : j ≤ height η) (t u : R),
-    ⁅ f {ζ, i, t}, f {η, j, u} ⁆ = f {θ, i + j, C * (t * u)}
+    ⁅ f {ζ, i, t}, f {η, j, u} ⁆ = f {θ, i + j, C * t * u}
 
 /-! #### Commutator for two generators from two roots which span one additional root -/
 
 def rels_of_double_commutator_of_root_pair (p : DoubleSpanRootPair Φ R) : Set (FreeGroupOnGradedGens Φ R) :=
   let ⟨ ζ, η, θ₁, θ₂, C₁, C₂, h_height₁, h_height₂ ⟩ := p;
   { ⁅ {ζ, i, t}, {η, j, u} ⁆ *
-    ({θ₁, i + j, C₁ * (t * u)} * {θ₂, i + 2 * j, C₂ * (t * (u * u))})⁻¹
+    ({θ₁, i + j, C₁ * t * u} * {θ₂, i + 2 * j, C₂ * t * u * u})⁻¹
     | (i : ℕ) (j : ℕ) (hi : i ≤ height ζ) (hj : j ≤ height η) (t : R) (u : R) }
 
 def double_commutator_of_root_pair (f : FreeGroupOnGradedGens Φ R →* G) (ζ η θ₁ θ₂ : Φ)
     (C₁ C₂ : R) (h_height₁ : height θ₁ = height ζ + height η) (h_height₂ : height θ₂ = height ζ + 2 * height η) : Prop :=
   ∀ ⦃i j : ℕ⦄ (hi : i ≤ height ζ) (hj : j ≤ height η) (t u : R),
-    ⁅ f {ζ, i, t}, f {η, j, u} ⁆ = f {θ₁, i + j, C₁ * (t * u)} * f {θ₂, i + 2 * j, C₂ * (t * (u * u))}
+    ⁅ f {ζ, i, t}, f {η, j, u} ⁆ = f {θ₁, i + j, C₁ * t * u} * f {θ₂, i + 2 * j, C₂ * t * u * u}
 
 /-! #### Commutator relation for two generators from the same root -/
 
@@ -178,7 +186,7 @@ set_option quotPrecheck false
   `(ζ : Φ)`
 -/
 scoped notation "lin_of_root" "(" f ", " ζ ")" =>
-  ∀ (i : ℕ) (hi : i ≤ height ζ) (t u),
+  ∀ ⦃i : ℕ⦄ (hi : i ≤ height ζ) (t u),
     f {ζ, i, t} * f {ζ, i, u} = f {ζ, i, t + u}
 
 /--
@@ -190,7 +198,7 @@ scoped notation "lin_of_root" "(" f ", " ζ ")" =>
   `(ζ : Φ)`
 -/
 scoped notation "id_of_root" "(" f ", " ζ ")" =>
-  ∀ (i : ℕ) (hi : i ≤ height ζ),
+  ∀ ⦃i : ℕ⦄ (hi : i ≤ height ζ),
     f {ζ, i, 0} = 1
 /--
   Negating the coefficient inverts the generator.
@@ -201,7 +209,7 @@ scoped notation "id_of_root" "(" f ", " ζ ")" =>
   `(ζ : Φ)`
 -/
 scoped notation "inv_of_root" "(" f ", " ζ ")" =>
-  ∀ (i : ℕ) (hi : i ≤ height ζ) (t),
+  ∀ ⦃i : ℕ⦄ (hi : i ≤ height ζ) (t),
     (f {ζ, i, t})⁻¹ = f {ζ, i, -t}
 
 /- Linearity implies identity (essentially a standard fact about group homomorphisms). -/

@@ -14,9 +14,6 @@ class PosRootSys (Root : semiOutParam (Type TΦ))
 
 namespace PosRootSys
 
-instance instCoeNat (R : Type TΦ) [PosRootSys R] : Coe R Nat where
-  coe r := PosRootSys.height r
-
 end PosRootSys
 
 end Steinberg
