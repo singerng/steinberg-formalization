@@ -95,12 +95,16 @@ theorem h_add_comm (ζ : Φ) (i j : ℕ) (h : i + j ≤ height ζ) (t : R)
   congr 1
   exact add_comm i j
 
-theorem eq_of_h_eq (ζ : Φ) (i : ℕ) (hi : i ≤ height ζ)
-    : ∀ (j : ℕ) (hij : i = j) (t : R), {ζ, i, t} = {ζ, j, t} := by
+theorem eq_of_h_eq (ζ : Φ) {i : ℕ} (j : ℕ) (hij : i = j)
+    : ∀ {_ : i ≤ height ζ} {t : R}, {ζ, i, t} = {ζ, j, t} := by
   intros; congr 1
 
-theorem eq_of_R_eq (ζ : Φ) (i : ℕ) (hi : i ≤ height ζ)
-    : ∀ (t u : R) (hij : t = u), {ζ, i, t} = {ζ, i, u} := by
+theorem eq_of_R_eq (ζ : Φ) {t : R} (u : R) (h : t = u)
+    : ∀ {i : ℕ} {_ : i ≤ height ζ}, {ζ, i, t} = {ζ, i, u} := by
+  intros; congr 1
+
+theorem eq_of_hR_eq (ζ : Φ) {i : ℕ} (j : ℕ) (hij : i = j) {t : R} (u : R) (htu : t = u)
+    : ∀ {_ : i ≤ height ζ}, {ζ, i, t} = {ζ, j, u} := by
   intros; congr 1
 
 end GradedGen
