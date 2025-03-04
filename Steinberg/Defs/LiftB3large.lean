@@ -2872,7 +2872,7 @@ private lemma expand_α2β2ψ_as_commutator_of_αβ2ψ_β_41 :
     rw [map_commutatorElement]; trivial
   rw [this, expand_α2β2ψ_as_commutator_of_αβ2ψ_β_00 Fchar]
 
--- 8.147a
+-- 8.174a
 theorem expand_α2β2ψ_as_commutator_of_αβ_β2ψ :
   forall_ij_tu 2 3, {α2β2ψ, i + j, -t * u} = ⁅{αβ, i, t}, {β2ψ, j, u}⁆ := by
   intro i j hi hj t u
@@ -2890,7 +2890,7 @@ theorem expand_α2β2ψ_as_commutator_of_αβ_β2ψ :
   | 1, 3 => rw [expand_α2β2ψ_as_commutator_of_αβ_β2ψ_13 Fchar]
   | 2, 3 => rw [expand_α2β2ψ_as_commutator_of_αβ_β2ψ_23 Fchar]
 
--- 8.147b
+-- 8.174b
 theorem expand_α2β2ψ_as_commutator_of_αβψ_βψ :
   forall_ij_tu 3 2, {α2β2ψ, i + j, -2 * t * u} = ⁅{αβψ, i, t}, {βψ, j, u}⁆ := by
   intro i j hi hj t u
@@ -2908,7 +2908,7 @@ theorem expand_α2β2ψ_as_commutator_of_αβψ_βψ :
   | 3, 1 => rw [expand_α2β2ψ_as_commutator_of_αβψ_βψ_31 Fchar]
   | 3, 2 => rw [expand_α2β2ψ_as_commutator_of_αβψ_βψ_32 Fchar]
 
--- 8.147c
+-- 8.174c
 theorem expand_α2β2ψ_as_commutator_of_αβ2ψ_β :
   forall_ij_tu 4 1, {α2β2ψ, i + j, -t * u} = ⁅{αβ2ψ, i, t}, {β, j, u}⁆ := by
   intro i j hi hj t u
