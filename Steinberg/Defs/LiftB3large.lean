@@ -2185,7 +2185,6 @@ theorem expr_β_comm_αβψ_βψ_as_comm_αβψ_βψ_β :
   intro i j k hi hj hk t u v
   exact triv_comm_iff_commutes.1 (comm_of_β_αβψ_βψ hi hj hk t u v)
 
--- Previous proof of (incorrectly stated) 8.158
 include Fchar
 -- 8.158 (revised)
 theorem sufficient_conditions_for_commutator_of_αβψ_and_βψ :
