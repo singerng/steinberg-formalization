@@ -512,6 +512,17 @@ theorem def_of_αβψ :
     exact Set.mem_insert rels_of_def_of_αβψ _
   · exists i, hi, t
 
+theorem def_of_αβ2ψ :
+  ∀ ⦃i : ℕ⦄ (hi : i ≤ αβ2ψ.height) (t : F),
+  ⁅ ({α, (split_4_into_1_3 i hi).1, t}'(correct_of_split_4_into_1_3 i hi).1),
+    ({β2ψ, (split_4_into_1_3 i hi).2, 1}'(correct_of_split_4_into_1_3 i hi).2)
+  ⁆ = {αβ2ψ, i, t} := by
+  intro i hi t
+  apply WeakChevalley.helper
+  apply (weakB3Large F).def_helper rels_of_def_of_αβ2ψ
+  · simp only [weakB3Large, def_sets, Set.mem_insert_iff, Set.mem_singleton_iff, true_or, or_true]
+  · exists i, hi, t
+
 /-! ### Nonhomogeneous lift -/
 
 section forallNotation
@@ -988,6 +999,8 @@ theorem expr_αβ_βψ_as_βψ_αβ :
     {αβ, i, t} * {βψ, j, u} = {βψ, j, u} * {αβ, i, t} := by
   intro i j hi hj t u
   rw [triv_comm_iff_commutes.1 (trivial_comm_of_αβ_βψ _ _ t u)]
+
+/- ### Establishing α + β + ψ -/
 
 private lemma interchange_αβψ_refl_v :
   forall_ijk_tu 1 1 1,
@@ -1485,17 +1498,226 @@ theorem partial_B_interchange_of_αβ2ψ :
   ⁅{αβψ, 2, t * u}, {ψ, 0, v}⁆ = ⁅{α, 0, t}, {β2ψ, 2, -2 * u * v}⁆ :=
   @sufficient_conditions_for_commutator_of_αβψ_and_ψ _ _ Fchar 0 2 0 (by trivial) (by trivial) (by trivial) (@partial_comm_of_βψ_α_β2ψ _ _ Fchar)
 
+/- ### Establishing α + β + 2ψ -/
+
+private lemma interchange_of_αβ2ψ_trans_α_β2ψ :
+  forall_ijk_tu 1 1 1, ⁅{α, i, t * u}, {β2ψ, j + 2 * k, 1}⁆ = ⁅{α, i, t}, {β2ψ, j + 2 * k, u}⁆ := by
+  intro i j k hi hj hk t u
+  have aux₁ := lift_hom_interchange_of_αβ2ψ hi hj hk (t * u) 1 (-1/2)
+  have aux₂ := lift_hom_interchange_of_αβ2ψ hi hj hk t u (-1/2)
+  field_simp at aux₁
+  field_simp at aux₂
+  rwa [aux₁] at aux₂
+
+omit Fchar
+private lemma interchange_of_αβ2ψ_refl_u :
+  forall_ijk_tu 1 1 1, ⁅{αβψ, i + j + k, t}, {ψ, k, u}⁆ = ⁅{α, i, t}, {β2ψ, j + 2 * k, -2 * u}⁆ := by
+  intro i j k hi hj hk t u
+  rw [←mul_one t, lift_hom_interchange_of_αβ2ψ hi hj hk]
+  simp only [neg_mul, mul_one]
+
+private lemma interchange_of_αβ2ψ_refl_v :
+  forall_ijk_tu 1 1 1, ⁅{αβψ, i + j + k, t * u}, {ψ, k, 1}⁆ = ⁅{α, i, t}, {β2ψ, j + 2 * k, -2 * u}⁆ := by
+  intro i j k hi hj hk t u
+  rw [lift_hom_interchange_of_αβ2ψ hi hj hk]
+  simp only [neg_mul, mul_one]
+
+private lemma interchange_of_αβ2ψ_trans_αβψ_ψ :
+  forall_ijk_tu 1 1 1, ⁅{αβψ, i + j + k, t * u}, {ψ, k, 1}⁆ = ⁅{αβψ, i + j + k, t}, {ψ, k, u}⁆ := by
+  intro i j k hi hj hk t u
+  rw [interchange_of_αβ2ψ_refl_v hi hj hk, interchange_of_αβ2ψ_refl_u hi hj hk]
+
+include Fchar
+private lemma interchange_A_of_αβ2ψ_refl_u :
+  ∀ t u : F, ⁅{αβψ, 0, t}, {ψ, 1, u}⁆ = ⁅{α, 0, t}, {β2ψ, 1, -2 * u}⁆ := by
+  intro t u
+  rw [←mul_one t, partial_A_interchange_of_αβ2ψ Fchar]
+  simp only [mul_one, neg_mul]
+
+private lemma interchange_A_of_αβ2ψ_refl_v :
+  ∀ t u : F, ⁅{αβψ, 0, t * u}, {ψ, 1, 1}⁆ = ⁅{α, 0, t}, {β2ψ, 1, -2 * u}⁆ := by
+  intro t u
+  rw [partial_A_interchange_of_αβ2ψ Fchar]
+  simp only [neg_mul, mul_one]
+
+private lemma interchange_A_of_αβ2ψ_trans_αβψ_ψ :
+  ∀ t u : F, ⁅{αβψ, 0, t * u}, {ψ, 1, 1}⁆ = ⁅{αβψ, 0, t}, {ψ, 1, u}⁆ := by
+  intro t u
+  rw [interchange_A_of_αβ2ψ_refl_v Fchar, interchange_A_of_αβ2ψ_refl_u Fchar]
+
+private lemma interchange_B_of_αβ2ψ_refl_u :
+  ∀ t u : F, ⁅{αβψ, 2, t}, {ψ, 0, u}⁆ = ⁅{α, 0, t}, {β2ψ, 2, -2 * u}⁆ := by
+  intro t u
+  rw [←mul_one t, partial_B_interchange_of_αβ2ψ Fchar]
+  simp only [mul_one, neg_mul]
+
+private lemma interchange_B_of_αβ2ψ_refl_v :
+  ∀ t u : F, ⁅{αβψ, 2, t * u}, {ψ, 0, 1}⁆ = ⁅{α, 0, t}, {β2ψ, 2, -2 * u}⁆ := by
+  intro t u
+  rw [partial_B_interchange_of_αβ2ψ Fchar]
+  simp only [neg_mul, mul_one]
+
+private lemma interchange_B_of_αβ2ψ_trans_αβψ_ψ :
+  ∀ t u : F, ⁅{αβψ, 2, t * u}, {ψ, 0, 1}⁆ = ⁅{αβψ, 2, t}, {ψ, 0, u}⁆ := by
+  intro t u
+  rw [interchange_B_of_αβ2ψ_refl_v Fchar, interchange_B_of_αβ2ψ_refl_u Fchar]
+
+-- height 0
+private lemma expand_αβ2ψ_as_commutator_of_α_β2ψ_00 :
+  ∀ t u : F, {αβ2ψ, 0, t * u} = ⁅{α, 0, t}, {β2ψ, 0, u}⁆ := by
+  intro t u
+  have := @def_of_αβ2ψ _ _ 0 (by trivial) (t * u)
+  unfold split_4_into_1_3 at this
+  rw [←this, @interchange_of_αβ2ψ_trans_α_β2ψ _ _ Fchar 0 0 0 (by trivial) (by trivial) (by trivial)]
+
+private lemma expand_αβ2ψ_as_commutator_of_αβψ_ψ_00 :
+  ∀ t u : F, {αβ2ψ, 0, -2 * t * u} = ⁅{αβψ, 0, u}, {ψ, 0, t}⁆ := by
+  intro t u
+  have : -2 * t * u = t * (-2 * u) := by group
+  rw [this, expand_αβ2ψ_as_commutator_of_α_β2ψ_00 Fchar, ←@interchange_of_αβ2ψ_refl_v _ _ 0 0 0 (by trivial) (by trivial) (by trivial),
+  mul_comm t u, interchange_of_αβ2ψ_trans_αβψ_ψ (by trivial) (by trivial) (by trivial)]
+
+-- height 1
+private lemma expand_αβ2ψ_as_commutator_of_α_β2ψ_01 :
+  ∀ t u : F, {αβ2ψ, 1, t * u} = ⁅{α, 0, t}, {β2ψ, 1, u}⁆ := by
+  intro t u
+  have := @def_of_αβ2ψ _ _ 1 (by trivial) (t * u)
+  unfold split_4_into_1_3 at this
+  rw [←this, @interchange_of_αβ2ψ_trans_α_β2ψ _ _ Fchar 0 1 0 (by trivial) (by trivial) (by trivial)]
+
+-- `A` edge
+private lemma expand_αβ2ψ_as_commutator_of_αβψ_ψ_01 :
+  ∀ t u : F, {αβ2ψ, 1, -2 * t * u} = ⁅{αβψ, 0, u}, {ψ, 1, t}⁆ := by
+  intro t u
+  have : -2 * t * u = t * (-2 * u) := by group
+  rw [this, expand_αβ2ψ_as_commutator_of_α_β2ψ_01 Fchar, ←interchange_A_of_αβ2ψ_refl_v Fchar,
+  mul_comm t u, interchange_A_of_αβ2ψ_trans_αβψ_ψ Fchar]
+
+private lemma expand_αβ2ψ_as_commutator_of_αβψ_ψ_10 :
+  ∀ t u : F, {αβ2ψ, 1, -2 * t * u} = ⁅{αβψ, 1, u}, {ψ, 0, t}⁆ := by
+  intro t u
+  have : -2 * t * u = t * (-2 * u) := by group
+  rw [this, expand_αβ2ψ_as_commutator_of_α_β2ψ_01 Fchar, ←@interchange_of_αβ2ψ_refl_v _ _ 0 1 0 (by trivial) (by trivial) (by trivial),
+  mul_comm t u, @interchange_of_αβ2ψ_trans_αβψ_ψ _ _ 0 1 0 (by trivial) (by trivial) (by trivial)]
+
+private lemma expand_αβ2ψ_as_commutator_of_α_β2ψ_10 :
+  ∀ t u : F, {αβ2ψ, 1, t * u} = ⁅{α, 1, t}, {β2ψ, 0, u}⁆ := by
+  intro t u
+  have : t * u = -2 * (-u / 2) * t := by ring_nf; field_simp
+  rw [this, expand_αβ2ψ_as_commutator_of_αβψ_ψ_10 Fchar, @interchange_of_αβ2ψ_refl_u _ _ 1 0 0 (by trivial) (by trivial) (by trivial)]
+  field_simp
+
+-- height 2
+private lemma expand_αβ2ψ_as_commutator_of_α_β2ψ_11 :
+  ∀ t u : F, {αβ2ψ, 2, t * u} = ⁅{α, 1, t}, {β2ψ, 1, u}⁆ := by
+  intro t u
+  have := @def_of_αβ2ψ _ _ 2 (by trivial) (t * u)
+  unfold split_4_into_1_3 at this
+  rw [←this, @interchange_of_αβ2ψ_trans_α_β2ψ _ _ Fchar 1 1 0 (by trivial) (by trivial) (by trivial)]
+
+private lemma expand_αβ2ψ_as_commutator_of_αβψ_ψ_20 :
+  ∀ t u : F, {αβ2ψ, 2, -2 * t * u} = ⁅{αβψ, 2, u}, {ψ, 0, t}⁆ := by
+  intro t u
+  have : -2 * t * u = t * (-2 * u) := by group
+  rw [this, expand_αβ2ψ_as_commutator_of_α_β2ψ_11 Fchar, ←@interchange_of_αβ2ψ_refl_v _ _ 1 1 0 (by trivial) (by trivial) (by trivial),
+  mul_comm t u, @interchange_of_αβ2ψ_trans_αβψ_ψ _ _ 1 1 0 (by trivial) (by trivial) (by trivial)]
+
+-- `B` edge
+private lemma expand_αβ2ψ_as_commutator_of_α_β2ψ_02 :
+  ∀ t u : F, {αβ2ψ, 2, t * u} = ⁅{α, 0, t}, {β2ψ, 2, u}⁆ := by
+  intro t u
+  have : t * u = -2 * (-u / 2) * t := by ring_nf; field_simp
+  rw [this, expand_αβ2ψ_as_commutator_of_αβψ_ψ_20 Fchar, interchange_B_of_αβ2ψ_refl_u Fchar]
+  field_simp
+
+private lemma expand_αβ2ψ_as_commutator_of_αβψ_ψ_11 :
+  ∀ t u : F, {αβ2ψ, 2, -2 * t * u} = ⁅{αβψ, 1, u}, {ψ, 1, t}⁆ := by
+  intro t u
+  have : -2 * t * u = t * (-2 * u) := by group
+  rw [this, expand_αβ2ψ_as_commutator_of_α_β2ψ_02 Fchar, ←@interchange_of_αβ2ψ_refl_v _ _ 0 0 1 (by trivial) (by trivial) (by trivial),
+  mul_comm t u, interchange_of_αβ2ψ_trans_αβψ_ψ (by trivial) (by trivial) (by trivial)]
+
+-- height 3
+private lemma expand_αβ2ψ_as_commutator_of_α_β2ψ_12 :
+  ∀ t u : F, {αβ2ψ, 3, t * u} = ⁅{α, 1, t}, {β2ψ, 2, u}⁆ := by
+  intro t u
+  have := @def_of_αβ2ψ _ _ 3 (by trivial) (t * u)
+  unfold split_4_into_1_3 at this
+  rw [←this, @interchange_of_αβ2ψ_trans_α_β2ψ _ _ Fchar 1 0 1 (by trivial) (by trivial) (by trivial)]
+
+-- `A` edge
+private lemma expand_αβ2ψ_as_commutator_of_αβψ_ψ_30 :
+  ∀ t u : F, {αβ2ψ, 3, -2 * t * u} = ⁅{αβψ, 3, u}, {ψ, 0, t}⁆ := by
+  intro t u
+  have : -2 * t * u = u * (-2 * t) := by group
+  rw [this, expand_αβ2ψ_as_commutator_of_α_β2ψ_12 Fchar]
+  have : ⁅{αβψ, 3, u}, {ψ, 0, t}⁆ = ReflDeg.refl_symm b3large_valid ⁅{αβψ, 0, u}, {ψ, 1, t}⁆ := by
+    rw [map_commutatorElement]
+    trivial
+  rw [this]
+  have : ⁅{α, 1, u}, {β2ψ, 2, -2 * t}⁆ = ReflDeg.refl_symm b3large_valid ⁅{α, 0, u}, {β2ψ, 1, -2 * t}⁆ := by
+    rw [map_commutatorElement]
+    trivial
+  rw [this, interchange_A_of_αβ2ψ_refl_u Fchar]
+
+private lemma expand_αβ2ψ_as_commutator_of_αβψ_ψ_21 :
+  ∀ t u : F, {αβ2ψ, 3, -2 * t * u} = ⁅{αβψ, 2, u}, {ψ, 1, t}⁆ := by
+  intro t u
+  have : -2 * t * u = u * (-2 * t) := by group
+  rw [this, expand_αβ2ψ_as_commutator_of_α_β2ψ_12 Fchar, ←@interchange_of_αβ2ψ_refl_v _ _ 1 0 1 (by trivial) (by trivial) (by trivial),
+  @interchange_of_αβ2ψ_trans_αβψ_ψ _ _ 1 0 1 (by trivial) (by trivial) (by trivial)]
+
+private lemma expand_αβ2ψ_as_commutator_of_α_β2ψ_03 :
+  ∀ t u : F, {αβ2ψ, 3, t * u} = ⁅{α, 0, t}, {β2ψ, 3, u}⁆ := by
+  intro t u
+  have : t * u = -2 * (-u / 2) * t := by ring_nf; field_simp
+  rw [this, expand_αβ2ψ_as_commutator_of_αβψ_ψ_21 Fchar, @interchange_of_αβ2ψ_refl_u _ _ 0 1 1 (by trivial) (by trivial) (by trivial)]
+  field_simp
+
+-- height 4
+private lemma expand_αβ2ψ_as_commutator_of_α_β2ψ_13 :
+  ∀ t u : F, {αβ2ψ, 4, t * u} = ⁅{α, 1, t}, {β2ψ, 3, u}⁆ := by
+  intro t u
+  have := @def_of_αβ2ψ _ _ 4 (by trivial) (t * u)
+  unfold split_4_into_1_3 at this
+  rw [←this, @interchange_of_αβ2ψ_trans_α_β2ψ _ _ Fchar 1 1 1 (by trivial) (by trivial) (by trivial)]
+
+private lemma expand_αβ2ψ_as_commutator_of_αβψ_ψ_31 :
+  ∀ t u : F, {αβ2ψ, 4, -2 * t * u} = ⁅{αβψ, 3, u}, {ψ, 1, t}⁆ := by
+  intro t u
+  have : -2 * t * u = u * (-2 * t) := by group
+  rw [this, expand_αβ2ψ_as_commutator_of_α_β2ψ_13 Fchar, ←@interchange_of_αβ2ψ_refl_v _ _ 1 1 1 (by trivial) (by trivial) (by trivial),
+  @interchange_of_αβ2ψ_trans_αβψ_ψ _ _ 1 1 1 (by trivial) (by trivial) (by trivial)]
+
 -- 8.135a
 theorem expand_αβ2ψ_as_commutator_of_α_β2ψ :
   forall_ij_tu 1 3,
     {αβ2ψ, i + j, t * u} = ⁅{α, i, t}, {β2ψ, j, u}⁆ := by
-  sorry
+  intro i j hi hj t u
+  match i, j with
+  | 0, 0 => rw [expand_αβ2ψ_as_commutator_of_α_β2ψ_00 Fchar]
+  | 0, 1 => rw [expand_αβ2ψ_as_commutator_of_α_β2ψ_01 Fchar]
+  | 1, 0 => rw [expand_αβ2ψ_as_commutator_of_α_β2ψ_10 Fchar]
+  | 0, 2 => rw [expand_αβ2ψ_as_commutator_of_α_β2ψ_02 Fchar]
+  | 1, 1 => rw [expand_αβ2ψ_as_commutator_of_α_β2ψ_11 Fchar]
+  | 0, 3 => rw [expand_αβ2ψ_as_commutator_of_α_β2ψ_03 Fchar]
+  | 1, 2 => rw [expand_αβ2ψ_as_commutator_of_α_β2ψ_12 Fchar]
+  | 1, 3 => rw [expand_αβ2ψ_as_commutator_of_α_β2ψ_13 Fchar]
 
 -- 8.135b
 theorem expand_αβ2ψ_as_commutator_of_αβψ_ψ :
   forall_ij_tu 3 1,
     {αβ2ψ, i + j, -2 * t * u} = ⁅{αβψ, i, u}, {ψ, j, t}⁆ := by
-  sorry
+  intro i j hi hj t u
+  match i, j with
+  | 0, 0 => rw [expand_αβ2ψ_as_commutator_of_αβψ_ψ_00 Fchar]
+  | 1, 0 => rw [expand_αβ2ψ_as_commutator_of_αβψ_ψ_10 Fchar]
+  | 0, 1 => rw [expand_αβ2ψ_as_commutator_of_αβψ_ψ_01 Fchar]
+  | 1, 1 => rw [expand_αβ2ψ_as_commutator_of_αβψ_ψ_11 Fchar]
+  | 2, 0 => rw [expand_αβ2ψ_as_commutator_of_αβψ_ψ_20 Fchar]
+  | 2, 1 => rw [expand_αβ2ψ_as_commutator_of_αβψ_ψ_21 Fchar]
+  | 3, 0 => rw [expand_αβ2ψ_as_commutator_of_αβψ_ψ_30 Fchar]
+  | 3, 1 => rw [expand_αβ2ψ_as_commutator_of_αβψ_ψ_31 Fchar]
 
 -- 8.136
 theorem trivial_comm_of_α_αβ2ψ :
