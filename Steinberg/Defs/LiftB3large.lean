@@ -1807,7 +1807,7 @@ theorem expand_αβ2ψ_as_αβψ_ψ_αβψ_ψ :
   forall_ij_tu αβψ ψ,
     {αβ2ψ, i + j, -2 * t * u} = {αβψ, i, u} * {ψ, j, t} * {αβψ, i, -u} * {ψ, j, -t} := by
   intro i j hi hj t u
-  rw [expand_αβ2ψ_as_commutator_of_αβψ_ψ Fchar hi hj, ← inv_of_αβψ hi, ← inv_of_ψ _ hj, commutatorElement_def];
+  rw [expand_αβ2ψ_as_commutator_of_αβψ_ψ Fchar hi hj, ← inv_of_αβψ hi, ← inv_of_ψ hj, commutatorElement_def];
 
 -- 8.141b
 theorem expand_αβ2ψ_as_ψ_αβψ_ψ_αβψ :
@@ -1818,7 +1818,7 @@ theorem expand_αβ2ψ_as_ψ_αβψ_ψ_αβψ :
     {αβ2ψ, i + j, -2 * t * u} = {αβ2ψ, i + j, -2 * (-t) * u}⁻¹ := by rw [inv_of_αβ2ψ Fchar (add_le_add hi hj)]; group
     _ = ⁅{αβψ, i, u}, {ψ, j, -t}⁆⁻¹ := by rw [expand_αβ2ψ_as_commutator_of_αβψ_ψ Fchar hi hj]
     _ = ⁅{αβψ, i, u}, {ψ, j, t}⁻¹⁆⁻¹ := by rw [inv_of_ψ]
-    _ = {ψ, j, -t} * {αβψ, i, u} * {ψ, j, t} * {αβψ, i, -u} := by rw [← inv_of_ψ _ hj, ← inv_of_αβψ hi]; group
+    _ = {ψ, j, -t} * {αβψ, i, u} * {ψ, j, t} * {αβψ, i, -u} := by rw [← inv_of_ψ hj, ← inv_of_αβψ hi]; group
 
 -- 8.142a
 @[group_reassoc]
