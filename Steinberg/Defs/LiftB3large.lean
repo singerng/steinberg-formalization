@@ -2130,7 +2130,6 @@ theorem more_sufficient_conditions_for_commutator_of_αβψ_and_βψ :
   exact reorder_left_iff_eq_comm.mp this
 omit Fchar
 
-
 -- 8.161
 theorem sufficient_conditions_for_commutator_of_αβ2ψ_and_β2ψ :
   ∀ ⦃i j k : ℕ⦄ (hi : i ≤ 3) (hj : j ≤ 1) (hk : k ≤ 3)
@@ -2158,7 +2157,6 @@ theorem partial_comm_of_β2ψ_αβ2ψ_b :
   have := @hom_lift_of_commutator_of_β2ψ_αβ2ψ F _ Fchar 0 1 0 (by norm_num) (by norm_num) (by norm_num)
   norm_num at this
   exact this
-
 omit Fchar
 
 -- 8.163
@@ -2170,9 +2168,18 @@ theorem sufficient_conditions_for_commutator_of_ψ_and_αβ2ψ_β :
   sorry
 
 -- 8.164
+include Fchar
 theorem partial_comm_of_ψ_αβ2ψ_β :
   ∀ (t u v : F), ⁅{ψ, 1, v}, ⁅{αβ2ψ, 1, t}, {β, 0, u}⁆⁆ = 1 := by
-  sorry
+  intro t u v
+  have := @sufficient_conditions_for_commutator_of_ψ_and_αβ2ψ_β F _ 1 1 0 (by norm_num) (by norm_num) (by norm_num)
+  norm_num at this
+  apply this
+  exact @partial_comm_of_β2ψ_αβ2ψ_a F _ Fchar
+  have := @hom_lift_of_commutator_βψ_αβ2ψ F _ Fchar 0 1 0 (by norm_num) (by norm_num) (by norm_num)
+  norm_num at this
+  exact this
+omit Fchar
 
 -- 8.165
 theorem partial_B_interchange_of_α2β2ψ :
