@@ -2354,11 +2354,11 @@ theorem more_sufficient_conditions_for_commutator_of_αβψ_and_βψ :
       rw [triv_comm_iff_commutes.1]
       exact h38a v (t * u) v
     grw [h1, h2, h3, h2, h4, h1, h38d]
-    have : {βψ, j + k, v * u} = {ψ, j, -u / 2} * {β, k, v} * {ψ, j, u} * {β, k, -v} * {ψ, j, -u / 2} := by
+    have : {βψ, j + k, u * v} = {ψ, j, -u / 2} * {β, k, v} * {ψ, j, u} * {β, k, -v} * {ψ, j, -u / 2} := by
       rw [← expand_βψ_as_ψ_β_ψ_β_ψ Fchar hj hk u v, mul_comm]
     have h5 : 2 * t * u = t * u * 2 := by
       ring
-    grw [this, h5]
+    grw [h5, ← this]
     repeat assumption
   exact reorder_left_iff_eq_comm.mp this
 omit Fchar
