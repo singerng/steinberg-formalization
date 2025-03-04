@@ -222,6 +222,27 @@ section declareThms
 open Lean Parser.Tactic
 set_option hygiene false
 
+macro "declare_triv_expr_thm" w:ident R:term:arg r₁:term:arg r₂:term:arg : command => do
+  let exprAs := TSyntax.mapIdent₂ r₁ r₂
+    (fun s₁ s₂ => "expr_" ++ s₁ ++ "_" ++ s₂ ++ "_as_" ++ s₂ ++ "_" ++ s₁)
+  let commName := TSyntax.mapIdent₂ r₁ r₂
+    (fun s₁ s₂ => "comm_of_" ++ s₁ ++ "_" ++ s₂)
+  let commOf ← `(rwRule| $commName:term)
+  let mut cmds ← Syntax.getArgs <$> `(
+    section
+
+    @[group_reassoc] theorem $exprAs
+       : ∀ ⦃i j : ℕ⦄ (hi : i ≤ height $r₁) (hj : j ≤ height $r₂) (t u : $R),
+        commutes(($w $R).pres_mk {$r₁:term, i, t},
+                 ($w $R).pres_mk {$r₂:term, j, u}) := by
+      intro i j hi hj t u
+      apply triv_comm_iff_commutes.mp
+      rw [$commOf]
+
+    end
+  )
+  return ⟨mkNullNode cmds⟩
+
 macro "declare_triv_comm_of_root_pair_thms" w:ident R:term:arg r₁:term:arg r₂:term:arg : command => do
   let commOf := TSyntax.mapIdent₂ r₁ r₂ (fun s₁ s₂ => "comm_of_" ++ s₁ ++ "_" ++ s₂)
   let cmds ← Syntax.getArgs <$> `(
@@ -230,17 +251,65 @@ macro "declare_triv_comm_of_root_pair_thms" w:ident R:term:arg r₁:term:arg r�
     theorem $commOf : trivial_commutator_of_root_pair ($w $R).pres_mk $r₁ $r₂ :=
       ($w $R).trivial_commutator_helper (by unfold $w; simp)
 
+    declare_triv_expr_thm $w $R $r₁ $r₂
+
     end
   )
   return ⟨mkNullNode cmds⟩
 
-macro "declare_single_comm_of_root_pair_thms" w:ident R:term:arg r₁:term:arg r₂:term:arg r₃:term:arg n:term:arg : command => do
+macro "declare_single_expr_thms" w:ident R:term:arg r₁:term:arg r₂:term:arg r₃:term:arg n:num : command => do
+  let innerTerm ←
+    if n.getNat = 1 then `(t * u)
+    else                 `($n * t * u)
+  let commOf := TSyntax.mapIdent₂ r₁ r₂ (fun s₁ s₂ => "comm_of_" ++ s₁ ++ "_" ++ s₂)
+  let exprAs := TSyntax.mapIdent₃ r₁ r₂ r₃
+    (fun s₁ s₂ s₃ => "expr_" ++ s₃ ++ "_as_" ++ s₁ ++ "_" ++ s₂ ++ "_" ++ s₁ ++ "_" ++ s₂)
+  let exprAsRev := TSyntax.mapIdent₃ r₁ r₂ r₃
+    (fun s₁ s₂ s₃ => "expr_" ++ s₁ ++ "_" ++ s₂ ++ "_as_" ++ s₃ ++ "_" ++ s₂ ++ "_" ++ s₁)
+  let cmds ← Syntax.getArgs <$> `(
+    section
+
+    theorem $exprAs
+      : ∀ ⦃i j : ℕ⦄ (hi : i ≤ height $r₁) (hj : j ≤ height $r₂) (t u : $R),
+        (($w $R).pres_mk
+          (free_mk_mk $r₃ (i + j) (by simp [PosRootSys.height, height] at hi hj ⊢; omega) $innerTerm))
+          = ($w $R).pres_mk {$r₁:term, i, t}
+            * ($w $R).pres_mk {$r₂:term, j, u}
+            * ($w $R).pres_mk {$r₁:term, i, -t}
+            * ($w $R).pres_mk {$r₂:term, j, -u} := by
+      intro i j hi hj t u
+      have := $commOf hi hj t u
+      chev_simp [commutatorElement_def, one_mul, mul_one] at this
+      symm at this
+      exact this
+
+    @[group_reassoc]
+    theorem $exprAsRev
+      : ∀ ⦃i j : ℕ⦄ (hi : i ≤ height $r₁) (hj : j ≤ height $r₂) (t u : $R),
+        reorder_left(
+          ($w $R).pres_mk {$r₁:term, i, t},
+          ($w $R).pres_mk {$r₂:term, j, u},
+          (($w $R).pres_mk
+            (free_mk_mk $r₃ (i + j) (by simp [PosRootSys.height, height] at hi hj ⊢; omega) $innerTerm))
+        ) := by
+      intro i j hi hj t u
+      have := $commOf hi hj t u
+      chev_simp [commutatorElement_def, one_mul, mul_one] at this
+      grw [← this]
+
+      end
+  )
+  return ⟨mkNullNode cmds⟩
+
+macro "declare_single_comm_of_root_pair_thms" w:ident R:term:arg r₁:term:arg r₂:term:arg r₃:term:arg n:num : command => do
   let commOf := TSyntax.mapIdent₂ r₁ r₂ (fun s₁ s₂ => "comm_of_" ++ s₁ ++ "_" ++ s₂)
   let cmds ← Syntax.getArgs <$> `(
     section
 
     theorem $commOf : single_commutator_of_root_pair ($w $R).pres_mk $r₁ $r₂ $r₃ $n rfl :=
       ($w $R).single_commutator_helper $r₁ $r₂ $r₃ $n rfl (by unfold $w; simp)
+
+    declare_single_expr_thms $w $R $r₁ $r₂ $r₃ $n
 
     end
   )
@@ -265,27 +334,6 @@ macro "declare_lin_id_inv_thms" w:ident R:term:arg root:term:arg : command => do
     @[simp, chev_simps]
     theorem $invOf : inv_of_root(($w $R).pres_mk, $root) :=
       inv_of_lin_of_root $linOf
-
-    end
-  )
-  return ⟨mkNullNode cmds⟩
-
-macro "declare_expr_as_thm" w:ident R:term:arg r₁:term:arg r₂:term:arg : command => do
-  let thmName := TSyntax.mapIdent₂ r₁ r₂
-    (fun s₁ s₂ => "expr_" ++ s₁ ++ "_" ++ s₂ ++ "_as_" ++ s₂ ++ "_" ++ s₁)
-  let rwName := TSyntax.mapIdent₂ r₁ r₂
-    (fun s₁ s₂ => "comm_of_" ++ s₁ ++ "_" ++ s₂)
-  let rwThm ← `(rwRule| $rwName:term)
-  let mut cmds ← Syntax.getArgs <$> `(
-    section
-
-    @[group_reassoc] theorem $thmName
-       : ∀ ⦃i j : ℕ⦄ (hi : i ≤ height $r₁) (hj : j ≤ height $r₂) (t u : $R),
-        commutes(($w $R).pres_mk {$r₁:term, i, t},
-                 ($w $R).pres_mk {$r₂:term, j, u}) := by
-      intro i j hi hj t u
-      apply triv_comm_iff_commutes.mp
-      rw [$rwThm]
 
     end
   )

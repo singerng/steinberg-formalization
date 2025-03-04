@@ -33,6 +33,8 @@ scoped notation "triv_comm" "( " x ", " y " )" => ⁅ x, y ⁆ = 1
 /-- `commutes(x, y)` unfolds to `x * y = y * x`.  -/
 scoped notation "commutes" "( " x ", " y " )" => x * y = y * x
 
+scoped notation "comm_unfold" "( " x ", " y " )" => x * y * x⁻¹ * y⁻¹
+
 /-- `reorder_left(x, y, z)` unfolds to `x * y = z * y * x`.  -/
 scoped notation "reorder_left" "( " x ", " y ", " z " )" => x * y = z * y * x
 scoped notation "reorder_mid" "( " x ", " y ", " z " )" => x * y = y * z * x

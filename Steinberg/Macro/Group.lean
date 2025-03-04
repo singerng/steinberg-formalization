@@ -35,7 +35,7 @@ open Mathlib.Tactic
 open Lean Meta Elab Term Tactic Parser.Tactic PrettyPrinter
 
 attribute [chev_simps] neg_add_cancel add_neg_cancel
-  one_mul mul_one zero_mul mul_zero mul_neg neg_neg
+  one_mul mul_one zero_mul mul_zero mul_neg neg_neg inv_inv
   zero_add add_zero
   map_one map_zero map_mul map_add map_neg map_commutatorElement
   commutatorElement_inv
@@ -50,9 +50,14 @@ macro_rules
     let args := simpArgs.map (·.getElems) |>.getD #[]
     `(tactic| simp only [chev_simps, $args,*] $[at $loc]?)
 
---macro (name := chev_simp) "chev_simp" args:simpArgs l:(location)? : tactic => `(tactic|
---  simp only [chev_simps] $l ?
---)
+syntax (name := chevSimp?) "chev_simp?" (simpArgs)? (location)? : tactic
+
+macro_rules
+  --| `(tactic| chev_simp $[at $loc]?) => do
+  --  `(tactic| simp only [chev_simps] $[at $loc]?)
+  | `(tactic| chev_simp? $[[$simpArgs,*]]? $[at $loc]?) => do
+    let args := simpArgs.map (·.getElems) |>.getD #[]
+    `(tactic| simp? [chev_simps, $args,*] $[at $loc]?)
 
 namespace Macro
 
@@ -72,8 +77,8 @@ macro (name := mul_assoc_r) "mul_assoc_r" l:(location)? : tactic => `(tactic|
 )
 
 @[inherit_doc mul_assoc_r]
-macro (name := mar) "mar" : tactic => `(tactic|
-  mul_assoc_r
+macro (name := mar) "mar" l:(location)? : tactic => `(tactic|
+  mul_assoc_r $l ?
 )
 
 /- CC: Use these two theorems to generate an automatic new theorem from a commutative theorem. -/
@@ -319,9 +324,9 @@ elab s:"grw " cfg:optConfig rws:rwRuleSeq l:(location)? : tactic => Elab.Tactic.
         if symm then `(rwRule | ← greassoc_of_r% $e:term) else `(rwRule | greassoc_o_rf% $e:term)
 
       ((evalTactic <| ← `(tactic|
-        (try mal $l ?);
         first
         | rw $cfg [$rwTerm] $l ?
+        | (mal $l ?; rw $cfg [$rwTerm] $l ?)
         | rw $cfg [$reassocTerm_l] $l ?
         | rw $cfg [$reassocTerm_r] $l ?
       ))
@@ -329,6 +334,13 @@ elab s:"grw " cfg:optConfig rws:rwRuleSeq l:(location)? : tactic => Elab.Tactic.
       cont);
       (evalTactic <| ← `(tactic| mul_inj $l ?));
       (evalTactic <| ← `(tactic| try chev_simp [] $l ?))
+
+/-- `rwa` is short-hand for `rw; assumption`. -/
+macro "rwa " rws:rwRuleSeq loc:(location)? : tactic =>
+  `(tactic| (rw $rws:rwRuleSeq $[$loc:location]?; assumption))
+
+macro "grwa " rws:rwRuleSeq l:(location)? : tactic =>
+  `(tactic| (grw $rws:rwRuleSeq $[$l:location]?; assumption))
 
 end Macro
 
