@@ -2352,8 +2352,6 @@ theorem more_sufficient_conditions_for_commutator_of_αβψ_and_βψ :
   exact reorder_left_iff_eq_comm.mp this
 omit Fchar
 
-#exit
-
 -- 8.161
 theorem sufficient_conditions_for_commutator_of_αβ2ψ_and_β2ψ :
   ∀ ⦃i j k : ℕ⦄ (hi : i ≤ 3) (hj : j ≤ 1) (hk : k ≤ 3)
