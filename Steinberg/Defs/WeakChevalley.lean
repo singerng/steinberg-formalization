@@ -238,6 +238,7 @@ macro "declare_triv_expr_thm" w:ident R:term:arg r₁:term:arg r₂:term:arg : c
       intro i j hi hj t u
       apply triv_comm_iff_commutes.mp
       rw [$commOf]
+      try assumption
 
     end
   )
