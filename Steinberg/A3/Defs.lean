@@ -1,0 +1,154 @@
+/-
+
+LICENSE goes here.
+
+-/
+
+import Steinberg.Defs.WeakChevalley
+import Mathlib.Tactic.DeriveFintype
+
+/-!
+
+  File dox.
+
+-/
+
+namespace Steinberg.A3
+
+inductive A3PosRoot
+  | α | β | γ | αβ | βγ | αβγ
+deriving Fintype, DecidableEq
+
+namespace A3PosRoot
+
+@[reducible]
+def height : A3PosRoot → Nat
+  | α | β | γ => 1
+  | αβ | βγ => 2
+  | αβγ => 3
+
+def toString : A3PosRoot → String
+  | α => "α"
+  | β => "β"
+  | γ => "γ"
+  | αβ => "α+β"
+  | βγ => "β+γ"
+  | αβγ => "α+β+γ"
+
+instance instPosRootSys : PosRootSys A3PosRoot where
+  height := height
+  toString := toString
+
+instance instCoeNat : Coe A3PosRoot Nat where
+  coe r := height r
+
+end A3PosRoot
+
+open A3PosRoot GradedGen
+
+variable {R : Type TR} [Ring R]
+
+/-! # Relations -/
+
+/-
+The specific relation arises from "nonhomogeneously lifting" the commutator of αβ and βγ elements. (There is no analogue
+of this relation for other root-pairs, since all other present pairs lie in a common two-dimensional subspace.)
+-/
+def rels_of_nonhomog_lift_of_comm_of_αβ_βγ :=
+  { ⁅ {αβ, 2, t₁ * u₁} * {αβ, 1, t₁ * u₀ + t₀ * u₁} * {αβ, 0, t₀ * u₀},
+      {βγ, 2, u₁ * v₁} * {βγ, 1, u₁ * v₀ + u₀ * v₁} * {βγ, 0, u₀ * v₀} ⁆
+    | (t₁ : R) (t₀ : R) (u₁ : R) (u₀ : R) (v₁ : R) (v₀ : R) }
+
+def split_3_into_1_2 (i : ℕ) (hi : i ≤ 3) :=
+  match i with
+  | 0 => (0, 0)
+  | 1 => (0, 1)
+  | 2 => (1, 1)
+  | 3 => (1, 2)
+
+theorem correct_of_split_3_into_1_2 (i : ℕ) (hi : i ≤ 3) :
+  (split_3_into_1_2 i hi).1 ≤ 1 ∧ (split_3_into_1_2 i hi).2 ≤ 2 := by
+  simp only [split_3_into_1_2]
+  split
+  all_goals trivial
+
+def rels_of_def_of_αβγ :=
+  { ⁅ {α, (split_3_into_1_2 i hi).1, t}'(correct_of_split_3_into_1_2 i hi).1,
+      {βγ, (split_3_into_1_2 i hi).2, 1}'(correct_of_split_3_into_1_2 i hi).2 ⁆
+      * {αβγ, i, t}⁻¹
+    | (i : ℕ) (hi : i ≤ αβγ.height) (t : R) }
+
+abbrev trivial_commutator_pairs : Set (A3PosRoot × A3PosRoot) :=
+  {(α, γ), (α, αβ), (β, αβ), (β, βγ), (γ, βγ)}
+
+abbrev single_commutator_pairs : Set ((ζ : A3PosRoot) × (η : A3PosRoot) × (θ : A3PosRoot) × R ×' (θ.height = ζ.height + η.height)) :=
+  {⟨ α, β, αβ, 1, (by simp only [height])⟩, ⟨β, γ, βγ, 1, (by simp only [height])⟩}
+
+abbrev double_commutator_pairs : Set ((ζ : A3PosRoot) × (η : A3PosRoot) × (θ₁ : A3PosRoot) × (θ₂ : A3PosRoot) × R × R ×' (θ₁.height = ζ.height + η.height)
+  ×' (θ₂.height = ζ.height + 2 * η.height)) := {}
+
+abbrev mixed_commutes_roots : Set (A3PosRoot) :=
+  {α, β, γ, αβ, βγ}
+
+abbrev lin_roots : Set (A3PosRoot) :=
+  {α, β, γ, αβ, βγ}
+
+-- lifted commutator of αβ and βγ
+def nonhomog_sets (R : Type TR) [Ring R] : Set (Set (FreeGroupOnGradedGens A3PosRoot R)) :=
+  { rels_of_nonhomog_lift_of_comm_of_αβ_βγ }
+
+-- definition of αβγ
+def def_sets (R : Type TR) [Ring R] : Set (Set (FreeGroupOnGradedGens A3PosRoot R)) :=
+  { rels_of_def_of_αβγ }
+
+def weakA3 (R : Type TR) [Ring R] := WeakChevalley.mk
+  trivial_commutator_pairs
+  single_commutator_pairs
+  double_commutator_pairs
+  mixed_commutes_roots
+  lin_roots
+  (nonhomog_sets R)
+  (def_sets R)
+
+/-! # Notation and macros -/
+
+/- Instantiate the `declare_thms` macros from `WeakChevalley.lean`. -/
+
+-- CC: TODO: Make this a macro to declare all at once for A3.
+--     Something like: `declare_thms A3 weakA3 R`
+
+macro "declare_A3_triv_expr_thm" R:term:arg r₁:term:arg r₂:term:arg : command =>
+  `(command| declare_triv_expr_thm weakA3 $R $r₁ $r₂)
+
+macro "declare_A3_triv_comm_of_root_pair_thms" R:term:arg r₁:term:arg r₂:term:arg : command =>
+  `(command| declare_triv_comm_of_root_pair_thms weakA3 $R $r₁ $r₂)
+
+macro "declare_A3_single_expr_thms" R:term:arg r₁:term:arg r₂:term:arg r₃:term:arg : command =>
+  `(command| declare_single_expr_thms weakA3 $R $r₁ $r₂ $r₃ 1)
+
+macro "declare_A3_single_comm_of_root_pair_thms" R:term:arg r₁:term:arg r₂:term:arg r₃:term:arg : command =>
+  `(command| declare_single_comm_of_root_pair_thms weakA3 $R $r₁ $r₂ $r₃ 1)
+
+macro "declare_A3_lin_id_inv_thms" R:term:arg root:term:arg : command =>
+  `(command| declare_lin_id_inv_thms weakA3 $R $root)
+
+macro "declare_A3_mixed_comm_thms" R:term:arg r:term:arg : command =>
+  `(command| declare_mixed_comm_thms weakA3 $R $r)
+
+set_option hygiene false in
+/-- Shorthand for building free group elements from a root, degree, and ring element. -/
+scoped notation (priority:=high) "{" ζ ", " i ", " t "}" =>
+  (weakA3 R).pres_mk (free_mk_mk ζ i (by
+    try simp only [PosRootSys.height, A3PosRoot.height] at *
+    first | assumption | trivial | omega) t)
+
+set_option hygiene false in
+/-- Shorthand for building free group elements from a root, degree, and ring element. -/
+scoped notation (priority:=high) "{" ζ ", " i ", " t "}'" h =>
+  (weakA3 R).pres_mk ({ζ, i, t}'h)
+
+/-- A simple tactic to solve `PosRootSys` height equations. Uses `omega`. -/
+macro "ht" : tactic =>
+  `(tactic| (simp only [PosRootSys.height, A3PosRoot.height] at *; omega))
+
+end Steinberg.A3

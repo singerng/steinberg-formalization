@@ -4,209 +4,27 @@ LICENSE goes here.
 
 -/
 
+import Steinberg.A3.Basic
+
 import Mathlib.Tactic.Group
 import Mathlib.Tactic.FinCases
-import Mathlib.Tactic.DeriveFintype
 
 import Steinberg.Defs.Deg
-import Steinberg.Defs.Commutator
 import Steinberg.Defs.ReflDeg
 
 import Steinberg.Upstream.FreeGroup
 
 /-!
 
-  File dox go here.
+  File dox.
 
 -/
 
-namespace Steinberg
+namespace Steinberg.A3
 
-open Steinberg.Macro
-
-/-!
-A formalization of a certain presentation of a variant of the group of 4x4 unipotent matrices.
-A unipotent matrix has 1's on the diagonal, 0's below the diagonal, and arbitrary entries from some ring above the diagonal.
-
-In our group, the entries are *polynomials* with `R` coefficients, i.e., the ring `R[x]` where `R` is a ring and
-`x` is an indeterminate. Specifically, we consider the group where every matrix position of "height" `i` has an
-entry of degree at most `i`, where the "height" of a position is the taxicab distance to the diagonal.
-
-We label the entries thusly:
-
-(1   α   αβ  αβγ )
-(0   1   β   βγ  )
-(0   0   1   γ   )
-(0   0   0   1   )
-
-Note that α, β, and γ have height 1, αβ and βγ have height 2, and αβγ has height 3. Thus, the α, β, and γ entries are linear
-polynomials with `R` coefficients; αβ and βγ are quadratic; and αβγ is cubic. The positions α, β, etc. are also called "roots".
-
-In our group presentation, the generators are of the form `{ζ, t, i}`, where `ζ` is one of α, β, γ, αβ, or βγ; `t` is in `R`
-(an arbitrary ring); and `i` is between 0 and height(`r`) inclusive. Such a generator corresponds to a unipotent matrix with a single homogeneous
-entry, `tx^i`, in the `r` position. We consider a certain set of relations which these generators satisfy, and prove from these
-all relations characterizing interactions of single-homogeneous-entry-above-diagonal unipotent matrices. (These, in turn,
-form a canonical presentation of the entire group.)
--/
+open Steinberg A3PosRoot GradedGen ReflDeg
 
 variable {R : Type TR} [Ring R]
-
-/-! ### Defining the A3 positive root system -/
-
-inductive A3PosRoot
-  | α | β | γ | αβ | βγ | αβγ
-deriving Fintype, DecidableEq
-
-namespace A3PosRoot
-
-@[reducible]
-def height : A3PosRoot → Nat
-  | α | β | γ => 1
-  | αβ | βγ => 2
-  | αβγ => 3
-
-def toString : A3PosRoot → String
-  | α => "α"
-  | β => "β"
-  | γ => "γ"
-  | αβ => "α+β"
-  | βγ => "β+γ"
-  | αβγ => "α+β+γ"
-
-instance : PosRootSys A3PosRoot where
-  height := height
-  toString := toString
-
-end A3PosRoot
-
-namespace A3Proof
-
-open A3PosRoot GradedGen ReflDeg
-
-/-! ### Bundle together assumptions about the A3 generators -/
-
-/-
-The specific relation arises from "nonhomogeneously lifting" the commutator of αβ and βγ elements. (There is no analogue
-of this relation for other root-pairs, since all other present pairs lie in a common two-dimensional subspace.)
--/
-def rels_of_nonhomog_lift_of_comm_of_αβ_βγ :=
-  { ⁅ {αβ, 2, t₁ * u₁} * {αβ, 1, t₁ * u₀ + t₀ * u₁} * {αβ, 0, t₀ * u₀},
-      {βγ, 2, u₁ * v₁} * {βγ, 1, u₁ * v₀ + u₀ * v₁} * {βγ, 0, u₀ * v₀} ⁆
-    | (t₁ : R) (t₀ : R) (u₁ : R) (u₀ : R) (v₁ : R) (v₀ : R) }
-
-def split_3_into_1_2 (i : ℕ) (hi : i ≤ 3) :=
-  match i with
-  | 0 => (0, 0)
-  | 1 => (0, 1)
-  | 2 => (1, 1)
-  | 3 => (1, 2)
-
-theorem correct_of_split_3_into_1_2 (i : ℕ) (hi : i ≤ 3) :
-  (split_3_into_1_2 i hi).1 ≤ 1 ∧ (split_3_into_1_2 i hi).2 ≤ 2 := by
-  simp only [split_3_into_1_2]
-  split
-  all_goals trivial
-
-def rels_of_def_of_αβγ :=
-  { ⁅ {α, (split_3_into_1_2 i hi).1, t}'(correct_of_split_3_into_1_2 i hi).1,
-      {βγ, (split_3_into_1_2 i hi).2, 1}'(correct_of_split_3_into_1_2 i hi).2 ⁆
-      * {αβγ, i, t}⁻¹
-    | (i : ℕ) (hi : i ≤ αβγ.height) (t : R) }
-
-abbrev trivial_commutator_pairs : Set (A3PosRoot × A3PosRoot) :=
-  {(α, γ), (α, αβ), (β, αβ), (β, βγ), (γ, βγ)}
-
-abbrev single_commutator_pairs : Set ((ζ : A3PosRoot) × (η : A3PosRoot) × (θ : A3PosRoot) × R ×' (θ.height = ζ.height + η.height)) :=
-  {⟨ α, β, αβ, 1, (by simp only [height])⟩, ⟨β, γ, βγ, 1, (by simp only [height])⟩}
-
-abbrev double_commutator_pairs : Set ((ζ : A3PosRoot) × (η : A3PosRoot) × (θ₁ : A3PosRoot) × (θ₂ : A3PosRoot) × R × R ×' (θ₁.height = ζ.height + η.height)
-  ×' (θ₂.height = ζ.height + 2 * η.height)) := {}
-
-abbrev mixed_commutes_roots : Set (A3PosRoot) :=
-  {α, β, γ, αβ, βγ}
-
-abbrev lin_roots : Set (A3PosRoot) :=
-  {α, β, γ, αβ, βγ}
-
--- lifted commutator of αβ and βγ
-def nonhomog_sets (R : Type TR) [Ring R] : Set (Set (FreeGroupOnGradedGens A3PosRoot R)) :=
-  { rels_of_nonhomog_lift_of_comm_of_αβ_βγ }
-
--- definition of αβγ
-def def_sets (R : Type TR) [Ring R] : Set (Set (FreeGroupOnGradedGens A3PosRoot R)) :=
-  { rels_of_def_of_αβγ }
-
-def weakA3 (R : Type TR) [Ring R] := WeakChevalley.mk
-  trivial_commutator_pairs
-  single_commutator_pairs
-  double_commutator_pairs
-  mixed_commutes_roots
-  lin_roots
-  (nonhomog_sets R)
-  (def_sets R)
-
-/- Instantiate the `declare_thms` macros from `WeakChevalley.lean`. -/
-
--- CC: TODO: Make this a macro to declare all at once for A3.
---     Something like: `declare_thms A3 weakA3 R`
-
-macro "declare_A3_triv_expr_thm" r₁:term:arg r₂:term:arg : command =>
-  `(command| declare_triv_expr_thm weakA3 R $r₁ $r₂)
-
-macro "declare_A3_triv_comm_of_root_pair_thms" r₁:term:arg r₂:term:arg : command =>
-  `(command| declare_triv_comm_of_root_pair_thms weakA3 R $r₁ $r₂)
-
-macro "declare_A3_single_expr_thms" r₁:term:arg r₂:term:arg r₃:term:arg : command =>
-  `(command| declare_single_expr_thms weakA3 R $r₁ $r₂ $r₃ 1)
-
-macro "declare_A3_single_comm_of_root_pair_thms" r₁:term:arg r₂:term:arg r₃:term:arg : command =>
-  `(command| declare_single_comm_of_root_pair_thms weakA3 R $r₁ $r₂ $r₃ 1)
-
-macro "declare_A3_lin_id_inv_thms" root:term:arg : command =>
-  `(command| declare_lin_id_inv_thms weakA3 R $root)
-
-macro "declare_A3_mixed_comm_thms" r:term:arg : command =>
-  `(command| declare_mixed_comm_thms weakA3 R $r)
-
-set_option hygiene false in
-/-- Shorthand for building free group elements from a root, degree, and ring element. -/
-scoped notation (priority:=high) "{" ζ ", " i ", " t "}" =>
-  (weakA3 R).pres_mk (free_mk_mk ζ i (by
-    try simp only [PosRootSys.height, A3PosRoot.height] at *
-    first | assumption | trivial | omega) t)
-
-set_option hygiene false in
-/-- Shorthand for building free group elements from a root, degree, and ring element. -/
-scoped notation (priority:=high) "{" ζ ", " i ", " t "}'" h =>
-  (weakA3 R).pres_mk ({ζ, i, t}'h)
-
-/-- A simple tactic to solve `PosRootSys` height equations. Uses `omega`. -/
-macro "ht" : tactic =>
-  `(tactic| (simp only [PosRootSys.height, A3PosRoot.height] at *; omega))
-
-section UnpackingPresentation
-
-/-! ### Linearity theorems for specific roots -/
-
-declare_A3_lin_id_inv_thms α
-declare_A3_lin_id_inv_thms β
-declare_A3_lin_id_inv_thms γ
-declare_A3_lin_id_inv_thms αβ
-declare_A3_lin_id_inv_thms βγ
-
-declare_A3_triv_comm_of_root_pair_thms α γ
-declare_A3_triv_comm_of_root_pair_thms α αβ
-declare_A3_triv_comm_of_root_pair_thms β αβ
-declare_A3_triv_comm_of_root_pair_thms β βγ
-declare_A3_triv_comm_of_root_pair_thms γ βγ
-
-declare_A3_single_comm_of_root_pair_thms α β αβ
-declare_A3_single_comm_of_root_pair_thms β γ βγ
-
-/-! ### Mixed-degree theorem for specific roots -/
-
-declare_A3_mixed_comm_thms αβ
-declare_A3_mixed_comm_thms βγ
 
 /-! ### Nonhomogeneous lift -/
 
@@ -243,9 +61,8 @@ theorem refl_of_nonhomog :
   simp_arith
   repeat rw [← free_mk_mk]
   rw [add_comm (t₁ * u₀), add_comm (u₁ * v₀)]
-  rw [expr_αβ_αβ_as_αβ_αβ, expr_βγ_βγ_as_βγ_βγ, mul_assoc, mul_assoc,
-    expr_αβ_αβ_as_αβ_αβ, expr_βγ_βγ_as_βγ_βγ, ← mul_assoc, ← mul_assoc,
-    expr_αβ_αβ_as_αβ_αβ, expr_βγ_βγ_as_βγ_βγ]
+  grw [expr_αβ_αβ_as_αβ_αβ, expr_αβ_αβ_as_αβ_αβ (i := 0), expr_αβ_αβ_as_αβ_αβ,
+       expr_βγ_βγ_as_βγ_βγ, expr_βγ_βγ_as_βγ_βγ (i := 0), expr_βγ_βγ_as_βγ_βγ]
   exact nonhomog_lift_of_comm_of_αβ_βγ t₀ t₁ u₀ u₁ v₀ v₁
 
 -- def relations are preserved under reflection
@@ -260,8 +77,6 @@ theorem refl_of_def : ∀ S ∈ def_sets R, ∀ r ∈ S, FreeGroup.map refl_deg_
 
 theorem a3_valid : ReflDeg.refl_valid (R := R) (weakA3 R) :=
   ⟨refl_of_nonhomog, refl_of_def⟩
-
-end UnpackingPresentation /- section -/
 
 /-! ### Derive full commutator for αβ and βγ from nonhomogeneous lift -/
 
@@ -345,7 +160,7 @@ theorem comm_of_αβ_βγ : trivial_commutator_of_root_pair (weakA3 R).pres_mk �
   · rw [← comm_of_αβ_βγ_20 t u]
   · exact image_of_homog_lift_of_comm_of_αβ_βγ hi hj hij _ _
 
-declare_A3_triv_expr_thm αβ βγ
+declare_A3_triv_expr_thm R αβ βγ
 
 /-! ### Further useful identities (roughly GENERIC) -/
 
@@ -484,8 +299,8 @@ theorem comm_of_αβ_γ : single_commutator_of_root_pair (weakA3 R).pres_mk αβ
   | 1, 1 => simp only [comm_of_αβ_γ_11 t u, Nat.reduceAdd, one_mul]
   | 2, 1 => simp only [comm_of_αβ_γ_21 t u, Nat.reduceAdd, one_mul]
 
-declare_A3_single_expr_thms α βγ αβγ
-declare_A3_single_expr_thms αβ γ αβγ
+declare_A3_single_expr_thms R α βγ αβγ
+declare_A3_single_expr_thms R αβ γ αβγ
 
 /-! ### More rewriting theorems -/
 
@@ -520,8 +335,6 @@ theorem expand_αβγ_as_αβ_γ_αβ_γ_mul_one :
 /-! ### Commutators of αβγ with other roots -/
 
 /- α and αβγ commute. -/
-/- NS: One should be able to prove this quite simply:  simple proof: we know αβγ is expressible as a product of αβ's and γ's (expand_αβγ_as_αβ_γ_αβ_γ), and we know that α's
-   commute with αβ's (expr_α_αβ_as_αβ_α) and γ's (expr_α_γ_as_γ_α) -/
 theorem comm_of_α_αβγ : trivial_commutator_of_root_pair (weakA3 R).pres_mk α αβγ := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.mpr
@@ -543,7 +356,7 @@ theorem comm_of_β_αβγ : trivial_commutator_of_root_pair (weakA3 R).pres_mk �
       expr_β_γ_as_γ_βγ_β hi hj₂,
       expr_β_αβ_as_αβ_β hi hj₁,
       expr_β_γ_as_βγ_γ_β hi hj₂,
-      ← expr_αβ_βγ_as_βγ_αβ hj₁ (by ht)]
+      ← expr_αβ_βγ_as_βγ_αβ hj₁]
 
 /- γ and αβγ commute. -/
 theorem comm_of_γ_αβγ : trivial_commutator_of_root_pair (weakA3 R).pres_mk γ αβγ := by
@@ -578,11 +391,11 @@ theorem comm_of_βγ_αβγ : trivial_commutator_of_root_pair (weakA3 R).pres_mk
     ← expr_αβ_βγ_as_βγ_αβ hj₁ hi,
     ← expr_γ_βγ_as_βγ_γ hj₂ hi]
 
-declare_A3_triv_expr_thm α αβγ
-declare_A3_triv_expr_thm β αβγ
-declare_A3_triv_expr_thm γ αβγ
-declare_A3_triv_expr_thm αβ αβγ
-declare_A3_triv_expr_thm βγ αβγ
+declare_A3_triv_expr_thm R α αβγ
+declare_A3_triv_expr_thm R β αβγ
+declare_A3_triv_expr_thm R γ αβγ
+declare_A3_triv_expr_thm R αβ αβγ
+declare_A3_triv_expr_thm R βγ αβγ
 
 /- αβγ commutes with itself. -/
 theorem comm_of_αβγ_αβγ : trivial_commutator_of_root_pair (weakA3 R).pres_mk αβγ αβγ := by
@@ -595,7 +408,7 @@ theorem comm_of_αβγ_αβγ : trivial_commutator_of_root_pair (weakA3 R).pres_
     ← expr_α_αβγ_as_αβγ_α hj₁ hi,
     ← expr_βγ_αβγ_as_αβγ_βγ hj₂ hi]
 
-declare_A3_triv_expr_thm αβγ αβγ
+declare_A3_triv_expr_thm R αβγ αβγ
 
 /- Linearity for αβγ. -/
 @[group_reassoc (attr := simp, chev_simps)]
@@ -611,4 +424,4 @@ theorem lin_of_αβγ : lin_of_root((weakA3 R).pres_mk, αβγ) := by
     ← neg_add, add_comm u t,
     ← expr_αβγ_as_α_βγ_α_βγ hi₁ hi₂]
 
-end A3Proof
+end Steinberg.A3
