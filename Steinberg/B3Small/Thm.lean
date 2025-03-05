@@ -20,7 +20,7 @@ namespace Steinberg.B3Small
 
 open Steinberg B3SmallPosRoot GradedGen ReflDeg
 
-variable {F : Type TF} [Field F] (Fchar : (2 : F) ≠ 0)
+variable {F : Type TF} [Field F] (Fchar : (2 : F) ≠ 0) (Fchar' : (4 : F) ≠ 0)
 
 /-! ### Double commutator theorem -/
 
@@ -256,8 +256,38 @@ theorem Interchange : forall_ijk_tuv β ψ ω,
     ⁅ {βψ, i + j, t * u}, {ω, k, v} ⁆ = ⁅ {β, i , t}, {ψω, j + k, 2 * u * v} ⁆ := by
   intro i j k hi hj hk t u v
   apply eq_comm_of_reorder_left
-  have : t * u = 2 * t * (u / 2) := by ring_nf; field_simp
-  sorry
+  have write_tu : t * u = 2 * t * (u / 2) := by ring_nf; field_simp
+  have : 2 * 2 * u * v / 2 = 2 * u * v := by field_simp; ring
+  have write_βψ : {βψ, i + j, t * u} * {ω, k, v} = {ω, k, v} * {ψω, j + k, -u * v} * {ψ, j, -u/2} * {β, i, t}
+      * {ψ, j, u} * {ψω, j + k, 2 * u * v} * {β, i, -t} * {ψ, j, -u/2} *
+      {ψω, j + k, -u * v} := by
+    -- express βψ as ψ and β elements
+    rw [write_tu, expr_βψ_as_ψ_β_ψ_β_ψ hi hj]
+    -- move ω all the way to the left
+    grw [expr_ψ_ω_as_ω_ψ_ψω, expr_β_ω_as_ω_β, expr_ψ_ω_as_ω_ψ_ψω, expr_β_ω_as_ω_β, expr_ψ_ω_as_ω_ψω_ψ]
+    field_simp; rw [this]
+  -- cyclically combine the left ψω with the right ψω
+  rw [expr_ω_ψω_as_ψω_ω] at write_βψ
+  have write_βψ_left := (mul_right_inj ({ψω, j + k, -u * v}'(add_le_add hj hk))⁻¹).2 write_βψ
+  rw [neg_mul, inv_of_ψω, neg_neg, ←mul_assoc, ←expr_βψ_ψω_as_ψω_βψ, mul_assoc, ←expr_ω_ψω_as_ψω_ω] at write_βψ_left
+  have write_βψ_right := (mul_left_inj ({ψω, j + k, u * v}'(add_le_add hj hk))⁻¹).2 write_βψ_left
+  grw [rfl] at write_βψ_right
+  -- move ψ elements together across β elements
+  grw [write_βψ_right, expr_ψ_β_as_βψ_β2ψ_β_ψ, expr_β_ψ_as_ψ_β_β2ψ_βψ]
+  -- commute ψ elements together across ψω elements and cancel them
+  grw [expr_ψ_ψω_as_ψω_ψ]
+  have : -u / 2 + u + -u / 2 = 0 := by ring_nf; field_simp
+  rw [this, id_of_ψ]
+  -- move β2ψ elements together and cancel them
+  grw [expr_β_β2ψ_as_β2ψ_β, ←expr_β2ψ_ψω_as_ψω_β2ψ Fchar, expr_β_β2ψ_as_β2ψ_β]
+  have : -t * (-u / 2) ^ 2 + t * (-u / 2) ^ 2 = 0 := by field_simp
+  rw [this, id_of_β2ψ]
+  -- collect βψ elements on the right
+  grw [expr_βψ_ψω_as_ψω_βψ, ←expr_β_βψ_as_βψ_β, expr_βψ_ψω_as_ψω_βψ, ←expr_β_βψ_as_βψ_β, expr_βψ_ψω_as_ψω_βψ]
+  -- bring ω as far right as possible
+  grw [commutatorElement_def, ←expr_β_ω_as_ω_β, expr_ω_ψω_as_ψω_ω, ←expr_β_ω_as_ω_β, expr_ω_ψω_as_ψω_ω]
+  ring_nf
+  field_simp
 
 private lemma βt_ψω2u_to_βψt_ωu : forall_ijk_tu β ψ ω,
     ⁅ {β, i, t}, {ψω, j + k, 2 * u} ⁆ = ⁅{βψ, i + j, t}, {ω, k, u} ⁆ := by
@@ -457,10 +487,8 @@ theorem lin_of_βψω : lin_of_root((weakB3Small F).pres_mk, βψω) := by
   grw [expr_βψω_as_β_ψω_β_ψω Fchar hi₁ hi₂]
   ring_nf
 
-theorem id_of_βψω : ∀ ⦃i : ℕ⦄ (hi : i ≤ βψω.height), {βψω, i, 0} = 1 := by
-  intro i hi
-  sorry
-  done
+theorem id_of_βψω : ∀ ⦃i : ℕ⦄ (hi : i ≤ βψω.height), {βψω, i, 0} = 1 :=
+  fun i hi ↦ mul_right_eq_self.mp (by rw [lin_of_βψω Fchar hi 0 0, zero_add])
 
 -- 8.56
 theorem inv_of_βψω : inv_of_root((weakB3Small F).pres_mk, βψω) := by
