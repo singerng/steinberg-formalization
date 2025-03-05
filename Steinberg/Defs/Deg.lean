@@ -24,15 +24,6 @@ theorem decompose' (i : ℕ) (hi : i ≤ 3) : ∃ (i₁ i₂ : ℕ), i = i₁ + 
   | 2 => exact ⟨0, 1, by omega⟩
   | 3 => exact ⟨1, 1, by omega⟩
 
-
-theorem decompose_4_into_3_1 (i : ℕ) (hi : i ≤ 4) : ∃ (i₁ i₂ : ℕ), i = i₁ + i₂ ∧ i₁ ≤ 3 ∧ i₂ ≤ 1 := by
-  match i with
-  | 0 => exact ⟨0, 0, by omega⟩
-  | 1 => exact ⟨0, 1, by omega⟩
-  | 2 => exact ⟨2, 0, by omega⟩
-  | 3 => exact ⟨3, 0, by omega⟩
-  | 4 => exact ⟨3, 1, by omega⟩
-
 /--
   Useful theorem to convert `i ≤ n` to `i ∈ List.range (n+1)`.
 -/
