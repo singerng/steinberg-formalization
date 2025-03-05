@@ -690,13 +690,12 @@ theorem doub_of_αβψ :
   intros i hi t
   rcases decompose αβ.height ψ.height i hi with ⟨ i₁, i₂, ⟨ rfl, hi₁, hi₂ ⟩ ⟩
   rw [←mul_one t]
-  grw [expr_αβψ_as_ψ_αβ_ψ_αβ_ψ hi₁ hi₂]
+  rw [expr_αβψ_as_ψ_αβ_ψ_αβ_ψ hi₁ hi₂]
   have := raw_hom_lift_of_doub_of_αβψ hi₁ hi₂ t 1 1
   rw [mul_one, neg_mul, mul_one, mul_one] at this
   grw [this]
   rw [mul_comm 2 t]
   grw [expr_αβψ_as_ψ_αβ_ψ_αβ_ψ hi₁ hi₂, neg_div_self Fchar]
-  sorry -- CC: I'm very sorry, this broke
 
 lemma half_add_half (u : F) : (u / 2) + (u / 2) = u := by
   have : ((2 : F) / 2) = 1 := (div_eq_one_iff_eq Fchar).mpr rfl
@@ -863,6 +862,7 @@ theorem comm_of_α_α_β2ψ :
   forall_ijk_tuv α α β2ψ,
     ⁅{α, i, t}, ⁅{α, j, u}, {β2ψ, k, v}⁆⁆ = 1 := by
   intro i j k hi hj hk t u v
+  apply triv_comm_iff_commutes.2
   rcases decompose' k hk with ⟨ j', k', ⟨ rfl, hj', hk' ⟩ ⟩
   have := lift_hom_interchange_of_αβ2ψ hj hj' hk' 1 u v
   sorry
