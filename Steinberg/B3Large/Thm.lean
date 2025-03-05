@@ -1594,7 +1594,33 @@ theorem hom_lift_of_inv_doub_of_β_αβ2ψ :
   ⁅{β, i, t}, {αβ2ψ, i + j + 2 * k, u}⁆ * ⁅{β, i, t}, {αβ2ψ, i + j + 2 * k, u}⁆ = ⁅{β, i, 2 * t}, {αβ2ψ, i + j + 2 * k, u}⁆ := by
   intro i j k hi hj hk t u
   rcases eq_or_ne t 0 with ht | ht
-  · sorry
+  · rw [ht, neg_zero, mul_zero, id_of_β]
+    group; tauto
+  have aux₁ := raw_hom_lift_of_inv_doub_of_β_αβ2ψ_a hi hj hk (u / t) t 1
+  have aux₂ := raw_hom_lift_of_inv_doub_of_β_αβ2ψ_b hi hj hk (u / t) t 1
+  have aux₃ := raw_hom_lift_of_inv_doub_of_β_αβ2ψ_c hi hj hk (u / t) t 1
+  field_simp at aux₁ aux₂ aux₃
+  have h1 := @expr_αβ2ψ_as_α_β2ψ_α_β2ψ F _ Fchar i (j + 2 * k) hi (by norm_num; omega) (-(u/t)) (t)
+  have h2 := @expr_αβ2ψ_as_α_β2ψ_α_β2ψ F _ Fchar i (j + 2 * k) hi (by norm_num; omega) (u/t) (t)
+  norm_num at h1 h2; field_simp at h1 h2
+  have eq1 : -u/t = -(u/t) := by field_simp
+  have eq2 {G : Type} [Group G] {x y : G} :
+      x⁻¹ * y * x * y⁻¹ = ⁅x⁻¹, y⁆ := by group
+  simp_all only [← inv_of_α, ← inv_of_β2ψ, ← inv_of_β, eq1, mul_inv_rev,
+                 neg_neg, ← add_assoc, ← mul_assoc, inv_inv]
+  constructor
+
+
+
+
+
+
+
+
+
+
+
+
   sorry
 
 -- 8.152
@@ -1859,10 +1885,10 @@ theorem sufficient_conditions_for_comm_of_αβ2ψ_and_β2ψ :
 include Fchar
 theorem partial_comm_of_β2ψ_αβ2ψ_a :
   ∀ (t u : F), ⁅{β2ψ, 2, t}, {αβ2ψ, 1, u}⁆ = 1 := by
-  have := @sufficient_conditions_for_comm_of_αβ2ψ_and_β2ψ F _ 2 0 1 (by omega) (by norm_num) (by norm_num)
+  have := sufficient_conditions_for_comm_of_αβ2ψ_and_β2ψ (F := F) (i := 2) (j := 0) (k := 1) (by ht)
   norm_num at this
   apply this
-  have := @hom_lift_of_comm_of_β2ψ_αβ2ψ F _ Fchar 1 1 0 (by ht) (by ht) (by ht)
+  have := hom_lift_of_comm_of_β2ψ_αβ2ψ (i := 1) (j := 1) (k := 0) (by ht)
   norm_num at this
   exact this
 
