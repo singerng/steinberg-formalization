@@ -1498,12 +1498,37 @@ theorem hom_lift_of_interchange_of_α2β2ψ_b :
   rcases eq_or_ne v 0 with hv | hv
   · rw [hv, mul_zero, id_of_βψ, id_of_β]; group
   have aux := raw_hom_lift_of_interchange_of_α2β2ψ_b hi hj hk (t / (u * v)) v u
-  have : t / (u * v) * v = t / u := by sorry
+  have : t / (u * v) * v = t / u := by field_simp; group
   rw [this] at aux
-  have : -(t / (u * v)) * v = -(t / u) := by sorry
+  have : -(t / (u * v)) * v = -(t / u) := by field_simp; group
   rw [this] at aux
-  sorry
-
+  grw [← expr_αβψ_as_ψ_αβ_ψ_αβ_ψ (add_le_add hi hj) hk] at aux
+  field_simp at aux;
+  have : u * v = v * u := by exact CommMonoid.mul_comm u v
+  rw [← this] at aux; rw [aux]
+  grw [commutatorElement_def, commutatorElement_def,
+      commutatorElement_def, commutatorElement_def, inv_of_αβ2ψ]
+  have : t / (u * v) * 2 * v * u ^ 2 = 2 * t * u := by
+      grw [CommMonoid.mul_comm]
+      field_simp
+      group
+  have h1 : {αβ2ψ, i + (j + 2 * k), t / (u * v) * 2 * v * u ^ 2} =
+         {αβ2ψ, i + j + 2 * k, 2 * t * u} := by
+    rw [this]
+    simp only [← add_assoc]
+  have h2 : {αβ2ψ, i + (j + 2 * k), -(t / (u * v) * 2 * v * u ^ 2)} =
+         {αβ2ψ, i + j + 2 * k, -(2 * t * u)} := by
+    grw [neg_inj]
+    have : -(t / (u * v) * 2 * v * u ^ 2) = -(2 * t * u) := by
+      rw [neg_inj]
+      exact this
+    rw [this]
+    simp only [← add_assoc]
+  have h3 := @expr_αβ2ψ_as_β2ψ_α_β2ψ_α F _ Fchar i (j + 2 * k) hi (by norm_num; omega) (t / (u * v)) (-2 * v * u^2)
+  have h4 := @expr_αβ2ψ_as_α_β2ψ_α_β2ψ F _ Fchar i (j + 2 * k) hi (by norm_num; omega) (t / (u * v)) (2 * v * u^2)
+  norm_num at h3; norm_num at h4
+  grw [← h4, ← h1, ← h3, ← h2]
+  assumption; norm_num; omega
 
 -- 8.148
 omit Fchar
