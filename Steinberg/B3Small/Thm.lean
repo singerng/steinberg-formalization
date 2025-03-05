@@ -418,7 +418,7 @@ theorem comm_of_βψω_ψ :
   rcases decompose 1 2 i hi with ⟨i₁, i₂, rfl, hi₁, hi₂⟩
   rw [←mul_one t, expr_βψω_as_β_ψω_β_ψω Fchar hi₁ hi₂]
   grw [←expr_ψ_ψω_as_ψω_ψ, expr_β_ψ_as_ψ_β_β2ψ_βψ hi₁ hj, ←expr_ψ_ψω_as_ψω_ψ, expr_β_ψ_as_ψ_β_β2ψ_βψ hi₁ hj,
-  ←expr_βψ_β2ψ_as_β2ψ_βψ, expr_β2ψ_ψω_as_ψω_β2ψ, expr_β_β2ψ_as_β2ψ_β]
+  ←expr_βψ_β2ψ_as_β2ψ_βψ, expr_β2ψ_ψω_as_ψω_β2ψ Fchar, expr_β_β2ψ_as_β2ψ_β]
   field_simp
   grw [expr_βψ_ψω_as_ψω_βψ, expr_β_βψ_as_βψ_β]
 declare_B3Small_triv_expr_thm F βψω ψ
