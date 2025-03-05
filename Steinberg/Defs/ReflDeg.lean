@@ -168,7 +168,7 @@ def refl_symm {w : WeakChevalley Φ R} (h : refl_valid w) : WeakChevalley.group 
   toPresentedGroup (reflect_degree_of_rels h)
 
 /- Calculates the image of a generator in the presented group by the degree-reflection homomorphism. -/
-theorem refl_im (ζ : Φ) (i : ℕ) (hi : i ≤ height ζ) (t : R) {w : WeakChevalley Φ R} (h :  refl_valid w) :
+theorem refl_im (ζ : Φ) (i : ℕ) (hi : i ≤ height ζ) (t : R) {w : WeakChevalley Φ R} (h : refl_valid w) :
   refl_symm h (pres_mk w (GradedGen.free_mk_mk ζ i hi t)) =
     (pres_mk w (GradedGen.free_mk_mk ζ (height ζ - i) (by omega) t)) := by
   simp only [refl_symm, pres_mk, GradedGen.free_mk_mk]

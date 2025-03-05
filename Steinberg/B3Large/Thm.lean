@@ -11,7 +11,7 @@ import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Linarith
 
-import Steinberg.Defs.Deg
+import Steinberg.Defs.Lattice
 import Steinberg.Defs.Commutator
 import Steinberg.Defs.ReflDeg
 
@@ -378,50 +378,49 @@ theorem expr_βψ_ψ_as_ψ_βψ_β2ψ :
     {βψ, j, u} * {ψ, i, t} = {ψ, i, t} * ({β2ψ, i + j, -2 * t * u} * {βψ, j, u}) := expr_βψ_ψ_as_ψ_β2ψ_βψ hi hj t u
     _ = {ψ, i, t} * ({βψ, j, u} * {β2ψ, i + j, -2 * t * u}) := by rw [triv_comm_iff_commutes.1 (comm_of_βψ_β2ψ _ _ u (-2 * t * u))]
 
-/- Commutator relation in the case (i,j) is not (0,2) or (2,0) -/
+/- Commutator relation in the case (i,j) is not (0,2) or (2,0) (via the previous theorem). -/
 private lemma homog_lift_of_comm_of_αβ_βψ (i j k : ℕ) (hi : i ≤ 1) (hj : j ≤ 1) (hk : k ≤ 1) :
   ∀ (t u : F), ⁅ { αβ, i + j, t}, {βψ, j + k, u} ⁆ = 1 := by
-  intro t u
-  let t₁ : F := match i with
-    | 1 => t
-    | 0 => 0
-  let t₀ : F := match i with
-    | 1 => 0
-    | 0 => t
-  let u₁ : F := match j with
-    | 1 => 1
-    | 0 => 0
-  let u₀ : F := match j with
-    | 1 => 0
-    | 0 => 1
-  let v₁ : F := match k with
-    | 1 => u
-    | 0 => 0
-  let v₀ : F := match k with
-    | 1 => 0
-    | 0 => u
-  have hf_i : i ∈ [0,1] := mem_list_range_iff_le.mp hi
-  have hf_j : j ∈ [0,1] := mem_list_range_iff_le.mp hj
-  have hf_k : k ∈ [0,1] := mem_list_range_iff_le.mp hk
-  have id₁ : {αβ, i + j, t} = {αβ, 2, t₁ * u₁} * {αβ, 1, t₁ * u₀ + t₀ * u₁} * {αβ, 0, t₀ * u₀} := by (
+    intro t u
+    let t₁ : F := match i with
+      | 1 => t
+      | 0 => 0
+    let t₀ : F := match i with
+      | 1 => 0
+      | 0 => t
+    let u₁ : F := match j with
+      | 1 => 1
+      | 0 => 0
+    let u₀ : F := match j with
+      | 1 => 0
+      | 0 => 1
+    let v₁ : F := match k with
+      | 1 => u
+      | 0 => 0
+    let v₀ : F := match k with
+      | 1 => 0
+      | 0 => u
+    have hf_i : i ∈ [0,1] := by simp only [List.mem_cons, List.mem_singleton]; omega
+    have hf_j : j ∈ [0,1] := by simp only [List.mem_cons, List.mem_singleton]; omega
+    have hf_k : k ∈ [0,1] := by simp only [List.mem_cons, List.mem_singleton]; omega
+    have id₁ : {αβ, i + j, t} = {αβ, 2, t₁ * u₁} * {αβ, 1, t₁ * u₀ + t₀ * u₁} * {αβ, 0, t₀ * u₀} := by (
       fin_cases hf_i, hf_j, hf_k
-      all_goals (
-        simp only [t₀, t₁, u₀, u₁, v₀, v₁]
-        simp only [add_zero, mul_zero, zero_mul, mul_one, zero_add]
-        repeat rw [id_of_αβ]
-        simp only [one_mul, mul_one]
-      )
+      <;> chev_simp [t₀, t₁, u₀, u₁, v₀, v₁]
     )
-  have id₂ : {βψ, j + k, u} = {βψ, 2, u₁ * v₁} * {βψ, 1, u₁ * v₀ + u₀ * v₁} * {βψ, 0, u₀ * v₀} := by (
-    fin_cases hf_i, hf_j, hf_k
-    all_goals (
-      simp only [t₀, t₁, u₀, u₁, v₀, v₁]
-      simp only [add_zero, mul_zero, zero_mul, one_mul, zero_add]
-      repeat rw [id_of_βψ]
-      simp only [one_mul, mul_one]
+    have id₂ : {βψ, j + k, u} = {βψ, 2, u₁ * v₁} * {βψ, 1, u₁ * v₀ + u₀ * v₁} * {βψ, 0, u₀ * v₀} := by (
+      fin_cases hf_i, hf_j, hf_k
+      <;> chev_simp [t₀, t₁, u₀, u₁, v₀, v₁]
     )
-  )
-  rw [id₁, id₂, raw_nonhomog_lift_of_comm_of_αβ_βψ]
+    rw [id₁, id₂, raw_nonhomog_lift_of_comm_of_αβ_βψ]
+
+private lemma image_of_homog_lift_of_comm_of_αβ_βψ {i j : ℕ} (hi : i ≤ αβ.height) (hj : j ≤ βψ.height)
+    : ((i, j) ∈ ij_jk_image) → ∀ (t u : F), ⁅ {αβ, i, t}, {βψ, j, u} ⁆ = 1 := by
+  intro h_in_image t u
+  have : ∃ ijk' : ℕ × ℕ × ℕ, ijk' ∈ boolean_cube ∧ f_ij_jk ijk' = (i, j) := by
+    rw [← Finset.mem_image, correct_of_ij_jk_image]; exact h_in_image
+  simp [f_ij_jk] at this
+  rcases this with ⟨ i', j', k', ⟨ hi', hj', hk' ⟩, rfl, rfl ⟩
+  rw [← homog_lift_of_comm_of_αβ_βψ i' j' k' hi' hj' hk' t u]
 
 private lemma comm_of_αβ_βψ_20 : ∀ (t u : F), ⁅ {αβ, 2, t}, {βψ, 0, u} ⁆ = 1 := by
   intro t u
@@ -446,17 +445,6 @@ private lemma comm_of_αβ_βψ_02 : ∀ (t u : F), ⁅ {αβ, 0, t}, {βψ, 2, 
     rw [map_commutatorElement]
     trivial
   rw [this, comm_of_αβ_βψ_20, map_one]
-
-private lemma image_of_homog_lift_of_comm_of_αβ_βψ {i j : ℕ} (hi : i ≤ αβ.height) (hj : j ≤ βψ.height)
-    : ((i, j) ∈ ij_jk_image) → ∀ (t u : F), ⁅ {αβ, i, t}, {βψ, j, u} ⁆ = 1 := by
-  intro h_in_image t u
-  have : ∃ ijk' : ℕ × ℕ × ℕ, ijk' ∈ boolean_cube ∧ f_ij_jk ijk' = (i, j) := by
-    rw [← Finset.mem_image, correct_of_ij_jk_image]; exact h_in_image
-  rcases this with ⟨ ⟨i', j', k'⟩, ⟨ h_in_cube, h_f ⟩ ⟩
-  rcases mem_range_of_boolean_cube _ h_in_cube with ⟨ hi', hj', hk' ⟩
-  have h_f' : i = i' + j' ∧ j = j' + k' := by rw [← Prod.mk.injEq, ← h_f, f_ij_jk]
-  rcases h_f' with ⟨ rfl, rfl ⟩
-  rw [←homog_lift_of_comm_of_αβ_βψ i' j' k' hi' hj' hk' t u]
 
 -- 8.115
 theorem trivial_comm_of_αβ_βψ :
@@ -779,7 +767,7 @@ theorem lift_hom_inv_doub_of_α_β2ψ_a :
   forall_ij_tu 1 3,
     ⁅{α, i, t}, {β2ψ, j, u}⁆ = ⁅{α, i, -t}, {β2ψ, j, -u}⁆ := by
   intro i j hi hj t u
-  rcases decompose' j hj with ⟨j₁, j₂, ⟨ rfl, hj₁, hj₂⟩ ⟩
+  rcases decompose_3_into_booleans_1_2 j hj with ⟨j₁, j₂, ⟨ rfl, hj₁, hj₂⟩ ⟩
   have := raw_hom_lift_of_inv_doub_of_α_β2ψ_a hi hj₁ hj₂ t u 1
   field_simp at this
   exact this
@@ -789,7 +777,7 @@ theorem lift_hom_inv_doub_of_α_β2ψ_b :
   forall_ij_tu α β2ψ,
     ⁅{α, i, t}, {β2ψ, j, u}⁆ * ⁅{α, i, t}, {β2ψ, j, -u}⁆ = 1 := by
   intro i j hi hj t u
-  rcases decompose' j hj with ⟨j₁, j₂, ⟨ rfl, hj₁, hj₂⟩ ⟩
+  rcases decompose_3_into_booleans_1_2 j hj with ⟨j₁, j₂, ⟨ rfl, hj₁, hj₂⟩ ⟩
   have := raw_hom_lift_of_inv_doub_of_α_β2ψ_b hi hj₁ hj₂ t u 1
   field_simp at this
   exact this
@@ -805,7 +793,7 @@ theorem lift_hom_inv_doub_of_α_β2ψ_c :
   forall_ij_tu α β2ψ,
     ⁅{α, i, t}, {β2ψ, j, u}⁆ * ⁅{α, i, t}, {β2ψ, j, u}⁆ = ⁅{α, i, t}, {β2ψ, j, 2 * u}⁆ := by
   intro i j hi hj t u
-  rcases decompose' j hj with ⟨j₁, j₂, ⟨ rfl, hj₁, hj₂⟩ ⟩
+  rcases decompose_3_into_booleans_1_2 j hj with ⟨j₁, j₂, ⟨ rfl, hj₁, hj₂⟩ ⟩
   have := raw_hom_lift_of_inv_doub_of_α_β2ψ_c hi hj₁ hj₂ t u 1
   field_simp at this
   exact this
@@ -865,7 +853,7 @@ theorem comm_of_α_α_β2ψ :
     ⁅{α, i, t}, ⁅{α, j, u}, {β2ψ, k, v}⁆⁆ = 1 := by
   intro i j k hi hj hk t u v
   apply triv_comm_iff_commutes.2
-  rcases decompose' k hk with ⟨ j', k', ⟨ rfl, hj', hk' ⟩ ⟩
+  rcases decompose_3_into_booleans_1_2 k hk with ⟨ j', k', ⟨ rfl, hj', hk' ⟩ ⟩
   have : v = -2 * v * (-1 / 2) := by field_simp
   rw [this, ←lift_hom_interchange_of_αβ2ψ hj hj' hk', expr_α_comm_αβψ_ψ_as_comm_αβψ_ψ_α hi (by linarith) hk']
 
