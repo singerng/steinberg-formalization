@@ -9,6 +9,7 @@ import Steinberg.B3Large.Basic
 import Mathlib.Tactic.Group
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.Linarith
 
 import Steinberg.Defs.Deg
 import Steinberg.Defs.Commutator
@@ -857,15 +858,16 @@ theorem expr_α_comm_αβψ_ψ_as_comm_αβψ_ψ_α :
   intro i j k hi hj hk t u v
   exact triv_comm_iff_commutes.1 (comm_of_α_αβψ_ψ hi hj hk t u v)
 
--- 8.129 ??????????????????????????????????????????????????
+include Fchar in
+-- 8.129
 theorem comm_of_α_α_β2ψ :
   forall_ijk_tuv α α β2ψ,
     ⁅{α, i, t}, ⁅{α, j, u}, {β2ψ, k, v}⁆⁆ = 1 := by
   intro i j k hi hj hk t u v
   apply triv_comm_iff_commutes.2
   rcases decompose' k hk with ⟨ j', k', ⟨ rfl, hj', hk' ⟩ ⟩
-  have := lift_hom_interchange_of_αβ2ψ hj hj' hk' 1 u v
-  sorry
+  have : v = -2 * v * (-1 / 2) := by field_simp
+  rw [this, ←lift_hom_interchange_of_αβ2ψ hj hj' hk', expr_α_comm_αβψ_ψ_as_comm_αβψ_ψ_α hi (by linarith) hk']
 
 @[group_reassoc]
 theorem expr_α_comm_α_β2ψ_as_comm_α_β2ψ_α :
