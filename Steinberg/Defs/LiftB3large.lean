@@ -2588,14 +2588,14 @@ private lemma interchange_B_of_α2β2ψ_refl_u_αβψ_βψ :
   rw [this, partial_B_interchange_of_α2β2ψ Fchar]
   field_simp
 
-omit Fchar
-
+include Fchar
 private lemma interchange_C_refl_u :
   ∀ t u : F, ⁅{αβ, 0, t}, {β2ψ, 1, 2 * u}⁆ = ⁅{αβψ, 1, t}, {βψ, 0, u}⁆ := by
   intro t u
-  rw [←one_mul u, ←mul_assoc, partial_C_interchange_of_α2β2ψ_a]
+  rw [←one_mul u, ←mul_assoc, partial_C_interchange_of_α2β2ψ_a Fchar]
   simp only [mul_one, one_mul]
 
+omit Fchar in
 private lemma interchange_C_refl_u' :
   ∀ t u : F, ⁅{αβ, 2, t}, {β2ψ, 0, 2 * u}⁆ = ⁅{αβψ, 2, t}, {βψ, 0, u}⁆ := by
   intro t u
@@ -2605,30 +2605,33 @@ private lemma interchange_C_refl_u' :
 private lemma interchange_C_refl_v :
   ∀ t u : F, ⁅{αβ, 0, t}, {β2ψ, 1, 2 * u}⁆ = ⁅{αβψ, 1, t * u}, {βψ, 0, 1}⁆ := by
   intro t u
-  rw [←mul_one u, ←mul_assoc, partial_C_interchange_of_α2β2ψ_a]
+  rw [←mul_one u, ←mul_assoc, partial_C_interchange_of_α2β2ψ_a Fchar]
   simp only [mul_one]
 
+include Fchar in
 private lemma interchange_C_of_α2β2ψ_trans_αβψ_βψ :
   ∀ t u : F, ⁅{αβψ, 1, t * u}, {βψ, 0, 1}⁆ = ⁅{αβψ, 1, t}, {βψ, 0, u}⁆ := by
   intro t u
-  rw [←interchange_C_refl_v t u, ←interchange_C_refl_u]
+  rw [←interchange_C_refl_v Fchar, ←interchange_C_refl_u Fchar]
 
-include Fchar
+include Fchar in
 private lemma interchange_C_of_α2β2ψ_trans_αβ_β2ψ :
   ∀ t u : F, ⁅{αβ, 0, t * u}, {β2ψ, 1, 1}⁆ = ⁅{αβ, 0, t}, {β2ψ, 1, u}⁆ := by
   intro t u
-  have aux₁ := partial_C_interchange_of_α2β2ψ_a t u (1 / 2)
-  have aux₂ := partial_C_interchange_of_α2β2ψ_a (t * u) 1 (1 / 2)
+  have aux₁ := partial_C_interchange_of_α2β2ψ_a Fchar t u (1 / 2)
+  have aux₂ := partial_C_interchange_of_α2β2ψ_a Fchar (t * u) 1 (1 / 2)
   field_simp at aux₁
   field_simp at aux₂
   rwa [←aux₁] at aux₂
 
+omit Fchar in
 private lemma interchange_D_refl_u :
   ∀ t u : F, ⁅{αβψ, 0, t}, {βψ, 1, u}⁆ = ⁅{αβ2ψ, 0, t}, {β, 1, 2 * u}⁆ := by
   intro t u
   rw [←one_mul u, partial_D_interchange_of_α2β2ψ]
   simp only [mul_one, one_mul]
 
+include Fchar
 -- height 0
 private lemma expand_α2β2ψ_as_commutator_of_αβ_β2ψ_00 :
   ∀ t u : F, {α2β2ψ, 0, -t * u} = ⁅{αβ, 0, t}, {β2ψ, 0, u}⁆:= by
@@ -2662,8 +2665,8 @@ private lemma expand_α2β2ψ_as_commutator_of_αβψ_βψ_10 :
   ∀ t u : F, {α2β2ψ, 1, -2 * t * u} = ⁅{αβψ, 1, t}, {βψ, 0, u}⁆ := by
   intro t u
   have : -2 * t * u = -t * (2 * u) := by ring
-  rw [this, expand_α2β2ψ_as_commutator_of_αβ_β2ψ_01 Fchar, interchange_C_refl_v,
-  interchange_C_of_α2β2ψ_trans_αβψ_βψ]
+  rw [this, expand_α2β2ψ_as_commutator_of_αβ_β2ψ_01 Fchar, interchange_C_refl_v Fchar,
+  interchange_C_of_α2β2ψ_trans_αβψ_βψ Fchar]
 
 private lemma expand_α2β2ψ_as_commutator_of_αβ_β2ψ_10 :
   ∀ t u : F, {α2β2ψ, 1, -t * u} = ⁅{αβ, 1, t}, {β2ψ, 0, u}⁆:= by
