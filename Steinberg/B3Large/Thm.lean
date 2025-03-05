@@ -898,7 +898,6 @@ theorem sufficient_conditions_for_comm_of_αβψ_and_ψ :
    _ = {β2ψ, j + k, -u * v} := by rw [lin_of_β2ψ]; ring_nf
   have aux₄ : {β2ψ, j + k, -u * v} * {β2ψ, j + k, u * v} = 1 := by
     rw [neg_mul, ← inv_of_β2ψ, inv_mul_cancel]
-   -- CC: I'm very sorry, this broke
   grw [←expr_βψ_β2ψ_as_β2ψ_βψ hj (add_le_add hk hj) (-u / 2), aux₁, aux₂,
   expr_βψ_β2ψ_as_β2ψ_βψ hj (add_le_add hj hk) u (u * v), aux₃, aux₄, hyp' (-u/2),
   expr_ψ_comm_α_β2ψ_as_comm_α_β2ψ_ψ hk hi (add_le_add hj hk), expr_α_comm_α_β2ψ_as_comm_α_β2ψ_α Fchar hi hi (add_le_add hj hk)]
@@ -935,17 +934,20 @@ theorem sufficient_conditions_for_comm_of_βψ_and_α_β2ψ :
     intro u'; rw [← inv_of_α]; group
   have aux₂ : ∀ (u' : F), {βψ, i, t} * {α, j, u'} = ⁅{α, j, u'}, {βψ, i, t}⁆⁻¹ * {α, j, u'} * {βψ, i, t} := by
     intro u'; group
-  stop -- CC: I'm sorry, I'm breaking everything
   grw [commutatorElement_def, ←inv_of_α, ←inv_of_β2ψ, aux₁ u, expr_βψ_β2ψ_as_β2ψ_βψ hi hk, aux₂ (-u), expr_βψ_β2ψ_as_β2ψ_βψ hi hk]
-  suffices h : ⁅{α, j, -u}, {βψ, i, t}⁆ * {β2ψ, k, v} * ⁅{α, j, -u}, {βψ, i, t}⁆⁻¹ = {β2ψ, k, v} by grw [h]
+  suffices h : ⁅{α, j, -u}, {βψ, i, t}⁆ * {β2ψ, k, v} * ⁅{α, j, -u}, {βψ, i, t}⁆⁻¹ = {β2ψ, k, v} by
+    have : ⁅{βψ, i, t}, {α, j, -u}⁆ = ⁅{α, j, -u}, {βψ, i, t}⁆⁻¹ := by rw [←inv_of_α]; group
+    rw [this]; exact h
   apply mul_inv_eq_iff_eq_mul.2
   have := (generic_comm_of_α_βψ Fchar hj hi (-u) t).1
   field_simp at this
   have := calc
     ⁅{α, j, -u}, {βψ, i, t}⁆ = {αβψ, j + i, -(u * t)} * ⁅{αβψ, j + i, u * t}, {βψ, i, t / 2}⁆ := this
     _ = {αβψ, i + j, -t * u} * ⁅{αβψ, i + j, t * u}, {βψ, i, t / 2}⁆ := by group
-  grw [this, commutatorElement_def, ←inv_of_αβψ (add_le_add hi hj), ←inv_of_βψ, expr_βψ_β2ψ_as_β2ψ_βψ hi hk,
-  hyp' (-(t * u)), expr_βψ_β2ψ_as_β2ψ_βψ hi hk, hyp' (t * u), hyp' (-t * u)]
+  grw [this, commutatorElement_def, expr_βψ_β2ψ_as_β2ψ_βψ hi hk, inv_of_αβψ, ←hyp', ←hyp']
+  rw [mul_assoc, hyp']
+  grw [expr_βψ_β2ψ_as_β2ψ_βψ]
+  exact add_le_add hi hj
 
 -- 8.133
 theorem partial_comm_of_βψ_α_β2ψ :
@@ -1444,9 +1446,8 @@ theorem expr_ψ_αβ_as_αβ_αβ2ψ_αβψ_ψ :
     {αβ2ψ, i + 2 * j, -t * u^2} * {αβψ, i + j, -t * u} = ⁅{αβ, i, -t}, {ψ, j, u}⁆ := by rw [commutator_of_αβ_ψ_b Fchar hi hj]
     _ = ⁅{αβ, i, t}⁻¹, {ψ, j, u}⁆ := by rw [inv_of_αβ]
   grw [this]
+  rw [←inv_of_αβ]
   group
-  stop
-  done
 
 @[simp, chev_simps]
 theorem id_of_αβψ : id_of_root((weakB3Large F).pres_mk, αβψ) := by
