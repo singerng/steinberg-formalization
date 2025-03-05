@@ -1609,18 +1609,7 @@ theorem hom_lift_of_inv_doub_of_β_αβ2ψ :
   simp_all only [← inv_of_α, ← inv_of_β2ψ, ← inv_of_β, eq1, mul_inv_rev,
                  neg_neg, ← add_assoc, ← mul_assoc, inv_inv]
   constructor
-
-
-
-
-
-
-
-
-
-
-
-
+  stop
   sorry
 
 -- 8.152
