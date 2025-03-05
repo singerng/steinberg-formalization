@@ -1965,53 +1965,52 @@ theorem sufficient_conditions_for_comm_of_αβ2ψ_and_βψ :
   ∀ (t u : F), ⁅{αβ2ψ, i, t}, {βψ, j + k, u}⁆ = 1 := by
   sorry
 
--- 8.168
 include Fchar
+private lemma partial_comm_of_βψ_αβ2ψ_help : ∀ t u : F,
+    ⁅{αβ2ψ, 2, t}, {β, 0, u}⁆ = ⁅{αβ, 1, t}, {β2ψ, 1, u}⁆ := by
+  intro t u
+  have : t = 2 * t * (1 / 2) := by field_simp
+  rw [this, ←@hom_lift_of_interchange_of_α2β2ψ_b F _ Fchar 0 0 1 (by trivial) (by trivial) (by trivial),
+    ←mul_one t, ←@hom_lift_of_interchange_of_α2β2ψ_a F _ Fchar 0 1 0 (by trivial) (by trivial) (by trivial)]
+  field_simp
+--example {G : Type*} [Group G] {x y : G} (h : x = y) : x⁻¹ = y⁻¹ := congrArg Inv.inv h
+private lemma partial_comm_of_βψ_αβ2ψ_help' : ∀ t u : F,
+    ⁅{β, 0, u}, {αβ2ψ, 2, t}⁆ = ⁅{β2ψ, 1, u}, {αβ, 1, t}⁆ := by
+  intro t u
+  sorry
+
+-- 8.168
 theorem partial_comm_of_βψ_αβ2ψ :
   ∀ (t u : F), ⁅{αβ2ψ, 2, t}, {βψ, 0, u}⁆ = 1 := by
-  have := @sufficient_conditions_for_comm_of_αβ2ψ_and_βψ F _ 2 0 0 (by omega) (by norm_num) (by norm_num)
-  norm_num at this
-  apply this
-  intro t u v
-  have h1 := @hom_lift_of_interchange_of_α2β2ψ_a F _ Fchar 0 1 0 (by norm_num) (by norm_num) (by norm_num)
-  have := @hom_lift_of_interchange_of_α2β2ψ_b F _ Fchar 0 0 1 (by norm_num) (by norm_num) (by norm_num)
-  specialize h1 t 1 u; specialize this t 1 u;
-  norm_num at h1; norm_num at this;
-  rw [this] at h1
-
-  have h2 := @hom_lift_of_comm_ψ_αβ_β2ψ F _ 0 1 0 (by norm_num) (by norm_num) (by norm_num) v t u
-  rw [← commutatorElement_inv] at h2
-  apply inv_inj.mpr at h2
-  simp only [zero_add, mul_zero, add_zero, commutatorElement_inv, inv_one] at h2
-
-  grw [h3] at h2
-  norm_num at h2; grw [← h1] at h2
+  apply @sufficient_conditions_for_comm_of_αβ2ψ_and_βψ F _ 2 0 0 (by trivial) (by trivial) (by trivial)
+  · intro t u v
+    rw [partial_comm_of_βψ_αβ2ψ_help Fchar, triv_comm_symm, @hom_lift_of_comm_ψ_αβ_β2ψ F _ 0 1 0 (by trivial) (by trivial) (by trivial)]
+  · intro t u
+    rw [partial_comm_of_βψ_αβ2ψ_help Fchar, ]
+    sorry
   sorry
 
 -- 8.169a
 theorem partial_C_interchange_of_α2β2ψ_a :
   ∀ (t u v : F), ⁅{αβ, 0, t}, {β2ψ, 1, 2 * u * v}⁆ = ⁅{αβψ, 1, t * u}, {βψ, 0, v}⁆ := by
-  have := @sufficient_conditions_for_comm_of_αβ_and_β2ψ F _ 0 1 0 (by omega) (by norm_num) (by norm_num)
-  norm_num at this
-  apply this
+  apply @sufficient_conditions_for_comm_of_αβ_and_β2ψ F _ 0 1 0 (by trivial) (by trivial) (by trivial)
   · exact @partial_comm_of_βψ_αβ2ψ F _ Fchar
   intro t u v
-  have h1 := @hom_lift_of_interchange_of_α2β2ψ_a F _ Fchar 1 0 0 (by norm_num) (by norm_num) (by norm_num) u 1 v
-  have := @hom_lift_of_interchange_of_α2β2ψ_b F _ Fchar 1 0 0 (by norm_num) (by norm_num) (by norm_num) u 1 v
-  norm_num at h1; norm_num at this;
-  rw [this] at h1
-
-
-
-  sorry
-omit Fchar
+  have := @hom_lift_of_interchange_of_α2β2ψ_b F _ Fchar 1 0 0 (by trivial) (by trivial) (by trivial) u 1 v
+  norm_num at this;
+  grw [this, partial_comm_of_ψ_αβ2ψ_β Fchar]
 
 -- 8.169b
 theorem partial_C_interchange_of_α2β2ψ_b :
   ∀ (t u v : F), ⁅{αβ, 2, t}, {β2ψ, 0, 2 * u * v}⁆ = ⁅{αβψ, 2, t * u}, {βψ, 0, v}⁆ := by
-  sorry
+  apply @sufficient_conditions_for_comm_of_αβ_and_β2ψ F _ 2 0 0 (by trivial) (by trivial) (by trivial)
+  · exact @partial_comm_of_βψ_αβ2ψ F _ Fchar
+  intro t u v
+  rw [←one_mul u, partial_A_interchange_of_α2β2ψ_b Fchar,
+  @hom_lift_of_comm_ψ_αβ_β2ψ F _ 0 1 0 (by trivial) (by trivial) (by trivial)]
 
--- 8.170
+omit Fchar
+-- 8.170 NOTE: SHOULD CHANGE STATEMENT TO MATCH 173
 theorem sufficient_conditions_for_comm_of_αβ2ψ_and_β :
   ∀ ⦃i j k : ℕ⦄ (hi : i ≤ 3) (hj : j ≤ 1) (hk : k ≤ 1)
   (h47a : ∀ (t u : F), ⁅{αβψ, i, t}, {β2ψ, 2 * j + k, u}⁆ = 1)
@@ -2035,6 +2034,9 @@ theorem partial_comm_of_αβψ_β2ψ :
 -- 8.173
 theorem partial_D_interchange_of_α2β2ψ :
   ∀ (t u v : F), ⁅{αβψ, 0, t}, {βψ, 1, u * v}⁆ = ⁅{αβ2ψ, 0, t * u}, {β, 1, 2 * v}⁆ := by
+  intro t u v
+  have := @sufficient_conditions_for_comm_of_αβ2ψ_and_β F _ 0 0 1 (by trivial) (by trivial) (by trivial)
+  -- notice how this doesn't match 170
   sorry
 
 /- ### Establishing α + 2β + 2ψ -/
