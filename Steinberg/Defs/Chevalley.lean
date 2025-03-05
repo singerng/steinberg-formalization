@@ -9,6 +9,7 @@ import Mathlib.Algebra.Ring.Defs
 import Mathlib.GroupTheory.FreeGroup.Basic
 
 import Steinberg.Defs.Root
+import Steinberg.Macro.Group
 
 /-!
 
@@ -68,7 +69,7 @@ set_option hygiene false in
   Then implement delaboration to use the `free_mk_mk` delab here.
 -/
 scoped notation (priority:=1000) "{" ζ ", " i ", " t "}" =>
-  free_mk_mk ζ i (by (first | trivial | assumption | omega)) t
+  free_mk_mk ζ i (by ht) t
 
 /-- `free_mk_mk` but with an explicit proof term provided. -/
 scoped notation (priority:=1000) "{" ζ ", " i ", " t "}'" h:max =>

@@ -23,7 +23,7 @@ deriving Fintype, DecidableEq
 
 namespace B3SmallPosRoot
 
-@[reducible]
+@[reducible, height_simps]
 def height : B3SmallPosRoot → Nat
   | β | ψ | ω => 1
   | βψ | ψω => 2
@@ -83,8 +83,6 @@ def rels_of_def_of_βψω :=
       * {βψω, i, t}⁻¹
     | (i : ℕ) (hi : i ≤ βψω.height) (t : F) }
 
--- Don't know yet which category does relation 8.2 fit into
-
 abbrev trivial_commutator_pairs : Set (B3SmallPosRoot × B3SmallPosRoot) :=
   {(β, βψ), (β, β2ψ), (ψ, β2ψ), (βψ, β2ψ), (β, ω), (ψ, ψω), (ω, ψω)}
 
@@ -92,6 +90,7 @@ abbrev single_commutator_pairs : Set ((ζ : B3SmallPosRoot) × (η : B3SmallPosR
    := {⟨ ψ, βψ, β2ψ, 2, (by simp only [height])⟩, ⟨ψ, ω, ψω, 2, (by simp only [height])⟩}
 
 /-! # These are the self-commutation relations -/
+
 abbrev mixed_commutes_roots : Set (B3SmallPosRoot) := {β, ψ, ω, βψ, ψω, β2ψ}
 
 abbrev lin_roots : Set (B3SmallPosRoot) := {β, ψ, ω, βψ, ψω, β2ψ}
@@ -143,12 +142,14 @@ macro "declare_B3Small_lin_id_inv_thms" F:term:arg root:term:arg : command =>
 macro "declare_B3Small_mixed_comm_thms" F:term:arg r:term:arg : command =>
   `(command| declare_mixed_comm_thms weakB3Small $F $r)
 
+-- r₁ is the larger root, as opposed to the above macros
+macro "declare_B3Small_reflected_thm" F:term:arg v:term:arg r₁:term:arg r₂:term:arg r₃:term:arg "const" C:num "heights" n₁:num n₂:num n₃:num "to" n₄:num n₅:num n₆:num : command =>
+  `(command| declare_reflected_thm weakB3Small $F $v $r₁ $r₂ $r₃ $C $n₁ $n₂ $n₃ $n₄ $n₅ $n₆)
+
 set_option hygiene false in
 /-- Shorthand for building free group elements from a root, degree, and ring element. -/
 scoped notation (priority:=high) "{" ζ ", " i ", " t "}" =>
-  (weakB3Small F).pres_mk (free_mk_mk ζ i (by
-    try simp only [PosRootSys.height, height] at *
-    first | assumption | trivial | omega) t)
+  (weakB3Small F).pres_mk (free_mk_mk ζ i (by ht) t)
 
 set_option hygiene false in
 /-- Shorthand for building free group elements from a root, degree, and ring element. -/
@@ -174,9 +175,6 @@ scoped notation "forall_ijk_tu" h₁:max h₂:max h₃:max "," e =>
 scoped notation "forall_ijk_tuv" h₁:max h₂:max h₃:max "," e =>
   ∀ ⦃i j k : ℕ⦄ (hi : i ≤ h₁) (hj : j ≤ h₂) (hk : k ≤ h₃) (t u v : F), e
 
-scoped notation "forall_ijk_tuv" "," e =>
-  ∀ ⦃i j k : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t u v : F), e
-
 end forallNotation
 
 macro "hom_tac " rel:ident " [" intros:ident,* "]" : tactic => `(tactic|
@@ -186,9 +184,5 @@ macro "hom_tac " rel:ident " [" intros:ident,* "]" : tactic => `(tactic|
     simp only [weakB3Small, nonhomog_sets, Set.mem_insert_iff,
       Set.mem_singleton_iff, true_or, or_true];
     exists $intros,* ))
-
-/-- A simple tactic to solve `PosRootSys` height equations. Uses `omega`. -/
-macro "ht" : tactic =>
-  `(tactic| (simp only [PosRootSys.height, B3SmallPosRoot.height] at *; omega))
 
 end Steinberg.B3Small

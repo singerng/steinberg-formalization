@@ -42,22 +42,32 @@ attribute [chev_simps] neg_add_cancel add_neg_cancel
 
 /-- A macro for a common simplification when rewriting with ghost component equations. -/
 syntax (name := chevSimp) "chev_simp" (simpArgs)? (location)? : tactic
-
 macro_rules
-  --| `(tactic| chev_simp $[at $loc]?) => do
-  --  `(tactic| simp only [chev_simps] $[at $loc]?)
   | `(tactic| chev_simp $[[$simpArgs,*]]? $[at $loc]?) => do
     let args := simpArgs.map (·.getElems) |>.getD #[]
     `(tactic| simp only [chev_simps, $args,*] $[at $loc]?)
 
 syntax (name := chevSimp?) "chev_simp?" (simpArgs)? (location)? : tactic
-
 macro_rules
-  --| `(tactic| chev_simp $[at $loc]?) => do
-  --  `(tactic| simp only [chev_simps] $[at $loc]?)
   | `(tactic| chev_simp? $[[$simpArgs,*]]? $[at $loc]?) => do
     let args := simpArgs.map (·.getElems) |>.getD #[]
     `(tactic| simp? [chev_simps, $args,*] $[at $loc]?)
+
+syntax (name := heightSimp) "height_simp" (simpArgs)? (location)? : tactic
+macro_rules
+  | `(tactic| height_simp $[[$simpArgs,*]]? $[at $loc]?) => do
+    let args := simpArgs.map (·.getElems) |>.getD #[]
+    `(tactic| simp only [height_simps, $args,*] $[at $loc]?)
+
+/-- A simple tactic to solve `PosRootSys` height equations. Uses `omega`. -/
+macro "ht" : tactic =>
+  `(tactic| (
+   first
+    | trivial
+    | assumption
+    | omega
+    | (try height_simp at *; omega)
+  ))
 
 namespace Macro
 

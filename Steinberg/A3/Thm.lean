@@ -41,7 +41,7 @@ theorem nonhomog_lift_of_comm_of_αβ_βγ :
 
 /-! ### Definition of missing root -/
 theorem def_of_αβγ :
-  ∀ ⦃i : ℕ⦄ (hi : i ≤ αβγ.height) (t : R),
+  forall_i_t αβγ,
     ⁅ {α, (split_3_into_1_2 i hi).1, t}'(correct_of_split_3_into_1_2 i hi).1
     , {βγ, (split_3_into_1_2 i hi).2, 1}'(correct_of_split_3_into_1_2 i hi).2 ⁆
     = {αβγ, i, t} := by
@@ -152,7 +152,7 @@ theorem comm_of_αβ_βγ : trivial_commutator_of_root_pair (weakA3 R).pres_mk �
   intro i j hi hj t u
   have : (i = 0 ∧ j = 2) ∨ (i = 2 ∧ j = 0) ∨ ((i, j) ∈ ij_jk_image) := by
     rw [ij_jk_image]
-    simp only [PosRootSys.height, height] at *
+    height_simp at *
     simp -- should fix
     omega
   rcases this with ( ⟨ rfl, rfl ⟩ | ⟨rfl, rfl⟩ | hij )
@@ -167,7 +167,7 @@ declare_A3_triv_expr_thm R αβ βγ
 /- Rewrite β⬝γ as γ⬝βγ⬝β. -/
 @[group_reassoc]
 theorem expr_β_γ_as_γ_βγ_β :
-  ∀ ⦃i j : ℕ⦄ (hi : i ≤ β.height) (hj : j ≤ γ.height) (t u : R),
+  forall_ij_tu β γ,
     reorder_mid({β, i, t}, {γ, j, u}, {βγ, i + j, t * u}) := by
   intro i j hi hj t u
   have := comm_of_β_γ hi hj t u
@@ -178,12 +178,12 @@ theorem expr_β_γ_as_γ_βγ_β :
 /-! ### Interchange theorems between ⁅α,βγ⁆ and ⁅αβ,γ⁆ forms -/
 
 /- Interchange between ⁅α, βγ⁆ and ⁅αβ, γ⁆, "trading" a single degree j : Deg 1 and scalar u : R. -/
-theorem Interchange {i j k : ℕ} (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ γ.height) :
-    ∀ (t u v : R), ⁅ {α, i, t}, {βγ, j + k, u * v} ⁆ = ⁅ {αβ, i + j, t * u}, {γ, k, v} ⁆ := by
-  intro t u v
+theorem Interchange : forall_ijk_tuv α β γ,
+     ⁅ {α, i, t}, {βγ, j + k, u * v} ⁆ = ⁅ {αβ, i + j, t * u}, {γ, k, v} ⁆ := by
+  intro i j k hi hj hk t u v
   apply eq_comm_of_reorder_left
-  have hij : i + j ≤ αβ.height := by simp only [height] at *; omega
-  have hjk : j + k ≤ βγ.height := by simp only [height] at *; omega
+  have hij : i + j ≤ αβ.height := by ht
+  have hjk : j + k ≤ βγ.height := by ht
   grw [expr_βγ_as_β_γ_β_γ hj hk,
     expr_α_β_as_αβ_β_α hi hj,
     expr_α_γ_as_γ_α hi hk,
@@ -199,16 +199,16 @@ theorem Interchange {i j k : ℕ} (hi : i ≤ α.height) (hj : j ≤ β.height) 
     ← expr_γ_βγ_as_βγ_γ hk hjk]
 
 /- Pass between ⁅α,βγ⁆ and ⁅αβ,γ⁆ forms (specializes `Interchange` to the case `u=1`). -/
-theorem InterchangeTrans {i j k : ℕ} (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ γ.height) :
-    ∀ (t u : R), ⁅ {α, i, t}, {βγ, j + k, u} ⁆ = ⁅ {αβ, i + j, t}, {γ, k, u} ⁆ := by
-  intro t u
+theorem InterchangeTrans : forall_ijk_tu α β γ,
+    ⁅ {α, i, t}, {βγ, j + k, u} ⁆ = ⁅ {αβ, i + j, t}, {γ, k, u} ⁆ := by
+  intro i j k hi hj hk t u
   have := Interchange hi hj hk t 1 u
   rwa [one_mul, mul_one] at this
 
 /- ⁅α,βγ⁆ forms depend only on product of coefficients. Applies `Interchange` twice. -/
-theorem InterchangeRefl {i j k : ℕ} (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ γ.height) :
-    ∀ (t u : R), ⁅ {α, i, t * u}, {βγ, j + k, 1} ⁆ = ⁅ {α, i, t}, {βγ, j + k, u} ⁆ := by
-  intro t u
+theorem InterchangeRefl : forall_ijk_tu α β γ,
+    ⁅ {α, i, t * u}, {βγ, j + k, 1} ⁆ = ⁅ {α, i, t}, {βγ, j + k, u} ⁆ := by
+  intro i j k hi hj hk t u
   nth_rewrite 2 [← mul_one u]
   rw [Interchange hi hj hk, InterchangeTrans hi hj hk]
 
@@ -276,8 +276,7 @@ private lemma comm_of_αβ_γ_21 (t u : R) : ⁅ {αβ, 2, t}, {γ, 1, u} ⁆ = 
         comm_of_α_βγ_12]
 
 /- Commutator relation for α and βγ. -/
-theorem comm_of_α_βγ : single_commutator_of_root_pair (weakA3 R).pres_mk α βγ αβγ 1
-    (by simp only [PosRootSys.height] at *; simp only [A3PosRoot.height] at *) := by
+theorem comm_of_α_βγ : single_commutator_of_root_pair (weakA3 R).pres_mk α βγ αβγ 1 (by ht) := by
   intro i j hi hj t u
   match i, j with
   | 0, 0 => simp only [comm_of_α_βγ_00 t u, add_zero, one_mul]
@@ -288,8 +287,7 @@ theorem comm_of_α_βγ : single_commutator_of_root_pair (weakA3 R).pres_mk α �
   | 1, 2 => simp only [comm_of_α_βγ_12 t u, Nat.reduceAdd, one_mul]
 
 /- Commutator relation for αβ and γ. -/
-theorem comm_of_αβ_γ : single_commutator_of_root_pair (weakA3 R).pres_mk αβ γ αβγ 1
-    (by simp only [PosRootSys.height] at *; simp only [A3PosRoot.height] at *) := by
+theorem comm_of_αβ_γ : single_commutator_of_root_pair (weakA3 R).pres_mk αβ γ αβγ 1 (by ht) := by
   intro i j hi hj t u
   match i, j with
   | 0, 0 => simp only [comm_of_αβ_γ_00 t u, add_zero, one_mul]
@@ -304,30 +302,26 @@ declare_A3_single_expr_thms R αβ γ αβγ
 
 /-! ### More rewriting theorems -/
 
-theorem expr_αβγ_as_α_βγ_α_βγ_one_mul :
-    ∀ ⦃i j : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ βγ.height) (u : R),
-      {αβγ, i + j, u} = {α, i, 1} * {βγ, j, u} * {α, i, -1} * {βγ, j, -u} := by
+theorem expr_αβγ_as_α_βγ_α_βγ_one_mul : forall_ij_t α βγ,
+    {αβγ, i + j, t} = {α, i, 1} * {βγ, j, t} * {α, i, -1} * {βγ, j, -t} := by
   intro i j hi hj u
   have := expr_αβγ_as_α_βγ_α_βγ hi hj 1 u
   rwa [one_mul] at this
 
-theorem expr_αβγ_as_α_βγ_α_βγ_mul_one :
-    ∀ ⦃i j : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ βγ.height) (t : R),
-      {αβγ, i + j, t} = {α, i, t} * {βγ, j, 1} * {α, i, -t} * {βγ, j, -1} := by
+theorem expr_αβγ_as_α_βγ_α_βγ_mul_one : forall_ij_t α βγ,
+    {αβγ, i + j, t} = {α, i, t} * {βγ, j, 1} * {α, i, -t} * {βγ, j, -1} := by
   intro i j hi hj t
   have := expr_αβγ_as_α_βγ_α_βγ hi hj t 1
   rwa [mul_one] at this
 
-theorem expr_αβγ_as_αβ_γ_αβ_γ_one_mul :
-    ∀ ⦃i j : ℕ⦄ (hi : i ≤ αβ.height) (hj : j ≤ γ.height) (u : R),
-      {αβγ, i + j, u} = {αβ, i, 1} * {γ, j, u} * {αβ, i, -1} * {γ, j, -u} := by
+theorem expr_αβγ_as_αβ_γ_αβ_γ_one_mul : forall_ij_t αβ γ,
+    {αβγ, i + j, t} = {αβ, i, 1} * {γ, j, t} * {αβ, i, -1} * {γ, j, -t} := by
   intro i j hi hj u
   have := expr_αβγ_as_αβ_γ_αβ_γ hi hj 1 u
   rwa [one_mul] at this
 
-theorem expand_αβγ_as_αβ_γ_αβ_γ_mul_one :
-    ∀ ⦃i j : ℕ⦄ (hi : i ≤ αβ.height) (hj : j ≤ γ.height) (t : R),
-      {αβγ, i + j, t} = {αβ, i, t} * {γ, j, 1} * {αβ, i, -t} * {γ, j, -1} := by
+theorem expand_αβγ_as_αβ_γ_αβ_γ_mul_one : forall_ij_t αβ γ,
+    {αβγ, i + j, t} = {αβ, i, t} * {γ, j, 1} * {αβ, i, -t} * {γ, j, -1} := by
   intro i j hi hj t
   have := expr_αβγ_as_αβ_γ_αβ_γ hi hj t 1
   rwa [mul_one] at this

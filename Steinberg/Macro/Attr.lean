@@ -12,5 +12,6 @@ import Mathlib.Tactic.Attr.Register
 namespace Steinberg
 
 register_simp_attr chev_simps
+register_simp_attr height_simps
 
 end Steinberg

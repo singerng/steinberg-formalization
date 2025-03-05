@@ -4,6 +4,8 @@ LICENSE goes here.
 
 -/
 
+import Steinberg.Macro.Group
+
 namespace Steinberg
 
 class PosRootSys (Root : semiOutParam (Type TΦ))
@@ -12,8 +14,6 @@ class PosRootSys (Root : semiOutParam (Type TΦ))
   where
   height : Root → Nat
 
-namespace PosRootSys
-
-end PosRootSys
+attribute [height_simps] PosRootSys.height
 
 end Steinberg

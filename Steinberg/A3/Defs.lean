@@ -5,6 +5,7 @@ LICENSE goes here.
 -/
 
 import Steinberg.Defs.WeakChevalley
+import Steinberg.Macro.Attr
 import Mathlib.Tactic.DeriveFintype
 
 /-!
@@ -21,7 +22,7 @@ deriving Fintype, DecidableEq
 
 namespace A3PosRoot
 
-@[reducible]
+@[reducible, height_simps]
 def height : A3PosRoot → Nat
   | α | β | γ => 1
   | αβ | βγ => 2
@@ -138,17 +139,38 @@ macro "declare_A3_mixed_comm_thms" R:term:arg r:term:arg : command =>
 set_option hygiene false in
 /-- Shorthand for building free group elements from a root, degree, and ring element. -/
 scoped notation (priority:=high) "{" ζ ", " i ", " t "}" =>
-  (weakA3 R).pres_mk (free_mk_mk ζ i (by
-    try simp only [PosRootSys.height, A3PosRoot.height] at *
-    first | assumption | trivial | omega) t)
+  (weakA3 R).pres_mk (free_mk_mk ζ i (by ht) t)
 
 set_option hygiene false in
 /-- Shorthand for building free group elements from a root, degree, and ring element. -/
 scoped notation (priority:=high) "{" ζ ", " i ", " t "}'" h =>
   (weakA3 R).pres_mk ({ζ, i, t}'h)
 
-/-- A simple tactic to solve `PosRootSys` height equations. Uses `omega`. -/
-macro "ht" : tactic =>
-  `(tactic| (simp only [PosRootSys.height, A3PosRoot.height] at *; omega))
+section forallNotation
+
+set_option hygiene false
+
+scoped notation "forall_i_t" h:max "," e =>
+  ∀ ⦃i : ℕ⦄ (hi : i ≤ h) (t : R), e
+
+scoped notation "forall_ij_t" h₁:max h₂:max "," e =>
+  ∀ ⦃i j : ℕ⦄ (hi : i ≤ h₁) (hj : j ≤ h₂) (t : R), e
+
+scoped notation "forall_ij_tu" h₁:max h₂:max "," e =>
+  ∀ ⦃i j : ℕ⦄ (hi : i ≤ h₁) (hj : j ≤ h₂) (t u : R), e
+
+scoped notation "forall_ik_tuv" h₁:max h₂:max "," e =>
+  ∀ ⦃i k : ℕ⦄ (hi : i ≤ h₁) (hk : k ≤ h₂) (t u v : R), e
+
+scoped notation "forall_ijk_tu" h₁:max h₂:max h₃:max "," e =>
+  ∀ ⦃i j k : ℕ⦄ (hi : i ≤ h₁) (hj : j ≤ h₂) (hk : k ≤ h₃) (t u : R), e
+
+scoped notation "forall_ijk_tuv" h₁:max h₂:max h₃:max "," e =>
+  ∀ ⦃i j k : ℕ⦄ (hi : i ≤ h₁) (hj : j ≤ h₂) (hk : k ≤ h₃) (t u v : R), e
+
+scoped notation "forall_ijk_tuv" "," e =>
+  ∀ ⦃i j k : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t u v : R), e
+
+end forallNotation
 
 end Steinberg.A3

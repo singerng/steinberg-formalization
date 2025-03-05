@@ -273,7 +273,7 @@ macro "declare_single_expr_thms" w:ident R:term:arg r₁:term:arg r₂:term:arg 
     theorem $exprAs
       : ∀ ⦃i j : ℕ⦄ (hi : i ≤ height $r₁) (hj : j ≤ height $r₂) (t u : $R),
         (($w $R).pres_mk
-          (free_mk_mk $r₃ (i + j) (by simp [PosRootSys.height, height] at hi hj ⊢; omega) $innerTerm))
+          (free_mk_mk $r₃ (i + j) (by ht) $innerTerm))
           = ($w $R).pres_mk {$r₁:term, i, t}
             * ($w $R).pres_mk {$r₂:term, j, u}
             * ($w $R).pres_mk {$r₁:term, i, -t}
@@ -291,7 +291,7 @@ macro "declare_single_expr_thms" w:ident R:term:arg r₁:term:arg r₂:term:arg 
           ($w $R).pres_mk {$r₁:term, i, t},
           ($w $R).pres_mk {$r₂:term, j, u},
           (($w $R).pres_mk
-            (free_mk_mk $r₃ (i + j) (by simp [PosRootSys.height, height] at hi hj ⊢; omega) $innerTerm))
+            (free_mk_mk $r₃ (i + j) (by ht) $innerTerm))
         ) := by
       intro i j hi hj t u
       have := $commOf hi hj t u
@@ -359,6 +359,41 @@ macro "declare_mixed_comm_thms" w:ident R:term:arg r:term:arg : command => do
       intro i j hi hj t u
       apply triv_comm_iff_commutes.mp
       rw [$mixedRw]
+      try assumption
+
+    end
+  )
+  return ⟨mkNullNode cmds⟩
+
+-- r₁ is the larger root, as opposed to the above macros
+macro "declare_reflected_thm" w:ident R:term:arg v:term:arg
+        r₁:term:arg r₂:term:arg r₃:term:arg C:num
+        n₁:num n₂:num n₃:num n₄:num n₅:num n₆:num : command => do
+  let innerTerm ←
+    if C.getNat = 1 then `(t * u)
+    else                 `($C * t * u)
+  let exprName := TSyntax.mapIdent₃ r₁ r₂ r₃
+    (fun s₁ s₂ s₃ => "expr_" ++ s₁ ++ "_as_comm_of_" ++ s₂ ++ "_" ++ s₃ ++ s!"_{n₂.getNat}{n₃.getNat}")
+  let exprLemma := TSyntax.mapIdent₃ r₁ r₂ r₃
+    (fun s₁ s₂ s₃ => "expr_" ++ s₁ ++ "_as_comm_of_" ++ s₂ ++ "_" ++ s₃ ++ s!"_{n₅.getNat}{n₆.getNat}")
+  let exprLemmaRw ← `(rwRule| $exprLemma:term Fchar)
+  let mut cmds ← Syntax.getArgs <$> `(
+    section
+
+    lemma $exprName :
+        ∀ (t u : $R),
+          (($w $R).pres_mk {$r₁:term, $n₁, $innerTerm})
+            = ⁅($w $R).pres_mk {$r₂:term, $n₂, t}, ($w $R).pres_mk {$r₃:term, $n₃, u}⁆ := by
+      intro t u
+      have : ($w $R).pres_mk {$r₁:term, $n₁, $innerTerm}
+        = ReflDeg.refl_symm $v (($w $R).pres_mk {$r₁:term, $n₄, $innerTerm}) := rfl
+      rw [this]; clear this
+      have : ⁅($w $R).pres_mk {$r₂:term, $n₂, t}, ($w $R).pres_mk {$r₃:term, $n₃, u}⁆
+          = ReflDeg.refl_symm $v
+              ⁅($w $R).pres_mk {$r₂:term, $n₅, t}, ($w $R).pres_mk {$r₃:term, $n₆, u}⁆ := by
+        rw [map_commutatorElement]; trivial
+      rw [this, $exprLemmaRw]
+      try assumption
 
     end
   )
