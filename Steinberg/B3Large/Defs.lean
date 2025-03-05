@@ -442,7 +442,14 @@ macro "declare_B3Large_reflected_thm" F:term:arg v:term:arg r₁:term:arg r₂:t
     "const" C:num
     "heights" n₁:num n₂:num n₃:num
     "to" n₄:num n₅:num n₆:num : command =>
-  `(command| declare_reflected_thm weakB3Large $F $v $r₁ $r₂ $r₃ $C $n₁ $n₂ $n₃ $n₄ $n₅ $n₆)
+  `(command| declare_reflected_thm weakB3Large $F $v $r₁ $r₂ $r₃ 0 $C $n₁ $n₂ $n₃ $n₄ $n₅ $n₆)
+
+-- r₁ is the larger root, as opposed to the above macros
+macro "declare_B3Large_reflected_thm" F:term:arg v:term:arg r₁:term:arg r₂:term:arg r₃:term:arg
+    "const" "neg" C:num
+    "heights" n₁:num n₂:num n₃:num
+    "to" n₄:num n₅:num n₆:num : command =>
+  `(command| declare_reflected_thm weakB3Large $F $v $r₁ $r₂ $r₃ 1 $C $n₁ $n₂ $n₃ $n₄ $n₅ $n₆)
 
 set_option hygiene false in
 /-- Shorthand for building free group elements from a root, degree, and ring element. -/

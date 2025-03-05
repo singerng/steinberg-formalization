@@ -367,11 +367,15 @@ macro "declare_mixed_comm_thms" w:ident R:term:arg r:term:arg : command => do
 
 -- r₁ is the larger root, as opposed to the above macros
 macro "declare_reflected_thm" w:ident R:term:arg v:term:arg
-        r₁:term:arg r₂:term:arg r₃:term:arg C:num
+        r₁:term:arg r₂:term:arg r₃:term:arg isNeg:num C:num
         n₁:num n₂:num n₃:num n₄:num n₅:num n₆:num : command => do
   let innerTerm ←
-    if C.getNat = 1 then `(t * u)
-    else                 `($C * t * u)
+    match isNeg.getNat, C.getNat with
+    | 0, 1 => `(t * u)
+    | 1, 1 => `(-t * u)
+    | 0, _ => `($C * t * u)
+    | 1, _ => `(-$C * t * u)
+    | _, _ => `($C * t * u)
   let exprName := TSyntax.mapIdent₃ r₁ r₂ r₃
     (fun s₁ s₂ s₃ => "expr_" ++ s₁ ++ "_as_comm_of_" ++ s₂ ++ "_" ++ s₃ ++ s!"_{n₂.getNat}{n₃.getNat}")
   let exprLemma := TSyntax.mapIdent₃ r₁ r₂ r₃
