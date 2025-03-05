@@ -858,7 +858,7 @@ theorem expr_α_comm_αβψ_ψ_as_comm_αβψ_ψ_α :
   intro i j k hi hj hk t u v
   exact triv_comm_iff_commutes.1 (comm_of_α_αβψ_ψ hi hj hk t u v)
 
-include Fchar in
+include Fchar
 -- 8.129
 theorem comm_of_α_α_β2ψ :
   forall_ijk_tuv α α β2ψ,
@@ -874,10 +874,9 @@ theorem expr_α_comm_α_β2ψ_as_comm_α_β2ψ_α :
   forall_ijk_tuv α α β2ψ,
     {α, i, t} * ⁅{α, j, u}, {β2ψ, k, v}⁆ = ⁅{α, j, u}, {β2ψ, k, v}⁆ * {α, i, t} := by
   intro i j k hi hj hk t u v
-  exact triv_comm_iff_commutes.1 (comm_of_α_α_β2ψ hi hj hk t u v)
+  exact triv_comm_iff_commutes.1 (comm_of_α_α_β2ψ Fchar hi hj hk t u v)
 
 -- Proposition 8.130
-include Fchar
 theorem sufficient_conditions_for_comm_of_αβψ_and_ψ :
   ∀ ⦃i j k : ℕ⦄ (hi : i ≤ 1) (hj : j ≤ 2) (hk : k ≤ 1)
   (hyp : ∀ (t u v : F), ⁅{βψ, j, t}, ⁅{α, i, u}, {β2ψ, j + k, v}⁆⁆ = 1),
@@ -899,11 +898,12 @@ theorem sufficient_conditions_for_comm_of_αβψ_and_ψ :
    _ = {β2ψ, j + k, -u * v} := by rw [lin_of_β2ψ]; ring_nf
   have aux₄ : {β2ψ, j + k, -u * v} * {β2ψ, j + k, u * v} = 1 := by
     rw [neg_mul, ← inv_of_β2ψ, inv_mul_cancel]
-  stop -- CC: I'm very sorry, this broke
+   -- CC: I'm very sorry, this broke
   grw [←expr_βψ_β2ψ_as_β2ψ_βψ hj (add_le_add hk hj) (-u / 2), aux₁, aux₂,
   expr_βψ_β2ψ_as_β2ψ_βψ hj (add_le_add hj hk) u (u * v), aux₃, aux₄, hyp' (-u/2),
-  expr_ψ_comm_α_β2ψ_as_comm_α_β2ψ_ψ hk hi (add_le_add hj hk), expr_α_comm_α_β2ψ_as_comm_α_β2ψ_α hi hi (add_le_add hj hk),
-  hyp' u, mul_one, expr_α_comm_α_β2ψ_as_comm_α_β2ψ_α hi hi (add_le_add hj hk), hyp' (-u/2), expr_ψ_comm_α_β2ψ_as_comm_α_β2ψ_ψ hk hi (add_le_add hj hk),
+  expr_ψ_comm_α_β2ψ_as_comm_α_β2ψ_ψ hk hi (add_le_add hj hk), expr_α_comm_α_β2ψ_as_comm_α_β2ψ_α Fchar hi hi (add_le_add hj hk)]
+  field_simp
+  grw [hyp' u, expr_α_comm_α_β2ψ_as_comm_α_β2ψ_α Fchar hi hi (add_le_add hj hk), hyp' (-u/2), expr_ψ_comm_α_β2ψ_as_comm_α_β2ψ_ψ hk hi (add_le_add hj hk),
   lift_hom_inv_doub_of_α_β2ψ_c hi (add_le_add hj hk)]
   group
 
