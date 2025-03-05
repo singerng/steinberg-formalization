@@ -249,10 +249,10 @@ def rels_of_hom_lift_of_inv_doub_of_αβ_β2ψ_c :=
 
 -- Relation 8.93a
 def rels_of_hom_lift_of_inv_doub_of_β_αβ2ψ_a :=
-  { ⁅ {β, i, t},
+  { ⁅ {β, j, u},
       ⁅ {α, i, t},
         {β2ψ, j + 2 * k, u * v^2}'(add_le_add hj (mul_le_mul_of_nonneg_left hk (by trivial))) ⁆ ⁆
-    * ⁅ {β, i, -t},
+    * ⁅ {β, j, -u},
         ⁅ {α, i, -t},
           {β2ψ, j + 2 * k, u * v^2}'(add_le_add hj (mul_le_mul_of_nonneg_left hk (by trivial))) ⁆ ⁆⁻¹
     | (i : ℕ) (j : ℕ) (k : ℕ)
@@ -261,10 +261,10 @@ def rels_of_hom_lift_of_inv_doub_of_β_αβ2ψ_a :=
 
 -- Relation 8.93b
 def rels_of_hom_lift_of_inv_doub_of_β_αβ2ψ_b :=
-  { ⁅ {β, i, t},
+  { ⁅ {β, j, u},
       ⁅ {α, i, t},
         {β2ψ, j + 2 * k, u * v^2}'(add_le_add hj (mul_le_mul_of_nonneg_left hk (by trivial))) ⁆ ⁆
-    * ⁅ {β, i, -t},
+    * ⁅ {β, j, -u},
         ⁅ {α, i, t},
           {β2ψ, j + 2 * k, u * v^2}'(add_le_add hj (mul_le_mul_of_nonneg_left hk (by trivial))) ⁆ ⁆
     | (i : ℕ) (j : ℕ) (k : ℕ)
@@ -273,13 +273,13 @@ def rels_of_hom_lift_of_inv_doub_of_β_αβ2ψ_b :=
 
 -- Relation 8.93c
 def rels_of_hom_lift_of_inv_doub_of_β_αβ2ψ_c :=
-  { ⁅ {β, i, t},
+  { ⁅ {β, j, u},
       ⁅ {α, i, t},
         {β2ψ, j + 2 * k, u * v^2}'(add_le_add hj (mul_le_mul_of_nonneg_left hk (by trivial))) ⁆ ⁆
-    * ⁅ {β, i, t},
+    * ⁅ {β, j, u},
         ⁅ {α, i, t},
           {β2ψ, j + 2 * k, u * v^2}'(add_le_add hj (mul_le_mul_of_nonneg_left hk (by trivial))) ⁆ ⁆
-    * ⁅ {β, i, 2 * t},
+    * ⁅ {β, j, 2 * u},
         ⁅ {α, i, t},
           {β2ψ, j + 2 * k, u * v^2}'(add_le_add hj (mul_le_mul_of_nonneg_left hk (by trivial))) ⁆ ⁆⁻¹
     | (i : ℕ) (j : ℕ) (k : ℕ)
