@@ -434,22 +434,33 @@ macro "declare_B3Large_single_comm_of_root_pair_thms" F:term:arg r₁:term:arg r
 macro "declare_B3Large_lin_id_inv_thms" F:term:arg root:term:arg : command =>
   `(command| declare_lin_id_inv_thms weakB3Large $F $root)
 
+macro "declare_B3Large_mixed_expr_thm" F:term:arg r:term:arg : command =>
+  `(command| declare_mixed_expr_thm weakB3Large $F $r)
+
 macro "declare_B3Large_mixed_comm_thms" F:term:arg r:term:arg : command =>
   `(command| declare_mixed_comm_thms weakB3Large $F $r)
 
 -- r₁ is the larger root, as opposed to the above macros
-macro "declare_B3Large_reflected_thm" F:term:arg v:term:arg r₁:term:arg r₂:term:arg r₃:term:arg
+macro "declare_B3Large_reflected_thm"
+    F:term:arg v:term:arg r₁:term:arg r₂:term:arg r₃:term:arg
     "const" C:num
     "heights" n₁:num n₂:num n₃:num
     "to" n₄:num n₅:num n₆:num : command =>
   `(command| declare_reflected_thm weakB3Large $F $v $r₁ $r₂ $r₃ 0 $C $n₁ $n₂ $n₃ $n₄ $n₅ $n₆)
 
 -- r₁ is the larger root, as opposed to the above macros
-macro "declare_B3Large_reflected_thm" F:term:arg v:term:arg r₁:term:arg r₂:term:arg r₃:term:arg
+macro "declare_B3Large_reflected_thm"
+    F:term:arg v:term:arg r₁:term:arg r₂:term:arg r₃:term:arg
     "const" "neg" C:num
     "heights" n₁:num n₂:num n₃:num
     "to" n₄:num n₅:num n₆:num : command =>
   `(command| declare_reflected_thm weakB3Large $F $v $r₁ $r₂ $r₃ 1 $C $n₁ $n₂ $n₃ $n₄ $n₅ $n₆)
+
+macro "declare_B3Large_triv_comm_reflected_thm"
+    F:term:arg v:term:arg r₁:term:arg r₂:term:arg
+    "heights" n₁:num n₂:num
+    "to" n₃:num n₄:num : command =>
+  `(command| declare_triv_comm_reflected_thm weakB3Large $F $v $r₁ $r₂ $n₁ $n₂ $n₃ $n₄)
 
 set_option hygiene false in
 /-- Shorthand for building free group elements from a root, degree, and ring element. -/

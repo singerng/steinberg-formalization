@@ -133,6 +133,9 @@ macro "declare_A3_single_comm_of_root_pair_thms" R:term:arg r₁:term:arg r₂:t
 macro "declare_A3_lin_id_inv_thms" R:term:arg root:term:arg : command =>
   `(command| declare_lin_id_inv_thms weakA3 $R $root)
 
+macro "declare_A3_mixed_expr_thm" R:term:arg r:term:arg : command =>
+  `(command| declare_mixed_expr_thm weakA3 $R $r)
+
 macro "declare_A3_mixed_comm_thms" R:term:arg r:term:arg : command =>
   `(command| declare_mixed_comm_thms weakA3 $R $r)
 
