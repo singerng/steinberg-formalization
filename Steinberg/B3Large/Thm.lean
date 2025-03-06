@@ -1937,33 +1937,34 @@ theorem partial_comm_of_ψ_αβ2ψ_β :
   norm_num at this
   exact this
 
--- 8.165 (broken)
+-- 8.165
 theorem partial_B_interchange_of_α2β2ψ :
   ∀ (t u v : F), ⁅{αβψ, 0, t}, {βψ, 1, u * v}⁆ = ⁅{αβ2ψ, 1, 2 * t * u}, {β, 0, v}⁆ := by
-  have h := @hom_lift_of_inv_doub_of_β_αβ2ψ F _ Fchar 0 1 0 (by norm_num) (by norm_num) (by norm_num)
+  have h := @hom_lift_of_inv_doub_of_β_αβ2ψ F _ Fchar 1 0 0 (by norm_num) (by norm_num) (by norm_num)
   norm_num at h
   have := @more_sufficient_conditions_for_comm_of_αβψ_and_βψ F _ Fchar 0 1 0 (by norm_num) (by norm_num) (by norm_num)
   norm_num at this
   apply this
-  stop
   · intro t u v
-    have h1 := @hom_lift_of_interchange_of_α2β2ψ_a F _ Fchar 0 1 0 (by norm_num) (by norm_num) (by norm_num) u (1/2) v
-    have := @hom_lift_of_interchange_of_α2β2ψ_b F _ Fchar 0 1 0 (by norm_num) (by norm_num) (by norm_num) (u/2) 1 v
-    norm_num at h1; norm_num at this; field_simp at h1; field_simp at this
-    rw [this] at h1
+    have h1 := @hom_lift_of_interchange_of_α2β2ψ_a F _ Fchar 1 0 0 (by norm_num) (by norm_num) (by norm_num) u (1/2) v
+    have h2 := @hom_lift_of_interchange_of_α2β2ψ_b F _ Fchar 1 0 0 (by norm_num) (by norm_num) (by norm_num) (u/2) 1 v
+    norm_num at h1; norm_num at h2; field_simp at h1; field_simp at h2
+    rw [h2] at h1
     have := @comm_of_β_αβ_β2ψ F _ 0 1 0 (by norm_num) (by norm_num) (by norm_num) t u v
-    grw [← h1]
+    rw [h1] at this
     exact this
   · intro t u v
     have := @partial_comm_of_ψ_αβ2ψ_β F _ Fchar u v t
     exact this
   · intro t u
-    rcases h (-u) t with ⟨h1, ⟨h2, _⟩⟩
-    norm_num at h1
-    apply mul_eq_one_iff_eq_inv.mp at h2
-    simp only [neg_neg, commutatorElement_inv] at h2
-    grw [← h2]
-    exact (Eq.symm h1)
+    nth_rw 2 [← comm_swap]
+    rw [← inv_inj, inv_inv]
+    apply Eq.symm
+    apply eq_inv_iff_mul_eq_one.mpr
+    rcases h (-u) (-t) with ⟨h1, ⟨h2, _⟩⟩
+    norm_num at h1; norm_num at h2
+    rw [← h1]
+    exact h2
   · intro t u
     rcases h (-u) t with ⟨h1, ⟨h2, h3⟩⟩
     norm_num at h1
