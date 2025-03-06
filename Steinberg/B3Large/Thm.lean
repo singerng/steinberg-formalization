@@ -1968,11 +1968,13 @@ private lemma partial_comm_of_βψ_αβ2ψ_help : ∀ t u : F,
   rw [this, ←@hom_lift_of_interchange_of_α2β2ψ_b F _ Fchar 0 0 1 (by trivial) (by trivial) (by trivial),
     ←mul_one t, ←@hom_lift_of_interchange_of_α2β2ψ_a F _ Fchar 0 1 0 (by trivial) (by trivial) (by trivial)]
   field_simp
---example {G : Type*} [Group G] {x y : G} (h : x = y) : x⁻¹ = y⁻¹ := congrArg Inv.inv h
+
 private lemma partial_comm_of_βψ_αβ2ψ_help' : ∀ t u : F,
     ⁅{β, 0, u}, {αβ2ψ, 2, t}⁆ = ⁅{β2ψ, 1, u}, {αβ, 1, t}⁆ := by
   intro t u
-  sorry
+  apply inv_inj.1
+  rw [comm_swap, comm_swap]
+  apply partial_comm_of_βψ_αβ2ψ_help Fchar
 
 -- 8.168
 theorem partial_comm_of_βψ_αβ2ψ :
@@ -1981,9 +1983,14 @@ theorem partial_comm_of_βψ_αβ2ψ :
   · intro t u v
     rw [partial_comm_of_βψ_αβ2ψ_help Fchar, triv_comm_symm, @hom_lift_of_comm_ψ_αβ_β2ψ F _ 0 1 0 (by trivial) (by trivial) (by trivial)]
   · intro t u
-    rw [partial_comm_of_βψ_αβ2ψ_help Fchar, ]
-    sorry
-  sorry
+    rw [partial_comm_of_βψ_αβ2ψ_help Fchar, partial_comm_of_βψ_αβ2ψ_help' Fchar]
+    apply (mul_left_inj (⁅{β2ψ, 1, -u}, {αβ, 1, t}⁆⁻¹)).1
+    rw [mul_inv_cancel, comm_swap, (@hom_lift_of_inv_doub_of_αβ_β2ψ F _ 0 1 0 (by trivial) (by trivial) (by trivial) t u).1]
+    nth_rewrite 2 [←neg_neg t]
+    rw [(@hom_lift_of_inv_doub_of_αβ_β2ψ F _ 0 1 0 (by trivial) (by trivial) (by trivial) (-t) (-u)).2.1]
+  · intro t u
+    rw [partial_comm_of_βψ_αβ2ψ_help Fchar, partial_comm_of_βψ_αβ2ψ_help Fchar,
+    (@hom_lift_of_inv_doub_of_αβ_β2ψ F _ 0 1 0 (by trivial) (by trivial) (by trivial) t u).2.1]
 
 -- 8.169a
 theorem partial_C_interchange_of_α2β2ψ_a :
@@ -2094,11 +2101,10 @@ private lemma interchange_C_refl_u :
   rw [←one_mul u, ←mul_assoc, partial_C_interchange_of_α2β2ψ_a Fchar]
   simp only [mul_one, one_mul]
 
-omit Fchar in
 private lemma interchange_C_refl_u' :
   ∀ t u : F, ⁅{αβ, 2, t}, {β2ψ, 0, 2 * u}⁆ = ⁅{αβψ, 2, t}, {βψ, 0, u}⁆ := by
   intro t u
-  rw [←one_mul u, ←mul_assoc, partial_C_interchange_of_α2β2ψ_b]
+  rw [←one_mul u, ←mul_assoc, partial_C_interchange_of_α2β2ψ_b Fchar]
   simp only [mul_one, one_mul]
 
 private lemma interchange_C_refl_v :
@@ -2216,7 +2222,7 @@ private lemma expr_α2β2ψ_as_comm_of_αβ_β2ψ_20 :
   ∀ t u : F, {α2β2ψ, 2, -t * u} = ⁅{αβ, 2, t}, {β2ψ, 0, u}⁆:= by
   intro t u
   have : -t * u = -2 * t * (u/2) := by ring_nf; field_simp
-  rw [this, expr_α2β2ψ_as_comm_of_αβψ_βψ_20 Fchar, ←interchange_C_refl_u']
+  rw [this, expr_α2β2ψ_as_comm_of_αβψ_βψ_20 Fchar, ←interchange_C_refl_u' Fchar]
   field_simp
 
 private lemma expr_α2β2ψ_as_comm_of_αβψ_βψ_11 :
