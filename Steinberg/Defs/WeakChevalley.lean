@@ -239,6 +239,7 @@ macro "declare_triv_expr_thm" w:ident R:term:arg r₁:term:arg r₂:term:arg : c
       apply triv_comm_iff_commutes.mp
       rw [$commOf]
       try assumption
+      try assumption
 
     end
   )
@@ -355,6 +356,7 @@ macro "declare_mixed_expr_thm" w:ident R:term:arg r:term:arg : command => do
       intro i j hi hj t u
       apply triv_comm_iff_commutes.mp
       rw [$mixedRw]
+      try assumption
       try assumption
 
     end
