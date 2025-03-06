@@ -2073,11 +2073,10 @@ private lemma partial_comm_of_βψ_αβ2ψ_help' : ∀ t u : F,
   rw [comm_swap, comm_swap]
   apply partial_comm_of_βψ_αβ2ψ_help Fchar
 
--- 8.168 (broken)
+-- 8.168
 theorem partial_comm_of_βψ_αβ2ψ :
   ∀ (t u : F), ⁅{αβ2ψ, 2, t}, {βψ, 0, u}⁆ = 1 := by
-  stop
-  apply @sufficient_conditions_for_comm_of_αβ2ψ_and_βψ F _ 2 0 0 (by trivial) (by trivial) (by trivial)
+  apply @sufficient_conditions_for_comm_of_αβ2ψ_and_βψ F _ Fchar 2 0 0 (by trivial) (by trivial) (by trivial)
   · intro t u v
     rw [partial_comm_of_βψ_αβ2ψ_help Fchar, triv_comm_symm, @hom_lift_of_comm_ψ_αβ_β2ψ F _ 0 1 0 (by trivial) (by trivial) (by trivial)]
   · intro t u
