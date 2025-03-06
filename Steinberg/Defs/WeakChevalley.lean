@@ -341,7 +341,7 @@ macro "declare_lin_id_inv_thms" w:ident R:term:arg root:term:arg : command => do
   return ⟨mkNullNode cmds⟩
 
 macro "declare_mixed_expr_thm" w:ident R:term:arg r:term:arg : command => do
-  let mixedName := r.mapIdent ("mixed_commutes_of_" ++ ·)
+  let mixedName := r.mapIdent ("comm_of_" ++ ·)
   let mixedRw ← `(rwRule| $mixedName:term)
   let exprName := r.mapIdent (fun s => "expr_" ++ s ++ "_" ++ s ++ "_as_" ++ s ++ "_" ++ s)
   let cmds ← Syntax.getArgs <$> `(
@@ -362,7 +362,7 @@ macro "declare_mixed_expr_thm" w:ident R:term:arg r:term:arg : command => do
   return ⟨mkNullNode cmds⟩
 
 macro "declare_mixed_comm_thms" w:ident R:term:arg r:term:arg : command => do
-  let mixedName := r.mapIdent ("mixed_commutes_of_" ++ ·)
+  let mixedName := r.mapIdent ("comm_of_" ++ ·)
   let cmds ← Syntax.getArgs <$> `(
     section
 

@@ -2778,7 +2778,7 @@ theorem comm_of_αβ2ψ_α2β2ψ :
 declare_B3Large_triv_expr_thm F αβ2ψ α2β2ψ
 
 -- 8.190
-theorem mixed_comm_of_α2β2ψ :
+theorem comm_of_α2β2ψ :
     mixed_commutes_of_root (weakB3Large F).pres_mk α2β2ψ := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.2
@@ -2787,59 +2787,61 @@ theorem mixed_comm_of_α2β2ψ :
   commutatorElement_def, inv_of_β, inv_of_αβ2ψ Fchar hi₁]
   grw [expr_β_α2β2ψ_as_α2β2ψ_β Fchar, expr_αβ2ψ_α2β2ψ_as_α2β2ψ_αβ2ψ Fchar,
   expr_β_α2β2ψ_as_α2β2ψ_β Fchar, expr_αβ2ψ_α2β2ψ_as_α2β2ψ_αβ2ψ Fchar]
--- declare_B3Large_mixed_comm_thms F α2β2ψ
+declare_B3Large_mixed_expr_thm F α2β2ψ
 
 -- 8.191
-theorem trivial_comm_of_αβψ_β2ψ :
-  trivial_commutator_of_root_pair (weakB3Large F).pres_mk αβψ β2ψ := by
+theorem comm_of_αβψ_β2ψ :
+    trivial_commutator_of_root_pair (weakB3Large F).pres_mk αβψ β2ψ := by
   sorry
+declare_B3Large_triv_expr_thm F αβψ β2ψ
 
 -- 8.192
-theorem trivial_comm_of_βψ_αβ2ψ :
-  trivial_commutator_of_root_pair (weakB3Large F).pres_mk βψ αβ2ψ := by
+theorem comm_of_βψ_αβ2ψ :
+    trivial_commutator_of_root_pair (weakB3Large F).pres_mk βψ αβ2ψ := by
   sorry
+declare_B3Large_triv_expr_thm F βψ αβ2ψ
 
 -- 8.193
-theorem trivial_comm_of_β2ψ_αβ2ψ :
-  trivial_commutator_of_root_pair (weakB3Large F).pres_mk β2ψ αβ2ψ := by
+theorem comm_of_β2ψ_αβ2ψ :
+    trivial_commutator_of_root_pair (weakB3Large F).pres_mk β2ψ αβ2ψ := by
   sorry
+declare_B3Large_triv_expr_thm F β2ψ αβ2ψ
 
 -- 8.194
-theorem trivial_comm_of_αβψ_αβ2ψ :
-  trivial_commutator_of_root_pair (weakB3Large F).pres_mk αβψ αβ2ψ := by
+theorem comm_of_αβψ_αβ2ψ :
+    trivial_commutator_of_root_pair (weakB3Large F).pres_mk αβψ αβ2ψ := by
   sorry
+declare_B3Large_triv_expr_thm F αβψ αβ2ψ
 
 -- 8.195
-theorem mixed_comm_of_αβ2ψ :
-  mixed_commutes_of_root (weakB3Large F).pres_mk αβ2ψ := by
+theorem comm_of_αβ2ψ :
+    mixed_commutes_of_root (weakB3Large F).pres_mk αβ2ψ := by
   sorry
+declare_B3Large_mixed_expr_thm F αβ2ψ
 
 -- 8.196
-theorem lin_of_αβ2ψ :
-  lin_of_root((weakB3Large F).pres_mk, αβ2ψ) := by
+@[simp, chev_simps]
+theorem lin_of_αβ2ψ : lin_of_root((weakB3Large F).pres_mk, αβ2ψ) := by
   sorry
 
 -- 8.197
-theorem lin_of_α2β2ψ :
-  lin_of_root((weakB3Large F).pres_mk, α2β2ψ) := by
+@[simp, chev_simps]
+theorem lin_of_α2β2ψ : lin_of_root((weakB3Large F).pres_mk, α2β2ψ) := by
   sorry
 
 -- 8.198
-theorem hom_lift_of_comm_of_α_α2β2ψ_square :
-  ∀ ⦃i j k : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t r : F),
-  ⁅{α, i, t}, {α2β2ψ, i + 2 * j + 2 * k, t * r^2}⁆ = 1 := by
+theorem hom_lift_of_comm_of_α_α2β2ψ_square : forall_ijk_tu α β ψ,
+    ⁅{α, i, t}, {α2β2ψ, i + 2 * j + 2 * k, t * u^2}⁆ = 1 := by
   sorry
 
 -- 8.200 (8.199 is about sum of squares in finite field)
-theorem hom_lift_of_comm_of_α_α2β2ψ :
-  ∀ ⦃i j k : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t u : F),
-  ⁅{α, i, t}, {α2β2ψ, i + 2 * j + 2 * k, u}⁆ = 1 := by
+theorem hom_lift_of_comm_of_α_α2β2ψ : forall_ijk_tu α β ψ,
+    ⁅{α, i, t}, {α2β2ψ, i + 2 * j + 2 * k, u}⁆ = 1 := by
   sorry
 
 -- 8.201
-theorem nonhomog_lift_of_comm_of_α_α2β2ψ :
-  ∀ ⦃i j : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ β.height) (t u : F),
-  ⁅{α, i, t}, {α2β2ψ, i + 2 * j + 1, u}⁆ = 1 := by
+theorem nonhomog_lift_of_comm_of_α_α2β2ψ : forall_ij_tu α β,
+    ⁅{α, i, t}, {α2β2ψ, i + 2 * j + 1, u}⁆ = 1 := by
   sorry
 
 -- 8.202
@@ -2867,23 +2869,26 @@ theorem partial_comm_of_α_α2β2ψ :
   sorry
 
 -- 8.206
-theorem trivial_comm_of_α_α2β2ψ :
-  trivial_commutator_of_root_pair (weakB3Large F).pres_mk α α2β2ψ := by
+theorem comm_of_α_α2β2ψ :
+    trivial_commutator_of_root_pair (weakB3Large F).pres_mk α α2β2ψ := by
   sorry
+declare_B3Large_triv_expr_thm F α α2β2ψ
 
 -- 8.207
-theorem trivial_comm_of_αβ_αβ2ψ :
-  trivial_commutator_of_root_pair (weakB3Large F).pres_mk αβ αβ2ψ := by
+theorem comm_of_αβ_αβ2ψ :
+    trivial_commutator_of_root_pair (weakB3Large F).pres_mk αβ αβ2ψ := by
   sorry
+declare_B3Large_triv_expr_thm F αβ αβ2ψ
 
 -- 8.208
-theorem mixed_comm_of_αβψ :
-  mixed_commutes_of_root (weakB3Large F).pres_mk αβψ := by
+theorem comm_of_αβψ :
+    mixed_commutes_of_root (weakB3Large F).pres_mk αβψ := by
   sorry
+declare_B3Large_mixed_expr_thm F αβψ
 
 -- 8.209
-theorem lin_of_αβψ :
-  lin_of_root((weakB3Large F).pres_mk, αβψ) := by
+@[simp, chev_simps]
+theorem lin_of_αβψ : lin_of_root((weakB3Large F).pres_mk, αβψ) := by
   sorry
 
 end Steinberg.B3Large

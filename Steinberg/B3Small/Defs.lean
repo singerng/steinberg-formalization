@@ -140,7 +140,7 @@ macro "declare_B3Small_lin_id_inv_thms" F:term:arg root:term:arg : command =>
   `(command| declare_lin_id_inv_thms weakB3Small $F $root)
 
 macro "declare_B3Small_mixed_expr_thm" F:term:arg r:term:arg : command =>
-  `(command| declare_mixed_comm_thms weakB3Small $F $r)
+  `(command| declare_mixed_expr_thm weakB3Small $F $r)
 
 macro "declare_B3Small_mixed_comm_thms" F:term:arg r:term:arg : command =>
   `(command| declare_mixed_comm_thms weakB3Small $F $r)
