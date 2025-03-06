@@ -2792,42 +2792,101 @@ declare_B3Large_mixed_expr_thm F α2β2ψ
 -- 8.191
 theorem comm_of_αβψ_β2ψ :
     trivial_commutator_of_root_pair (weakB3Large F).pres_mk αβψ β2ψ := by
-  sorry
+  intro i j hi hj t u
+  apply triv_comm_iff_commutes.2
+  -- expand αβψ into product of αβ and ψ elements (work on LHS)
+  rcases decompose 2 1 i hi with ⟨i₁, i₂, rfl, hi₁, hi₂⟩
+  rw [eq_of_R_eq αβψ (-2 * (-t / 2) * 1) (by ring_nf; field_simp), expr_αβψ_as_ψ_αβ_ψ_αβ_ψ hi₁ hi₂]
+  -- move β2ψ from the right to the left
+  grw [expr_ψ_β2ψ_as_β2ψ_ψ, expr_αβ_β2ψ_as_β2ψ_α2β2ψ_αβ Fchar hi₁ hj, expr_ψ_β2ψ_as_β2ψ_ψ,
+  expr_αβ_β2ψ_as_β2ψ_αβ_α2β2ψ Fchar hi₁ hj, expr_ψ_β2ψ_as_β2ψ_ψ]
+  -- commute α2β2ψ across ψ and cancel
+  grw [expr_ψ_α2β2ψ_as_α2β2ψ_ψ Fchar]
+  rw [eq_of_R_eq α2β2ψ (-(t * u)) (by ring_nf; field_simp)]
+  nth_rewrite 2 [eq_of_R_eq α2β2ψ (t * u) (by ring_nf; field_simp)]
+  rw [←inv_of_α2β2ψ Fchar (add_le_add hi₁ hj), inv_mul_cancel, one_mul]
 declare_B3Large_triv_expr_thm F αβψ β2ψ
 
 -- 8.192
 theorem comm_of_βψ_αβ2ψ :
     trivial_commutator_of_root_pair (weakB3Large F).pres_mk βψ αβ2ψ := by
-  sorry
+  intro i j hi hj t u
+  apply triv_comm_iff_commutes.2
+  -- expand βψ as a product of ψ and β elements (work on LHS)
+  rcases decompose 1 1 i hi with ⟨i₁, i₂, rfl, hi₁, hi₂⟩
+  rw [eq_of_R_eq βψ (-2 * (-1 / 2) * t) (by ring_nf; field_simp), expr_βψ_as_ψ_β_ψ_β_ψ Fchar hi₁ hi₂]
+  -- move αβ2ψ fully to the left
+  grw [expr_ψ_αβ2ψ_as_αβ2ψ_ψ Fchar, expr_β_αβ2ψ_as_αβ2ψ_α2β2ψ_β Fchar hi₂ hj,
+  expr_ψ_αβ2ψ_as_αβ2ψ_ψ Fchar, expr_β_αβ2ψ_as_αβ2ψ_β_α2β2ψ Fchar hi₂ hj, expr_ψ_αβ2ψ_as_αβ2ψ_ψ Fchar]
+  -- commute α2β2ψ across ψ and cancel
+  grw [expr_ψ_α2β2ψ_as_α2β2ψ_ψ Fchar]
+  rw [neg_mul, ←inv_of_α2β2ψ Fchar (add_le_add hi₂ hj), mul_inv_cancel, one_mul]
 declare_B3Large_triv_expr_thm F βψ αβ2ψ
 
 -- 8.193
 theorem comm_of_β2ψ_αβ2ψ :
     trivial_commutator_of_root_pair (weakB3Large F).pres_mk β2ψ αβ2ψ := by
-  sorry
+  intro i j hi hj t u
+  apply triv_comm_iff_commutes.2
+  rcases decompose 1 2 i hi with ⟨i₁, i₂, rfl, hi₁, hi₂⟩
+  rw [eq_of_R_eq β2ψ (2 * t * (1 / 2)) (by field_simp), expr_β2ψ_as_ψ_βψ_ψ_βψ hi₁ hi₂]
+  grw [expr_βψ_αβ2ψ_as_αβ2ψ_βψ Fchar, expr_ψ_αβ2ψ_as_αβ2ψ_ψ Fchar,
+  expr_βψ_αβ2ψ_as_αβ2ψ_βψ Fchar, expr_ψ_αβ2ψ_as_αβ2ψ_ψ Fchar]
 declare_B3Large_triv_expr_thm F β2ψ αβ2ψ
 
 -- 8.194
 theorem comm_of_αβψ_αβ2ψ :
     trivial_commutator_of_root_pair (weakB3Large F).pres_mk αβψ αβ2ψ := by
-  sorry
+  intro i j hi hj t u
+  apply triv_comm_iff_commutes.2
+  rcases decompose 1 2 i hi with ⟨i₁, i₂, rfl, hi₁, hi₂⟩
+  rw [←mul_one t, expr_αβψ_as_βψ_α_βψ_α_βψ hi₁ hi₂]
+  grw [expr_βψ_αβ2ψ_as_αβ2ψ_βψ Fchar, expr_α_αβ2ψ_as_αβ2ψ_α Fchar, expr_βψ_αβ2ψ_as_αβ2ψ_βψ Fchar,
+  expr_α_αβ2ψ_as_αβ2ψ_α Fchar, expr_βψ_αβ2ψ_as_αβ2ψ_βψ Fchar]
 declare_B3Large_triv_expr_thm F αβψ αβ2ψ
 
 -- 8.195
 theorem comm_of_αβ2ψ :
     mixed_commutes_of_root (weakB3Large F).pres_mk αβ2ψ := by
-  sorry
+  intro i j hi hj t u
+  apply triv_comm_iff_commutes.2
+  rcases decompose 3 1 i hi with ⟨i₁, i₂, rfl, hi₁, hi₂⟩
+  rw [eq_of_R_eq αβ2ψ (-2 * t * (-1 / 2)) (by ring_nf; field_simp), expr_αβ2ψ_as_ψ_αβψ_ψ_αβψ Fchar hi₁ hi₂]
+  grw [expr_αβψ_αβ2ψ_as_αβ2ψ_αβψ Fchar, expr_ψ_αβ2ψ_as_αβ2ψ_ψ Fchar,
+  expr_αβψ_αβ2ψ_as_αβ2ψ_αβψ Fchar, expr_ψ_αβ2ψ_as_αβ2ψ_ψ Fchar]
 declare_B3Large_mixed_expr_thm F αβ2ψ
 
 -- 8.196
 @[simp, chev_simps]
 theorem lin_of_αβ2ψ : lin_of_root((weakB3Large F).pres_mk, αβ2ψ) := by
-  sorry
+  intro i hi t u
+  rcases decompose 1 3 i hi with ⟨i₁, i₂, rfl, hi₁, hi₂⟩
+  -- expand one αβ2ψ as product of α and β2ψ elements (work on LHS)
+  rw [←mul_one t, expr_αβ2ψ_as_α_β2ψ_α_β2ψ Fchar hi₁ hi₂]
+  -- move the αβ2ψ to the left but not all the way
+  grw [expr_β2ψ_αβ2ψ_as_αβ2ψ_β2ψ Fchar, expr_α_αβ2ψ_as_αβ2ψ_α Fchar, expr_β2ψ_αβ2ψ_as_αβ2ψ_β2ψ Fchar]
+  -- expand αβ2ψ as product of α and β2ψ elements
+  rw [←mul_one u, expr_αβ2ψ_as_α_β2ψ_α_β2ψ Fchar hi₁ hi₂, ←inv_of_β2ψ]
+  -- collect back into an αβ2ψ term
+  grw [rfl]
+  rw [←mul_one (t + u), expr_αβ2ψ_as_α_β2ψ_α_β2ψ Fchar hi₁ hi₂]
+  group
 
 -- 8.197
 @[simp, chev_simps]
 theorem lin_of_α2β2ψ : lin_of_root((weakB3Large F).pres_mk, α2β2ψ) := by
-  sorry
+  intro i hi t u
+  rcases decompose 2 3 i hi with ⟨i₁, i₂, rfl, hi₁, hi₂⟩
+  -- expand one α2β2ψ as product of αβ and β2ψ elements (work on LHS)
+  rw [eq_of_R_eq α2β2ψ (-t * -1) (by ring), expr_α2β2ψ_as_αβ_β2ψ_αβ_β2ψ Fchar hi₁ hi₂, neg_neg]
+  -- move the α2β2ψ to the left but not all the way
+  grw [expr_β2ψ_α2β2ψ_as_α2β2ψ_β2ψ Fchar, expr_αβ_α2β2ψ_as_α2β2ψ_αβ Fchar, expr_β2ψ_α2β2ψ_as_α2β2ψ_β2ψ Fchar]
+  -- expand α2β2ψ as product of αβ and β2ψ elements
+  rw [eq_of_R_eq α2β2ψ (-u * -1) (by ring), expr_α2β2ψ_as_αβ_β2ψ_αβ_β2ψ Fchar hi₁ hi₂, neg_neg, ←inv_of_β2ψ]
+  -- collect back into α2β2ψ term
+  grw [rfl]
+  rw [eq_of_R_eq α2β2ψ (-(t + u) * -1) (by ring), expr_α2β2ψ_as_αβ_β2ψ_αβ_β2ψ Fchar hi₁ hi₂]
+  group
 
 -- 8.198
 theorem hom_lift_of_comm_of_α_α2β2ψ_square : forall_ijk_tu α β ψ,
