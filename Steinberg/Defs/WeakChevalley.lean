@@ -434,6 +434,7 @@ macro "declare_triv_comm_reflected_thm" w:ident R:term:arg v:term:arg
         rw [map_commutatorElement]; trivial
       rw [this, $commLemmaRw]
       <;> try assumption
+      rfl
 
     end
   )
