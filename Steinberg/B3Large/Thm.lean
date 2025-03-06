@@ -2002,7 +2002,6 @@ theorem sufficient_conditions_for_comm_of_αβ_and_β2ψ :
 
 omit Fchar
 -- 8.167
-
 include Fchar in
 theorem sufficient_conditions_for_comm_of_αβ2ψ_and_βψ :
   ∀ ⦃i j k : ℕ⦄ (hi : i ≤ 4) (hj : j ≤ 1) (hk : k ≤ 1)
@@ -2018,14 +2017,18 @@ theorem sufficient_conditions_for_comm_of_αβ2ψ_and_βψ :
     _ = {β, j, u} * ⁅{αβ2ψ, i, t}, {β, j, u}⁆ * {αβ2ψ, i, t} := by
       rw [h44b t u]
   have eq46 := calc {αβ2ψ, i, t} * {β, j, -u}
-    _ = {β, j, -u} * {αβ2ψ, i, t} * ⁅{αβ2ψ, i, -t}, {β, j, u}⁆ := by
-      rw [comm_right, inv_of_β, inv_of_αβ2ψ Fchar hi, neg_neg]
+    _ = ⁅{αβ2ψ, i, t}, {β, j, -u}⁆ * {β, j, -u} * {αβ2ψ, i, t} := by
+      apply comm_left
+  have h44d : ∀ t u, ⁅{αβ2ψ, i, -t}, {β, j, u}⁆ * ⁅{αβ2ψ, i, t}, {β, j, u}⁆ = 1 := by
+    intro t u
+    have := h44c (-t) (u)
+    norm_num at this
+    exact this
+  have h := expr_βψ_as_ψ_β_ψ_β_ψ Fchar (i := k) (j := j) (by ht) hj 1 u
+  norm_num at h; rw [eq_of_h_eq βψ (j + k)] at h
   have := calc {αβ2ψ, i, t} * {βψ, j + k, u}
     _ = {αβ2ψ, i, t} * {ψ, k, -1/2} * {β, j, u} * {ψ, k, 1} * {β, j, -u} * {ψ, k, -1/2} := by
-      have := expr_βψ_as_ψ_β_ψ_β_ψ Fchar (i := k) (j := j) (by ht) hj 1 u
-      norm_num at this; rw [eq_of_h_eq βψ (j + k)] at this
-      grw [this]
-      exact Nat.add_comm k j
+      grw [h]
     _ = {ψ, k, -1/2} * {β, j, u} * ⁅{αβ2ψ, i, t}, {β, j, u}⁆ * {ψ, k, 1} * ⁅{αβ2ψ, i, -t}, {β, j, u}⁆ * {β, j, -u} * {ψ, k, -1/2} * {αβ2ψ, i, t} := by
       have h1 : ∀ u, {ψ, k, u} * {αβ2ψ, i, t} = {αβ2ψ, i, t} * {ψ, k, u} := by
         intro u
@@ -2037,11 +2040,22 @@ theorem sufficient_conditions_for_comm_of_αβ2ψ_and_βψ :
           grw [commutatorElement_def, inv_of_αβ2ψ Fchar (by ht)]
         _ = ⁅{αβ2ψ, i, t}, {β, j, -u}⁆ * {αβ2ψ, i, t} := by
           grw [commutatorElement_def, inv_of_αβ2ψ Fchar (by ht)]
-      grw [← h1, eq45, ← h1, eq46, this, ← h1]
-      sorry
-  stop
-
-  sorry
+      grw [← h1, eq45, ← h1, eq46, ← h1]
+      nth_rw 2 [← comm_swap]
+      apply mul_eq_one_iff_eq_inv.mp
+      have := h44b (-t) (-u)
+      norm_num at this
+      grw [this]
+      have := h44d (-t) (-u)
+      norm_num at this
+      exact this
+    _ = {ψ, k, -1/2} * {β, j, u} * {ψ, k, 1} * {β, j, -u} * {ψ, k, -1/2} * {αβ2ψ, i, t} := by
+      have := fun t u v ↦ (triv_comm_iff_commutes.mp (h44a t u v))
+      grw [this, this, h44c]
+    _ = {βψ, j + k, u} * {αβ2ψ, i, t} := by
+      grw [← h]
+  exact triv_comm_iff_commutes.mpr this
+  exact Nat.add_comm k j
 
 include Fchar
 private lemma partial_comm_of_βψ_αβ2ψ_help : ∀ t u : F,
