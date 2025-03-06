@@ -1851,10 +1851,20 @@ theorem more_sufficient_conditions_for_comm_of_αβψ_and_βψ :
 
 -- 8.161
 theorem sufficient_conditions_for_comm_of_αβ2ψ_and_β2ψ :
-  ∀ ⦃i j k : ℕ⦄ (hi : i ≤ 3) (hj : j ≤ 1) (hk : k ≤ 3)
-  (hyp : ∀ (t u : F), ⁅{β2ψ, k, t}, {αβ2ψ, i + j, u}⁆ = 1),
-  ∀ (t u : F), ⁅{β2ψ, i, t}, {αβ2ψ, j + k, u}⁆ = 1 := by
-  sorry
+    ∀ ⦃i j k : ℕ⦄ (hi : i ≤ 3) (hj : j ≤ 1) (hk : k ≤ 3)
+    (hyp : ∀ (t u : F), ⁅{β2ψ, k, t}, {αβ2ψ, i + j, u}⁆ = 1),
+    ∀ (t u : F), ⁅{β2ψ, i, t}, {αβ2ψ, j + k, u}⁆ = 1 := by
+  intro i j k hi hj hk hyp t u
+  have hyp' := fun t' u' ↦ triv_comm_iff_commutes.1 (hyp t' u')
+  apply triv_comm_iff_commutes.2
+  -- expand αβ2ψ element as a product of α and β2ψ elements
+  rw [←mul_one u, expr_αβ2ψ_as_α_β2ψ_α_β2ψ Fchar hj hk]
+  -- commute the β2ψ element fully to the left (working on RHS)
+  grw [expr_β2ψ_β2ψ_as_β2ψ_β2ψ, expr_α_β2ψ_as_β2ψ_αβ2ψ_α (t := -u) Fchar hj hi,
+  expr_β2ψ_β2ψ_as_β2ψ_β2ψ, expr_α_β2ψ_as_β2ψ_α_αβ2ψ Fchar hj hi]
+  rw [eq_of_h_eq αβ2ψ (i + j) (add_comm j i), eq_of_h_eq αβ2ψ (i + j) (add_comm j i)]
+  rw [←hyp', neg_mul, ←inv_of_αβ2ψ Fchar (add_le_add hi hj)]
+  group
 
 -- 8.162a
 include Fchar in
@@ -1891,7 +1901,7 @@ include Fchar
 theorem partial_comm_of_ψ_αβ2ψ_β :
   ∀ (t u v : F), ⁅{ψ, 1, v}, ⁅{αβ2ψ, 1, t}, {β, 0, u}⁆⁆ = 1 := by
   intro t u v
-  have := @sufficient_conditions_for_comm_of_ψ_and_αβ2ψ_β F _ 1 1 0 (by norm_num) (by norm_num) (by norm_num)
+  have := @sufficient_conditions_for_comm_of_ψ_and_αβ2ψ_β F _ Fchar 1 1 0 (by norm_num) (by norm_num) (by norm_num)
   norm_num at this
   apply this
   exact @partial_comm_of_β2ψ_αβ2ψ_a F _ Fchar
