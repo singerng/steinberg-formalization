@@ -2036,7 +2036,7 @@ theorem partial_comm_of_βψ_αβ2ψ :
 -- 8.169a
 theorem partial_C_interchange_of_α2β2ψ_a :
   ∀ (t u v : F), ⁅{αβ, 0, t}, {β2ψ, 1, 2 * u * v}⁆ = ⁅{αβψ, 1, t * u}, {βψ, 0, v}⁆ := by
-  apply @sufficient_conditions_for_comm_of_αβ_and_β2ψ F _ 0 1 0 (by trivial) (by trivial) (by trivial)
+  apply @sufficient_conditions_for_comm_of_αβ_and_β2ψ F _ Fchar 0 1 0 (by trivial) (by trivial) (by trivial)
   · exact @partial_comm_of_βψ_αβ2ψ F _ Fchar
   intro t u v
   have := @hom_lift_of_interchange_of_α2β2ψ_b F _ Fchar 1 0 0 (by trivial) (by trivial) (by trivial) u 1 v
