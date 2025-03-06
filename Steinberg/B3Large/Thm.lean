@@ -2489,112 +2489,305 @@ declare_B3Large_triv_expr_thm F βψ α2β2ψ
 theorem inv_of_α2β2ψ : forall_i_t α2β2ψ,
     {α2β2ψ, i, t}⁻¹ = {α2β2ψ, i, -t}  := by
   intro i hi t
-  rcases decompose 2 3 i hi with ⟨ i₁, i₂, rfl, hi₁, hi₂ ⟩
-  rw [←one_mul t, ←neg_neg 1, expr_α2β2ψ_as_comm_of_αβ_β2ψ Fchar hi₁ hi₂, neg_neg, ←neg_mul, expr_α2β2ψ_as_comm_of_αβ_β2ψ Fchar hi₁ hi₂]
-  sorry
+  rcases decompose_5_into_booleans_1_2_2 i hi with ⟨i₁, i₂, i₃, rfl, hi₁, hi₂, hi₃⟩
+  rw [eq_of_hR_eq α2β2ψ ((i₁ + i₂) + (i₂ + 2 * i₃)) (by linarith) (-t * (-1)) (by ring),
+  eq_of_hR_eq α2β2ψ (i := i₁ + 2 * i₂ + 2 * i₃) ((i₁ + i₂) + (i₂ + 2 * i₃)) (by linarith) (-t * 1) (by ring),
+  expr_α2β2ψ_as_comm_of_αβ_β2ψ Fchar (by linarith) (by linarith), expr_α2β2ψ_as_comm_of_αβ_β2ψ Fchar (by linarith) (by linarith),
+  (hom_lift_of_inv_doub_of_αβ_β2ψ hi₁ hi₂ hi₃ _ _).1, neg_neg]
+  apply (mul_right_inj ⁅{αβ, i₁ + i₂, -t}, {β2ψ, i₂ + 2 * i₃, 1}⁆).1
+  rw [mul_inv_cancel]
+  nth_rewrite 2 [←neg_neg t]
+  rw [(hom_lift_of_inv_doub_of_αβ_β2ψ hi₁ hi₂ hi₃ (-t) _).2.1]
 
 -- 8.178b
 @[group_reassoc]
 theorem inv_doub_of_α2β2ψ_b : forall_i_t α2β2ψ,
     {α2β2ψ, i, t} * {α2β2ψ, i, t} = {α2β2ψ, i, 2 * t} := by
-  sorry
+  intro i hi t
+  rcases decompose_5_into_booleans_1_2_2 i hi with ⟨i₁, i₂, i₃, rfl, hi₁, hi₂, hi₃⟩
+  rw [eq_of_hR_eq α2β2ψ ((i₁ + i₂) + (i₂ + 2 * i₃)) (by linarith) (-t * (-1)) (by ring),
+  eq_of_hR_eq α2β2ψ (i := i₁ + 2 * i₂ + 2 * i₃) ((i₁ + i₂) + (i₂ + 2 * i₃)) (by linarith) (-(2 * t) * (-1)) (by ring),
+  expr_α2β2ψ_as_comm_of_αβ_β2ψ Fchar (by linarith) (by linarith), expr_α2β2ψ_as_comm_of_αβ_β2ψ Fchar (by linarith) (by linarith),
+  (hom_lift_of_inv_doub_of_αβ_β2ψ hi₁ hi₂ hi₃ _ _).2.2]
 
 -- 8.179a
 theorem expr_α2β2ψ_as_αβ_β2ψ_αβ_β2ψ : forall_ij_tu αβ β2ψ,
     {α2β2ψ, i + j, -t * u} = {αβ, i, t} * {β2ψ, j, u} * {αβ, i, -t} * {β2ψ, j, -u} := by
-  sorry
+  intro i j hi hj t u
+  rw [expr_α2β2ψ_as_comm_of_αβ_β2ψ Fchar hi hj, ←inv_of_αβ, ←inv_of_β2ψ, commutatorElement_def]
 
 -- 8.179b
 theorem expr_α2β2ψ_as_β2ψ_αβ_β2ψ_αβ : forall_ij_tu αβ β2ψ,
     {α2β2ψ, i + j, -t * u} = {β2ψ, j, -u} * {αβ, i, t} * {β2ψ, j, u} * {αβ, i, -t} := by
-  sorry
+  intro i j hi hj t u
+  apply inv_inj.1
+  rw [inv_of_α2β2ψ Fchar (by linarith)]
+  simp only [neg_mul, neg_neg, mul_inv_rev, inv_of_αβ, inv_of_β2ψ]
+  rw [eq_of_R_eq α2β2ψ (-t * (-u)) (by ring), expr_α2β2ψ_as_comm_of_αβ_β2ψ Fchar hi hj,
+  ←inv_of_αβ, ←inv_of_β2ψ]
+  group
 
 -- 8.180a
 @[group_reassoc]
 theorem expr_αβ_β2ψ_as_β2ψ_α2β2ψ_αβ : forall_ij_tu αβ β2ψ,
     {αβ, i, t} * {β2ψ, j, u} = {β2ψ, j, u} * {α2β2ψ, i + j, -t * u} * {αβ, i, t} := by
-  sorry
+  intro i j hi hj t u
+  rw [expr_α2β2ψ_as_β2ψ_αβ_β2ψ_αβ Fchar hi hj, ←inv_of_β2ψ, ←inv_of_αβ]
+  group
 
 -- 8.180b
 @[group_reassoc]
 theorem expr_αβ_β2ψ_as_β2ψ_αβ_α2β2ψ : forall_ij_tu αβ β2ψ,
     {αβ, i, t} * {β2ψ, j, u} = {β2ψ, j, u} * {αβ, i, t} * {α2β2ψ, i + j, -t * u} := by
-  sorry
+  intro i j hi hj t u
+  rw [eq_of_R_eq α2β2ψ (- -t * -u) (by ring), expr_α2β2ψ_as_αβ_β2ψ_αβ_β2ψ Fchar hi hj,
+  ←inv_of_αβ, neg_neg, neg_neg, ←inv_of_β2ψ]
+  group
 
 -- 8.181a
 @[group_reassoc]
 theorem expr_β_αβ2ψ_as_αβ2ψ_α2β2ψ_β : forall_ij_tu β αβ2ψ,
     {β, i, t} * {αβ2ψ, j, u} = {αβ2ψ, j, u} * {α2β2ψ, i + j, t * u} * {β, i, t} := by
-  sorry
+  intro i j hi hj t u
+  rw [eq_of_hR_eq α2β2ψ (j + i) (by linarith) (-(-u) * t) (by ring), expr_α2β2ψ_as_comm_of_αβ2ψ_β Fchar hj hi,
+  ←inv_of_αβ2ψ Fchar hj]
+  group
 
 -- 8.181b
 @[group_reassoc]
 theorem expr_β_αβ2ψ_as_αβ2ψ_β_α2β2ψ : forall_ij_tu β αβ2ψ,
     {β, i, t} * {αβ2ψ, j, u} = {αβ2ψ, j, u} * {β, i, t} * {α2β2ψ, i + j, t * u} := by
-  sorry
+  intro i j hi hj t u
+  rw [←neg_neg (t * u), ←inv_of_α2β2ψ Fchar (by linarith), eq_of_hR_eq α2β2ψ (j + i) (by linarith) (-(-u) * (-t)) (by ring),
+  expr_α2β2ψ_as_comm_of_αβ2ψ_β Fchar hj hi, comm_swap, ←inv_of_β, ←inv_of_αβ2ψ Fchar hj]
+  group
 
 -- 8.182a
 @[group_reassoc]
 theorem expr_βψ_αβψ_as_αβψ_α2β2ψ_βψ : forall_ij_tu βψ αβψ,
     {βψ, i, t} * {αβψ, j, u} = {αβψ, j, u} * {α2β2ψ, i + j, 2 * t * u} * {βψ, i, t} := by
-  sorry
+  intro i j hi hj t u
+  rw [eq_of_hR_eq α2β2ψ (j + i) (by linarith) (-2 * (-u) *(t)) (by ring),
+  expr_α2β2ψ_as_comm_of_αβψ_βψ Fchar hj hi, ←inv_of_αβψ hj]
+  group
 
 -- 8.182b
 @[group_reassoc]
-theorem expr_βψ_αβψ_as_αβψ_βψ_α2β2ψ :
-  ∀ ⦃i j : ℕ⦄ (hi : i ≤ βψ.height) (hj : j ≤ αβψ.height) (t u : F),
-  {βψ, i, t} * {αβψ, j, u} = {αβψ, j, u} * {βψ, i, t} * {α2β2ψ, i + j, 2 * t * u} := by
-  sorry
+theorem expr_βψ_αβψ_as_αβψ_βψ_α2β2ψ : forall_ij_tu βψ αβψ,
+    {βψ, i, t} * {αβψ, j, u} = {αβψ, j, u} * {βψ, i, t} * {α2β2ψ, i + j, 2 * t * u} := by
+  intro i j hi hj t u
+  rw [←neg_neg (2 * t * u), ←inv_of_α2β2ψ Fchar (by linarith), eq_of_hR_eq α2β2ψ (j + i) (by linarith) (-2 * (-u) * (-t)) (by ring),
+  expr_α2β2ψ_as_comm_of_αβψ_βψ Fchar hj hi, comm_swap, ←inv_of_βψ, ←inv_of_αβψ hj]
+  group
 
 -- 8.183a
-theorem commutator_of_α_βψ_a :
-  ∀ ⦃i j : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ βψ.height) (t u : F),
-  ⁅{α, i, t}, {βψ, j, u}⁆ = {αβψ, i + j, t * u} * {α2β2ψ, i + 2 * j, t * u^2} := by
-  sorry
+theorem commutator_of_α_βψ_a : forall_ij_tu α βψ,
+    ⁅{α, i, t}, {βψ, j, u}⁆ = {αβψ, i + j, t * u} * {α2β2ψ, i + 2 * j, t * u^2} := by
+  intro i j hi hj t u
+  rw [(generic_comm_of_α_βψ Fchar hi hj _ _).1, eq_of_hR_eq α2β2ψ ((i + j) + j) (by linarith) (-2 * (-t * u) * (u / 2)) (by ring_nf; field_simp),
+  expr_α2β2ψ_as_comm_of_αβψ_βψ Fchar (by linarith) hj]
 
 -- 8.183b
-theorem commutator_of_α_βψ_b :
-  ∀ ⦃i j : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ βψ.height) (t u : F),
-  ⁅{α, i, t}, {βψ, j, u}⁆ = {α2β2ψ, i + 2 * j, t * u^2} * {αβψ, i + j, t * u} := by
-  sorry
+theorem commutator_of_α_βψ_b : forall_ij_tu α βψ,
+    ⁅{α, i, t}, {βψ, j, u}⁆ = {α2β2ψ, i + 2 * j, t * u^2} * {αβψ, i + j, t * u} := by
+  intro i j hi hj t u
+  rw [(generic_comm_of_α_βψ Fchar hi hj _ _).2, ←neg_neg (t * u^2), ←inv_of_α2β2ψ Fchar (by linarith),
+  eq_of_hR_eq α2β2ψ ((i + j) + j) (by linarith) (-2 * (t * u) * (u / 2)) (by ring_nf; field_simp),
+  expr_α2β2ψ_as_comm_of_αβψ_βψ Fchar (by linarith) hj, comm_swap]
 
 -- 8.184
 theorem sufficient_conditions_for_comm_of_ψ_and_α2β2ψ :
-  ∀ ⦃i j k : ℕ⦄ (hi : i ≤ 1) (hj : j ≤ 2) (hk : k ≤ 3)
-  (h50a : ∀ (t u : F), ⁅{αβψ, i + j, t}, {β2ψ, k, u}⁆ = 1)
-  (h50b : ∀ (t u : F), ⁅{αβ2ψ, 2 * i + j, t}, {β2ψ, k, u}⁆ = 1),
-  ∀ (t u : F), ⁅{ψ, i, t}, {α2β2ψ, j + k, u}⁆ = 1 := by
-  sorry
+    ∀ ⦃i j k : ℕ⦄ (hi : i ≤ 1) (hj : j ≤ 2) (hk : k ≤ 3)
+    (h50a : ∀ (t u : F), ⁅{αβψ, i + j, t}, {β2ψ, k, u}⁆ = 1)
+    (h50b : ∀ (t u : F), ⁅{αβ2ψ, 2 * i + j, t}, {β2ψ, k, u}⁆ = 1),
+    ∀ (t u : F), ⁅{ψ, i, t}, {α2β2ψ, j + k, u}⁆ = 1 := by
+  intro i j k hi hj hk h50a h50b t u
+  have h₁ := fun t u ↦ triv_comm_iff_commutes.1 (h50a t u)
+  have h₂ := fun t u ↦ triv_comm_iff_commutes.1 (h50b t u)
+  apply triv_comm_iff_commutes.2
+  -- expand α2β2ψ into a product of αβ and β2ψ (work on RHS)
+  rw [eq_of_R_eq α2β2ψ (-u * -1) (by ring), expr_α2β2ψ_as_αβ_β2ψ_αβ_β2ψ Fchar hj hk, neg_neg]
+  -- move ψ fully to the left
+  grw [←expr_ψ_β2ψ_as_β2ψ_ψ, expr_αβ_ψ_as_ψ_αβ2ψ_αβψ_αβ Fchar hj hi, ←expr_ψ_β2ψ_as_β2ψ_ψ, expr_αβ_ψ_as_ψ_αβ_αβψ_αβ2ψ Fchar hj hi]
+  -- use h₂ to cancel the αβ2ψ elements
+  grw [eq_of_h_eq αβ2ψ (2 * i + j) (by linarith), h₂ (-u * t^2)]
+  nth_rewrite 2 [eq_of_h_eq αβ2ψ (2 * i + j) (by linarith)]
+  rw [neg_mul, ←inv_of_αβ2ψ Fchar (by linarith)]
+  grw [rfl]
+  -- use h₁ to cancel the αβψ elements
+  grw [eq_of_h_eq αβψ (i + j) (by linarith), h₁]
+  rw [neg_mul, ←inv_of_αβψ (by linarith)]
+  nth_rewrite 2 [eq_of_h_eq αβψ (i + j) (by linarith)]
+  grw [rfl]
 
 -- 8.185
 theorem partial_comm_of_ψ_α2β2ψ :
-  ∀ (t u : F), ⁅{ψ, 1, t}, {α2β2ψ, 0, u}⁆ = 1 := by
-  sorry
+    ∀ (t u : F), ⁅{ψ, 1, t}, {α2β2ψ, 0, u}⁆ = 1 := by
+  apply sufficient_conditions_for_comm_of_ψ_and_α2β2ψ Fchar (i := 1) (j := 0) (k := 0) (by trivial) (by trivial) (by trivial)
+  · intro t u
+    rw [triv_comm_symm, lift_hom_comm_of_β2ψ_αβψ (i := 1) (j := 0) (k := 0) (by trivial) (by trivial) (by trivial)]
+  · intro t u
+    rw [triv_comm_symm, partial_comm_of_β2ψ_αβ2ψ_b (by trivial)]
+
+/- ### ψ and α + 2β + 2ψ commute -/
+
+private lemma comm_of_ψ_α2β2ψ_00 :
+    ∀ (t u : F), ⁅{ψ, 0, t}, {α2β2ψ, 0, u}⁆ = 1 := by
+  intro t u
+  rw [eq_of_R_eq α2β2ψ (-u * -1) (by ring),
+  expr_α2β2ψ_as_comm_of_αβ_β2ψ (i := 0) (j := 0) Fchar (by trivial) (by trivial),
+  hom_lift_of_comm_ψ_αβ_β2ψ (i := 0) (j := 0) (k := 0) (by trivial) (by trivial) (by trivial)]
+
+private lemma comm_of_ψ_α2β2ψ_01 :
+    ∀ (t u : F), ⁅{ψ, 0, t}, {α2β2ψ, 1, u}⁆ = 1 := by
+  intro t u
+  rw [eq_of_R_eq α2β2ψ (-u * -1) (by ring),
+  expr_α2β2ψ_as_comm_of_αβ_β2ψ (i := 1) (j := 0) Fchar (by trivial) (by trivial),
+  hom_lift_of_comm_ψ_αβ_β2ψ (i := 1) (j := 0) (k := 0) (by trivial) (by trivial) (by trivial)]
+
+private lemma comm_of_ψ_α2β2ψ_02 :
+    ∀ (t u : F), ⁅{ψ, 0, t}, {α2β2ψ, 2, u}⁆ = 1 := by
+  intro t u
+  rw [eq_of_R_eq α2β2ψ (-u * -1) (by ring),
+  expr_α2β2ψ_as_comm_of_αβ_β2ψ (i := 1) (j := 1) Fchar (by trivial) (by trivial),
+  hom_lift_of_comm_ψ_αβ_β2ψ (i := 0) (j := 1) (k := 0) (by trivial) (by trivial) (by trivial)]
+
+private lemma comm_of_ψ_α2β2ψ_03 :
+    ∀ (t u : F), ⁅{ψ, 0, t}, {α2β2ψ, 3, u}⁆ = 1 := by
+  intro t u
+  rw [eq_of_R_eq α2β2ψ (-u * -1) (by ring),
+  expr_α2β2ψ_as_comm_of_αβ_β2ψ (i := 2) (j := 1) Fchar (by trivial) (by trivial),
+  hom_lift_of_comm_ψ_αβ_β2ψ (i := 1) (j := 1) (k := 0) (by trivial) (by trivial) (by trivial)]
+
+private lemma comm_of_ψ_α2β2ψ_10 :
+    ∀ (t u : F), ⁅{ψ, 1, t}, {α2β2ψ, 0, u}⁆ = 1 :=
+  partial_comm_of_ψ_α2β2ψ Fchar
+
+private lemma comm_of_ψ_α2β2ψ_11 :
+    ∀ (t u : F), ⁅{ψ, 1, t}, {α2β2ψ, 1, u}⁆ = 1 := by
+  intro t u
+  rw [eq_of_R_eq α2β2ψ (-u * -1) (by ring),
+  expr_α2β2ψ_as_comm_of_αβ2ψ_β (i := 1) (j := 0) Fchar (by trivial) (by trivial),
+  partial_comm_of_ψ_αβ2ψ_β (by trivial)]
+
+-- reflected theorems
+private lemma comm_of_ψ_α2β2ψ_04 :
+    ∀ (t u : F), ⁅{ψ, 0, t}, {α2β2ψ, 4, u}⁆ = 1 := by
+  intro t u
+  have : ⁅{ψ, 0, t}, {α2β2ψ, 4, u}⁆ = ReflDeg.refl_symm b3large_valid ⁅{ψ, 1, t}, {α2β2ψ, 1, u}⁆ := by
+    rw [map_commutatorElement]
+    trivial
+  rw [this, comm_of_ψ_α2β2ψ_11 Fchar]
+  rfl
+
+private lemma comm_of_ψ_α2β2ψ_05 :
+    ∀ (t u : F), ⁅{ψ, 0, t}, {α2β2ψ, 5, u}⁆ = 1 := by
+  intro t u
+  have : ⁅{ψ, 0, t}, {α2β2ψ, 5, u}⁆ = ReflDeg.refl_symm b3large_valid ⁅{ψ, 1, t}, {α2β2ψ, 0, u}⁆ := by
+    rw [map_commutatorElement]
+    trivial
+  rw [this, comm_of_ψ_α2β2ψ_10 Fchar]
+  rfl
+
+private lemma comm_of_ψ_α2β2ψ_12 :
+    ∀ (t u : F), ⁅{ψ, 1, t}, {α2β2ψ, 2, u}⁆ = 1 := by
+  intro t u
+  have : ⁅{ψ, 1, t}, {α2β2ψ, 2, u}⁆ = ReflDeg.refl_symm b3large_valid ⁅{ψ, 0, t}, {α2β2ψ, 3, u}⁆ := by
+    rw [map_commutatorElement]
+    trivial
+  rw [this, comm_of_ψ_α2β2ψ_03 Fchar]
+  rfl
+
+private lemma comm_of_ψ_α2β2ψ_13 :
+    ∀ (t u : F), ⁅{ψ, 1, t}, {α2β2ψ, 3, u}⁆ = 1 := by
+  intro t u
+  have : ⁅{ψ, 1, t}, {α2β2ψ, 3, u}⁆ = ReflDeg.refl_symm b3large_valid ⁅{ψ, 0, t}, {α2β2ψ, 2, u}⁆ := by
+    rw [map_commutatorElement]
+    trivial
+  rw [this, comm_of_ψ_α2β2ψ_02 Fchar]
+  rfl
+
+private lemma comm_of_ψ_α2β2ψ_14 :
+    ∀ (t u : F), ⁅{ψ, 1, t}, {α2β2ψ, 4, u}⁆ = 1 := by
+  intro t u
+  have : ⁅{ψ, 1, t}, {α2β2ψ, 4, u}⁆ = ReflDeg.refl_symm b3large_valid ⁅{ψ, 0, t}, {α2β2ψ, 1, u}⁆ := by
+    rw [map_commutatorElement]
+    trivial
+  rw [this, comm_of_ψ_α2β2ψ_01 Fchar]
+  rfl
+
+private lemma comm_of_ψ_α2β2ψ_15 :
+    ∀ (t u : F), ⁅{ψ, 1, t}, {α2β2ψ, 5, u}⁆ = 1 := by
+  intro t u
+  have : ⁅{ψ, 1, t}, {α2β2ψ, 5, u}⁆ = ReflDeg.refl_symm b3large_valid ⁅{ψ, 0, t}, {α2β2ψ, 0, u}⁆ := by
+    rw [map_commutatorElement]
+    trivial
+  rw [this, comm_of_ψ_α2β2ψ_00 Fchar]
+  rfl
 
 -- 8.186
-theorem trivial_comm_of_ψ_α2β2ψ :
-  trivial_commutator_of_root_pair (weakB3Large F).pres_mk ψ α2β2ψ := by
-  sorry
+theorem comm_of_ψ_α2β2ψ :
+    trivial_commutator_of_root_pair (weakB3Large F).pres_mk ψ α2β2ψ := by
+  intro i j hi hj
+  match i, j with
+  | 0, 0 => exact comm_of_ψ_α2β2ψ_00 Fchar
+  | 0, 1 => exact comm_of_ψ_α2β2ψ_01 Fchar
+  | 0, 2 => exact comm_of_ψ_α2β2ψ_02 Fchar
+  | 0, 3 => exact comm_of_ψ_α2β2ψ_03 Fchar
+  | 0, 4 => exact comm_of_ψ_α2β2ψ_04 Fchar
+  | 0, 5 => exact comm_of_ψ_α2β2ψ_05 Fchar
+  | 1, 0 => exact comm_of_ψ_α2β2ψ_10 Fchar
+  | 1, 1 => exact comm_of_ψ_α2β2ψ_11 Fchar
+  | 1, 2 => exact comm_of_ψ_α2β2ψ_12 Fchar
+  | 1, 3 => exact comm_of_ψ_α2β2ψ_13 Fchar
+  | 1, 4 => exact comm_of_ψ_α2β2ψ_14 Fchar
+  | 1, 5 => exact comm_of_ψ_α2β2ψ_15 Fchar
+declare_B3Large_triv_expr_thm F ψ α2β2ψ
 
 -- 8.187
-theorem trivial_comm_of_β2ψ_α2β2ψ :
-  trivial_commutator_of_root_pair (weakB3Large F).pres_mk β2ψ α2β2ψ := by
-  sorry
+theorem comm_of_β2ψ_α2β2ψ :
+    trivial_commutator_of_root_pair (weakB3Large F).pres_mk β2ψ α2β2ψ := by
+  intro i j hi hj t u
+  apply triv_comm_iff_commutes.2
+  rcases decompose 1 2 i hi with ⟨i₁, i₂, rfl, hi₁, hi₂⟩
+  rw [eq_of_R_eq β2ψ (2 * t * (1 / 2)) (by field_simp), expr_β2ψ_as_ψ_βψ_ψ_βψ]
+  grw [expr_βψ_α2β2ψ_as_α2β2ψ_βψ Fchar hi₂, expr_ψ_α2β2ψ_as_α2β2ψ_ψ Fchar hi₁,
+  expr_βψ_α2β2ψ_as_α2β2ψ_βψ Fchar hi₂, expr_ψ_α2β2ψ_as_α2β2ψ_ψ Fchar hi₁]
+declare_B3Large_triv_expr_thm F β2ψ α2β2ψ
 
 -- 8.188
-theorem trivial_comm_of_αβψ_α2β2ψ :
-  trivial_commutator_of_root_pair (weakB3Large F).pres_mk αβψ α2β2ψ := by
-  sorry
+theorem comm_of_αβψ_α2β2ψ :
+    trivial_commutator_of_root_pair (weakB3Large F).pres_mk αβψ α2β2ψ := by
+  intro i j hi hj t u
+  apply triv_comm_iff_commutes.2
+  rcases decompose 2 1 i hi with ⟨i₁, i₂, rfl, hi₁, hi₂⟩
+  rw [←mul_one t, expr_αβψ_as_ψ_αβ_ψ_αβ_ψ hi₁ hi₂]
+  grw [expr_ψ_α2β2ψ_as_α2β2ψ_ψ Fchar, expr_αβ_α2β2ψ_as_α2β2ψ_αβ Fchar,
+  expr_ψ_α2β2ψ_as_α2β2ψ_ψ Fchar, expr_αβ_α2β2ψ_as_α2β2ψ_αβ Fchar, expr_ψ_α2β2ψ_as_α2β2ψ_ψ Fchar]
+declare_B3Large_triv_expr_thm F αβψ α2β2ψ
 
 -- 8.189
-theorem trivial_comm_of_αβ2ψ_α2β2ψ :
-  trivial_commutator_of_root_pair (weakB3Large F).pres_mk αβ2ψ α2β2ψ := by
-  sorry
+theorem comm_of_αβ2ψ_α2β2ψ :
+    trivial_commutator_of_root_pair (weakB3Large F).pres_mk αβ2ψ α2β2ψ := by
+  intro i j hi hj t u
+  apply triv_comm_iff_commutes.2
+  rcases decompose 3 1 i hi with ⟨i₁, i₂, rfl, hi₁, hi₂⟩
+  rw [eq_of_R_eq αβ2ψ (-2 * t * (-1 / 2)) (by field_simp), expr_αβ2ψ_as_αβψ_ψ_αβψ_ψ Fchar hi₁ hi₂]
+  grw [expr_ψ_α2β2ψ_as_α2β2ψ_ψ Fchar, expr_αβψ_α2β2ψ_as_α2β2ψ_αβψ Fchar,
+  expr_ψ_α2β2ψ_as_α2β2ψ_ψ Fchar, expr_αβψ_α2β2ψ_as_α2β2ψ_αβψ Fchar]
+declare_B3Large_triv_expr_thm F αβ2ψ α2β2ψ
 
 -- 8.190
 theorem mixed_comm_of_α2β2ψ :
-  mixed_commutes_of_root (weakB3Large F).pres_mk α2β2ψ := by
-  sorry
+    mixed_commutes_of_root (weakB3Large F).pres_mk α2β2ψ := by
+  intro i j hi hj t u
+  apply triv_comm_iff_commutes.2
+  rcases decompose 4 1 i hi with ⟨i₁, i₂, rfl, hi₁, hi₂⟩
+  rw [eq_of_R_eq α2β2ψ (-t * (-1)) (by ring), expr_α2β2ψ_as_comm_of_αβ2ψ_β Fchar hi₁ hi₂,
+  commutatorElement_def, inv_of_β, inv_of_αβ2ψ Fchar hi₁]
+  grw [expr_β_α2β2ψ_as_α2β2ψ_β Fchar, expr_αβ2ψ_α2β2ψ_as_α2β2ψ_αβ2ψ Fchar,
+  expr_β_α2β2ψ_as_α2β2ψ_β Fchar, expr_αβ2ψ_α2β2ψ_as_α2β2ψ_αβ2ψ Fchar]
+-- declare_B3Large_mixed_comm_thms F α2β2ψ
 
 -- 8.191
 theorem trivial_comm_of_αβψ_β2ψ :

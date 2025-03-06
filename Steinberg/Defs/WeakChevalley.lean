@@ -228,7 +228,7 @@ macro "declare_triv_expr_thm" w:ident R:term:arg r₁:term:arg r₂:term:arg : c
   let commName := TSyntax.mapIdent₂ r₁ r₂
     (fun s₁ s₂ => "comm_of_" ++ s₁ ++ "_" ++ s₂)
   let commOf ← `(rwRule| $commName:term)
-  let mut cmds ← Syntax.getArgs <$> `(
+  let cmds ← Syntax.getArgs <$> `(
     section
 
     @[group_reassoc] theorem $exprAs
@@ -340,16 +340,12 @@ macro "declare_lin_id_inv_thms" w:ident R:term:arg root:term:arg : command => do
   )
   return ⟨mkNullNode cmds⟩
 
-macro "declare_mixed_comm_thms" w:ident R:term:arg r:term:arg : command => do
+macro "declare_mixed_expr_thm" w:ident R:term:arg r:term:arg : command => do
   let mixedName := r.mapIdent ("mixed_commutes_of_" ++ ·)
   let mixedRw ← `(rwRule| $mixedName:term)
   let exprName := r.mapIdent (fun s => "expr_" ++ s ++ "_" ++ s ++ "_as_" ++ s ++ "_" ++ s)
-  let mut cmds ← Syntax.getArgs <$> `(
+  let cmds ← Syntax.getArgs <$> `(
     section
-
-    theorem $mixedName : mixed_commutes_of_root ($w $R).pres_mk $r :=
-      WeakChevalley.mixed_commutes_helper ($w $R)
-        (by unfold $w; simp [trivial_commutator_pairs])
 
     @[group_reassoc]
     theorem $exprName :
@@ -360,6 +356,21 @@ macro "declare_mixed_comm_thms" w:ident R:term:arg r:term:arg : command => do
       apply triv_comm_iff_commutes.mp
       rw [$mixedRw]
       try assumption
+
+    end
+  )
+  return ⟨mkNullNode cmds⟩
+
+macro "declare_mixed_comm_thms" w:ident R:term:arg r:term:arg : command => do
+  let mixedName := r.mapIdent ("mixed_commutes_of_" ++ ·)
+  let cmds ← Syntax.getArgs <$> `(
+    section
+
+    theorem $mixedName : mixed_commutes_of_root ($w $R).pres_mk $r :=
+      WeakChevalley.mixed_commutes_helper ($w $R)
+        (by unfold $w; simp [trivial_commutator_pairs])
+
+    declare_mixed_expr_thm $w $R $r
 
     end
   )
@@ -380,8 +391,8 @@ macro "declare_reflected_thm" w:ident R:term:arg v:term:arg
     (fun s₁ s₂ s₃ => "expr_" ++ s₁ ++ "_as_comm_of_" ++ s₂ ++ "_" ++ s₃ ++ s!"_{n₂.getNat}{n₃.getNat}")
   let exprLemma := TSyntax.mapIdent₃ r₁ r₂ r₃
     (fun s₁ s₂ s₃ => "expr_" ++ s₁ ++ "_as_comm_of_" ++ s₂ ++ "_" ++ s₃ ++ s!"_{n₅.getNat}{n₆.getNat}")
-  let exprLemmaRw ← `(rwRule| $exprLemma:term Fchar)
-  let mut cmds ← Syntax.getArgs <$> `(
+  let exprLemmaRw ← `(rwRule| $exprLemma:term)
+  let cmds ← Syntax.getArgs <$> `(
     section
 
     lemma $exprName :
@@ -397,7 +408,32 @@ macro "declare_reflected_thm" w:ident R:term:arg v:term:arg
               ⁅($w $R).pres_mk {$r₂:term, $n₅, t}, ($w $R).pres_mk {$r₃:term, $n₆, u}⁆ := by
         rw [map_commutatorElement]; trivial
       rw [this, $exprLemmaRw]
-      try assumption
+      <;> try assumption
+
+    end
+  )
+  return ⟨mkNullNode cmds⟩
+
+macro "declare_triv_comm_reflected_thm" w:ident R:term:arg v:term:arg
+        r₁:term:arg r₂:term:arg
+        n₁:num n₂:num n₃:num n₄:num : command => do
+  let commOf := TSyntax.mapIdent₂ r₁ r₂
+    (fun s₁ s₂ => "comm_of_" ++ s₁ ++ "_" ++ s₂ ++ s!"_{n₁.getNat}{n₂.getNat}")
+  let commLemma := TSyntax.mapIdent₂ r₁ r₂
+    (fun s₁ s₂ => "comm_of_" ++ s₁ ++ "_" ++ s₂ ++ s!"_{n₃.getNat}{n₄.getNat}")
+  let commLemmaRw ← `(rwRule| $commLemma:term)
+  let cmds ← Syntax.getArgs <$> `(
+    section
+
+    lemma $commOf : ∀ (t u : $R),
+        ⁅ ($w $R).pres_mk {$r₁:term, $n₁, t}, ($w $R).pres_mk {$r₂:term, $n₂, u} ⁆ = 1 := by
+      intro t u
+      have : ⁅ ($w $R).pres_mk {$r₁:term, $n₁, t}, ($w $R).pres_mk {$r₂:term, $n₂, u} ⁆
+        = ReflDeg.refl_symm $v
+            ⁅ ($w $R).pres_mk {$r₁:term, $n₃, t}, ($w $R).pres_mk {$r₂:term, $n₄, u} ⁆ := by
+        rw [map_commutatorElement]; trivial
+      rw [this, $commLemmaRw]
+      <;> try assumption
 
     end
   )
