@@ -10,7 +10,7 @@ import Mathlib.Tactic.Group
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.FieldSimp
 
-import Steinberg.Defs.Deg
+import Steinberg.Defs.Lattice
 import Steinberg.Defs.Commutator
 import Steinberg.Defs.ReflDeg
 
@@ -116,40 +116,27 @@ private lemma homog_lift_of_comm_of_βψ_ψω (i j k : ℕ) (hi : i ≤ 1) (hj :
     let v₀ : F := match k with
       | 1 => 0
       | 0 => u
-    have hf_i : i ∈ [0,1] := mem_list_range_iff_le.mp hi
-    have hf_j : j ∈ [0,1] := mem_list_range_iff_le.mp hj
-    have hf_k : k ∈ [0,1] := mem_list_range_iff_le.mp hk
+    have hf_i : i ∈ [0,1] := by simp only [List.mem_cons, List.mem_singleton]; omega
+    have hf_j : j ∈ [0,1] := by simp only [List.mem_cons, List.mem_singleton]; omega
+    have hf_k : k ∈ [0,1] := by simp only [List.mem_cons, List.mem_singleton]; omega
     have id₁ : {βψ, i + j, t} = {βψ, 2, t₁ * u₁} * {βψ, 1, t₁ * u₀ + t₀ * u₁} * {βψ, 0, t₀ * u₀} := by (
       fin_cases hf_i, hf_j, hf_k
-      all_goals (
-        simp only [t₀, t₁, u₀, u₁, v₀, v₁]
-        simp only [add_zero, mul_zero, zero_mul, mul_one, zero_add]
-        repeat rw [id_of_βψ]
-        simp only [one_mul, mul_one]
-      )
+      <;> chev_simp [t₀, t₁, u₀, u₁, v₀, v₁]
     )
     have id₂ : {ψω, j + k, u} = {ψω, 2, u₁ * v₁} * {ψω, 1, u₁ * v₀ + u₀ * v₁} * {ψω, 0, u₀ * v₀} := by (
       fin_cases hf_i, hf_j, hf_k
-      all_goals (
-        simp only [t₀, t₁, u₀, u₁, v₀, v₁]
-        simp only [add_zero, mul_zero, zero_mul, one_mul, zero_add]
-        repeat rw [id_of_ψω]
-        simp only [one_mul, mul_one]
-      )
+      <;> chev_simp [t₀, t₁, u₀, u₁, v₀, v₁]
     )
     rw [id₁, id₂, nonhomog_lift_of_comm_of_βψ_ψω]
 
-private lemma image_of_homog_lift_of_comm_of_βψ_ψω {i j : ℕ} (hi : i ≤ βψ.height) (hj : j ≤ ψω.height) :
-  ((i, j) ∈ ij_jk_image) → ∀ (t u : F), ⁅ {βψ, i, t}, {ψω, j, u} ⁆ = 1 := by
+private lemma image_of_homog_lift_of_comm_of_βψ_ψω {i j : ℕ} (hi : i ≤ βψ.height) (hj : j ≤ ψω.height)
+    : ((i, j) ∈ ij_jk_image) → ∀ (t u : F), ⁅ {βψ, i, t}, {ψω, j, u} ⁆ = 1 := by
   intro h_in_image t u
   have : ∃ ijk' : ℕ × ℕ × ℕ, ijk' ∈ boolean_cube ∧ f_ij_jk ijk' = (i, j) := by
     rw [← Finset.mem_image, correct_of_ij_jk_image]; exact h_in_image
-  have ⟨ ijk', ⟨ h_in_cube, h_f ⟩ ⟩ := this
-  have ⟨ hi', hj', hk' ⟩ := mem_range_of_boolean_cube ijk' h_in_cube
-  let ⟨ i', j', k' ⟩ := ijk'
-  have h_f' : i = i' + j' ∧ j = j' + k' := by rw [← Prod.mk.injEq, ← h_f, f_ij_jk]
+  simp [f_ij_jk] at this
+  rcases this with ⟨ i', j', k', ⟨ hi', hj', hk' ⟩, rfl, rfl ⟩
   rw [← homog_lift_of_comm_of_βψ_ψω i' j' k' hi' hj' hk' t u]
-  simp only [h_f']
 
 private lemma comm_of_βψ_ψω_20 : ∀ (t u : F), ⁅ {βψ, 2, t}, {ψω, 0, u} ⁆ = 1 := by
   intro t u

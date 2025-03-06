@@ -9,7 +9,7 @@ import Steinberg.A3.Basic
 import Mathlib.Tactic.Group
 import Mathlib.Tactic.FinCases
 
-import Steinberg.Defs.Deg
+import Steinberg.Defs.Lattice
 import Steinberg.Defs.ReflDeg
 
 import Steinberg.Upstream.FreeGroup
@@ -104,9 +104,9 @@ private lemma homog_lift_of_comm_of_αβ_βγ (i j k : ℕ) (hi : i ≤ 1) (hj :
     let v₀ : R := match k with
       | 1 => 0
       | 0 => u
-    have hf_i : i ∈ [0,1] := mem_list_range_iff_le.mp hi
-    have hf_j : j ∈ [0,1] := mem_list_range_iff_le.mp hj
-    have hf_k : k ∈ [0,1] := mem_list_range_iff_le.mp hk
+    have hf_i : i ∈ [0,1] := by simp only [List.mem_cons, List.mem_singleton]; omega
+    have hf_j : j ∈ [0,1] := by simp only [List.mem_cons, List.mem_singleton]; omega
+    have hf_k : k ∈ [0,1] := by simp only [List.mem_cons, List.mem_singleton]; omega
     have id₁ : {αβ, i + j, t} = {αβ, 2, t₁ * u₁} * {αβ, 1, t₁ * u₀ + t₀ * u₁} * {αβ, 0, t₀ * u₀} := by (
       fin_cases hf_i, hf_j, hf_k
       <;> chev_simp [t₀, t₁, u₀, u₁, v₀, v₁]
@@ -122,10 +122,8 @@ private lemma image_of_homog_lift_of_comm_of_αβ_βγ {i j : ℕ} (hi : i ≤ �
   intro h_in_image t u
   have : ∃ ijk' : ℕ × ℕ × ℕ, ijk' ∈ boolean_cube ∧ f_ij_jk ijk' = (i, j) := by
     rw [← Finset.mem_image, correct_of_ij_jk_image]; exact h_in_image
-  rcases this with ⟨ ⟨i', j', k'⟩, ⟨ h_in_cube, h_f ⟩ ⟩
-  rcases mem_range_of_boolean_cube _ h_in_cube with ⟨ hi', hj', hk' ⟩
-  have h_f' : i = i' + j' ∧ j = j' + k' := by rw [← Prod.mk.injEq, ← h_f, f_ij_jk]
-  rcases h_f' with ⟨ rfl, rfl ⟩
+  simp [f_ij_jk] at this
+  rcases this with ⟨ i', j', k', ⟨ hi', hj', hk' ⟩, rfl, rfl ⟩
   rw [← homog_lift_of_comm_of_αβ_βγ i' j' k' hi' hj' hk' t u]
 
 private lemma comm_of_αβ_βγ_20 : ∀ (t u : R), ⁅ {αβ, 2, t}, {βγ, 0, u} ⁆ = 1 := by
@@ -150,15 +148,15 @@ private lemma comm_of_αβ_βγ_02 : ∀ (t u : R), ⁅ {αβ, 0, t}, {βγ, 2, 
 
 theorem comm_of_αβ_βγ : trivial_commutator_of_root_pair (weakA3 R).pres_mk αβ βγ := by
   intro i j hi hj t u
-  have : (i = 0 ∧ j = 2) ∨ (i = 2 ∧ j = 0) ∨ ((i, j) ∈ ij_jk_image) := by
-    rw [ij_jk_image]
-    height_simp at *
-    simp -- should fix
-    omega
-  rcases this with ( ⟨ rfl, rfl ⟩ | ⟨rfl, rfl⟩ | hij )
-  · rw [← comm_of_αβ_βγ_02 t u]
-  · rw [← comm_of_αβ_βγ_20 t u]
-  · exact image_of_homog_lift_of_comm_of_αβ_βγ hi hj hij _ _
+  by_cases hij : (i, j) ∈ ij_jk_image
+  · apply image_of_homog_lift_of_comm_of_αβ_βγ hi hj hij
+  · have : (i = 0 ∧ j = 2) ∨ (i = 2 ∧ j = 0) := by
+      simp [ij_jk_image] at hij
+      height_simp at hi hj
+      omega
+    rcases this with ( ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ )
+    · rw [← comm_of_αβ_βγ_02 t u]
+    · rw [← comm_of_αβ_βγ_20 t u]
 
 declare_A3_triv_expr_thm R αβ βγ
 
