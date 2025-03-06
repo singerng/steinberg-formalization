@@ -1971,16 +1971,27 @@ theorem partial_B_interchange_of_α2β2ψ :
     have h5b := h5 (t) (1/2) (2*u); field_simp at h5b;
     rw [←h5a, ←h5b]
 
-omit Fchar
-
 -- 8.166
 theorem sufficient_conditions_for_comm_of_αβ_and_β2ψ :
-  ∀ ⦃i j k : ℕ⦄ (hi : i ≤ 2) (hj : j ≤ 1) (hk : k ≤ 2)
-  (h42a : ∀ (t u : F), ⁅{αβ2ψ, i + 2 * j, t}, {βψ, k, u}⁆ = 1)
-  (h42b : ∀ (t u v : F), ⁅{ψ, j, t}, ⁅{αβψ, i + j, u}, {βψ, k, v}⁆⁆ = 1),
-  ∀ (t u v : F), ⁅{αβ, i, t}, {β2ψ, j + k, 2 * u * v}⁆ = ⁅{αβψ, i + j, t * u}, {βψ, k, v}⁆ := by
-  sorry
+    ∀ ⦃i j k : ℕ⦄ (hi : i ≤ 2) (hj : j ≤ 1) (hk : k ≤ 2)
+    (h42a : ∀ (t u : F), ⁅{αβ2ψ, i + 2 * j, t}, {βψ, k, u}⁆ = 1)
+    (h42b : ∀ (t u v : F), ⁅{ψ, j, t}, ⁅{αβψ, i + j, u}, {βψ, k, v}⁆⁆ = 1),
+    ∀ (t u v : F), ⁅{αβ, i, t}, {β2ψ, j + k, 2 * u * v}⁆ = ⁅{αβψ, i + j, t * u}, {βψ, k, v}⁆ := by
+  intro i j k hi hj hk h42a h42b t u v
+  have h₁ := fun t u ↦ triv_comm_iff_commutes.1 (h42a t u)
+  have h₂ := fun t u v ↦ triv_comm_iff_commutes.1 (h42b t u v)
+  apply eq_comm_of_reorder_left
+  -- expand β2ψ element as product of βψ and ψ elements
+  rw [expr_β2ψ_as_ψ_βψ_ψ_βψ hj hk]
+  -- move αβ element fully to the right
+  grw [expr_αβ_ψ_as_ψ_αβψ_αβ2ψ_αβ Fchar hi hj, expr_αβ_βψ_as_βψ_αβ hi hk,
+  expr_αβ_ψ_as_αβ2ψ_αβψ_ψ_αβ Fchar hi hj, expr_αβ_βψ_as_βψ_αβ hi hk]
+  -- by h₁, commute αβ2ψ elements together and cancel them
+  grw [h₁ (-t * u^2)]
+  rw [neg_mul, ←inv_of_αβ2ψ Fchar (by linarith), neg_sq]
+  grw [rfl, comm_left {αβψ, i + j, t * u}, ←inv_of_αβψ (by linarith), h₂]
 
+omit Fchar
 -- 8.167
 theorem sufficient_conditions_for_comm_of_αβ2ψ_and_βψ :
   ∀ ⦃i j k : ℕ⦄ (hi : i ≤ 4) (hj : j ≤ 1) (hk : k ≤ 1)
