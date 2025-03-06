@@ -28,6 +28,7 @@ namespace Steinberg.B3Large
 open Steinberg B3LargePosRoot GradedGen ReflDeg
 
 variable {F : Type TF} [Field F] (Fchar : (2 : F) ≠ 0)
+variable (F_sum_of_squares : ∀ (a : F), ∃ (x y : F), a = x^2 + y^2)
 
 theorem def_of_αβψ :
   forall_i_t αβψ,
@@ -2108,6 +2109,7 @@ theorem partial_C_interchange_of_α2β2ψ_b :
   rw [←one_mul u, partial_A_interchange_of_α2β2ψ_b Fchar,
   @hom_lift_of_comm_ψ_αβ_β2ψ F _ 0 1 0 (by trivial) (by trivial) (by trivial)]
 
+-- 8.170
 theorem sufficient_conditions_for_comm_of_αβ2ψ_and_β :
   ∀ ⦃i j k : ℕ⦄ (hi : i ≤ 3) (hj : j ≤ 1) (hk : k ≤ 1)
   (h47a : ∀ (t u : F), ⁅{αβψ, i, t}, {β2ψ, 2 * j + k, u}⁆ = 1)
@@ -2947,11 +2949,19 @@ theorem lin_of_α2β2ψ : lin_of_root((weakB3Large F).pres_mk, α2β2ψ) := by
 -- 8.198
 theorem hom_lift_of_comm_of_α_α2β2ψ_square : forall_ijk_tu α β ψ,
     ⁅{α, i, t}, {α2β2ψ, i + 2 * j + 2 * k, t * u^2}⁆ = 1 := by
+  intro i j k hi hj hk t u
   sorry
 
--- 8.200 (8.199 is about sum of squares in finite field)
+-- 8.199
+include F_sum_of_squares
+
+-- 8.200
 theorem hom_lift_of_comm_of_α_α2β2ψ : forall_ijk_tu α β ψ,
     ⁅{α, i, t}, {α2β2ψ, i + 2 * j + 2 * k, u}⁆ = 1 := by
+  intro i j k hi hj hk t u
+  rcases eq_or_ne t 0 with ht | ht
+  · sorry
+  rcases F_sum_of_squares (u / t) with ⟨r, s, hrs⟩
   sorry
 
 -- 8.201
