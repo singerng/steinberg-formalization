@@ -48,6 +48,7 @@ variable {G : Type TG} [Group G]
 theorem comm_left      (x y : G) : x * y = ⁅x, y⁆ * y * x       := by group
 theorem comm_mid       (x y : G) : x * y = y * ⁅x, y⁻¹⁆⁻¹ * x   := by group
 theorem comm_right     (x y : G) : x * y = y * x * ⁅x⁻¹, y⁻¹⁆   := by group
+theorem comm_swap      (x y : G) : ⁅x, y⁆⁻¹ = ⁅y, x⁆            := by group
 
 theorem comm_left_rev  (x y : G) : x * y = ⁅y, x⁆⁻¹ * y * x     := commutatorElement_inv y _ ▸ comm_left ..
 theorem comm_mid_rev   (x y : G) : x * y = y * ⁅y⁻¹, x⁆ * x     := (commutatorElement_inv x _).symm ▸ comm_mid ..
