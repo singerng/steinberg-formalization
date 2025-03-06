@@ -1789,7 +1789,7 @@ theorem partial_A_interchange_of_α2β2ψ_b :
     grw [h4a, h4b]
 
 -- 8.160
-include Fchar
+include Fchar in
 theorem more_sufficient_conditions_for_comm_of_αβψ_and_βψ :
   ∀ ⦃i j k : ℕ⦄ (hi : i ≤ 3) (hj : j ≤ 1) (hk : k ≤ 1)
   (h38a : ∀ (t u v : F), ⁅{β, k, t}, ⁅{αβ2ψ, i + j, u}, {β, k, v}⁆⁆ = 1)
@@ -1849,8 +1849,6 @@ theorem more_sufficient_conditions_for_comm_of_αβψ_and_βψ :
     repeat assumption
   exact reorder_left_iff_eq_comm.mp this
 
-omit Fchar
-
 -- 8.161
 theorem sufficient_conditions_for_comm_of_αβ2ψ_and_β2ψ :
   ∀ ⦃i j k : ℕ⦄ (hi : i ≤ 3) (hj : j ≤ 1) (hk : k ≤ 3)
@@ -1859,7 +1857,7 @@ theorem sufficient_conditions_for_comm_of_αβ2ψ_and_β2ψ :
   sorry
 
 -- 8.162a
-include Fchar
+include Fchar in
 theorem partial_comm_of_β2ψ_αβ2ψ_a :
   ∀ (t u : F), ⁅{β2ψ, 2, t}, {αβ2ψ, 1, u}⁆ = 1 := by
   have := sufficient_conditions_for_comm_of_αβ2ψ_and_β2ψ (F := F) (i := 2) (j := 0) (k := 1) (by ht)
@@ -1870,15 +1868,15 @@ theorem partial_comm_of_β2ψ_αβ2ψ_a :
   exact this
 
 -- 8.162b
+include Fchar in
 theorem partial_comm_of_β2ψ_αβ2ψ_b :
   ∀ (t u : F), ⁅{β2ψ, 0, t}, {αβ2ψ, 2, u}⁆ = 1 := by
-  have := @sufficient_conditions_for_comm_of_αβ2ψ_and_β2ψ F _ 0 1 1 (by norm_num) (by norm_num) (by norm_num)
+  have := @sufficient_conditions_for_comm_of_αβ2ψ_and_β2ψ F _ Fchar 0 1 1 (by ht) (by norm_num) (by norm_num)
   norm_num at this
   apply this
   have := @hom_lift_of_comm_of_β2ψ_αβ2ψ F _ Fchar 0 1 0 (by norm_num) (by norm_num) (by norm_num)
   norm_num at this
   exact this
-omit Fchar
 
 -- 8.163
 theorem sufficient_conditions_for_comm_of_ψ_and_αβ2ψ_β :
