@@ -2059,11 +2059,11 @@ theorem sufficient_conditions_for_comm_of_αβ2ψ_and_β :
   (h47a : ∀ (t u : F), ⁅{αβψ, i, t}, {β2ψ, 2 * j + k, u}⁆ = 1)
   (h47b : ∀ (t u v : F), ⁅⁅{αβψ, i, t}, {βψ, j + k, u}⁆, {ψ, j, v}⁆ = 1)
   (h47c : ∀ (t u : F), ⁅{βψ, j + k, -u}, {αβψ, i, t}⁆ = ⁅{αβψ, i, t}, {βψ, j + k, u}⁆),
-  ∀ (t u v : F), ⁅{αβ2ψ, i + j, 2 * t * u}, {β, k, v}⁆ = ⁅{αβψ, i, t}, {βψ, j + k, u * v}⁆ := by
+  ∀ (t u v : F), ⁅{αβ2ψ, i + j, t * u}, {β, k, 2 * v}⁆ = ⁅{αβψ, i, t}, {βψ, j + k, u * v}⁆ := by
   sorry
 
 -- 8.171
-include Fchar in
+include Fchar
 theorem sufficient_conditions_for_comm_of_αβψ_and_β2ψ :
     ∀ ⦃i j k : ℕ⦄ (hi : i ≤ 1) (hj : j ≤ 2) (hk : k ≤ 3)
     (hyp : ∀ (t u : F), ⁅{αβ2ψ, i + k, u}, {βψ, j, t}⁆ = 1),
@@ -2081,7 +2081,6 @@ theorem sufficient_conditions_for_comm_of_αβψ_and_β2ψ :
   group
 
 -- 8.172
-include Fchar in
 theorem partial_comm_of_αβψ_β2ψ :
     ∀ (t u : F), ⁅{αβψ, 0, t}, {β2ψ, 1, u}⁆ = 1 := by
   apply sufficient_conditions_for_comm_of_αβψ_and_β2ψ (i := 0) (j := 0) (k := 1) (by trivial) (by trivial) (by trivial) (by trivial)
@@ -2090,13 +2089,33 @@ theorem partial_comm_of_αβψ_β2ψ :
   apply triv_comm_symm.1
   rw [lift_hom_comm_of_βψ_α_β2ψ (i := 1) (j := 0) (k := 0) (by trivial) (by trivial) (by trivial)]
 
+private lemma partial_D_interchange_of_α2β2ψ_help : ∀ t u : F,
+    ⁅{αβψ, 0, t}, {βψ, 1, u}⁆ = ⁅{αβ, 1, t}, {β2ψ, 0, 2 * u}⁆ := by
+  intro t u
+  rw [←mul_one u, partial_B_interchange_of_α2β2ψ Fchar,
+  ←hom_lift_of_interchange_of_α2β2ψ_b (i := 1) (j := 0) (k := 0) Fchar (by trivial) (by trivial) (by trivial),
+  mul_one, ←mul_one t, ←hom_lift_of_interchange_of_α2β2ψ_a Fchar (by trivial) (by trivial) (by trivial)]
+  simp only [add_zero, mul_zero, mul_one]
+
 -- 8.173
 theorem partial_D_interchange_of_α2β2ψ :
   ∀ (t u v : F), ⁅{αβψ, 0, t}, {βψ, 1, u * v}⁆ = ⁅{αβ2ψ, 0, t * u}, {β, 1, 2 * v}⁆ := by
-  intro t u v
-  have := @sufficient_conditions_for_comm_of_αβ2ψ_and_β F _ 0 0 1 (by trivial) (by trivial) (by trivial)
-  -- notice how this doesn't match 170
-  sorry
+  intro _ _ _
+  apply symm
+  apply @sufficient_conditions_for_comm_of_αβ2ψ_and_β F _ 0 0 1 (by trivial) (by trivial) (by trivial)
+  · exact partial_comm_of_αβψ_β2ψ Fchar
+  · intro t u v
+    rw [partial_D_interchange_of_α2β2ψ_help Fchar, triv_comm_symm,
+    hom_lift_of_comm_ψ_αβ_β2ψ (i := 1) (j := 0) (k := 0) (by trivial) (by trivial) (by trivial)]
+  · intro t u
+    apply (mul_right_inj (⁅{βψ, 0 + 1, -u}, {αβψ, 0, t}⁆⁻¹)).1
+    rw [inv_mul_cancel, comm_swap, partial_D_interchange_of_α2β2ψ_help Fchar,
+    partial_D_interchange_of_α2β2ψ_help Fchar, eq_of_R_eq β2ψ (-(2 * u)) (by ring),
+    (hom_lift_of_inv_doub_of_αβ_β2ψ (i := 1) (j := 0) (k := 0) (by trivial) (by trivial) (by trivial) t (-(2 * u))).1,
+    neg_neg]
+    nth_rewrite 2 [←neg_neg t]
+    rw [(hom_lift_of_inv_doub_of_αβ_β2ψ (i := 1) (j := 0) (k := 0) (by trivial) (by trivial) (by trivial) (-t) (2 * u)).2.1]
+
 
 /- ### Establishing α + 2β + 2ψ -/
 
