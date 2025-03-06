@@ -50,11 +50,13 @@ theorem M_commutator_overlap (i j k : I) (t u : R) (hij : i ≠ j) (hjk : j ≠ 
   algebra
   module
 
--- structure ARoot (n : ℕ) where
---   mk ::
---   i : I
---   j : I
---   hne : i ≠ j
+/-- ### Type-A roots -/
 
--- def M_root (ζ : ARoot n) (t : R) :=
---   1 + (E ζ.i ζ.j t)
+structure ARoot (I : Type u) [DecidableEq I] [Fintype I] where
+  mk ::
+  i : I
+  j : I
+  hij : i ≠ j
+
+def ARoot.M (ζ : ARoot I) (t : R) : Matrix I I R :=
+  1 + t • (E ζ.i ζ.j)
