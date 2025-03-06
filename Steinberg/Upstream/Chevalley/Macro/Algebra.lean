@@ -1,14 +1,14 @@
 import Mathlib.Tactic
 import Mathlib.Algebra.Algebra.Defs
 
-
 namespace Steinberg
 
--- tactic, under development, to simplify algebra expressions
 macro (name := algebra) "algebra" : tactic => `(tactic|
   simp only [
+    -- distributiveness
+    mul_add, add_mul,
     -- additive ring structure
-    mul_add, add_mul, neg_add, sub_eq_add_neg, add_zero, zero_add,
+    neg_add, sub_eq_add_neg, add_zero, zero_add,
     -- multiplicative ring structure
     one_mul, mul_one, mul_zero, zero_mul, mul_neg,
     -- scalar structure
