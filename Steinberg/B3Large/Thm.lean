@@ -3040,7 +3040,8 @@ theorem comm_of_αβ_αβ2ψ :
   intro t u
   apply comm_of_α_α2β2ψ Fchar F_sum_of_squares hi₁
 declare_B3Large_triv_expr_thm F αβ αβ2ψ
-
+#check expr_ψ_α2β2ψ_as_α2β2ψ_ψ
+#check expr_αβ_α2β2ψ_as_α2β2ψ_αβ
 -- 8.208
 theorem comm_of_αβψ :
     mixed_commutes_of_root (weakB3Large F).pres_mk αβψ := by
@@ -3050,7 +3051,15 @@ theorem comm_of_αβψ :
   rcases decompose 2 1 i hi with ⟨i₁, i₂, rfl, hi₁, hi₂⟩
   rw [←mul_one t, expr_αβψ_as_ψ_αβ_ψ_αβ_ψ hi₁ hi₂]
   -- move αβψ to the left
-  sorry
+  grw [expr_ψ_αβψ_as_αβψ_αβ2ψ_ψ Fchar hi₂ hj, expr_αβ_αβψ_as_αβψ_αβ, expr_ψ_αβψ_as_αβψ_αβ2ψ_ψ Fchar hi₂ hj,
+  expr_αβ_αβψ_as_αβψ_αβ, expr_ψ_αβψ_as_αβψ_ψ_αβ2ψ Fchar hi₂ hj]
+  -- cancel the α2β2ψ terms
+  grw [←expr_αβ_αβ2ψ_as_αβ2ψ_αβ Fchar F_sum_of_squares, expr_αβ_αβ2ψ_as_αβ2ψ_αβ Fchar F_sum_of_squares,
+  expr_ψ_αβ2ψ_as_αβ2ψ_ψ Fchar]
+  rw [lin_of_αβ2ψ Fchar, lin_of_αβ2ψ Fchar]
+  ring_nf; field_simp; ring_nf
+  rw [id_of_αβ2ψ Fchar]
+
 declare_B3Large_mixed_expr_thm F αβψ
 
 -- 8.209
