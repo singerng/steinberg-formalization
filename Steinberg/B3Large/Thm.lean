@@ -2900,10 +2900,16 @@ theorem lin_of_α2β2ψ : lin_of_root((weakB3Large F).pres_mk, α2β2ψ) := by
   rw [eq_of_R_eq α2β2ψ (-(t + u) * -1) (by ring), expr_α2β2ψ_as_αβ_β2ψ_αβ_β2ψ Fchar hi₁ hi₂]
   group
 
+#check add_mul_comm
+
 -- 8.198
 theorem hom_lift_of_comm_of_α_α2β2ψ_square : forall_ijk_tu α β ψ,
     ⁅{α, i, t}, {α2β2ψ, i + 2 * j + 2 * k, t * u^2}⁆ = 1 := by
   intro i j k hi hj hk t u
+  have := expr_α2β2ψ_as_comm_of_αβ_β2ψ Fchar (i := 2 * j) (j := i + 2 * k) (by ht) (by ht) (-t) (u^2)
+  norm_num at this
+  rw [eq_of_h_eq α2β2ψ (i + 2 * j + 2 * k) (by omega)] at this
+  grw [this]
   sorry
 
 -- 8.199
