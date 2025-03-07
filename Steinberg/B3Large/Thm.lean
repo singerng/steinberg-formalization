@@ -3076,8 +3076,10 @@ theorem lin_of_αβψ : lin_of_root((weakB3Large F).pres_mk, αβψ) := by
   -- commute ψ and αβ elements
   grw [expr_ψ_αβ_as_αβ_αβ2ψ_αβψ_ψ Fchar hi₁ hi₂ (t := u), expr_αβ_ψ_as_ψ_αβψ_αβ2ψ_αβ Fchar hi₁ hi₂ (t := -u)]
   -- commute αβψ across ψ and cancel
-  grw [expr_ψ_αβψ_as_αβψ_αβ2ψ_ψ Fchar hi₂ (add_le_add hi₁ hi₂), lin_of_αβψ]
-  rw [eq_of_R_eq αβψ 0 (by ring_nf; field_simp), id_of_αβψ Fchar, mul_one]
+  grw [expr_ψ_αβψ_as_αβψ_αβ2ψ_ψ Fchar hi₂ (add_le_add hi₁ hi₂)]
+  rw [eq_of_R_eq αβψ (-(u / 2)) (by ring_nf; field_simp; group)]
+  nth_rewrite 2 [eq_of_R_eq αβψ (u / 2) (by ring_nf)]
+  rw [←inv_of_αβψ (add_le_add hi₁ hi₂)]
   grw [expr_ψ_αβ2ψ_as_αβ2ψ_ψ Fchar, expr_αβ_αβ2ψ_as_αβ2ψ_αβ Fchar F_sum_of_squares]
   nth_rewrite 2 [eq_of_h_eq αβ2ψ (i₁ + 2 * i₂) (by linarith)]
   nth_rewrite 4 [eq_of_h_eq αβ2ψ (i₁ + 2 * i₂) (by linarith)]
