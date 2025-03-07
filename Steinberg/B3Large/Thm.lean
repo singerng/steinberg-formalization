@@ -2891,6 +2891,13 @@ theorem hom_lift_of_comm_of_α_α2β2ψ : forall_ijk_tu α β ψ,
   chev_simp [← mul_assoc]
   grw [h₁, h₂]
 
+@[group_reassoc]
+theorem expr_α_α2β2ψ_as_α2β2ψ_α_parity : forall_ijk_tu α β ψ,
+    {α, i, t} * {α2β2ψ, i + 2 * j + 2 * k, u} = {α2β2ψ, i + 2 * j + 2 * k, u} * {α, i, t} := by
+  intro i j k hi hj hk t u
+  apply triv_comm_iff_commutes.1
+  exact hom_lift_of_comm_of_α_α2β2ψ Fchar F_sum_of_squares hi hj hk t u
+
 -- 8.201
 theorem nonhomog_lift_of_comm_of_α_α2β2ψ : forall_ij_tu α β,
     ⁅{α, i, t}, {α2β2ψ, i + 2 * j + 1, u}⁆ = 1 := by
@@ -2929,8 +2936,27 @@ theorem nonhomog_lift_of_comm_of_α_α2β2ψ : forall_ij_tu α β,
     fin_cases hf_i, hf_j
     <;> chev_simp [t₀, t₁, u₀, u₁, v₀, v₁, aux₁, aux₂, pow_two, one_mul]
   rw [←raw_nonhomog_lift_of_comm_of_α_α2β2ψ t₁ t₀ u₁ u₀ v₁ v₀, hα, hαβ, hβ2ψ, commutatorElement_def,
-  commutatorElement_def, commutatorElement_def]
-  sorry
+  commutatorElement_def, commutatorElement_def, inv_of_α, inv_of_αβ, mul_inv_rev, mul_inv_rev, mul_inv_rev,
+  mul_inv_rev, mul_inv_rev, mul_inv_rev, mul_inv_rev, mul_inv_rev, mul_inv_rev, inv_inv, inv_inv,
+  inv_inv, inv_of_β2ψ, inv_of_β2ψ, inv_of_β2ψ, inv_of_αβ, inv_of_αβ, neg_neg]
+  -- move pairs of β2ψ elements across αβ and cancel them
+  mal
+  grw [expr_αβ_β2ψ_as_β2ψ_α2β2ψ_αβ (i := i + j) (t := -t) (j := j), expr_αβ_β2ψ_as_β2ψ_α2β2ψ_αβ (i := i + j) (t := t) (j := j)]
+  -- move the α2β2ψ together and cancel them
+  grw [expr_β2ψ_α2β2ψ_as_α2β2ψ_β2ψ, expr_β2ψ_α2β2ψ_as_α2β2ψ_β2ψ]
+  nth_rewrite 4 [eq_of_hR_eq α2β2ψ (i + 2 * j + 2 * 0) (by omega) (u^2 / (4 * t)) (by sorry)]
+  grw [expr_α_α2β2ψ_as_α2β2ψ_α_parity, expr_β2ψ_α2β2ψ_as_α2β2ψ_β2ψ, expr_β2ψ_α2β2ψ_as_α2β2ψ_β2ψ,
+  expr_αβ_α2β2ψ_as_α2β2ψ_αβ]
+  nth_rewrite 3 [eq_of_hR_eq α2β2ψ (i + 2 * j) (by omega) (-(u * u / (4 * t))) (by sorry)]
+  rw [←inv_of_α2β2ψ]
+  grw [rfl]
+  -- move pairs of β2ψ elements together across αβ and cancel them
+  grw [expr_αβ_β2ψ_as_β2ψ_α2β2ψ_αβ (i := i + j) (j := j + 1) (t := -t),
+  expr_αβ_β2ψ_as_β2ψ_α2β2ψ_αβ (i := i + j) (j := j + 1) (t := t)]
+  -- move the α2β2ψ together and cancel them
+  grw [expr_β2ψ_α2β2ψ_as_α2β2ψ_β2ψ]
+  stop
+#exit
 
 -- 8.202
 omit F_sum_of_squares in
