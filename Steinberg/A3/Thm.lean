@@ -429,13 +429,11 @@ theorem full_rels_satisfied_in_weak_group (R : Type TR) [Ring R] :
     · right
       simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at h_new
       intro r h_r
+      simp only [rels_of_trivial_commutator_of_root_pair] at h_r
+      rcases h_r with ⟨ i, j, hi, hj, t, u, goal ⟩
+      rw [← goal]
       rcases h_new with h_αβ_βγ|h_α_αβγ|h_β_αβγ|h_γ_αβγ|h_αβ_αβγ|h_βγ_αβγ
-      all_goals (
-        simp only [rels_of_trivial_commutator_of_root_pair] at h_r
-        simp_all only
-        rcases h_r with ⟨ i, j, hi, hj, t, u, goal ⟩
-        rw [← goal]
-      )
+      all_goals (subst p)
       · exact comm_of_αβ_βγ hi hj t u
       · exact comm_of_α_αβγ hi hj t u
       · exact comm_of_β_αβγ hi hj t u
@@ -449,15 +447,12 @@ theorem full_rels_satisfied_in_weak_group (R : Type TR) [Ring R] :
     · right
       simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at h_new
       intro r h_r
+      simp only [rels_of_single_commutator_of_root_pair] at h_r
+      rcases h_r with ⟨ i, j, hi, hj, t, u, goal ⟩
+      rw [←goal]
+      simp only [map_mul, map_inv, mul_inv_eq_one]
       rcases h_new with h_α_βγ|h_αβ_γ
-      all_goals (
-        simp only [rels_of_single_commutator_of_root_pair] at h_r
-        rcases h_r with ⟨ i, j, hi, hj, t, u, goal ⟩
-        subst p
-        simp_all only
-        rw [←goal]
-        simp only [map_mul, map_inv, mul_inv_eq_one]
-      )
+      all_goals (subst p)
       · exact comm_of_α_βγ hi hj t u
       · exact comm_of_αβ_γ hi hj t u
   · simp only [full_double_commutator_pairs]
