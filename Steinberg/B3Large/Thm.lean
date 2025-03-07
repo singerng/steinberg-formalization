@@ -2897,6 +2897,7 @@ theorem expr_α_α2β2ψ_as_α2β2ψ_α_parity : forall_ijk_tu α β ψ,
   intro i j k hi hj hk t u
   apply triv_comm_iff_commutes.1
   exact hom_lift_of_comm_of_α_α2β2ψ Fchar F_sum_of_squares hi hj hk t u
+example {j : ℕ} (h : j ≤ 1) : j ≤ β2ψ.height := by ht
 
 -- 8.201
 theorem nonhomog_lift_of_comm_of_α_α2β2ψ : forall_ij_tu α β,
@@ -2906,6 +2907,8 @@ theorem nonhomog_lift_of_comm_of_α_α2β2ψ : forall_ij_tu α β,
   · rw [ht, id_of_α]; group
   have hi : i ≤ 1 := by ht
   have hj : j ≤ 1 := by ht
+
+  -- things to plug into 8.82
   let t₁ : F := match i with
     | 1 => t
     | 0 => 0
@@ -2935,27 +2938,46 @@ theorem nonhomog_lift_of_comm_of_α_α2β2ψ : forall_ij_tu α β,
           = {β2ψ, j + 2, 1} * {β2ψ, j + 1, u / t} * {β2ψ, j, u^2 / (4 * t^2)} := by
     fin_cases hf_i, hf_j
     <;> chev_simp [t₀, t₁, u₀, u₁, v₀, v₁, aux₁, aux₂, pow_two, one_mul]
+
+  -- apply 8.82 and simplify stuff
   rw [←raw_nonhomog_lift_of_comm_of_α_α2β2ψ t₁ t₀ u₁ u₀ v₁ v₀, hα, hαβ, hβ2ψ, commutatorElement_def,
   commutatorElement_def, commutatorElement_def, inv_of_α, inv_of_αβ, mul_inv_rev, mul_inv_rev, mul_inv_rev,
   mul_inv_rev, mul_inv_rev, mul_inv_rev, mul_inv_rev, mul_inv_rev, mul_inv_rev, inv_inv, inv_inv,
   inv_inv, inv_of_β2ψ, inv_of_β2ψ, inv_of_β2ψ, inv_of_αβ, inv_of_αβ, neg_neg]
+
   -- move pairs of β2ψ elements across αβ and cancel them
+  rw [expr_β2ψ_β2ψ_as_β2ψ_β2ψ (i := j + 2) (j := j + 1) (t := 1) (u := u / t),
+  ←expr_β2ψ_β2ψ_as_β2ψ_β2ψ (i := j + 2) (j := j + 1) (t := -1) (u := -(u / t))]
   mal
-  grw [expr_αβ_β2ψ_as_β2ψ_α2β2ψ_αβ (i := i + j) (t := -t) (j := j), expr_αβ_β2ψ_as_β2ψ_α2β2ψ_αβ (i := i + j) (t := t) (j := j)]
+  grw [expr_αβ_β2ψ_as_β2ψ_α2β2ψ_αβ (i := i + j) (t := -t) (j := j) Fchar (by ht) (by ht),
+  expr_αβ_β2ψ_as_β2ψ_α2β2ψ_αβ (i := i + j) (t := t) (j := j) Fchar (by ht) (by ht)]
+
   -- move the α2β2ψ together and cancel them
-  grw [expr_β2ψ_α2β2ψ_as_α2β2ψ_β2ψ, expr_β2ψ_α2β2ψ_as_α2β2ψ_β2ψ]
-  nth_rewrite 4 [eq_of_hR_eq α2β2ψ (i + 2 * j + 2 * 0) (by omega) (u^2 / (4 * t)) (by sorry)]
-  grw [expr_α_α2β2ψ_as_α2β2ψ_α_parity, expr_β2ψ_α2β2ψ_as_α2β2ψ_β2ψ, expr_β2ψ_α2β2ψ_as_α2β2ψ_β2ψ,
-  expr_αβ_α2β2ψ_as_α2β2ψ_αβ]
+  grw [expr_β2ψ_α2β2ψ_as_α2β2ψ_β2ψ Fchar, expr_β2ψ_α2β2ψ_as_α2β2ψ_β2ψ Fchar]
+  nth_rewrite 4 [eq_of_hR_eq α2β2ψ (i + 2 * j + 2 * 0) (by omega) (u * u / (4 * t)) (by sorry)]
+  grw [expr_α_α2β2ψ_as_α2β2ψ_α_parity Fchar F_sum_of_squares hi hj (by trivial),
+  expr_β2ψ_α2β2ψ_as_α2β2ψ_β2ψ Fchar, expr_β2ψ_α2β2ψ_as_α2β2ψ_β2ψ Fchar, expr_αβ_α2β2ψ_as_α2β2ψ_αβ Fchar]
   nth_rewrite 3 [eq_of_hR_eq α2β2ψ (i + 2 * j) (by omega) (-(u * u / (4 * t))) (by sorry)]
-  rw [←inv_of_α2β2ψ]
+  rw [←inv_of_α2β2ψ Fchar (by ht)]
   grw [rfl]
+
   -- move pairs of β2ψ elements together across αβ and cancel them
-  grw [expr_αβ_β2ψ_as_β2ψ_α2β2ψ_αβ (i := i + j) (j := j + 1) (t := -t),
-  expr_αβ_β2ψ_as_β2ψ_α2β2ψ_αβ (i := i + j) (j := j + 1) (t := t)]
+  grw [expr_αβ_β2ψ_as_β2ψ_α2β2ψ_αβ (i := i + j) (j := j + 2) (t := -t) Fchar (by ht) (by ht),
+  expr_αβ_β2ψ_as_β2ψ_α2β2ψ_αβ (i := i + j) (j := j + 2) (t := t) Fchar (by ht) (by ht)]
+
   -- move the α2β2ψ together and cancel them
-  grw [expr_β2ψ_α2β2ψ_as_α2β2ψ_β2ψ]
-  stop
+  grw [expr_β2ψ_α2β2ψ_as_α2β2ψ_β2ψ Fchar]
+  nth_rewrite 4 [eq_of_h_eq α2β2ψ (i + 2 * j + 2 * 1) (by omega)]
+  grw [expr_α_α2β2ψ_as_α2β2ψ_α_parity Fchar F_sum_of_squares hi hj (by trivial),
+  expr_β2ψ_α2β2ψ_as_α2β2ψ_β2ψ Fchar, expr_αβ_α2β2ψ_as_α2β2ψ_αβ Fchar]
+  nth_rewrite 3 [eq_of_h_eq α2β2ψ (i + 2 * j + 2) (by omega)]
+  rw [←inv_of_α2β2ψ Fchar (by ht)]
+
+  -- expand the α2β2ψ elements on the LHS
+  sorry
+
+
+
 #exit
 
 -- 8.202
