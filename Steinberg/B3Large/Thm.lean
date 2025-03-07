@@ -2968,6 +2968,42 @@ theorem hom_lift_of_comm_of_α_α2β2ψ : forall_ijk_tu α β ψ,
 -- 8.201
 theorem nonhomog_lift_of_comm_of_α_α2β2ψ : forall_ij_tu α β,
     ⁅{α, i, t}, {α2β2ψ, i + 2 * j + 1, u}⁆ = 1 := by
+  intro i j hi hj t u
+  rcases eq_or_ne t 0 with ht | ht
+  · rw [ht, id_of_α]; group
+  have hi : i ≤ 1 := by ht
+  have hj : j ≤ 1 := by ht
+  let t₁ : F := match i with
+    | 1 => t
+    | 0 => 0
+  let t₀ : F := match i with
+    | 1 => 0
+    | 0 => t
+  let u₁ : F := match j with
+    | 1 => 1
+    | 0 => 0
+  let u₀ : F := match j with
+    | 1 => 0
+    | 0 => 1
+  let v₁ : F := 1
+  let v₀ : F := u / (2 * t)
+  have hf_i : i ∈ [0,1] := by simp only [List.mem_cons, List.mem_singleton]; omega
+  have hf_j : j ∈ [0,1] := by simp only [List.mem_cons, List.mem_singleton]; omega
+  have aux₁ : 2 * (u / (2 * t)) = u / t := by ring_nf; field_simp; group
+  have aux₂ : (u / (2 * t))^2 = u^2 / (4 * t^2) := by sorry
+  have hα : {α, 1, t₁} * {α, 0, t₀} = {α, i, t} := by
+    fin_cases hf_i, hf_j
+    <;> chev_simp [t₀, t₁, u₀, u₁, v₀, v₁]
+  have hαβ : {αβ, 2, t₁ * u₁} * {αβ, 1, t₁ * u₀ + t₀ * u₁} * {αβ, 0, t₀ * u₀} = {αβ, i + j, t} := by
+    fin_cases hf_i, hf_j
+    <;> chev_simp [t₀, t₁, u₀, u₁, v₀, v₁]
+  have hβ2ψ : {β2ψ, 3, u₁ * v₁^2} * {β2ψ, 2, u₀ * v₁^2 + 2 * u₁ * v₀ * v₁}
+          * {β2ψ, 1, u₁ * v₀^2 + 2 * u₀ * v₀ * v₁} * {β2ψ, 0, u₀ * v₀^2}
+          = {β2ψ, j + 2, 1} * {β2ψ, j + 1, u / t} * {β2ψ, j, u^2 / (4 * t^2)} := by
+    fin_cases hf_i, hf_j
+    <;> chev_simp [t₀, t₁, u₀, u₁, v₀, v₁, aux₁, aux₂, pow_two, one_mul]
+  rw [←raw_nonhomog_lift_of_comm_of_α_α2β2ψ t₁ t₀ u₁ u₀ v₁ v₀, hα, hαβ, hβ2ψ, commutatorElement_def,
+  commutatorElement_def, commutatorElement_def]
   sorry
 
 -- 8.202
