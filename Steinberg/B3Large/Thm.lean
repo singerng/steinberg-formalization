@@ -2900,16 +2900,41 @@ theorem lin_of_α2β2ψ : lin_of_root((weakB3Large F).pres_mk, α2β2ψ) := by
   rw [eq_of_R_eq α2β2ψ (-(t + u) * -1) (by ring), expr_α2β2ψ_as_αβ_β2ψ_αβ_β2ψ Fchar hi₁ hi₂]
   group
 
-#check add_mul_comm
-
 -- 8.198
 theorem hom_lift_of_comm_of_α_α2β2ψ_square : forall_ijk_tu α β ψ,
     ⁅{α, i, t}, {α2β2ψ, i + 2 * j + 2 * k, t * u^2}⁆ = 1 := by
   intro i j k hi hj hk t u
-  have := expr_α2β2ψ_as_comm_of_αβ_β2ψ Fchar (i := 2 * j) (j := i + 2 * k) (by ht) (by ht) (-t) (u^2)
-  norm_num at this
-  rw [eq_of_h_eq α2β2ψ (i + 2 * j + 2 * k) (by omega)] at this
-  grw [this]
+  have hi : i ≤ 1 := by ht
+  have hj : j ≤ 1 := by ht
+  have hk : k ≤ 1 := by ht
+  let t₁ : F := match i with
+    | 1 => t
+    | 0 => 0
+  let t₀ : F := match i with
+    | 1 => 0
+    | 0 => t
+  let u₁ : F := match j with
+    | 1 => 1
+    | 0 => 0
+  let u₀ : F := match j with
+    | 1 => 0
+    | 0 => 1
+  let v₁ : F := match k with
+    | 1 => u
+    | 0 => 0
+  let v₀ : F := match k with
+    | 1 => 0
+    | 0 => u
+  have hf_i : i ∈ [0,1] := by simp only [List.mem_cons, List.mem_singleton]; omega
+  have hf_j : j ∈ [0,1] := by simp only [List.mem_cons, List.mem_singleton]; omega
+  have hf_k : k ∈ [0,1] := by simp only [List.mem_cons, List.mem_singleton]; omega
+  have id₁ : {α, i, t} = {α, 1, t₁} * {α, 0, t₀} := by
+    fin_cases hf_i, hf_j, hf_k
+    <;> chev_simp [t₀, t₁, u₀, u₁, v₀, v₁]
+  have id₂ : {αβ, 2 * j, t} = {αβ, 2, t₁ * u₁} * {αβ, 2, t₁ * u₀ + t₀ * u₁} * {αβ, 0, t₀ * u₀} := by
+    fin_cases hf_i, hf_j, hf_k
+    <;> chev_simp [t₀, t₁, u₀, u₁, v₀, v₁]
+    sorry
   sorry
 
 -- 8.199
