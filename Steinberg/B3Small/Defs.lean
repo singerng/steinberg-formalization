@@ -99,7 +99,7 @@ abbrev double_commutator_pairs : Set (DoubleSpanRootPair B3SmallPosRoot F) :=
     {⟨β, ψ, βψ, β2ψ, 1, 1, (by exact rfl), (by exact rfl)⟩}
 
 -- lifted commutator of βψ and ψω
-def nonhomog_sets (F : Type TR) [Field F] : Set (Set (FreeGroupOnGradedGens B3SmallPosRoot F)) := {
+def lifted_sets (F : Type TR) [Field F] : Set (Set (FreeGroupOnGradedGens B3SmallPosRoot F)) := {
   rels_of_nonhomog_lift_of_comm_of_βψ_ψω
 }
 
@@ -114,7 +114,7 @@ def weakB3Small (F : Type TR) [Field F] := WeakChevalley.mk
   double_commutator_pairs
   mixed_commutes_roots
   lin_roots
-  (nonhomog_sets F)
+  (lifted_sets F)
   (def_sets F)
 
 /-! # Notation and macros -/
@@ -193,8 +193,8 @@ end forallNotation
 macro "hom_tac " rel:ident " [" intros:ident,* "]" : tactic => `(tactic|
   ( intros $intros*;
     apply WeakChevalley.helper;
-    apply (weakB3Small _).nonhomog_helper $rel;
-    simp only [weakB3Small, nonhomog_sets, Set.mem_insert_iff,
+    apply (weakB3Small _).lifted_helper $rel;
+    simp only [weakB3Small, lifted_sets, Set.mem_insert_iff,
       Set.mem_singleton_iff, true_or, or_true];
     exists $intros,* ))
 

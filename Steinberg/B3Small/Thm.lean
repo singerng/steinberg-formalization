@@ -47,10 +47,10 @@ theorem def_of_βψω : forall_i_t βψω,
   · simp only [weakB3Small, def_sets, Set.mem_singleton_iff]
   · exists t, i, hi
 
-theorem refl_of_nonhomog :
-  ∀ S ∈ nonhomog_sets F,
+theorem refl_of_lifted :
+  ∀ S ∈ lifted_sets F,
     ∀ r ∈ S, (weakB3Small F).pres_mk (FreeGroup.map refl_deg_of_gen r) = 1 := by
-  simp only [nonhomog_sets, Set.mem_singleton_iff, forall_eq, rels_of_nonhomog_lift_of_comm_of_βψ_ψω, Set.mem_setOf_eq]
+  simp only [lifted_sets, Set.mem_singleton_iff, forall_eq, rels_of_nonhomog_lift_of_comm_of_βψ_ψω, Set.mem_setOf_eq]
   intro r h
   rcases h with ⟨ t₁, t₀, u₁, u₀, v₁, v₀, rfl ⟩
   simp only [free_mk_mk, map_commutatorElement, map_mul, FreeGroup.map.of, refl_deg_of_gen,
@@ -71,7 +71,7 @@ theorem refl_of_def : ∀ S ∈ def_sets F, ∀ r ∈ S, FreeGroup.map refl_deg_
   split <;> congr
 
 theorem b3small_valid : ReflDeg.refl_valid (weakB3Small F) :=
-  ⟨refl_of_nonhomog, refl_of_def⟩
+  ⟨refl_of_lifted, refl_of_def⟩
 
 /-! ### 8.37 -/
 

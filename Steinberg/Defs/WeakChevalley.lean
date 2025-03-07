@@ -39,7 +39,7 @@ structure WeakChevalley (Φ : Type TΦ) [PosRootSys Φ] (R : Type TR) [Ring R] w
   lin_roots : Set Φ
 
   -- problem dependent
-  nonhomog_rels_sets : Set (Set (FreeGroupOnGradedGens Φ R))
+  lifted_rels_sets : Set (Set (FreeGroupOnGradedGens Φ R))
   def_rels_sets : Set (Set (FreeGroupOnGradedGens Φ R))
 
 namespace WeakChevalley
@@ -66,7 +66,7 @@ def lin_rels (w : WeakChevalley Φ R) :=
 
 def all_rels (w : WeakChevalley Φ R) :=
   ⋃₀ {trivial_comm_rels w, single_comm_rels w, double_comm_rels w, mixed_commutes_rels w,
-      lin_rels w, ⋃₀ nonhomog_rels_sets w, ⋃₀ def_rels_sets w}
+      lin_rels w, ⋃₀ lifted_rels_sets w, ⋃₀ def_rels_sets w}
 
 /-! ### The group and the embedding -/
 
@@ -75,6 +75,98 @@ abbrev group (w : WeakChevalley Φ R) :=
 
 def pres_mk (w : WeakChevalley Φ R) : FreeGroupOnGradedGens Φ R →* group w :=
   PresentedGroup.mk (WeakChevalley.all_rels w)
+
+/-- Mapping between two WeakChevalley group -/
+theorem injection (w₁ w₂ : WeakChevalley Φ R)
+  (h_triv : ∀ p ∈ w₁.trivial_comm_root_pairs, p ∈ w₂.trivial_comm_root_pairs ∨
+    (∀ r ∈ (rels_of_trivial_commutator_of_root_pair R p), w₂.pres_mk r = 1))
+  (h_single : ∀ p ∈ w₁.single_comm_root_pairs, p ∈ w₂.single_comm_root_pairs ∨
+    (∀ r ∈ (rels_of_single_commutator_of_root_pair p), w₂.pres_mk r = 1))
+  (h_doub : ∀ p ∈ w₁.double_comm_root_pairs, p ∈ w₂.double_comm_root_pairs ∨
+    (∀ r ∈ (rels_of_double_commutator_of_root_pair p), w₂.pres_mk r = 1))
+  (h_mix : ∀ p ∈ w₁.mixed_commutes_roots, p ∈ w₂.mixed_commutes_roots ∨
+    (∀ r ∈ (rels_of_mixed_commutes_of_root R p), w₂.pres_mk r = 1))
+  (h_lin : ∀ p ∈ w₁.lin_roots, p ∈ w₂.lin_roots ∨
+    (∀ r ∈ (rels_of_lin_of_root R p), w₂.pres_mk r = 1))
+  (h_lift : ∀ S ∈ w₁.lifted_rels_sets, ∀ p ∈ S, w₂.pres_mk p = 1)
+  (h_def : ∀ S ∈ w₁.def_rels_sets, ∀ p ∈ S, w₂.pres_mk p = 1)
+  : ∀ r ∈ w₁.all_rels, w₂.pres_mk r = 1 := by
+  simp only [all_rels]
+  intro r h
+  simp only [Set.sUnion_insert, Set.sUnion_singleton, Set.mem_union, Set.mem_sUnion] at h
+  rcases h with h|h|h|h|h|h|h
+  · simp only [trivial_comm_rels, Set.sUnion_image, Set.mem_iUnion, exists_prop] at h
+    rcases h with ⟨ p, h_p, h_r_p ⟩
+    specialize h_triv p
+    simp_all only [forall_const]
+    rcases h_triv with h|h
+    · apply eq_one_of_mem_rels
+      simp only [all_rels]
+      have : r ∈ w₂.trivial_comm_rels := by
+        simp only [trivial_comm_rels]
+        simp only [Set.sUnion_image, Set.mem_iUnion, exists_prop]
+        use p
+      simp only [Set.sUnion_insert, Set.sUnion_singleton, Set.mem_union, Set.mem_sUnion]
+      tauto
+    · tauto
+  · simp only [single_comm_rels, Set.sUnion_image, Set.mem_iUnion, exists_prop] at h
+    rcases h with ⟨ p, h_p, h_r_p ⟩
+    specialize h_single p
+    simp_all only [forall_const]
+    rcases h_single with h|h
+    · apply eq_one_of_mem_rels
+      simp only [all_rels]
+      have : r ∈ w₂.single_comm_rels := by
+        simp only [single_comm_rels]
+        simp only [Set.sUnion_image, Set.mem_iUnion, exists_prop]
+        use p
+      simp only [Set.sUnion_insert, Set.sUnion_singleton, Set.mem_union, Set.mem_sUnion]
+      tauto
+    · tauto
+  · simp only [double_comm_rels, Set.sUnion_image, Set.mem_iUnion, exists_prop] at h
+    rcases h with ⟨ p, h_p, h_r_p ⟩
+    specialize h_doub p
+    simp_all only [forall_const]
+    rcases h_doub with h|h
+    · apply eq_one_of_mem_rels
+      simp only [all_rels]
+      have : r ∈ w₂.double_comm_rels := by
+        simp only [double_comm_rels]
+        simp only [Set.sUnion_image, Set.mem_iUnion, exists_prop]
+        use p
+      simp only [Set.sUnion_insert, Set.sUnion_singleton, Set.mem_union, Set.mem_sUnion]
+      tauto
+    · tauto
+  · simp only [mixed_commutes_rels, Set.sUnion_image, Set.mem_iUnion, exists_prop] at h
+    rcases h with ⟨ p, h_p, h_r_p ⟩
+    specialize h_mix p
+    simp_all only [forall_const]
+    rcases h_mix with h|h
+    · apply eq_one_of_mem_rels
+      simp only [all_rels]
+      have : r ∈ w₂.mixed_commutes_rels := by
+        simp only [mixed_commutes_rels]
+        simp only [Set.sUnion_image, Set.mem_iUnion, exists_prop]
+        use p
+      simp only [Set.sUnion_insert, Set.sUnion_singleton, Set.mem_union, Set.mem_sUnion]
+      tauto
+    · tauto
+  · simp only [lin_rels, Set.sUnion_image, Set.mem_iUnion, exists_prop] at h
+    rcases h with ⟨ p, h_p, h_r_p ⟩
+    specialize h_lin p
+    simp_all only [forall_const]
+    rcases h_lin with h|h
+    · apply eq_one_of_mem_rels
+      simp only [all_rels]
+      have : r ∈ w₂.lin_rels := by
+        simp only [lin_rels]
+        simp only [Set.sUnion_image, Set.mem_iUnion, exists_prop]
+        use p
+      simp only [Set.sUnion_insert, Set.sUnion_singleton, Set.mem_union, Set.mem_sUnion]
+      tauto
+    · tauto
+  · tauto
+  · tauto
 
 open Lean PrettyPrinter Delaborator SubExpr in
 /--
@@ -195,12 +287,12 @@ theorem lin_helper (w : WeakChevalley Φ R) {ζ : Φ} (h : ζ ∈ w.lin_roots)
     · rw [rels_of_lin_of_root]
       exists i, hi, t, u
 
-theorem nonhomog_helper (w : WeakChevalley Φ R)
-    : ∀ S ∈ w.nonhomog_rels_sets, ∀ r ∈ S, w.pres_mk r = 1 := by
+theorem lifted_helper (w : WeakChevalley Φ R)
+    : ∀ S ∈ w.lifted_rels_sets, ∀ r ∈ S, w.pres_mk r = 1 := by
   intro S _ _ _
   apply eq_one_of_mem_rels
   apply Set.mem_sUnion.mpr
-  use ⋃₀ nonhomog_rels_sets w
+  use ⋃₀ lifted_rels_sets w
   constructor
   · simp only [Set.mem_insert_iff, Set.mem_singleton_iff, true_or, or_true]
   · apply Set.mem_sUnion.mpr

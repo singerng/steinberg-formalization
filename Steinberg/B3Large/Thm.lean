@@ -237,18 +237,18 @@ theorem raw_hom_lift_of_comm_of_β2ψ_αβ2ψ :
     ⁅ {β2ψ, j + 2 * k, u * v^2}, ⁅ {α, i, t}, {β2ψ, j + 2 * k, u * v^2} ⁆ ⁆ = 1 := by
   hom_tac rels_of_hom_lift_of_comm_of_β2ψ_αβ2ψ [i, j, k, hi, hj, hk, t, u, v]
 
-theorem refl_of_homog_and_nonhomog :
-  ∀ S ∈ homog_and_nonhomog_sets F,
+theorem refl_of_lifted :
+  ∀ S ∈ lifted_sets F,
     ∀ r ∈ S, (weakB3Large F).pres_mk (FreeGroup.map refl_deg_of_gen r) = 1 := by
   intro rel hrel r hr
-  simp only [homog_and_nonhomog_sets] at hrel
+  simp only [lifted_sets] at hrel
   sorry
 
 theorem refl_of_def : ∀ S ∈ def_sets F, ∀ r ∈ S, FreeGroup.map refl_deg_of_gen r ∈ S := by
   sorry
 
 theorem b3large_valid : ReflDeg.refl_valid (weakB3Large F) :=
-  ⟨refl_of_homog_and_nonhomog, refl_of_def⟩
+  ⟨refl_of_lifted, refl_of_def⟩
 
 include Fchar
 -- 8.108
