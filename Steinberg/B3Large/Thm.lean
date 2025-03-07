@@ -240,12 +240,34 @@ theorem raw_hom_lift_of_comm_of_β2ψ_αβ2ψ :
 theorem refl_of_lifted :
   ∀ S ∈ lifted_sets F,
     ∀ r ∈ S, (weakB3Large F).pres_mk (FreeGroup.map refl_deg_of_gen r) = 1 := by
-  intro rel hrel r hr
-  simp only [lifted_sets] at hrel
+  simp only [lifted_sets]
+  intro s hs r hr
+
   sorry
 
 theorem refl_of_def : ∀ S ∈ def_sets F, ∀ r ∈ S, FreeGroup.map refl_deg_of_gen r ∈ S := by
-  sorry
+  intro s hs r hr
+  simp_all only [def_sets, rels_of_def_of_αβψ, rels_of_def_of_αβ2ψ, rels_of_def_of_α2β2ψ]
+  rcases hs with hs | hs | hs
+  · rcases hs
+    rcases hr with ⟨i, hi, t, rfl⟩
+    chev_simp [split_3_into_1_2]
+    exists (αβψ.height - i), (by omega), t
+    split
+    all_goals (simp only; congr)
+  · rcases hs
+    rcases hr with ⟨i, hi, t, rfl⟩
+    chev_simp [split_4_into_1_3]
+    exists (αβ2ψ.height - i), (by omega), t
+    split
+    all_goals (simp only; congr)
+    stop -- Ummmm what...
+  · rcases hs
+    rcases hr with ⟨i, hi, t, rfl⟩
+    chev_simp [split_5_into_2_3]
+    exists (α2β2ψ.height - i), (by omega), t
+    split
+    all_goals (simp only; congr)
 
 theorem b3large_valid : ReflDeg.refl_valid (weakB3Large F) :=
   ⟨refl_of_lifted, refl_of_def⟩
