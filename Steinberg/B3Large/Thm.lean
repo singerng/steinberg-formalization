@@ -81,9 +81,9 @@ theorem raw_nonhomog_lift_of_comm_of_αβ_βψ :
 theorem raw_nonhomog_lift_of_comm_of_α_α2β2ψ :
   ∀ (t₁ t₀ u₁ u₀ v₁ v₀ : F),
     ⁅ {α, 1, t₁} * {α, 0, t₀},
-      ⁅ {αβ, 2, t₁ * u₁} * {αβ, 2, t₁ * u₀ + t₀ * u₁} * {αβ, 0, t₀ * u₀},
-        {β2ψ, 3, t₁ * u₁^2} * {β2ψ, 2, t₀ * u₁^2 + 2 * t₁ * u₀ * u₁} *
-        {β2ψ, 1, t₁ * u₀^2 + 2 * t₀ * u₀ * u₁} * {β2ψ, 0, t₀ * u₀^2} ⁆⁆ = 1 := by
+      ⁅ {αβ, 2, t₁ * u₁} * {αβ, 1, t₁ * u₀ + t₀ * u₁} * {αβ, 0, t₀ * u₀},
+        {β2ψ, 3, u₁ * v₁^2} * {β2ψ, 2, u₀ * v₁^2 + 2 * u₁ * v₀ * v₁}
+          * {β2ψ, 1, u₁ * v₀^2 + 2 * u₀ * v₀ * v₁} * {β2ψ, 0, u₀ * v₀^2} ⁆⁆ = 1 := by
   hom_tac rels_of_nonhomog_lift_of_comm_of_α_α2β2ψ [t₁, t₀, u₁, u₀, v₁, v₀]
 
 /-! ### Homogeneous lift -/
@@ -2902,7 +2902,7 @@ theorem lin_of_α2β2ψ : lin_of_root((weakB3Large F).pres_mk, α2β2ψ) := by
 
 -- 8.198
 theorem hom_lift_of_comm_of_α_α2β2ψ_square : forall_ijk_tu α β ψ,
-    ⁅{α, i, t}, {α2β2ψ, i + 2 * j + 2 * k, t * u^2}⁆ = 1 := by
+    ⁅{α, i, t}, {α2β2ψ, i + 2 * j + 2 * k, -t * u^2}⁆ = 1 := by
   intro i j k hi hj hk t u
   have hi : i ≤ 1 := by ht
   have hj : j ≤ 1 := by ht
@@ -2928,14 +2928,20 @@ theorem hom_lift_of_comm_of_α_α2β2ψ_square : forall_ijk_tu α β ψ,
   have hf_i : i ∈ [0,1] := by simp only [List.mem_cons, List.mem_singleton]; omega
   have hf_j : j ∈ [0,1] := by simp only [List.mem_cons, List.mem_singleton]; omega
   have hf_k : k ∈ [0,1] := by simp only [List.mem_cons, List.mem_singleton]; omega
-  have id₁ : {α, i, t} = {α, 1, t₁} * {α, 0, t₀} := by
+  have aux₁ : {α, i, t} = {α, 1, t₁} * {α, 0, t₀} := by
     fin_cases hf_i, hf_j, hf_k
     <;> chev_simp [t₀, t₁, u₀, u₁, v₀, v₁]
-  have id₂ : {αβ, 2 * j, t} = {αβ, 2, t₁ * u₁} * {αβ, 2, t₁ * u₀ + t₀ * u₁} * {αβ, 0, t₀ * u₀} := by
+  have aux₂ : {αβ, i + j, t} = {αβ, 2, t₁ * u₁} * {αβ, 1, t₁ * u₀ + t₀ * u₁} * {αβ, 0, t₀ * u₀} := by
     fin_cases hf_i, hf_j, hf_k
     <;> chev_simp [t₀, t₁, u₀, u₁, v₀, v₁]
-    sorry
-  sorry
+  have aux₃ : {β2ψ, j + 2 * k, u^2} = {β2ψ, 3, u₁ * v₁^2} * {β2ψ, 2, u₀ * v₁^2 + 2 * u₁ * v₀ * v₁}
+          * {β2ψ, 1, u₁ * v₀^2 + 2 * u₀ * v₀ * v₁} * {β2ψ, 0, u₀ * v₀^2} := by
+    fin_cases hf_i, hf_j, hf_k
+    <;> chev_simp [pow_two, t₀, t₁, u₀, u₁, v₀, v₁]
+  rw [eq_of_h_eq α2β2ψ ((i + j) + (j + 2 * k)) (by linarith),
+  expr_α2β2ψ_as_comm_of_αβ_β2ψ Fchar (add_le_add hi hj) (by linarith), aux₁, aux₂, aux₃,
+  raw_nonhomog_lift_of_comm_of_α_α2β2ψ]
+
 
 -- 8.199
 include F_sum_of_squares
@@ -2946,10 +2952,13 @@ theorem hom_lift_of_comm_of_α_α2β2ψ : forall_ijk_tu α β ψ,
   intro i j k hi hj hk t u
   rcases eq_or_ne t 0 with ht | ht
   · rw [ht, id_of_α]; group
-  rcases F_sum_of_squares (u / t) with ⟨r, s, hrs⟩
-  have hu := (mul_left_inj' ht).2 hrs
-  ring_nf at hu
-  field_simp at hu
+  rcases F_sum_of_squares (-u / t) with ⟨r, s, hrs⟩
+  have := (mul_left_inj' ht).2 hrs
+  ring_nf at this
+  field_simp at this
+  have hu : u = (-t * r^2) + (-t * s^2) := by
+    rw [neg_mul, neg_mul, ←neg_add]
+    exact neg_eq_iff_eq_neg.1 this
   have h₁ := triv_comm_iff_commutes.1 (hom_lift_of_comm_of_α_α2β2ψ_square Fchar hi hj hk t r)
   have h₂ :=  triv_comm_iff_commutes.1 (hom_lift_of_comm_of_α_α2β2ψ_square Fchar hi hj hk t s)
   apply triv_comm_iff_commutes.2
