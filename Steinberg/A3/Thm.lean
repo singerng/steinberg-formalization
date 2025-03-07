@@ -6,6 +6,8 @@ LICENSE goes here.
 
 import Steinberg.A3.Basic
 
+import Mathlib.Algebra.Group.Basic
+
 import Mathlib.Tactic.Group
 import Mathlib.Tactic.FinCases
 
@@ -35,8 +37,8 @@ theorem nonhomog_lift_of_comm_of_αβ_βγ :
     = 1 := by
   intro t₁ t₀ u₁ u₀ v₁ v₀
   apply WeakChevalley.helper
-  apply (weakA3 R).nonhomog_helper rels_of_nonhomog_lift_of_comm_of_αβ_βγ
-  · simp only [weakA3, nonhomog_sets, Set.mem_singleton_iff]
+  apply (weakA3 R).lifted_helper rels_of_nonhomog_lift_of_comm_of_αβ_βγ
+  · simp only [weakA3, lifted_sets, Set.mem_singleton_iff]
   · exists t₁, t₀, u₁, u₀, v₁, v₀
 
 /-! ### Definition of missing root -/
@@ -51,10 +53,10 @@ theorem def_of_αβγ :
   · simp only [weakA3, def_sets, Set.mem_singleton_iff]
   · exists t, i, hi
 
-theorem refl_of_nonhomog :
-  ∀ S ∈ nonhomog_sets R,
+theorem refl_of_lifted :
+  ∀ S ∈ lifted_sets R,
     ∀ r ∈ S, (weakA3 R).pres_mk (FreeGroup.map refl_deg_of_gen r) = 1 := by
-  simp only [nonhomog_sets, Set.mem_singleton_iff, forall_eq, rels_of_nonhomog_lift_of_comm_of_αβ_βγ, Set.mem_setOf_eq]
+  simp only [lifted_sets, Set.mem_singleton_iff, forall_eq, rels_of_nonhomog_lift_of_comm_of_αβ_βγ, Set.mem_setOf_eq]
   intro r h
   rcases h with ⟨ t₁, t₀, u₁, u₀, v₁, v₀, rfl ⟩
   simp only [map_mul, map_commutatorElement, free_mk_mk, FreeGroup.map.of, refl_deg_of_gen, PosRootSys.height, height]
@@ -76,7 +78,7 @@ theorem refl_of_def : ∀ S ∈ def_sets R, ∀ r ∈ S, FreeGroup.map refl_deg_
   all_goals (simp only; congr)
 
 theorem a3_valid : ReflDeg.refl_valid (R := R) (weakA3 R) :=
-  ⟨refl_of_nonhomog, refl_of_def⟩
+  ⟨refl_of_lifted, refl_of_def⟩
 
 /-! ### Derive full commutator for αβ and βγ from nonhomogeneous lift -/
 
@@ -415,5 +417,76 @@ theorem lin_of_αβγ : lin_of_root((weakA3 R).pres_mk, αβγ) := by
     expr_αβγ_as_α_βγ_α_βγ_mul_one hi₁ hi₂,
     ← neg_add, add_comm u t,
     ← expr_αβγ_as_α_βγ_α_βγ hi₁ hi₂]
+
+theorem full_rels_satisfied_in_weak_group (R : Type TR) [Ring R] :
+  ∀ r ∈ (fullA3 R).all_rels, (weakA3 R).pres_mk r = 1 := by
+  simp only [fullA3, weakA3]
+  apply WeakChevalley.injection
+  · intro p h
+    simp only [full_trivial_commutator_pairs] at h
+    rcases h with h_old|h_new
+    · tauto
+    · right
+      simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at h_new
+      intro r h_r
+      rcases h_new with h_αβ_βγ|h_α_αβγ|h_β_αβγ|h_γ_αβγ|h_αβ_αβγ|h_βγ_αβγ
+      all_goals (
+        simp only [rels_of_trivial_commutator_of_root_pair] at h_r
+        simp_all only
+        rcases h_r with ⟨ i, j, hi, hj, t, u, goal ⟩
+        rw [← goal]
+      )
+      · exact comm_of_αβ_βγ hi hj t u
+      · exact comm_of_α_αβγ hi hj t u
+      · exact comm_of_β_αβγ hi hj t u
+      · exact comm_of_γ_αβγ hi hj t u
+      · exact comm_of_αβ_αβγ hi hj t u
+      · exact comm_of_βγ_αβγ hi hj t u
+  · intro p h
+    simp only [full_single_commutator_pairs] at h
+    rcases h with h_old|h_new
+    · tauto
+    · right
+      simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at h_new
+      intro r h_r
+      rcases h_new with h_α_βγ|h_αβ_γ
+      all_goals (
+        simp only [rels_of_single_commutator_of_root_pair] at h_r
+        rcases h_r with ⟨ i, j, hi, hj, t, u, goal ⟩
+        subst p
+        simp_all only
+        rw [←goal]
+        simp only [map_mul, map_inv, mul_inv_eq_one]
+      )
+      · exact comm_of_α_βγ hi hj t u
+      · exact comm_of_αβ_γ hi hj t u
+  · simp only [full_double_commutator_pairs]
+    tauto
+  · intro p h
+    simp only [full_mixed_commutes_roots] at h
+    rcases h with h_old|h_new
+    · tauto
+    · right
+      simp_all only [Set.mem_singleton_iff]
+      intro r h_r
+      simp only [rels_of_mixed_commutes_of_root] at h_r
+      rcases h_r with ⟨ i, j, hi, hj, t, u, goal ⟩
+      rw [← goal]
+      exact comm_of_αβγ_αβγ hi hj t u
+  · intro p h
+    simp only [full_lin_roots] at h
+    rcases h with h_old|h_new
+    · tauto
+    · right
+      simp_all only [Set.mem_singleton_iff]
+      intro r h_r
+      simp only [rels_of_lin_of_root] at h_r
+      rcases h_r with ⟨ i, hi, t, u, goal ⟩
+      rw [← goal]
+      simp only [map_mul, map_inv, mul_inv_eq_one]
+      exact lin_of_αβγ hi t u
+  · tauto
+  · tauto
+
 
 end Steinberg.A3

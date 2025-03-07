@@ -390,7 +390,7 @@ abbrev lin_roots : Set B3LargePosRoot :=
 abbrev double_comm_pairs : Set (DoubleSpanRootPair B3LargePosRoot F) :=
   {⟨β, ψ, βψ, β2ψ, 1, 1, rfl, rfl⟩}
 
-def homog_and_nonhomog_sets (F : Type TF) [Field F] : Set (Set (FreeGroupOnGradedGens B3LargePosRoot F)) := {
+def lifted_sets (F : Type TF) [Field F] : Set (Set (FreeGroupOnGradedGens B3LargePosRoot F)) := {
   rels_of_nonhomog_lift_of_comm_of_αβ_βψ, rels_of_nonhomog_lift_of_comm_of_α_α2β2ψ,
   rels_of_hom_lift_of_interchange_of_αβψ, rels_of_hom_lift_of_doub_of_αβψ,
   rels_of_hom_lift_of_interchange_of_αβ2ψ, rels_of_hom_lift_of_comm_of_βψ_α_β2ψ,
@@ -412,7 +412,7 @@ def weakB3Large (F : Type TF) [Field F] := WeakChevalley.mk
   double_comm_pairs
   mixed_commutes_roots
   lin_roots
-  (homog_and_nonhomog_sets F)
+  (lifted_sets F)
   (def_sets F)
 
 /-! # Notation and macros -/
@@ -502,8 +502,8 @@ end forallNotation
 macro "hom_tac " rel:ident " [" intros:ident,* "]" : tactic => `(tactic|
   ( intros $intros*;
     apply WeakChevalley.helper;
-    apply (weakB3Large _).nonhomog_helper $rel;
-    simp only [weakB3Large, homog_and_nonhomog_sets, Set.mem_insert_iff,
+    apply (weakB3Large _).lifted_helper $rel;
+    simp only [weakB3Large, lifted_sets, Set.mem_insert_iff,
       Set.mem_singleton_iff, true_or, or_true];
     exists $intros,* ))
 

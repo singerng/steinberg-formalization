@@ -55,6 +55,24 @@ variable {R : Type TR} [Ring R]
 The specific relation arises from "nonhomogeneously lifting" the commutator of αβ and βγ elements. (There is no analogue
 of this relation for other root-pairs, since all other present pairs lie in a common two-dimensional subspace.)
 -/
+/-- Steinberg relations in the weak A3 group -/
+abbrev trivial_commutator_pairs : Set (A3PosRoot × A3PosRoot) :=
+  {(α, γ), (α, αβ), (β, αβ), (β, βγ), (γ, βγ)}
+
+abbrev single_commutator_pairs : Set ((ζ : A3PosRoot) × (η : A3PosRoot) × (θ : A3PosRoot) × R ×' (θ.height = ζ.height + η.height)) :=
+  {⟨ α, β, αβ, 1, (by simp only [height])⟩, ⟨β, γ, βγ, 1, (by simp only [height])⟩}
+
+abbrev double_commutator_pairs : Set ((ζ : A3PosRoot) × (η : A3PosRoot) × (θ₁ : A3PosRoot) × (θ₂ : A3PosRoot) × R × R ×' (θ₁.height = ζ.height + η.height)
+  ×' (θ₂.height = ζ.height + 2 * η.height)) := {}
+
+abbrev mixed_commutes_roots : Set (A3PosRoot) :=
+  {α, β, γ, αβ, βγ}
+
+abbrev lin_roots : Set (A3PosRoot) :=
+  {α, β, γ, αβ, βγ}
+
+/-- Additional relations (TBD title) -/
+
 def rels_of_nonhomog_lift_of_comm_of_αβ_βγ :=
   { ⁅ {αβ, 2, t₁ * u₁} * {αβ, 1, t₁ * u₀ + t₀ * u₁} * {αβ, 0, t₀ * u₀},
       {βγ, 2, u₁ * v₁} * {βγ, 1, u₁ * v₀ + u₀ * v₁} * {βγ, 0, u₀ * v₀} ⁆
@@ -79,23 +97,8 @@ def rels_of_def_of_αβγ :=
       * {αβγ, i, t}⁻¹
     | (i : ℕ) (hi : i ≤ αβγ.height) (t : R) }
 
-abbrev trivial_commutator_pairs : Set (A3PosRoot × A3PosRoot) :=
-  {(α, γ), (α, αβ), (β, αβ), (β, βγ), (γ, βγ)}
-
-abbrev single_commutator_pairs : Set ((ζ : A3PosRoot) × (η : A3PosRoot) × (θ : A3PosRoot) × R ×' (θ.height = ζ.height + η.height)) :=
-  {⟨ α, β, αβ, 1, (by simp only [height])⟩, ⟨β, γ, βγ, 1, (by simp only [height])⟩}
-
-abbrev double_commutator_pairs : Set ((ζ : A3PosRoot) × (η : A3PosRoot) × (θ₁ : A3PosRoot) × (θ₂ : A3PosRoot) × R × R ×' (θ₁.height = ζ.height + η.height)
-  ×' (θ₂.height = ζ.height + 2 * η.height)) := {}
-
-abbrev mixed_commutes_roots : Set (A3PosRoot) :=
-  {α, β, γ, αβ, βγ}
-
-abbrev lin_roots : Set (A3PosRoot) :=
-  {α, β, γ, αβ, βγ}
-
 -- lifted commutator of αβ and βγ
-def nonhomog_sets (R : Type TR) [Ring R] : Set (Set (FreeGroupOnGradedGens A3PosRoot R)) :=
+def lifted_sets (R : Type TR) [Ring R] : Set (Set (FreeGroupOnGradedGens A3PosRoot R)) :=
   { rels_of_nonhomog_lift_of_comm_of_αβ_βγ }
 
 -- definition of αβγ
@@ -108,8 +111,34 @@ def weakA3 (R : Type TR) [Ring R] := WeakChevalley.mk
   double_commutator_pairs
   mixed_commutes_roots
   lin_roots
-  (nonhomog_sets R)
+  (lifted_sets R)
   (def_sets R)
+
+/-! ### Additional relations which define the full A3 group -/
+
+abbrev full_trivial_commutator_pairs : Set (A3PosRoot × A3PosRoot) :=
+  trivial_commutator_pairs ∪ {(αβ, βγ), (α, αβγ), (β, αβγ), (γ, αβγ), (αβ, αβγ), (βγ, αβγ)}
+
+abbrev full_single_commutator_pairs : Set ((ζ : A3PosRoot) × (η : A3PosRoot) × (θ : A3PosRoot) × R ×' (θ.height = ζ.height + η.height)) :=
+  single_commutator_pairs ∪ {⟨ α, βγ, αβγ, 1, (by ht)⟩, ⟨αβ, γ, αβγ, 1, (by ht)⟩}
+
+abbrev full_double_commutator_pairs : Set ((ζ : A3PosRoot) × (η : A3PosRoot) × (θ₁ : A3PosRoot) × (θ₂ : A3PosRoot) × R × R ×' (θ₁.height = ζ.height + η.height)
+  ×' (θ₂.height = ζ.height + 2 * η.height)) := {}
+
+abbrev full_mixed_commutes_roots : Set (A3PosRoot) :=
+  mixed_commutes_roots ∪ {αβγ}
+
+abbrev full_lin_roots : Set (A3PosRoot) :=
+  lin_roots ∪ {αβγ}
+
+def fullA3 (R : Type TR) [Ring R] := @WeakChevalley.mk _ _ R _
+  full_trivial_commutator_pairs
+  full_single_commutator_pairs
+  full_double_commutator_pairs
+  full_mixed_commutes_roots
+  full_lin_roots
+  (∅)
+  (∅)
 
 /-! # Notation and macros -/
 

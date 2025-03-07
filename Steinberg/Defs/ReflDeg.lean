@@ -96,7 +96,7 @@ private def pres_of_refl_deg_of_gen (w : WeakChevalley Φ R) (g : GradedGen Φ R
   w.pres_mk (GradedGen.free_mk (refl_deg_of_gen g))
 
 def refl_valid (w : WeakChevalley Φ R) :=
-  (∀ S ∈ w.nonhomog_rels_sets, ∀ r ∈ S, w.pres_mk (FreeGroup.map refl_deg_of_gen r) = 1) ∧
+  (∀ S ∈ w.lifted_rels_sets, ∀ r ∈ S, w.pres_mk (FreeGroup.map refl_deg_of_gen r) = 1) ∧
   (∀ S ∈ w.def_rels_sets, ∀ r ∈ S, FreeGroup.map refl_deg_of_gen r ∈ S)
 
 theorem reflect_degree_of_rels {w : WeakChevalley Φ R} (h' : refl_valid w) :
