@@ -35,10 +35,14 @@ open Mathlib.Tactic
 open Lean Meta Elab Term Tactic Parser.Tactic PrettyPrinter
 
 attribute [chev_simps] neg_add_cancel add_neg_cancel
-  one_mul mul_one zero_mul mul_zero mul_neg neg_neg inv_inv
-  zero_add add_zero
+  one_mul mul_one zero_mul mul_zero
+  mul_neg neg_mul neg_neg inv_inv mul_inv_rev
+  div_neg neg_div
+  pow_two
+  zero_add add_zero neg_zero
   map_one map_zero map_mul map_add map_neg map_commutatorElement
-  commutatorElement_inv
+  commutatorElement_inv commutatorElement_one_left commutatorElement_one_right
+  and_true true_and and_self or_self
 
 /-- A macro for a common simplification when rewriting with ghost component equations. -/
 syntax (name := chevSimp) "chev_simp" (simpArgs)? (location)? : tactic

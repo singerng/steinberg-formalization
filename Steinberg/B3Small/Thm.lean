@@ -196,11 +196,11 @@ theorem expr_ψ_ω_as_ω_ψω_ψ : forall_ij_tu ψ ω,
 
 -- 8.40
 theorem expr_β_ψ_as_ψ_β_β2ψ_βψ : forall_ij_tu β ψ,
-    {β, i, t} * {ψ, j, u} = {ψ, j, u}  * {β, i, t} * {β2ψ, i + 2 * j, -t * u^2} * {βψ, i + j, t * u} := by
+    {β, i, t} * {ψ, j, u} = {ψ, j, u} * {β, i, t} * {β2ψ, i + 2 * j, -t * u^2} * {βψ, i + j, t * u} := by
   intro i j hi hj t u
   have := comm_of_β_ψ hi hj (-t) (-u)
-  rw [one_mul, mul_assoc, neg_mul_neg, neg_mul_neg, ← pow_two] at this
-  grw [← expr_βψ_β2ψ_as_β2ψ_βψ, ← this]
+  chev_simp at this
+  grw [← expr_βψ_β2ψ_as_β2ψ_βψ, ← mul_assoc, ← this]
 
 -- 8.40 a
 
@@ -209,7 +209,6 @@ theorem expr_β_ψ_as_ψ_βψ_β2ψ_β : forall_ij_tu β ψ,
   intro i j hi hj t u
   grw [expr_β_ψ_as_ψ_β_β2ψ_βψ hi hj, ← expr_βψ_β2ψ_as_β2ψ_βψ,
         expr_β_βψ_as_βψ_β, expr_β_β2ψ_as_β2ψ_β]
-  rw [neg_mul]
 
 -- 8.41
 theorem expr_ψ_β_as_βψ_β2ψ_β_ψ : forall_ij_tu β ψ,
@@ -263,16 +262,17 @@ theorem Interchange : forall_ijk_tuv β ψ ω,
   grw [write_βψ_right, expr_ψ_β_as_βψ_β2ψ_β_ψ, expr_β_ψ_as_ψ_β_β2ψ_βψ]
   -- commute ψ elements together across ψω elements and cancel them
   grw [expr_ψ_ψω_as_ψω_ψ]
-  have : -u / 2 + u + -u / 2 = 0 := by ring_nf; field_simp
+  have : -(u / 2) + u + -(u / 2) = 0 := by ring_nf; field_simp
   rw [this, id_of_ψ]
   -- move β2ψ elements together and cancel them
   grw [expr_β_β2ψ_as_β2ψ_β, ←expr_β2ψ_ψω_as_ψω_β2ψ Fchar, expr_β_β2ψ_as_β2ψ_β]
-  have : -t * (-u / 2) ^ 2 + t * (-u / 2) ^ 2 = 0 := by field_simp
-  rw [this, id_of_β2ψ]
   -- collect βψ elements on the right
-  grw [expr_βψ_ψω_as_ψω_βψ, ←expr_β_βψ_as_βψ_β, expr_βψ_ψω_as_ψω_βψ, ←expr_β_βψ_as_βψ_β, expr_βψ_ψω_as_ψω_βψ]
+  grw [expr_βψ_ψω_as_ψω_βψ, ← expr_β_βψ_as_βψ_β,
+        expr_βψ_ψω_as_ψω_βψ, ← expr_β_βψ_as_βψ_β,
+        expr_βψ_ψω_as_ψω_βψ]
   -- bring ω as far right as possible
-  grw [commutatorElement_def, ←expr_β_ω_as_ω_β, expr_ω_ψω_as_ψω_ω, ←expr_β_ω_as_ω_β, expr_ω_ψω_as_ψω_ω]
+  grw [commutatorElement_def, ← expr_β_ω_as_ω_β,
+        expr_ω_ψω_as_ψω_ω, ← expr_β_ω_as_ω_β, expr_ω_ψω_as_ψω_ω]
   ring_nf
   field_simp
 
@@ -411,10 +411,11 @@ theorem comm_of_βψω_ψ :
   apply triv_comm_iff_commutes.2
   rcases decompose 1 2 i hi with ⟨i₁, i₂, rfl, hi₁, hi₂⟩
   rw [←mul_one t, expr_βψω_as_β_ψω_β_ψω Fchar hi₁ hi₂]
-  grw [←expr_ψ_ψω_as_ψω_ψ, expr_β_ψ_as_ψ_β_β2ψ_βψ hi₁ hj, ←expr_ψ_ψω_as_ψω_ψ, expr_β_ψ_as_ψ_β_β2ψ_βψ hi₁ hj,
-  ←expr_βψ_β2ψ_as_β2ψ_βψ, expr_β2ψ_ψω_as_ψω_β2ψ Fchar, expr_β_β2ψ_as_β2ψ_β]
-  field_simp
-  grw [expr_βψ_ψω_as_ψω_βψ, expr_β_βψ_as_βψ_β]
+  grw [←expr_ψ_ψω_as_ψω_ψ, expr_β_ψ_as_ψ_β_β2ψ_βψ hi₁ hj,
+    ← expr_ψ_ψω_as_ψω_ψ, expr_β_ψ_as_ψ_β_β2ψ_βψ hi₁ hj,
+    ← expr_βψ_β2ψ_as_β2ψ_βψ, expr_β2ψ_ψω_as_ψω_β2ψ Fchar,
+    expr_β_β2ψ_as_β2ψ_β,
+    expr_βψ_ψω_as_ψω_βψ, expr_β_βψ_as_βψ_β]
 declare_B3Small_triv_expr_thm F βψω ψ
 
 -- 8.51
@@ -506,11 +507,12 @@ theorem comm_of_β2ψ_ω :
   apply triv_comm_iff_commutes.2
   rcases decompose 1 2 i hi with ⟨i₁, i₂, rfl, hi₁, hi₂⟩
   rcases write_t_as_2tu Fchar t with ⟨x, t, rfl⟩
-  grw [expr_β2ψ_as_ψ_βψ_ψ_βψ hi₁ hi₂, expr_βψ_ω_as_ω_βψ_βψω Fchar hi₂ hj, expr_ψ_ω_as_ω_ψω_ψ hi₁ hj, ←expr_ω_ψω_as_ψω_ω,
-  expr_βψ_ω_as_ω_βψ_βψω Fchar hi₂ hj, expr_ψ_ω_as_ω_ψ_ψω hi₁ hj, expr_βψω_ψω_as_ψω_βψω Fchar, expr_βψω_ψ_as_ψ_βψω Fchar,
-  expr_βψω_βψ_as_βψ_βψω Fchar, lin_of_βψω Fchar]
-  field_simp
-  grw [id_of_βψω Fchar (add_le_add hi₂ hj), expr_βψ_ψω_as_ψω_βψ]
+  grw [expr_β2ψ_as_ψ_βψ_ψ_βψ hi₁ hi₂, expr_βψ_ω_as_ω_βψ_βψω Fchar hi₂ hj,
+        expr_ψ_ω_as_ω_ψω_ψ hi₁ hj, ← expr_ω_ψω_as_ψω_ω,
+        expr_βψ_ω_as_ω_βψ_βψω Fchar hi₂ hj, expr_ψ_ω_as_ω_ψ_ψω hi₁ hj,
+        expr_βψω_ψω_as_ψω_βψω Fchar, expr_βψω_ψ_as_ψ_βψω Fchar,
+        expr_βψω_βψ_as_βψ_βψω Fchar, lin_of_βψω Fchar,
+        id_of_βψω Fchar (add_le_add hi₂ hj), expr_βψ_ψω_as_ψω_βψ]
 declare_B3Small_triv_expr_thm F β2ψ ω
 
 end Steinberg.B3Small

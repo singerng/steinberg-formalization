@@ -96,6 +96,11 @@ theorem h_add_comm (ζ : Φ) (i j : ℕ) (h : i + j ≤ height ζ) (t : R)
   congr 1
   exact add_comm i j
 
+theorem h_add_assoc (ζ : Φ) (i j k : ℕ) (h : i + j + k ≤ height ζ) (t : R)
+    : {ζ, i + j + k, t} = {ζ, i + (j + k), t} := by
+  congr 1
+  exact add_assoc i j k
+
 theorem eq_of_h_eq (ζ : Φ) {i : ℕ} (j : ℕ) (hij : i = j)
     : ∀ {_ : i ≤ height ζ} {t : R}, {ζ, i, t} = {ζ, j, t} := by
   intros; congr 1

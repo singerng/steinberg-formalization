@@ -185,11 +185,8 @@ theorem Interchange : forall_ijk_tuv α β γ,
   have hij : i + j ≤ αβ.height := by ht
   have hjk : j + k ≤ βγ.height := by ht
   grw [expr_βγ_as_β_γ_β_γ hj hk,
-    expr_α_β_as_αβ_β_α hi hj,
-    expr_α_γ_as_γ_α hi hk,
-    expr_α_β_as_αβ_β_α hi hj,
-    mul_neg,
-    expr_α_γ_as_γ_α hi hk,
+    expr_α_β_as_αβ_β_α hi hj, expr_α_γ_as_γ_α hi hk,
+    expr_α_β_as_αβ_β_α hi hj, expr_α_γ_as_γ_α hi hk,
     expr_β_γ_as_βγ_γ_β hj hk,
     expr_β_αβ_as_αβ_β hj hij,
     ← expr_γ_βγ_as_βγ_γ hk hjk,
@@ -334,10 +331,8 @@ theorem comm_of_α_αβγ : trivial_commutator_of_root_pair (weakA3 R).pres_mk �
   apply triv_comm_iff_commutes.mpr
   rcases decompose αβ.height γ.height j hj with ⟨ j₁, j₂, ⟨ rfl, hj₁, hj₂ ⟩ ⟩
   grw [expr_αβγ_as_αβ_γ_αβ_γ_one_mul hj₁ hj₂,
-      expr_α_αβ_as_αβ_α hi hj₁,
-      expr_α_γ_as_γ_α hi hj₂,
-      expr_α_αβ_as_αβ_α hi hj₁,
-      expr_α_γ_as_γ_α hi hj₂]
+      expr_α_αβ_as_αβ_α hi hj₁, expr_α_γ_as_γ_α hi hj₂,
+      expr_α_αβ_as_αβ_α hi hj₁, expr_α_γ_as_γ_α hi hj₂]
 
 /- β and αβγ commute. -/
 -- the only commutator proof where we have to do something 'interesting'
@@ -346,10 +341,8 @@ theorem comm_of_β_αβγ : trivial_commutator_of_root_pair (weakA3 R).pres_mk �
   apply triv_comm_iff_commutes.mpr
   rcases decompose αβ.height γ.height j hj with ⟨ j₁, j₂, ⟨ rfl, hj₁, hj₂ ⟩ ⟩
   grw [expr_αβγ_as_αβ_γ_αβ_γ_one_mul hj₁ hj₂,
-      expr_β_αβ_as_αβ_β hi hj₁,
-      expr_β_γ_as_γ_βγ_β hi hj₂,
-      expr_β_αβ_as_αβ_β hi hj₁,
-      expr_β_γ_as_βγ_γ_β hi hj₂,
+      expr_β_αβ_as_αβ_β hi hj₁, expr_β_γ_as_γ_βγ_β hi hj₂,
+      expr_β_αβ_as_αβ_β hi hj₁, expr_β_γ_as_βγ_γ_β hi hj₂,
       ← expr_αβ_βγ_as_βγ_αβ hj₁]
 
 /- γ and αβγ commute. -/
@@ -358,10 +351,8 @@ theorem comm_of_γ_αβγ : trivial_commutator_of_root_pair (weakA3 R).pres_mk �
   apply triv_comm_iff_commutes.mpr
   rcases decompose α.height βγ.height j hj with ⟨ j₁, j₂, ⟨ rfl, hj₁, hj₂ ⟩ ⟩
   grw [expr_αβγ_as_α_βγ_α_βγ_one_mul hj₁ hj₂,
-    ← expr_α_γ_as_γ_α hj₁ hi,
-    expr_γ_βγ_as_βγ_γ hi hj₂,
-    ← expr_α_γ_as_γ_α hj₁ hi,
-    expr_γ_βγ_as_βγ_γ hi hj₂]
+    ← expr_α_γ_as_γ_α hj₁ hi, expr_γ_βγ_as_βγ_γ hi hj₂,
+    ← expr_α_γ_as_γ_α hj₁ hi, expr_γ_βγ_as_βγ_γ hi hj₂]
 
 /- αβ and αβγ commute. -/
 theorem comm_of_αβ_αβγ : trivial_commutator_of_root_pair (weakA3 R).pres_mk αβ αβγ := by
@@ -369,10 +360,8 @@ theorem comm_of_αβ_αβγ : trivial_commutator_of_root_pair (weakA3 R).pres_mk
   apply triv_comm_iff_commutes.mpr
   rcases decompose α.height βγ.height j hj with ⟨ j₁, j₂, ⟨ rfl, hj₁, hj₂ ⟩ ⟩
   grw [expr_αβγ_as_α_βγ_α_βγ_one_mul hj₁ hj₂,
-    ← expr_α_αβ_as_αβ_α hj₁ hi,
-    expr_αβ_βγ_as_βγ_αβ hi hj₂,
-    ← expr_α_αβ_as_αβ_α hj₁ hi,
-    expr_αβ_βγ_as_βγ_αβ hi hj₂]
+    ← expr_α_αβ_as_αβ_α hj₁ hi, expr_αβ_βγ_as_βγ_αβ hi hj₂,
+    ← expr_α_αβ_as_αβ_α hj₁ hi, expr_αβ_βγ_as_βγ_αβ hi hj₂]
 
 /- βγ and αβγ commute. -/
 theorem comm_of_βγ_αβγ : trivial_commutator_of_root_pair (weakA3 R).pres_mk βγ αβγ := by
@@ -380,10 +369,8 @@ theorem comm_of_βγ_αβγ : trivial_commutator_of_root_pair (weakA3 R).pres_mk
   apply triv_comm_iff_commutes.mpr
   rcases decompose αβ.height γ.height j hj with ⟨ j₁, j₂, ⟨ rfl, hj₁, hj₂ ⟩ ⟩
   grw [expr_αβγ_as_αβ_γ_αβ_γ_one_mul hj₁ hj₂,
-    ← expr_αβ_βγ_as_βγ_αβ hj₁ hi,
-    ← expr_γ_βγ_as_βγ_γ hj₂ hi,
-    ← expr_αβ_βγ_as_βγ_αβ hj₁ hi,
-    ← expr_γ_βγ_as_βγ_γ hj₂ hi]
+    ← expr_αβ_βγ_as_βγ_αβ hj₁ hi, ← expr_γ_βγ_as_βγ_γ hj₂ hi,
+    ← expr_αβ_βγ_as_βγ_αβ hj₁ hi, ← expr_γ_βγ_as_βγ_γ hj₂ hi]
 
 declare_A3_triv_expr_thm R α αβγ
 declare_A3_triv_expr_thm R β αβγ
@@ -397,10 +384,8 @@ theorem comm_of_αβγ_αβγ : trivial_commutator_of_root_pair (weakA3 R).pres_
   apply triv_comm_iff_commutes.mpr
   rcases decompose α.height βγ.height j (by trivial) with ⟨ j₁, j₂, ⟨ rfl, hj₁, hj₂ ⟩ ⟩
   grw [expr_αβγ_as_α_βγ_α_βγ_one_mul hj₁ hj₂,
-    ← expr_α_αβγ_as_αβγ_α hj₁ hi,
-    ← expr_βγ_αβγ_as_αβγ_βγ hj₂ hi,
-    ← expr_α_αβγ_as_αβγ_α hj₁ hi,
-    ← expr_βγ_αβγ_as_αβγ_βγ hj₂ hi]
+    ← expr_α_αβγ_as_αβγ_α hj₁ hi, ← expr_βγ_αβγ_as_αβγ_βγ hj₂ hi,
+    ← expr_α_αβγ_as_αβγ_α hj₁ hi, ← expr_βγ_αβγ_as_αβγ_βγ hj₂ hi]
 
 declare_A3_triv_expr_thm R αβγ αβγ
 
