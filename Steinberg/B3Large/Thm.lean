@@ -3040,8 +3040,7 @@ theorem comm_of_αβ_αβ2ψ :
   intro t u
   apply comm_of_α_α2β2ψ Fchar F_sum_of_squares hi₁
 declare_B3Large_triv_expr_thm F αβ αβ2ψ
-#check expr_ψ_α2β2ψ_as_α2β2ψ_ψ
-#check expr_αβ_α2β2ψ_as_α2β2ψ_αβ
+
 -- 8.208
 theorem comm_of_αβψ :
     mixed_commutes_of_root (weakB3Large F).pres_mk αβψ := by
@@ -3059,12 +3058,33 @@ theorem comm_of_αβψ :
   rw [lin_of_αβ2ψ Fchar, lin_of_αβ2ψ Fchar]
   ring_nf; field_simp; ring_nf
   rw [id_of_αβ2ψ Fchar]
-
 declare_B3Large_mixed_expr_thm F αβψ
 
 -- 8.209
 @[simp, chev_simps]
 theorem lin_of_αβψ : lin_of_root((weakB3Large F).pres_mk, αβψ) := by
-  sorry
+  intro i hi t u
+  rcases decompose 2 1 i hi with ⟨i₁, i₂, rfl, hi₁, hi₂⟩
+  -- expand one αβψ element into a product of ψ and αβ elements (work on LHS)
+  rw [←mul_one t, expr_αβψ_as_ψ_αβ_ψ_αβ_ψ hi₁ hi₂]
+  -- move αβψ from right to middle
+  grw [expr_ψ_αβψ_as_αβψ_ψ_αβ2ψ Fchar hi₂ (add_le_add hi₁ hi₂), expr_αβ_αβψ_as_αβψ_αβ]
+  -- expand the other αβψ element in the same way as before
+  rw [←mul_one u, expr_αβψ_as_ψ_αβ_ψ_αβ_ψ hi₁ hi₂]
+  -- simplify the product of ψ elements using linearity
+  grw [rfl]
+  -- commute ψ and αβ elements
+  grw [expr_ψ_αβ_as_αβ_αβ2ψ_αβψ_ψ Fchar hi₁ hi₂ (t := u), expr_αβ_ψ_as_ψ_αβψ_αβ2ψ_αβ Fchar hi₁ hi₂ (t := -u)]
+  -- commute αβψ across ψ and cancel
+  grw [expr_ψ_αβψ_as_αβψ_αβ2ψ_ψ Fchar hi₂ (add_le_add hi₁ hi₂), lin_of_αβψ]
+  rw [eq_of_R_eq αβψ 0 (by ring_nf; field_simp), id_of_αβψ Fchar, mul_one]
+  grw [expr_ψ_αβ2ψ_as_αβ2ψ_ψ Fchar, expr_αβ_αβ2ψ_as_αβ2ψ_αβ Fchar F_sum_of_squares]
+  nth_rewrite 2 [eq_of_h_eq αβ2ψ (i₁ + 2 * i₂) (by linarith)]
+  nth_rewrite 4 [eq_of_h_eq αβ2ψ (i₁ + 2 * i₂) (by linarith)]
+  grw [lin_of_αβ2ψ Fchar, expr_ψ_αβ2ψ_as_αβ2ψ_ψ Fchar, lin_of_αβ2ψ Fchar, lin_of_αβ2ψ Fchar]
+  rw [eq_of_R_eq αβ2ψ 0 (by ring_nf; field_simp; ring_nf), id_of_αβ2ψ Fchar, mul_one]
+  -- collect back into an αβψ term
+  rw [←mul_one (t + u), expr_αβψ_as_ψ_αβ_ψ_αβ_ψ hi₁ hi₂]
+  ring_nf; field_simp; ring_nf
 
 end Steinberg.B3Large
