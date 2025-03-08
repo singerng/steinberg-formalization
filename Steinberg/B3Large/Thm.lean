@@ -235,12 +235,14 @@ theorem refl_of_def : ∀ S ∈ def_sets F, ∀ r ∈ S, FreeGroup.map refl_deg_
     split
     all_goals (simp only; congr)
     stop -- Ummmm what...
+    sorry
   · rcases hs
     rcases hr with ⟨i, hi, t, rfl⟩
     chev_simp [split_5_into_2_3]
     exists (α2β2ψ.height - i), (by omega), t
     split
     all_goals (simp only; congr)
+
 
 theorem b3large_valid : ReflDeg.refl_valid (weakB3Large F) :=
   ⟨refl_of_lifted, refl_of_def⟩
@@ -2926,7 +2928,10 @@ theorem nonhomog_lift_of_comm_of_α_α2β2ψ : forall_ij_tu α β,
   have hf_i : i ∈ [0,1] := by simp only [List.mem_cons, List.mem_singleton]; omega
   have hf_j : j ∈ [0,1] := by simp only [List.mem_cons, List.mem_singleton]; omega
   have aux₁ : 2 * (u / (2 * t)) = u / t := by ring_nf; field_simp; group
-  have aux₂ : u / (2 * t) * (u / (2 * t)) = (u * u) / (4 * (t * t)) := by sorry
+  have aux₂ : u / (2 * t) * (u / (2 * t)) = (u * u) / (4 * (t * t)) := by
+    ring_nf; simp; left
+    rw [pow_two, mul_two]
+    sorry
   have hα : {α, 1, t₁} * {α, 0, t₀} = {α, i, t} := by
     fin_cases hf_i, hf_j
     <;> chev_simp [t₀, t₁, u₀, u₁, v₀, v₁]
@@ -2954,10 +2959,16 @@ theorem nonhomog_lift_of_comm_of_α_α2β2ψ : forall_ij_tu α β,
 
   -- move the α2β2ψ together and cancel them
   grw [expr_β2ψ_α2β2ψ_as_α2β2ψ_β2ψ Fchar, expr_β2ψ_α2β2ψ_as_α2β2ψ_β2ψ Fchar]
-  nth_rewrite 4 [eq_of_hR_eq α2β2ψ (i + 2 * j + 2 * 0) (by omega) (u * u / (4 * t)) (by sorry)]
+  nth_rewrite 4 [eq_of_hR_eq α2β2ψ (i + 2 * j + 2 * 0) (by omega) (u * u / (4 * t))
+    (by ring_nf; simp only [inv_pow, neg_inj, mul_eq_mul_right_iff, inv_eq_zero]
+        left; rw [pow_two]; field_simp
+        repeat rw [← mul_assoc]; grw [mul_comm t u, mul_comm t u])]
   grw [expr_α_α2β2ψ_as_α2β2ψ_α_parity Fchar F_sum_of_squares hi hj (by trivial),
   expr_β2ψ_α2β2ψ_as_α2β2ψ_β2ψ Fchar, expr_β2ψ_α2β2ψ_as_α2β2ψ_β2ψ Fchar, expr_αβ_α2β2ψ_as_α2β2ψ_αβ Fchar]
-  nth_rewrite 3 [eq_of_hR_eq α2β2ψ (i + 2 * j) (by omega) (-(u * u / (4 * t))) (by sorry)]
+  nth_rewrite 3 [eq_of_hR_eq α2β2ψ (i + 2 * j) (by omega) (-(u * u / (4 * t)))
+    (by ring_nf; simp only [inv_pow, neg_inj, mul_eq_mul_right_iff, inv_eq_zero]
+        left; rw [pow_two]; field_simp
+        repeat rw [← mul_assoc]; grw [mul_comm t u, mul_comm t u])]
   rw [←inv_of_α2β2ψ Fchar (by ht)]
   grw [rfl]
 
