@@ -2929,9 +2929,10 @@ theorem nonhomog_lift_of_comm_of_α_α2β2ψ : forall_ij_tu α β,
   have hf_j : j ∈ [0,1] := by simp only [List.mem_cons, List.mem_singleton]; omega
   have aux₁ : 2 * (u / (2 * t)) = u / t := by ring_nf; field_simp; group
   have aux₂ : u / (2 * t) * (u / (2 * t)) = (u * u) / (4 * (t * t)) := by
-    ring_nf; simp; left
-    rw [pow_two, mul_two]
-    sorry
+    ring_nf; simp only [inv_pow, mul_eq_mul_left_iff, inv_inj, mul_eq_zero, ne_eq,
+      OfNat.ofNat_ne_zero, not_false_eq_true, pow_eq_zero_iff, inv_eq_zero];
+    left
+    rw [pow_two, mul_two, two_add_two_eq_four]
   have hα : {α, 1, t₁} * {α, 0, t₀} = {α, i, t} := by
     fin_cases hf_i, hf_j
     <;> chev_simp [t₀, t₁, u₀, u₁, v₀, v₁]
