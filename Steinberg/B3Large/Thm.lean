@@ -2922,11 +2922,11 @@ theorem nonhomog_lift_of_comm_of_α_α2β2ψ : forall_ij_tu α β,
     | 1 => 0
     | 0 => 1
   let v₁ : F := 1
-  let v₀ : F := u / (2 * t)
+  let v₀ : F := -u / (2 * t)
   have hf_i : i ∈ [0,1] := by simp only [List.mem_cons, List.mem_singleton]; omega
   have hf_j : j ∈ [0,1] := by simp only [List.mem_cons, List.mem_singleton]; omega
   have aux₁ : 2 * (u / (2 * t)) = u / t := by ring_nf; field_simp; group
-  have aux₂ : (u / (2 * t))^2 = u^2 / (4 * t^2) := by sorry
+  have aux₂ : u / (2 * t) * (u / (2 * t)) = (u * u) / (4 * (t * t)) := by sorry
   have hα : {α, 1, t₁} * {α, 0, t₀} = {α, i, t} := by
     fin_cases hf_i, hf_j
     <;> chev_simp [t₀, t₁, u₀, u₁, v₀, v₁]
@@ -2935,7 +2935,7 @@ theorem nonhomog_lift_of_comm_of_α_α2β2ψ : forall_ij_tu α β,
     <;> chev_simp [t₀, t₁, u₀, u₁, v₀, v₁]
   have hβ2ψ : {β2ψ, 3, u₁ * v₁^2} * {β2ψ, 2, u₀ * v₁^2 + 2 * u₁ * v₀ * v₁}
           * {β2ψ, 1, u₁ * v₀^2 + 2 * u₀ * v₀ * v₁} * {β2ψ, 0, u₀ * v₀^2}
-          = {β2ψ, j + 2, 1} * {β2ψ, j + 1, u / t} * {β2ψ, j, u^2 / (4 * t^2)} := by
+          = {β2ψ, j + 2, 1} * {β2ψ, j + 1, -u / t} * {β2ψ, j, u^2 / (4 * t^2)} := by
     fin_cases hf_i, hf_j
     <;> chev_simp [t₀, t₁, u₀, u₁, v₀, v₁, aux₁, aux₂, pow_two, one_mul]
 
@@ -2946,8 +2946,8 @@ theorem nonhomog_lift_of_comm_of_α_α2β2ψ : forall_ij_tu α β,
   inv_inv, inv_of_β2ψ, inv_of_β2ψ, inv_of_β2ψ, inv_of_αβ, inv_of_αβ, neg_neg]
 
   -- move pairs of β2ψ elements across αβ and cancel them
-  rw [expr_β2ψ_β2ψ_as_β2ψ_β2ψ (i := j + 2) (j := j + 1) (t := 1) (u := u / t),
-  ←expr_β2ψ_β2ψ_as_β2ψ_β2ψ (i := j + 2) (j := j + 1) (t := -1) (u := -(u / t))]
+  rw [expr_β2ψ_β2ψ_as_β2ψ_β2ψ (i := j + 2) (j := j + 1) (t := 1) (u := -u / t),
+  ←expr_β2ψ_β2ψ_as_β2ψ_β2ψ (i := j + 2) (j := j + 1) (t := -1) (u := -(-u / t))]
   mal
   grw [expr_αβ_β2ψ_as_β2ψ_α2β2ψ_αβ (i := i + j) (t := -t) (j := j) Fchar (by ht) (by ht),
   expr_αβ_β2ψ_as_β2ψ_α2β2ψ_αβ (i := i + j) (t := t) (j := j) Fchar (by ht) (by ht)]
@@ -2972,13 +2972,13 @@ theorem nonhomog_lift_of_comm_of_α_α2β2ψ : forall_ij_tu α β,
   expr_β2ψ_α2β2ψ_as_α2β2ψ_β2ψ Fchar, expr_αβ_α2β2ψ_as_α2β2ψ_αβ Fchar]
   nth_rewrite 3 [eq_of_h_eq α2β2ψ (i + 2 * j + 2) (by omega)]
   rw [←inv_of_α2β2ψ Fchar (by ht)]
+  grw [rfl]
 
   -- expand the α2β2ψ elements on the LHS
-  sorry
-
-
-
-#exit
+  rw [eq_of_hR_eq α2β2ψ ((i + j) + (j + 1)) (by omega) (-t * (-(u / t))) (by ring_nf; field_simp),
+  expr_α2β2ψ_as_αβ_β2ψ_αβ_β2ψ Fchar (by ht) (by ht), neg_neg]
+  grw [rfl]
+  mal
 
 -- 8.202
 omit F_sum_of_squares in
