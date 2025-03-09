@@ -414,13 +414,21 @@ private lemma comm_of_αβ_βψ_20 : ∀ (t u : F), ⁅ {αβ, 2, t}, {βψ, 0, 
   rw [←homog_lift_of_comm_of_αβ_βψ 1 0 0 (by trivial) (by trivial) (by trivial) (t+1) u]
   rw [←homog_lift_of_comm_of_αβ_βψ 0 0 0 (by trivial) (by trivial) (by trivial) 1 u]
 
--- symmetric to proof of `comm_of_αβ_βγ_20`
-private lemma comm_of_αβ_βψ_02 : ∀ (t u : F), ⁅ {αβ, 0, t}, {βψ, 2, u} ⁆ = 1 := by
+private lemma comm_of_αβ_βψ_02 : ∀ (t u : F), ⁅ {αβ, 0, t}, {βψ, 2, u}⁆ = 1 := by
   intro t u
-  have : ⁅ {αβ, 0, t}, {βψ, 2, u} ⁆ = ReflDeg.refl_symm b3large_valid ⁅ {αβ, 2, t}, {βψ, 0, u} ⁆ := by
-    rw [map_commutatorElement]
-    trivial
-  rw [this, comm_of_αβ_βψ_20, map_one]
+  apply triv_comm_symm.1
+  apply @trivial_comm_from_embedded_comm_and_pairs _ _ {αβ, 1, t} _ ({βψ, 1, u + 1} * {βψ, 0, 1})
+  · mul_assoc_l
+    rw [←triv_comm_symm.1 (raw_nonhomog_lift_of_comm_of_αβ_βψ 0 t 1 1 u 1)]
+    simp only [one_mul, mul_one, mul_zero, add_zero, zero_add]
+    rw [add_comm u 1, id_of_αβ, one_mul]
+  · rw [←triv_comm_symm.1 (homog_lift_of_comm_of_αβ_βψ 0 1 1 (by trivial) (by trivial) (by trivial) t u)]
+  · apply triv_comm_mul_left
+    rw [←triv_comm_symm.1 (homog_lift_of_comm_of_αβ_βψ 0 1 0 (by trivial) (by trivial) (by trivial) t (u + 1))]
+    rw [←triv_comm_symm.1 (homog_lift_of_comm_of_αβ_βψ 1 0 0 (by trivial) (by trivial) (by trivial) t 1)]
+  apply triv_comm_mul_left
+  rw [←triv_comm_symm.1 (homog_lift_of_comm_of_αβ_βψ 0 0 1 (by trivial) (by trivial) (by trivial) t (u + 1))]
+  rw [←triv_comm_symm.1 (homog_lift_of_comm_of_αβ_βψ 0 0 0 (by trivial) (by trivial) (by trivial) t 1)]
 
 -- 8.115
 theorem comm_of_αβ_βψ :
