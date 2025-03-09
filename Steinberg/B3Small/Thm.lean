@@ -20,7 +20,7 @@ namespace Steinberg.B3Small
 
 open Steinberg B3SmallPosRoot GradedGen ReflDeg
 
-variable {F : Type TF} [Field F] (Fchar : (2 : F) ≠ 0) (Fchar' : (4 : F) ≠ 0)
+variable {F : Type TF} [Field F] (Fchar : (2 : F) ≠ 0)
 
 /-! ### Double commutator theorem -/
 
