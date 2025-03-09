@@ -863,6 +863,20 @@ theorem partial_A_interchange_of_αβ2ψ :
   have h₁ := @lift_hom_comm_of_βψ_α_β2ψ _ _ 1 0 0 (by trivial) (by trivial) (by trivial) t u v
   rwa [h] at h₁
 
+theorem partial_A_interchange_of_αβ2ψ' :
+  ∀ (t u v : F),
+  ⁅{αβψ, 3, t * u}, {ψ, 0, v}⁆ = ⁅{α, 1, t}, {β2ψ, 2, -2 * u * v}⁆ := by
+  apply @sufficient_conditions_for_comm_of_αβψ_and_ψ _ _ Fchar 1 2 0 (by trivial) (by trivial) (by trivial)
+  intro t u v
+  have h₁ := @lift_hom_interchange_of_αβ2ψ _ _ 0 1 1 (by trivial) (by trivial) (by trivial) u (-v/2) 1
+  have h := @lift_hom_interchange_of_αβ2ψ _ _ 1 0 1 (by trivial) (by trivial) (by trivial) u (-v/2) 1
+  norm_num at h₁
+  norm_num at h
+  rw [h₁] at h
+  have : -(2 * (-v / 2)) = v := by field_simp
+  rw [this] at h
+  have h₁ := @lift_hom_comm_of_βψ_α_β2ψ _ _ 0 1 1 (by trivial) (by trivial) (by trivial) t u v
+  rwa [h] at h₁
 
 -- Proposition 8.132
 theorem sufficient_conditions_for_comm_of_βψ_and_α_β2ψ :
@@ -941,16 +955,33 @@ private lemma interchange_A_of_αβ2ψ_refl_u :
   rw [←mul_one t, partial_A_interchange_of_αβ2ψ Fchar]
   simp only [mul_one, neg_mul]
 
+private lemma interchange_A_of_αβ2ψ_refl_u' :
+  ∀ t u : F, ⁅{αβψ, 3, t}, {ψ, 0, u}⁆ = ⁅{α, 1, t}, {β2ψ, 2, -2 * u}⁆ := by
+  intro t u
+  rw [←mul_one t, partial_A_interchange_of_αβ2ψ' Fchar]
+  simp only [mul_one, neg_mul]
+
 private lemma interchange_A_of_αβ2ψ_refl_v :
   ∀ t u : F, ⁅{αβψ, 0, t * u}, {ψ, 1, 1}⁆ = ⁅{α, 0, t}, {β2ψ, 1, -2 * u}⁆ := by
   intro t u
   rw [partial_A_interchange_of_αβ2ψ Fchar]
   simp only [neg_mul, mul_one]
 
+private lemma interchange_A_of_αβ2ψ_refl_v' :
+  ∀ t u : F, ⁅{αβψ, 3, t * u}, {ψ, 0, 1}⁆ = ⁅{α, 1, t}, {β2ψ, 2, -2 * u}⁆ := by
+  intro t u
+  rw [partial_A_interchange_of_αβ2ψ' Fchar]
+  simp only [neg_mul, mul_one]
+
 private lemma interchange_A_of_αβ2ψ_trans_αβψ_ψ :
   ∀ t u : F, ⁅{αβψ, 0, t * u}, {ψ, 1, 1}⁆ = ⁅{αβψ, 0, t}, {ψ, 1, u}⁆ := by
   intro t u
   rw [interchange_A_of_αβ2ψ_refl_v Fchar, interchange_A_of_αβ2ψ_refl_u Fchar]
+
+private lemma interchange_A_of_αβ2ψ_trans_αβψ_ψ' :
+  ∀ t u : F, ⁅{αβψ, 3, t * u}, {ψ, 0, 1}⁆ = ⁅{αβψ, 3, t}, {ψ, 0, u}⁆ := by
+  intro t u
+  rw [interchange_A_of_αβ2ψ_refl_v' Fchar, interchange_A_of_αβ2ψ_refl_u' Fchar]
 
 private lemma interchange_B_of_αβ2ψ_refl_u :
   ∀ t u : F, ⁅{αβψ, 2, t}, {ψ, 0, u}⁆ = ⁅{α, 0, t}, {β2ψ, 2, -2 * u}⁆ := by
@@ -1056,16 +1087,9 @@ private lemma expr_αβ2ψ_as_comm_of_α_β2ψ_12 :
 private lemma expr_αβ2ψ_as_comm_of_αβψ_ψ_30 :
   ∀ t u : F, {αβ2ψ, 3, -2 * t * u} = ⁅{αβψ, 3, u}, {ψ, 0, t}⁆ := by
   intro t u
-  have : -2 * t * u = u * (-2 * t) := by group
-  rw [this, expr_αβ2ψ_as_comm_of_α_β2ψ_12 Fchar]
-  have : ⁅{αβψ, 3, u}, {ψ, 0, t}⁆ = ReflDeg.refl_symm b3large_valid ⁅{αβψ, 0, u}, {ψ, 1, t}⁆ := by
-    rw [map_commutatorElement]
-    trivial
-  rw [this]
-  have : ⁅{α, 1, u}, {β2ψ, 2, -2 * t}⁆ = ReflDeg.refl_symm b3large_valid ⁅{α, 0, u}, {β2ψ, 1, -2 * t}⁆ := by
-    rw [map_commutatorElement]
-    trivial
-  rw [this, interchange_A_of_αβ2ψ_refl_u Fchar]
+  have : -2 * t * u = t * (-2 * u) := by group
+  rw [this, expr_αβ2ψ_as_comm_of_α_β2ψ_12 Fchar, ←interchange_A_of_αβ2ψ_refl_v' Fchar,
+  mul_comm t u, interchange_A_of_αβ2ψ_trans_αβψ_ψ' Fchar]
 
 private lemma expr_αβ2ψ_as_comm_of_αβψ_ψ_21 :
   ∀ t u : F, {αβ2ψ, 3, -2 * t * u} = ⁅{αβψ, 2, u}, {ψ, 1, t}⁆ := by
