@@ -15,13 +15,13 @@ import Steinberg.A3.Defs
   All the proofs for these theorems are extremely similar, so much so
   that we can declare and prove them from macros agnostic to the root system.
 
-  See `WeakChevalley.lean` for their definitions.
+  See `PartialChevalley.lean` for their definitions.
 
 -/
 
 namespace Steinberg.A3
 
-open A3PosRoot GradedGen
+open A3PosRoot GradedChevalleyGenerator
 
 variable {R : Type TR} [Ring R]
 

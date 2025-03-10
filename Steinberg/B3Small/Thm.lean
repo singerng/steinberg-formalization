@@ -18,7 +18,7 @@ import Steinberg.Upstream.FreeGroup
 
 namespace Steinberg.B3Small
 
-open Steinberg B3SmallPosRoot GradedGen ReflDeg
+open Steinberg B3SmallPosRoot GradedChevalleyGenerator ReflDeg
 
 variable {F : Type TF} [Field F] (Fchar : (2 : F) ≠ 0)
 
@@ -42,7 +42,7 @@ theorem def_of_βψω : forall_i_t βψω,
     , {ψω, (split_3_into_1_2 i hi).2, 1}'(correct_of_split_3_into_1_2 i hi).2 ⁆
       = {βψω, i, t} := by
   intro t i hi
-  apply WeakChevalley.helper
+  apply PartialChevalley.helper
   apply (weakB3Small F).def_helper rels_of_def_of_βψω
   · simp only [weakB3Small, def_sets, Set.mem_singleton_iff]
   · exists t, i, hi
@@ -53,9 +53,9 @@ theorem refl_of_lifted :
   simp only [lifted_sets, Set.mem_singleton_iff, forall_eq, rels_of_nonhomog_lift_of_comm_of_βψ_ψω, Set.mem_setOf_eq]
   intro r h
   rcases h with ⟨ t₁, t₀, u₁, u₀, v₁, v₀, rfl ⟩
-  simp only [free_mk_mk, map_commutatorElement, map_mul, FreeGroup.map.of, refl_deg_of_gen,
+  simp only [free_mk, map_commutatorElement, map_mul, FreeGroup.map.of, refl_deg_of_gen,
     PosRootSys.height, height, tsub_self, Nat.add_one_sub_one, tsub_zero]
-  repeat rw [← free_mk_mk]
+  repeat rw [← free_mk]
   rw [add_comm, add_comm (u₁ * v₀)]
   grw [expr_βψ_βψ_as_βψ_βψ, expr_βψ_βψ_as_βψ_βψ (i := 0), expr_βψ_βψ_as_βψ_βψ,
     expr_ψω_ψω_as_ψω_ψω, expr_ψω_ψω_as_ψω_ψω (i := 0), expr_ψω_ψω_as_ψω_ψω]

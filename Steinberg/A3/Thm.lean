@@ -24,7 +24,7 @@ import Steinberg.Upstream.FreeGroup
 
 namespace Steinberg.A3
 
-open Steinberg A3PosRoot GradedGen ReflDeg
+open Steinberg A3PosRoot GradedChevalleyGenerator ReflDeg
 
 variable {R : Type TR} [Ring R]
 
@@ -36,7 +36,7 @@ theorem nonhomog_lift_of_comm_of_αβ_βγ :
     , {βγ, 2, u₁ * v₁} * {βγ, 1, u₁ * v₀ + u₀ * v₁} * {βγ, 0, u₀ * v₀} ⁆
     = 1 := by
   intro t₁ t₀ u₁ u₀ v₁ v₀
-  apply WeakChevalley.helper
+  apply PartialChevalley.helper
   apply (weakA3 R).lifted_helper rels_of_nonhomog_lift_of_comm_of_αβ_βγ
   · simp only [weakA3, lifted_sets, Set.mem_singleton_iff]
   · exists t₁, t₀, u₁, u₀, v₁, v₀
@@ -48,7 +48,7 @@ theorem def_of_αβγ :
     , {βγ, (split_3_into_1_2 i hi).2, 1}'(correct_of_split_3_into_1_2 i hi).2 ⁆
     = {αβγ, i, t} := by
   intro t i hi
-  apply WeakChevalley.helper
+  apply PartialChevalley.helper
   apply (weakA3 R).def_helper rels_of_def_of_αβγ
   · simp only [weakA3, def_sets, Set.mem_singleton_iff]
   · exists t, i, hi
@@ -59,9 +59,9 @@ theorem refl_of_lifted :
   simp only [lifted_sets, Set.mem_singleton_iff, forall_eq, rels_of_nonhomog_lift_of_comm_of_αβ_βγ, Set.mem_setOf_eq]
   intro r h
   rcases h with ⟨ t₁, t₀, u₁, u₀, v₁, v₀, rfl ⟩
-  simp only [map_mul, map_commutatorElement, free_mk_mk, FreeGroup.map.of, refl_deg_of_gen, PosRootSys.height, height]
+  simp only [map_mul, map_commutatorElement, free_mk, FreeGroup.map.of, refl_deg_of_gen, PosRootSys.height, height]
   simp_arith
-  repeat rw [← free_mk_mk]
+  repeat rw [← free_mk]
   rw [add_comm (t₁ * u₀), add_comm (u₁ * v₀)]
   grw [expr_αβ_αβ_as_αβ_αβ, expr_αβ_αβ_as_αβ_αβ (i := 0), expr_αβ_αβ_as_αβ_αβ,
        expr_βγ_βγ_as_βγ_βγ, expr_βγ_βγ_as_βγ_βγ (i := 0), expr_βγ_βγ_as_βγ_βγ]
@@ -406,7 +406,7 @@ theorem lin_of_αβγ : lin_of_root((weakA3 R).pres_mk, αβγ) := by
 theorem full_rels_satisfied_in_weak_group (R : Type TR) [Ring R] :
   ∀ r ∈ (fullA3 R).all_rels, (weakA3 R).pres_mk r = 1 := by
   simp only [fullA3, weakA3]
-  apply WeakChevalley.injection
+  apply PartialChevalley.graded_injection
   · intro p h
     simp only [full_trivial_commutator_pairs] at h
     rcases h with h_old|h_new
@@ -467,6 +467,5 @@ theorem full_rels_satisfied_in_weak_group (R : Type TR) [Ring R] :
       exact lin_of_αβγ hi t u
   · tauto
   · tauto
-
 
 end Steinberg.A3

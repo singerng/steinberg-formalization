@@ -4,7 +4,7 @@ LICENSE goes here.
 
 -/
 
-import Steinberg.Defs.WeakChevalley
+import Steinberg.Defs.PartialChevalley
 import Mathlib.Tactic.DeriveFintype
 
 /-!
@@ -51,7 +51,7 @@ instance instCoeNat : Coe B3LargePosRoot Nat where
 
 end B3LargePosRoot
 
-open B3LargePosRoot GradedGen
+open B3LargePosRoot GradedChevalleyGenerator
 
 variable {F : Type TR} [Field F]
 
@@ -367,7 +367,7 @@ def rels_of_def_of_αβ2ψ :=
 def rels_of_def_of_α2β2ψ :=
   { ⁅ {αβ, (split_5_into_2_3 i hi).1, t}'(correct_of_split_5_into_2_3 i hi).1,
       {β2ψ, (split_5_into_2_3 i hi).2, 1}'(correct_of_split_5_into_2_3 i hi).2 ⁆
-    * ({α2β2ψ, i, -t} : FreeGroupOnGradedGens _ _)⁻¹
+    * ({α2β2ψ, i, -t} : FreeGroup (GradedChevalleyGenerator _ _))⁻¹
     | (i : ℕ) (hi : i ≤ α2β2ψ.height) (t : F) }
 
 -- relations 8.60, 8.61, 8.62, 8.64, 8.65, 8.67, 8.68
@@ -390,7 +390,7 @@ abbrev lin_roots : Set B3LargePosRoot :=
 abbrev double_comm_pairs : Set (DoubleSpanRootPair B3LargePosRoot F) :=
   {⟨β, ψ, βψ, β2ψ, 1, 1, rfl, rfl⟩}
 
-def lifted_sets (F : Type TF) [Field F] : Set (Set (FreeGroupOnGradedGens B3LargePosRoot F)) := {
+def lifted_sets (F : Type TF) [Field F] : Set (Set (FreeGroup (GradedChevalleyGenerator B3LargePosRoot F))) := {
   rels_of_nonhomog_lift_of_comm_of_αβ_βψ, rels_of_nonhomog_lift_of_comm_of_α_α2β2ψ,
   rels_of_hom_lift_of_interchange_of_αβψ, rels_of_hom_lift_of_doub_of_αβψ,
   rels_of_hom_lift_of_interchange_of_αβ2ψ, rels_of_hom_lift_of_comm_of_βψ_α_β2ψ,
@@ -402,11 +402,11 @@ def lifted_sets (F : Type TF) [Field F] : Set (Set (FreeGroupOnGradedGens B3Larg
   rels_of_hom_lift_of_comm_of_βψ_αβ2ψ, rels_of_hom_lift_of_comm_of_β2ψ_αβ2ψ
 }
 
-def def_sets (F : Type TF) [Field F] : Set (Set (FreeGroupOnGradedGens B3LargePosRoot F)) := {
+def def_sets (F : Type TF) [Field F] : Set (Set (FreeGroup (GradedChevalleyGenerator B3LargePosRoot F))) := {
   rels_of_def_of_αβψ, rels_of_def_of_αβ2ψ, rels_of_def_of_α2β2ψ
 }
 
-def weakB3Large (F : Type TF) [Field F] := WeakChevalley.mk
+def weakB3Large (F : Type TF) [Field F] := PartialChevalley.mk
   trivial_commutator_pairs
   single_commutator_pairs
   double_comm_pairs
@@ -417,7 +417,7 @@ def weakB3Large (F : Type TF) [Field F] := WeakChevalley.mk
 
 /-! # Notation and macros -/
 
-/- Instantiate the `declare_thms` macros from `WeakChevalley.lean`. -/
+/- Instantiate the `declare_thms` macros from `PartialChevalley.lean`. -/
 
 macro "declare_B3Large_triv_expr_thm" F:term:arg r₁:term:arg r₂:term:arg : command =>
   `(command| declare_triv_expr_thm weakB3Large $F $r₁ $r₂)
@@ -465,14 +465,14 @@ macro "declare_B3Large_triv_comm_reflected_thm"
 set_option hygiene false in
 /-- Shorthand for building free group elements from a root, degree, and ring element. -/
 scoped notation (priority:=high) "{" ζ ", " i ", " t "}" =>
-  (weakB3Large F).pres_mk (free_mk_mk ζ i (by
+  (weakB3Large F).pres_mk (free_mk ζ i (by
     try simp only [PosRootSys.height, height] at *
     first | assumption | trivial | omega) t)
 
 set_option hygiene false in
 /-- Shorthand for building free group elements from a root, degree, and ring element. -/
 scoped notation (priority:=high) "{" ζ ", " i ", " t "}'" h:max =>
-  (weakB3Large F).pres_mk (free_mk_mk ζ i h t)
+  (weakB3Large F).pres_mk (free_mk ζ i h t)
 
 section forallNotation
 
@@ -501,7 +501,7 @@ end forallNotation
 
 macro "hom_tac " rel:ident " [" intros:ident,* "]" : tactic => `(tactic|
   ( intros $intros*;
-    apply WeakChevalley.helper;
+    apply PartialChevalley.helper;
     apply (weakB3Large _).lifted_helper $rel;
     simp only [weakB3Large, lifted_sets, Set.mem_insert_iff,
       Set.mem_singleton_iff, true_or, or_true];

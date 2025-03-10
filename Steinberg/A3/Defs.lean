@@ -4,7 +4,7 @@ LICENSE goes here.
 
 -/
 
-import Steinberg.Defs.WeakChevalley
+import Steinberg.Defs.PartialChevalley
 import Steinberg.Macro.Attr
 import Mathlib.Tactic.DeriveFintype
 
@@ -45,7 +45,7 @@ instance instCoeNat : Coe A3PosRoot Nat where
 
 end A3PosRoot
 
-open A3PosRoot GradedGen
+open A3PosRoot GradedChevalleyGenerator
 
 variable {R : Type TR} [Ring R]
 
@@ -98,14 +98,14 @@ def rels_of_def_of_αβγ :=
     | (i : ℕ) (hi : i ≤ αβγ.height) (t : R) }
 
 -- lifted commutator of αβ and βγ
-def lifted_sets (R : Type TR) [Ring R] : Set (Set (FreeGroupOnGradedGens A3PosRoot R)) :=
+def lifted_sets (R : Type TR) [Ring R] : Set (Set (FreeGroup (GradedChevalleyGenerator A3PosRoot R))) :=
   { rels_of_nonhomog_lift_of_comm_of_αβ_βγ }
 
 -- definition of αβγ
-def def_sets (R : Type TR) [Ring R] : Set (Set (FreeGroupOnGradedGens A3PosRoot R)) :=
+def def_sets (R : Type TR) [Ring R] : Set (Set (FreeGroup (GradedChevalleyGenerator A3PosRoot R))) :=
   { rels_of_def_of_αβγ }
 
-def weakA3 (R : Type TR) [Ring R] := WeakChevalley.mk
+def weakA3 (R : Type TR) [Ring R] := PartialChevalley.mk
   trivial_commutator_pairs
   single_commutator_pairs
   double_commutator_pairs
@@ -131,7 +131,7 @@ abbrev full_mixed_commutes_roots : Set (A3PosRoot) :=
 abbrev full_lin_roots : Set (A3PosRoot) :=
   lin_roots ∪ {αβγ}
 
-def fullA3 (R : Type TR) [Ring R] := @WeakChevalley.mk _ _ R _
+def fullA3 (R : Type TR) [Ring R] := @PartialChevalley.mk _ _ R _
   full_trivial_commutator_pairs
   full_single_commutator_pairs
   full_double_commutator_pairs
@@ -142,7 +142,7 @@ def fullA3 (R : Type TR) [Ring R] := @WeakChevalley.mk _ _ R _
 
 /-! # Notation and macros -/
 
-/- Instantiate the `declare_thms` macros from `WeakChevalley.lean`. -/
+/- Instantiate the `declare_thms` macros from `PartialChevalley.lean`. -/
 
 -- CC: TODO: Make this a macro to declare all at once for A3.
 --     Something like: `declare_thms A3 weakA3 R`
@@ -171,7 +171,7 @@ macro "declare_A3_mixed_comm_thms" R:term:arg r:term:arg : command =>
 set_option hygiene false in
 /-- Shorthand for building free group elements from a root, degree, and ring element. -/
 scoped notation (priority:=high) "{" ζ ", " i ", " t "}" =>
-  (weakA3 R).pres_mk (free_mk_mk ζ i (by ht) t)
+  (weakA3 R).pres_mk (free_mk ζ i (by ht) t)
 
 set_option hygiene false in
 /-- Shorthand for building free group elements from a root, degree, and ring element. -/

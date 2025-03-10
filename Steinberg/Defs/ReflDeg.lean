@@ -4,7 +4,7 @@ LICENSE goes here.
 
 -/
 
-import Steinberg.Defs.WeakChevalley
+import Steinberg.Defs.PartialChevalley
 import Steinberg.Upstream.PresentedGroup
 
 import Mathlib.GroupTheory.Commutator.Basic
@@ -19,7 +19,7 @@ namespace Steinberg
 
 namespace ReflDeg
 
-open PosRootSys WeakChevalley
+open PosRootSys PartialChevalley GradedChevalleyGenerator
 open Set
 
 variable {G : Type TG} [Group G]
@@ -27,8 +27,8 @@ variable {G : Type TG} [Group G]
          {R : Type TR} [Ring R]
 
 /-- "Degree-reflection" map of `GradedGen`s corresponding to swapping degree `i` with `height ζ - i`. (An involution.) -/
-def refl_deg_of_gen (g : GradedGen Φ R) : GradedGen Φ R :=
-  GradedGen.mk g.ζ (height g.ζ - g.i) (by omega) g.t
+def refl_deg_of_gen (g : GradedChevalleyGenerator Φ R) : GradedChevalleyGenerator Φ R :=
+  GradedChevalleyGenerator.mk g.ζ (height g.ζ - g.i) (by omega) g.t
 
 /-! ### Generic reflection theorems -/
 
@@ -92,14 +92,14 @@ private theorem refl_deg_of_rels_of_lin_of_root (ζ : Φ) :
   exists (height ζ - i), (by omega), t, u
 
 /-- Map a generator to its reflected image in the presented group (used to define the symmetry below). -/
-private def pres_of_refl_deg_of_gen (w : WeakChevalley Φ R) (g : GradedGen Φ R) : w.group :=
-  w.pres_mk (GradedGen.free_mk (refl_deg_of_gen g))
+private def pres_of_refl_deg_of_gen (w : PartialChevalley Φ R) (g : GradedChevalleyGenerator Φ R) : w.graded_group :=
+  w.pres_mk (FreeGroup.of (refl_deg_of_gen g))
 
-def refl_valid (w : WeakChevalley Φ R) :=
+def refl_valid (w : PartialChevalley Φ R) :=
   (∀ S ∈ w.lifted_rels_sets, ∀ r ∈ S, w.pres_mk (FreeGroup.map refl_deg_of_gen r) = 1) ∧
   (∀ S ∈ w.def_rels_sets, ∀ r ∈ S, FreeGroup.map refl_deg_of_gen r ∈ S)
 
-theorem reflect_degree_of_rels {w : WeakChevalley Φ R} (h' : refl_valid w) :
+theorem reflect_degree_of_rels {w : PartialChevalley Φ R} (h' : refl_valid w) :
     FreeGroup.lift (FreeGroup.of ∘ refl_deg_of_gen) '' w.all_rels ⊆ Subgroup.normalClosure w.all_rels := by
   nth_rewrite 1 [all_rels]
   intro r h_r
@@ -164,14 +164,14 @@ theorem reflect_degree_of_rels {w : WeakChevalley Φ R} (h' : refl_valid w) :
       simp_all only [mem_sUnion, or_true]
     use T, h_T, h'.2 T h_T t h_t_T
 
-def refl_symm {w : WeakChevalley Φ R} (h : refl_valid w) : WeakChevalley.group w →* WeakChevalley.group w :=
+def refl_symm {w : PartialChevalley Φ R} (h : refl_valid w) : graded_group w →* graded_group w :=
   toPresentedGroup (reflect_degree_of_rels h)
 
 /- Calculates the image of a generator in the presented group by the degree-reflection homomorphism. -/
-theorem refl_im (ζ : Φ) (i : ℕ) (hi : i ≤ height ζ) (t : R) {w : WeakChevalley Φ R} (h : refl_valid w) :
-  refl_symm h (pres_mk w (GradedGen.free_mk_mk ζ i hi t)) =
-    (pres_mk w (GradedGen.free_mk_mk ζ (height ζ - i) (by omega) t)) := by
-  simp only [refl_symm, pres_mk, GradedGen.free_mk_mk]
+theorem refl_im (ζ : Φ) (i : ℕ) (hi : i ≤ height ζ) (t : R) {w : PartialChevalley Φ R} (h : refl_valid w) :
+  refl_symm h (pres_mk w (free_mk ζ i hi t)) =
+    (pres_mk w (free_mk ζ (height ζ - i) (by omega) t)) := by
+  simp only [refl_symm, pres_mk, free_mk]
   rw [← PresentedGroup.of, toPresentedGroup.of]
   simp only [FreeGroup.lift.of, Function.comp_apply, refl_deg_of_gen]
 

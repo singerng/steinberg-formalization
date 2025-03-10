@@ -4,7 +4,7 @@ LICENSE goes here.
 
 -/
 
-import Steinberg.Defs.WeakChevalley
+import Steinberg.Defs.PartialChevalley
 import Mathlib.Tactic.DeriveFintype
 
 /-!
@@ -47,7 +47,7 @@ instance instCoeNat : Coe B3SmallPosRoot Nat where
 
 end B3SmallPosRoot
 
-open B3SmallPosRoot GradedGen
+open B3SmallPosRoot GradedChevalleyGenerator
 
 variable {F : Type TR} [Field F]
 
@@ -99,16 +99,16 @@ abbrev double_commutator_pairs : Set (DoubleSpanRootPair B3SmallPosRoot F) :=
     {⟨β, ψ, βψ, β2ψ, 1, 1, (by exact rfl), (by exact rfl)⟩}
 
 -- lifted commutator of βψ and ψω
-def lifted_sets (F : Type TR) [Field F] : Set (Set (FreeGroupOnGradedGens B3SmallPosRoot F)) := {
+def lifted_sets (F : Type TR) [Field F] : Set (Set (FreeGroup (GradedChevalleyGenerator B3SmallPosRoot F))) := {
   rels_of_nonhomog_lift_of_comm_of_βψ_ψω
 }
 
 -- definition of βψω
-def def_sets (F : Type TR) [Field F] : Set (Set (FreeGroupOnGradedGens B3SmallPosRoot F)) := {
+def def_sets (F : Type TR) [Field F] : Set (Set (FreeGroup (GradedChevalleyGenerator B3SmallPosRoot F))) := {
   rels_of_def_of_βψω
 }
 
-def weakB3Small (F : Type TR) [Field F] := WeakChevalley.mk
+def weakB3Small (F : Type TR) [Field F] := PartialChevalley.mk
   trivial_commutator_pairs
   single_commutator_pairs
   double_commutator_pairs
@@ -119,7 +119,7 @@ def weakB3Small (F : Type TR) [Field F] := WeakChevalley.mk
 
 /-! # Notation and macros -/
 
-/- Instantiate the `declare_thms` macros from `WeakChevalley.lean`. -/
+/- Instantiate the `declare_thms` macros from `PartialChevalley.lean`. -/
 
 -- CC: TODO: Make this a macro to declare all at once for A3.
 --     Something like: `declare_thms A3 weakB3Small F`
@@ -162,12 +162,12 @@ macro "declare_B3Small_triv_comm_reflected_thm"
 set_option hygiene false in
 /-- Shorthand for building free group elements from a root, degree, and ring element. -/
 scoped notation (priority:=high) "{" ζ ", " i ", " t "}" =>
-  (weakB3Small F).pres_mk (free_mk_mk ζ i (by ht) t)
+  (weakB3Small F).pres_mk (free_mk ζ i (by ht) t)
 
 set_option hygiene false in
 /-- Shorthand for building free group elements from a root, degree, and ring element. -/
 scoped notation (priority:=high) "{" ζ ", " i ", " t "}'" h:max =>
-  (weakB3Small F).pres_mk (free_mk_mk ζ i h t)
+  (weakB3Small F).pres_mk (free_mk ζ i h t)
 
 section forallNotation
 
@@ -192,7 +192,7 @@ end forallNotation
 
 macro "hom_tac " rel:ident " [" intros:ident,* "]" : tactic => `(tactic|
   ( intros $intros*;
-    apply WeakChevalley.helper;
+    apply PartialChevalley.helper;
     apply (weakB3Small _).lifted_helper $rel;
     simp only [weakB3Small, lifted_sets, Set.mem_insert_iff,
       Set.mem_singleton_iff, true_or, or_true];
