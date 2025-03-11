@@ -379,7 +379,7 @@ declare_A3_triv_expr_thm R αβ αβγ
 declare_A3_triv_expr_thm R βγ αβγ
 
 /- αβγ commutes with itself. -/
-theorem comm_of_αβγ_αβγ : trivial_commutator_of_root_pair (weakA3 R).pres_mk αβγ αβγ := by
+theorem comm_of_αβγ_αβγ : mixed_commutes_of_root (weakA3 R).pres_mk αβγ := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.mpr
   rcases decompose α.height βγ.height j (by trivial) with ⟨ j₁, j₂, ⟨ rfl, hj₁, hj₂ ⟩ ⟩
@@ -403,7 +403,7 @@ theorem lin_of_αβγ : lin_of_root((weakA3 R).pres_mk, αβγ) := by
     ← neg_add, add_comm u t,
     ← expr_αβγ_as_α_βγ_α_βγ hi₁ hi₂]
 
-theorem full_rels_satisfied_in_weak_group (R : Type TR) [Ring R] :
+theorem full_rels_satisfied_in_weak_group :
   ∀ r ∈ (fullA3 R).all_rels, (weakA3 R).pres_mk r = 1 := by
   simp only [fullA3, weakA3]
   apply PartialChevalley.graded_injection
@@ -416,9 +416,8 @@ theorem full_rels_satisfied_in_weak_group (R : Type TR) [Ring R] :
       intro r h_r
       simp only [rels_of_trivial_commutator_of_root_pair] at h_r
       rcases h_r with ⟨ i, j, hi, hj, t, u, goal ⟩
-      rw [← goal]
       rcases h_new with h_αβ_βγ|h_α_αβγ|h_β_αβγ|h_γ_αβγ|h_αβ_αβγ|h_βγ_αβγ
-      all_goals (subst p)
+      all_goals subst p r
       · exact comm_of_αβ_βγ hi hj t u
       · exact comm_of_α_αβγ hi hj t u
       · exact comm_of_β_αβγ hi hj t u
@@ -434,14 +433,14 @@ theorem full_rels_satisfied_in_weak_group (R : Type TR) [Ring R] :
       intro r h_r
       simp only [rels_of_single_commutator_of_root_pair] at h_r
       rcases h_r with ⟨ i, j, hi, hj, t, u, goal ⟩
-      rw [←goal]
-      simp only [map_mul, map_inv, mul_inv_eq_one]
       rcases h_new with h_α_βγ|h_αβ_γ
-      all_goals (subst p)
+      all_goals (
+        subst p r
+        simp only [map_mul, map_inv, mul_inv_eq_one]
+      )
       · exact comm_of_α_βγ hi hj t u
       · exact comm_of_αβ_γ hi hj t u
-  · simp only [full_double_commutator_pairs]
-    tauto
+  · tauto
   · intro p h
     simp only [full_mixed_commutes_roots] at h
     rcases h with h_old|h_new
@@ -451,7 +450,7 @@ theorem full_rels_satisfied_in_weak_group (R : Type TR) [Ring R] :
       intro r h_r
       simp only [rels_of_mixed_commutes_of_root] at h_r
       rcases h_r with ⟨ i, j, hi, hj, t, u, goal ⟩
-      rw [← goal]
+      subst r
       exact comm_of_αβγ_αβγ hi hj t u
   · intro p h
     simp only [full_lin_roots] at h
@@ -462,7 +461,7 @@ theorem full_rels_satisfied_in_weak_group (R : Type TR) [Ring R] :
       intro r h_r
       simp only [rels_of_lin_of_root] at h_r
       rcases h_r with ⟨ i, hi, t, u, goal ⟩
-      rw [← goal]
+      subst r
       simp only [map_mul, map_inv, mul_inv_eq_one]
       exact lin_of_αβγ hi t u
   · tauto

@@ -571,4 +571,126 @@ theorem lin_of_αβψ : lin_of_root((weakB3Large F).pres_mk, αβψ) := by
   rw [←mul_one (t + u), expr_αβψ_as_ψ_αβ_ψ_αβ_ψ hi₁ hi₂]
   ring_nf; field_simp; ring_nf
 
+theorem full_rels_satisfied_in_weak_group :
+  ∀ r ∈ (fullB3Large F).all_rels, (weakB3Large F).pres_mk r = 1 := by
+  simp only [fullB3Large, fullB3Large]
+  apply PartialChevalley.graded_injection
+  · intro p h
+    simp only [full_trivial_commutator_pairs] at h
+    rcases h with h_old|h_new
+    · tauto
+    · right
+      simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at h_new
+      intro r h_r
+      simp only [rels_of_trivial_commutator_of_root_pair] at h_r
+      rcases h_r with ⟨ i, j, hi, hj, t, u, goal ⟩
+      rcases h_new with h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h
+      all_goals (
+        subst p r
+        simp only
+      )
+      · exact comm_of_αβ_βψ hi hj t u
+      · exact comm_of_α_αβψ hi hj t u
+      · exact comm_of_β_αβψ hi hj t u
+      · exact comm_of_αβ_αβψ hi hj t u
+      · exact comm_of_αβψ_β2ψ Fchar hi hj t u
+      · exact comm_of_α_αβ2ψ Fchar hi hj t u
+      · exact comm_of_ψ_αβ2ψ Fchar hi hj t u
+      · exact comm_of_αβ_αβ2ψ Fchar F_sum_of_squares hi hj t u
+      · exact comm_of_βψ_αβ2ψ Fchar hi hj t u
+      · exact comm_of_β2ψ_αβ2ψ Fchar hi hj t u
+      · exact comm_of_αβψ_αβ2ψ Fchar hi hj t u
+      · exact comm_of_α_α2β2ψ Fchar F_sum_of_squares hi hj t u
+      · exact comm_of_β_α2β2ψ Fchar hi hj t u
+      · exact comm_of_ψ_α2β2ψ Fchar hi hj t u
+      · exact comm_of_αβ_α2β2ψ Fchar hi hj t u
+      · exact comm_of_βψ_α2β2ψ Fchar hi hj t u
+      · exact comm_of_β2ψ_α2β2ψ Fchar hi hj t u
+      · exact comm_of_αβψ_α2β2ψ Fchar hi hj t u
+      · exact comm_of_αβ2ψ_α2β2ψ Fchar hi hj t u
+  · intro p h
+    simp only [full_single_commutator_pairs] at h
+    rcases h with h_old|h_new
+    · tauto
+    · right
+      simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at h_new
+      intro r h_r
+      simp only [rels_of_single_commutator_of_root_pair] at h_r
+      rcases h_r with ⟨ i, j, hi, hj, t, u, goal ⟩
+      rcases h_new with h|h|h|h|h
+      all_goals (
+        subst p r
+        simp only [map_mul, map_inv, mul_inv_eq_one]
+      )
+      · have : t * u = 1 * t * u := by ring_nf
+        rw [← this]
+        exact (expr_αβ2ψ_as_comm_of_α_β2ψ Fchar hi hj t u).symm
+      · have : -2 * t * u = -2 * u * t := by ring_nf
+        rw [this]
+        exact (expr_αβ2ψ_as_comm_of_αβψ_ψ Fchar hi hj u t).symm
+      · have : -1 * t * u = -t * u := by ring_nf
+        rw [this]
+        exact (expr_α2β2ψ_as_comm_of_αβ_β2ψ Fchar hi hj t u).symm
+      · exact (expr_α2β2ψ_as_comm_of_αβψ_βψ Fchar hi hj t u).symm
+      · have : -1 * t * u = -t * u := by ring_nf
+        rw [this]
+        exact (expr_α2β2ψ_as_comm_of_αβ2ψ_β Fchar hi hj t u).symm
+  · intro p h
+    simp only [double_comm_pairs] at h
+    rcases h with h_old|h_new
+    · tauto
+    · right
+      simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at h_new
+      intro r h_r
+      simp only [rels_of_double_commutator_of_root_pair] at h_r
+      rcases h_r with ⟨ i, j, hi, hj, t, u, goal ⟩
+      rcases h_new with h|h
+      all_goals (
+        subst p r
+        simp only [map_mul, map_inv, mul_inv_eq_one]
+      )
+      · have : t * u = 1 * t * u := by ring_nf
+        rw [← this]
+        have : t * u * u = t * u^2 := by ring_nf
+        rw [this]
+        exact commutator_of_α_βψ_a Fchar hi hj t u
+      · have : t * u = 1 * t * u := by ring_nf
+        rw [← this]
+        have : t * u * u = t * u^2 := by ring_nf
+        rw [this]
+        exact commutator_of_αβ_ψ_a Fchar hi hj t u
+  · intro p h
+    simp only [full_mixed_commutes_roots] at h
+    rcases h with h_old|h_new
+    · tauto
+    · right
+      simp_all only [ne_eq, Set.mem_insert_iff, Set.mem_singleton_iff]
+      intro r h_r
+      simp only [rels_of_mixed_commutes_of_root] at h_r
+      rcases h_r with ⟨ i, j, hi, hj, t, u, goal ⟩
+      rcases h_new with h|h|h
+      all_goals subst p r
+      · exact comm_of_αβψ Fchar F_sum_of_squares hi hj t u
+      · exact comm_of_αβ2ψ Fchar hi hj t u
+      · exact comm_of_α2β2ψ Fchar hi hj t u
+  · intro p h
+    simp only [full_lin_roots] at h
+    rcases h with h_old|h_new
+    · tauto
+    · right
+      simp_all only [ne_eq, Set.mem_insert_iff, Set.mem_singleton_iff]
+      intro r h_r
+      simp only [rels_of_lin_of_root] at h_r
+      rcases h_r with ⟨ i, hi, t, u, goal ⟩
+      rcases h_new with h|h|h
+      all_goals (
+        subst p r
+        simp only [map_mul, map_inv, mul_inv_eq_one]
+      )
+      · exact lin_of_αβψ Fchar F_sum_of_squares hi t u
+      · exact lin_of_αβ2ψ Fchar hi t u
+      · exact lin_of_α2β2ψ Fchar hi t u
+  · tauto
+  · tauto
+
 end Steinberg.B3Large

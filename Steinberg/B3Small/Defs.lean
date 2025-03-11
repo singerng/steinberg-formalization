@@ -86,8 +86,8 @@ def rels_of_def_of_βψω :=
 abbrev trivial_commutator_pairs : Set (B3SmallPosRoot × B3SmallPosRoot) :=
   {(β, βψ), (β, β2ψ), (ψ, β2ψ), (βψ, β2ψ), (β, ω), (ψ, ψω), (ω, ψω)}
 
-abbrev single_commutator_pairs : Set ((ζ : B3SmallPosRoot) × (η : B3SmallPosRoot) × (θ : B3SmallPosRoot) × F ×' (θ.height = ζ.height + η.height))
-   := {⟨ ψ, βψ, β2ψ, 2, (by simp only [height])⟩, ⟨ψ, ω, ψω, 2, (by simp only [height])⟩}
+abbrev single_commutator_pairs : Set (SingleSpanRootPair B3SmallPosRoot F)
+   := {⟨ ψ, βψ, β2ψ, 2, (by ht)⟩, ⟨ψ, ω, ψω, 2, (by ht)⟩}
 
 /-! # These are the self-commutation relations -/
 
@@ -116,6 +116,31 @@ def weakB3Small (F : Type TR) [Field F] := PartialChevalley.mk
   lin_roots
   (lifted_sets F)
   (def_sets F)
+
+/-! ### Additional relations which define the full B3-small group -/
+
+abbrev full_trivial_commutator_pairs : Set (B3SmallPosRoot × B3SmallPosRoot) :=
+  trivial_commutator_pairs ∪ {(βψ, ψω), (βψω, β), (βψω, ψ), (βψω, ω), (βψω, βψ), (βψω, β2ψ), (βψω, ψω), (ω, β2ψ)}
+
+abbrev full_single_commutator_pairs : Set (SingleSpanRootPair B3SmallPosRoot F) :=
+  single_commutator_pairs ∪ {⟨ β, ψω, βψω, 1, (by ht)⟩, ⟨βψ, ω, βψω, 2, (by ht)⟩}
+
+abbrev full_double_commutator_pairs :  Set (DoubleSpanRootPair B3SmallPosRoot F) := double_commutator_pairs
+
+abbrev full_mixed_commutes_roots : Set (B3SmallPosRoot) :=
+  mixed_commutes_roots ∪ {βψω}
+
+abbrev full_lin_roots : Set (B3SmallPosRoot) :=
+  lin_roots ∪ {βψω}
+
+def fullB3Small (F : Type TR) [Field F] := @PartialChevalley.mk _ _ F _
+  full_trivial_commutator_pairs
+  full_single_commutator_pairs
+  full_double_commutator_pairs
+  full_mixed_commutes_roots
+  full_lin_roots
+  (∅)
+  (∅)
 
 /-! # Notation and macros -/
 

@@ -375,8 +375,8 @@ abbrev trivial_commutator_pairs : Set (B3LargePosRoot × B3LargePosRoot) :=
   {(α, αβ), (β, αβ), (α, ψ), (β, βψ), (β, β2ψ), (ψ, β2ψ), (βψ, β2ψ)}
 
 -- relations 8.59, 8.66
-abbrev single_commutator_pairs : Set ((ζ : B3LargePosRoot) × (η : B3LargePosRoot) × (θ : B3LargePosRoot) × F ×' (θ.height = ζ.height + η.height))
-  := {⟨α, β, αβ, 1, (by simp only [height])⟩, ⟨ψ, βψ, β2ψ, 2, (by simp only [height])⟩}
+abbrev single_commutator_pairs : Set (SingleSpanRootPair B3LargePosRoot F)
+  := {⟨α, β, αβ, 1, (by ht)⟩, ⟨ψ, βψ, β2ψ, 2, (by ht)⟩}
 
 -- relations 8.75, 8.76, 8.77, 8.78, 8.79, 8.80
 abbrev mixed_commutes_roots : Set B3LargePosRoot :=
@@ -414,6 +414,36 @@ def weakB3Large (F : Type TF) [Field F] := PartialChevalley.mk
   lin_roots
   (lifted_sets F)
   (def_sets F)
+
+/-! ### Additional relations which define the full B3-large group -/
+
+abbrev full_trivial_commutator_pairs : Set (B3LargePosRoot × B3LargePosRoot) :=
+  trivial_commutator_pairs ∪ {(αβ, βψ),
+                              (α, αβψ), (β, αβψ), (αβ, αβψ), (β2ψ, αβψ),
+                              (α, αβ2ψ), (ψ, αβ2ψ), (αβ, αβ2ψ), (βψ, αβ2ψ), (β2ψ, αβ2ψ), (αβψ, αβ2ψ),
+                              (α, α2β2ψ), (β, α2β2ψ), (ψ, α2β2ψ), (αβ, α2β2ψ), (βψ, α2β2ψ), (β2ψ, α2β2ψ), (αβψ, α2β2ψ), (αβ2ψ, α2β2ψ)}
+
+abbrev full_single_commutator_pairs : Set (SingleSpanRootPair B3LargePosRoot F) :=
+  single_commutator_pairs ∪ {⟨ α, β2ψ, αβ2ψ, 1, (by ht)⟩, ⟨αβψ, ψ, αβ2ψ, -2, (by ht)⟩,
+                            ⟨αβ, β2ψ, α2β2ψ, -1, (by ht)⟩, ⟨αβψ, βψ, α2β2ψ, -2, (by ht)⟩, ⟨αβ2ψ, β, α2β2ψ, -1, (by ht)⟩}
+
+abbrev full_double_commutator_pairs : Set (DoubleSpanRootPair B3LargePosRoot F) :=
+  double_comm_pairs ∪ {⟨ α, βψ, αβψ, α2β2ψ, 1, 1, (by ht), (by ht)⟩, ⟨ αβ, ψ, αβψ, αβ2ψ, 1, 1, (by ht), (by ht)⟩}
+
+abbrev full_mixed_commutes_roots : Set (B3LargePosRoot) :=
+  mixed_commutes_roots ∪ {αβψ, αβ2ψ, α2β2ψ}
+
+abbrev full_lin_roots : Set (B3LargePosRoot) :=
+  lin_roots ∪ {αβψ, αβ2ψ, α2β2ψ}
+
+def fullB3Large (F : Type TR) [Field F] := @PartialChevalley.mk _ _ F _
+  full_trivial_commutator_pairs
+  full_single_commutator_pairs
+  full_double_commutator_pairs
+  full_mixed_commutes_roots
+  full_lin_roots
+  (∅)
+  (∅)
 
 /-! # Notation and macros -/
 

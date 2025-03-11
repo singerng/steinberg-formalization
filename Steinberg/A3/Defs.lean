@@ -59,11 +59,8 @@ of this relation for other root-pairs, since all other present pairs lie in a co
 abbrev trivial_commutator_pairs : Set (A3PosRoot × A3PosRoot) :=
   {(α, γ), (α, αβ), (β, αβ), (β, βγ), (γ, βγ)}
 
-abbrev single_commutator_pairs : Set ((ζ : A3PosRoot) × (η : A3PosRoot) × (θ : A3PosRoot) × R ×' (θ.height = ζ.height + η.height)) :=
-  {⟨ α, β, αβ, 1, (by simp only [height])⟩, ⟨β, γ, βγ, 1, (by simp only [height])⟩}
-
-abbrev double_commutator_pairs : Set ((ζ : A3PosRoot) × (η : A3PosRoot) × (θ₁ : A3PosRoot) × (θ₂ : A3PosRoot) × R × R ×' (θ₁.height = ζ.height + η.height)
-  ×' (θ₂.height = ζ.height + 2 * η.height)) := {}
+abbrev single_commutator_pairs : Set (SingleSpanRootPair A3PosRoot R) :=
+  {⟨ α, β, αβ, 1, (by ht)⟩, ⟨β, γ, βγ, 1, (by ht)⟩}
 
 abbrev mixed_commutes_roots : Set (A3PosRoot) :=
   {α, β, γ, αβ, βγ}
@@ -108,7 +105,7 @@ def def_sets (R : Type TR) [Ring R] : Set (Set (FreeGroup (GradedChevalleyGenera
 def weakA3 (R : Type TR) [Ring R] := PartialChevalley.mk
   trivial_commutator_pairs
   single_commutator_pairs
-  double_commutator_pairs
+  ∅
   mixed_commutes_roots
   lin_roots
   (lifted_sets R)
@@ -119,11 +116,8 @@ def weakA3 (R : Type TR) [Ring R] := PartialChevalley.mk
 abbrev full_trivial_commutator_pairs : Set (A3PosRoot × A3PosRoot) :=
   trivial_commutator_pairs ∪ {(αβ, βγ), (α, αβγ), (β, αβγ), (γ, αβγ), (αβ, αβγ), (βγ, αβγ)}
 
-abbrev full_single_commutator_pairs : Set ((ζ : A3PosRoot) × (η : A3PosRoot) × (θ : A3PosRoot) × R ×' (θ.height = ζ.height + η.height)) :=
+abbrev full_single_commutator_pairs : Set (SingleSpanRootPair A3PosRoot R) :=
   single_commutator_pairs ∪ {⟨ α, βγ, αβγ, 1, (by ht)⟩, ⟨αβ, γ, αβγ, 1, (by ht)⟩}
-
-abbrev full_double_commutator_pairs : Set ((ζ : A3PosRoot) × (η : A3PosRoot) × (θ₁ : A3PosRoot) × (θ₂ : A3PosRoot) × R × R ×' (θ₁.height = ζ.height + η.height)
-  ×' (θ₂.height = ζ.height + 2 * η.height)) := {}
 
 abbrev full_mixed_commutes_roots : Set (A3PosRoot) :=
   mixed_commutes_roots ∪ {αβγ}
@@ -134,7 +128,7 @@ abbrev full_lin_roots : Set (A3PosRoot) :=
 def fullA3 (R : Type TR) [Ring R] := @PartialChevalley.mk _ _ R _
   full_trivial_commutator_pairs
   full_single_commutator_pairs
-  full_double_commutator_pairs
+  ∅
   full_mixed_commutes_roots
   full_lin_roots
   (∅)

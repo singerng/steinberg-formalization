@@ -515,4 +515,77 @@ theorem comm_of_β2ψ_ω :
         id_of_βψω Fchar (add_le_add hi₂ hj), expr_βψ_ψω_as_ψω_βψ]
 declare_B3Small_triv_expr_thm F β2ψ ω
 
+theorem full_rels_satisfied_in_weak_group :
+  ∀ r ∈ (fullB3Small F).all_rels, (weakB3Small F).pres_mk r = 1 := by
+  simp only [fullB3Small, weakB3Small]
+  apply PartialChevalley.graded_injection
+  · intro p h
+    simp only [full_trivial_commutator_pairs] at h
+    rcases h with h_old|h_new
+    · tauto
+    · right
+      simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at h_new
+      intro r h_r
+      simp only [rels_of_trivial_commutator_of_root_pair] at h_r
+      rcases h_r with ⟨ i, j, hi, hj, t, u, goal ⟩
+      rcases h_new with h_βψ_ψω|h_β_βψω|h_ψ_βψω|h_ω_βψω|h_βψ_βψω|h_β2ψ_βψω|h_ψω_βψω|h_ω_β2ψ
+      all_goals (
+        subst p r
+        simp only
+      )
+      · exact comm_of_βψ_ψω hi hj t u
+      · exact comm_of_βψω_β Fchar hi hj t u
+      · exact comm_of_βψω_ψ Fchar hi hj t u
+      · exact comm_of_βψω_ω Fchar hi hj t u
+      · exact comm_of_βψω_βψ Fchar hi hj t u
+      · exact comm_of_βψω_β2ψ Fchar hi hj t u
+      · exact comm_of_βψω_ψω Fchar hi hj t u
+      · apply triv_comm_symm.1
+        exact comm_of_β2ψ_ω Fchar hj hi u t
+  · intro p h
+    simp only [full_single_commutator_pairs] at h
+    rcases h with h_old|h_new
+    · tauto
+    · right
+      simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at h_new
+      intro r h_r
+      simp only [rels_of_single_commutator_of_root_pair] at h_r
+      rcases h_r with ⟨ i, j, hi, hj, t, u, goal ⟩
+      rcases h_new with h_β_ψω|h_βψ_ω
+      all_goals (
+        subst p r
+        simp only [map_mul, map_inv, mul_inv_eq_one]
+      )
+      · have : t * u = 1 * t * u := by ring_nf
+        rw [← this]
+        exact (expand_βψω_as_commutator_of_β_ψω Fchar hi hj t u).symm
+      · exact (expand_βψω_as_commutator_of_βψ_ω Fchar hi hj t u).symm
+  · simp only [full_double_commutator_pairs]
+    tauto
+  · intro p h
+    simp only [full_mixed_commutes_roots] at h
+    rcases h with h_old|h_new
+    · tauto
+    · right
+      simp_all only [Set.mem_singleton_iff]
+      intro r h_r
+      simp only [rels_of_mixed_commutes_of_root] at h_r
+      rcases h_r with ⟨ i, j, hi, hj, t, u, goal ⟩
+      subst r
+      exact comm_of_βψω Fchar hi hj t u
+  · intro p h
+    simp only [full_lin_roots] at h
+    rcases h with h_old|h_new
+    · tauto
+    · right
+      simp_all only [Set.mem_singleton_iff]
+      intro r h_r
+      simp only [rels_of_lin_of_root] at h_r
+      rcases h_r with ⟨ i, hi, t, u, goal ⟩
+      subst r
+      simp only [map_mul, map_inv, mul_inv_eq_one]
+      exact lin_of_βψω Fchar hi t u
+  · tauto
+  · tauto
+
 end Steinberg.B3Small
