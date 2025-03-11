@@ -21,7 +21,7 @@ import Steinberg.A3.Defs
 
 namespace Steinberg.A3
 
-open A3PosRoot GradedChevalleyGenerator
+open A3PosRoot GradedPartialChevalley GradedPartialChevalleyGroup GradedChevalleyGenerator
 
 variable {R : Type TR} [Ring R]
 

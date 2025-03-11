@@ -4,7 +4,7 @@ LICENSE goes here.
 
 -/
 
-import Steinberg.Defs.PartialChevalley
+import Steinberg.Defs.GradedPartialChevalleyGroup
 import Mathlib.Tactic.DeriveFintype
 
 /-!
@@ -38,7 +38,7 @@ def toString : B3SmallPosRoot → String
   | βψω => "β+ψ+ω"
   | β2ψ => "β+2ψ"
 
-instance : PosRootSys B3SmallPosRoot where
+instance : PositiveRootSystem B3SmallPosRoot where
   height := height
   toString := toString
 
@@ -47,11 +47,28 @@ instance instCoeNat : Coe B3SmallPosRoot Nat where
 
 end B3SmallPosRoot
 
-open B3SmallPosRoot GradedChevalleyGenerator
+open B3SmallPosRoot GradedPartialChevalley GradedPartialChevalleyGroup GradedChevalleyGenerator
 
 variable {F : Type TR} [Field F]
 
 /-! # Relations -/
+
+abbrev present_roots : Set (B3SmallPosRoot) := {β, ψ, ω, βψ, ψω, β2ψ}
+
+abbrev trivial_commutator_pairs : Set (B3SmallPosRoot × B3SmallPosRoot) :=
+  {(β, βψ), (β, β2ψ), (ψ, β2ψ), (βψ, β2ψ), (β, ω), (ψ, ψω), (ω, ψω)}
+
+abbrev single_commutator_pairs (F : Type TR) [Field F] : Set (SingleSpanRootPair B3SmallPosRoot F)
+   := {⟨ ψ, βψ, β2ψ, 2, (by ht)⟩, ⟨ψ, ω, ψω, 2, (by ht)⟩}
+
+abbrev double_commutator_pairs (F : Type TR) [Field F] : Set (DoubleSpanRootPair B3SmallPosRoot F) :=
+    {⟨β, ψ, βψ, β2ψ, 1, 1, (by exact rfl), (by exact rfl)⟩}
+
+abbrev weakB3SmallSystem := PartialChevalleySystem.mk
+  present_roots
+  trivial_commutator_pairs
+  (single_commutator_pairs F)
+  (double_commutator_pairs F)
 
 /-
 The specific relation arises from "nonhomogeneously lifting" the commutator of βψ and ψω elements. (There is no analogue
@@ -83,21 +100,6 @@ def rels_of_def_of_βψω :=
       * {βψω, i, t}⁻¹
     | (i : ℕ) (hi : i ≤ βψω.height) (t : F) }
 
-abbrev trivial_commutator_pairs : Set (B3SmallPosRoot × B3SmallPosRoot) :=
-  {(β, βψ), (β, β2ψ), (ψ, β2ψ), (βψ, β2ψ), (β, ω), (ψ, ψω), (ω, ψω)}
-
-abbrev single_commutator_pairs : Set (SingleSpanRootPair B3SmallPosRoot F)
-   := {⟨ ψ, βψ, β2ψ, 2, (by ht)⟩, ⟨ψ, ω, ψω, 2, (by ht)⟩}
-
-/-! # These are the self-commutation relations -/
-
-abbrev mixed_commutes_roots : Set (B3SmallPosRoot) := {β, ψ, ω, βψ, ψω, β2ψ}
-
-abbrev lin_roots : Set (B3SmallPosRoot) := {β, ψ, ω, βψ, ψω, β2ψ}
-
-abbrev double_commutator_pairs : Set (DoubleSpanRootPair B3SmallPosRoot F) :=
-    {⟨β, ψ, βψ, β2ψ, 1, 1, (by exact rfl), (by exact rfl)⟩}
-
 -- lifted commutator of βψ and ψω
 def lifted_sets (F : Type TR) [Field F] : Set (Set (FreeGroup (GradedChevalleyGenerator B3SmallPosRoot F))) := {
   rels_of_nonhomog_lift_of_comm_of_βψ_ψω
@@ -108,37 +110,32 @@ def def_sets (F : Type TR) [Field F] : Set (Set (FreeGroup (GradedChevalleyGener
   rels_of_def_of_βψω
 }
 
-def weakB3Small (F : Type TR) [Field F] := PartialChevalley.mk
-  trivial_commutator_pairs
-  single_commutator_pairs
-  double_commutator_pairs
-  mixed_commutes_roots
-  lin_roots
+def weakB3Small (F : Type TR) [Field F] := GradedPartialChevalleyGroup.mk
+  weakB3SmallSystem
   (lifted_sets F)
   (def_sets F)
 
 /-! ### Additional relations which define the full B3-small group -/
 
+abbrev full_present_roots : Set (B3SmallPosRoot) :=
+  present_roots ∪ {βψω}
+
 abbrev full_trivial_commutator_pairs : Set (B3SmallPosRoot × B3SmallPosRoot) :=
   trivial_commutator_pairs ∪ {(βψ, ψω), (βψω, β), (βψω, ψ), (βψω, ω), (βψω, βψ), (βψω, β2ψ), (βψω, ψω), (ω, β2ψ)}
 
-abbrev full_single_commutator_pairs : Set (SingleSpanRootPair B3SmallPosRoot F) :=
-  single_commutator_pairs ∪ {⟨ β, ψω, βψω, 1, (by ht)⟩, ⟨βψ, ω, βψω, 2, (by ht)⟩}
+abbrev full_single_commutator_pairs (F : Type TR) [Field F] : Set (SingleSpanRootPair B3SmallPosRoot F) :=
+  (single_commutator_pairs F) ∪ {⟨ β, ψω, βψω, 1, (by ht)⟩, ⟨βψ, ω, βψω, 2, (by ht)⟩}
 
-abbrev full_double_commutator_pairs :  Set (DoubleSpanRootPair B3SmallPosRoot F) := double_commutator_pairs
+abbrev full_double_commutator_pairs (F : Type TR) [Field F] : Set (DoubleSpanRootPair B3SmallPosRoot F) := double_commutator_pairs F
 
-abbrev full_mixed_commutes_roots : Set (B3SmallPosRoot) :=
-  mixed_commutes_roots ∪ {βψω}
-
-abbrev full_lin_roots : Set (B3SmallPosRoot) :=
-  lin_roots ∪ {βψω}
-
-def fullB3Small (F : Type TR) [Field F] := @PartialChevalley.mk _ _ F _
+abbrev fullB3SmallSystem (F : Type TR) [Field F] := PartialChevalleySystem.mk
+  full_present_roots
   full_trivial_commutator_pairs
-  full_single_commutator_pairs
-  full_double_commutator_pairs
-  full_mixed_commutes_roots
-  full_lin_roots
+  (full_single_commutator_pairs F)
+  (full_double_commutator_pairs F)
+
+def fullB3Small (F : Type TR) [Field F] := GradedPartialChevalleyGroup.mk
+  (fullB3SmallSystem F)
   (∅)
   (∅)
 
@@ -217,7 +214,7 @@ end forallNotation
 
 macro "hom_tac " rel:ident " [" intros:ident,* "]" : tactic => `(tactic|
   ( intros $intros*;
-    apply PartialChevalley.helper;
+    apply GradedPartialChevalleyGroup.helper;
     apply (weakB3Small _).lifted_helper $rel;
     simp only [weakB3Small, lifted_sets, Set.mem_insert_iff,
       Set.mem_singleton_iff, true_or, or_true];

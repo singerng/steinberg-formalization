@@ -3,7 +3,7 @@ import Steinberg.B3Large.EstabAlphaBeta2Psi
 
 namespace Steinberg.B3Large
 
-open Steinberg B3LargePosRoot GradedChevalleyGenerator ReflDeg
+open Steinberg B3LargePosRoot GradedPartialChevalley GradedChevalleyGenerator GradedPartialChevalleyGroup ReflDeg
 
 variable {F : Type TF} [Field F] (Fchar : (2 : F) ≠ 0)
 

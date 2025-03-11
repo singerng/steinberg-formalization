@@ -24,7 +24,7 @@ import Steinberg.Upstream.FreeGroup
 
 namespace Steinberg.A3
 
-open Steinberg A3PosRoot GradedChevalleyGenerator ReflDeg
+open Steinberg A3PosRoot GradedPartialChevalley GradedChevalleyGenerator GradedPartialChevalleyGroup ReflDeg
 
 variable {R : Type TR} [Ring R]
 
@@ -36,7 +36,7 @@ theorem nonhomog_lift_of_comm_of_αβ_βγ :
     , {βγ, 2, u₁ * v₁} * {βγ, 1, u₁ * v₀ + u₀ * v₁} * {βγ, 0, u₀ * v₀} ⁆
     = 1 := by
   intro t₁ t₀ u₁ u₀ v₁ v₀
-  apply PartialChevalley.helper
+  apply GradedPartialChevalleyGroup.helper
   apply (weakA3 R).lifted_helper rels_of_nonhomog_lift_of_comm_of_αβ_βγ
   · simp only [weakA3, lifted_sets, Set.mem_singleton_iff]
   · exists t₁, t₀, u₁, u₀, v₁, v₀
@@ -48,7 +48,7 @@ theorem def_of_αβγ :
     , {βγ, (split_3_into_1_2 i hi).2, 1}'(correct_of_split_3_into_1_2 i hi).2 ⁆
     = {αβγ, i, t} := by
   intro t i hi
-  apply PartialChevalley.helper
+  apply GradedPartialChevalleyGroup.helper
   apply (weakA3 R).def_helper rels_of_def_of_αβγ
   · simp only [weakA3, def_sets, Set.mem_singleton_iff]
   · exists t, i, hi
@@ -59,7 +59,7 @@ theorem refl_of_lifted :
   simp only [lifted_sets, Set.mem_singleton_iff, forall_eq, rels_of_nonhomog_lift_of_comm_of_αβ_βγ, Set.mem_setOf_eq]
   intro r h
   rcases h with ⟨ t₁, t₀, u₁, u₀, v₁, v₀, rfl ⟩
-  simp only [map_mul, map_commutatorElement, free_mk, FreeGroup.map.of, refl_deg_of_gen, PosRootSys.height, height]
+  simp only [map_mul, map_commutatorElement, free_mk, FreeGroup.map.of, refl_deg_of_gen, PositiveRootSystem.height, height]
   simp_arith
   repeat rw [← free_mk]
   rw [add_comm (t₁ * u₀), add_comm (u₁ * v₀)]
@@ -394,7 +394,7 @@ declare_A3_triv_expr_thm R αβγ αβγ
 theorem lin_of_αβγ : lin_of_root((weakA3 R).pres_mk, αβγ) := by
   intro i hi t u
   rcases decompose α.height βγ.height i (by trivial) with ⟨ i₁, i₂, ⟨ rfl, hi₁, hi₂ ⟩ ⟩
-  have h_eq' : i₁ + i₂ ≤ PosRootSys.height αβγ := by omega
+  have h_eq' : i₁ + i₂ ≤ PositiveRootSystem.height αβγ := by omega
   grw [expr_αβγ_as_α_βγ_α_βγ_mul_one hi₁ hi₂,
     expr_βγ_αβγ_as_αβγ_βγ hi₂ h_eq',
     expr_α_αβγ_as_αβγ_α hi₁ h_eq',
@@ -406,10 +406,12 @@ theorem lin_of_αβγ : lin_of_root((weakA3 R).pres_mk, αβγ) := by
 theorem full_rels_satisfied_in_weak_group :
   ∀ r ∈ (fullA3 R).all_rels, (weakA3 R).pres_mk r = 1 := by
   simp only [fullA3, weakA3]
-  apply PartialChevalley.graded_injection
-  · intro p h
-    simp only [full_trivial_commutator_pairs] at h
-    rcases h with h_old|h_new
+  apply GradedPartialChevalleyGroup.graded_injection
+  all_goals (
+    intro p h
+    simp only at h
+  )
+  · rcases h with h_old|h_new
     · tauto
     · right
       simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at h_new
@@ -424,9 +426,7 @@ theorem full_rels_satisfied_in_weak_group :
       · exact comm_of_γ_αβγ hi hj t u
       · exact comm_of_αβ_αβγ hi hj t u
       · exact comm_of_βγ_αβγ hi hj t u
-  · intro p h
-    simp only [full_single_commutator_pairs] at h
-    rcases h with h_old|h_new
+  · rcases h with h_old|h_new
     · tauto
     · right
       simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at h_new
@@ -441,9 +441,7 @@ theorem full_rels_satisfied_in_weak_group :
       · exact comm_of_α_βγ hi hj t u
       · exact comm_of_αβ_γ hi hj t u
   · tauto
-  · intro p h
-    simp only [full_mixed_commutes_roots] at h
-    rcases h with h_old|h_new
+  · rcases h with h_old|h_new
     · tauto
     · right
       simp_all only [Set.mem_singleton_iff]
@@ -452,9 +450,7 @@ theorem full_rels_satisfied_in_weak_group :
       rcases h_r with ⟨ i, j, hi, hj, t, u, goal ⟩
       subst r
       exact comm_of_αβγ_αβγ hi hj t u
-  · intro p h
-    simp only [full_lin_roots] at h
-    rcases h with h_old|h_new
+  · rcases h with h_old|h_new
     · tauto
     · right
       simp_all only [Set.mem_singleton_iff]

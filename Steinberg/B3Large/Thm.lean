@@ -10,7 +10,7 @@ import Steinberg.B3Large.EstabAlpha2Beta2Psi
 
 namespace Steinberg.B3Large
 
-open Steinberg B3LargePosRoot GradedChevalleyGenerator ReflDeg
+open Steinberg B3LargePosRoot GradedPartialChevalley GradedChevalleyGenerator GradedPartialChevalleyGroup ReflDeg
 
 /-!
 
@@ -574,10 +574,12 @@ theorem lin_of_αβψ : lin_of_root((weakB3Large F).pres_mk, αβψ) := by
 theorem full_rels_satisfied_in_weak_group :
   ∀ r ∈ (fullB3Large F).all_rels, (weakB3Large F).pres_mk r = 1 := by
   simp only [fullB3Large, fullB3Large]
-  apply PartialChevalley.graded_injection
-  · intro p h
-    simp only [full_trivial_commutator_pairs] at h
-    rcases h with h_old|h_new
+  apply GradedPartialChevalleyGroup.graded_injection
+  all_goals (
+    intro p h
+    simp only at h
+  )
+  · rcases h with h_old|h_new
     · tauto
     · right
       simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at h_new
@@ -593,7 +595,9 @@ theorem full_rels_satisfied_in_weak_group :
       · exact comm_of_α_αβψ hi hj t u
       · exact comm_of_β_αβψ hi hj t u
       · exact comm_of_αβ_αβψ hi hj t u
-      · exact comm_of_αβψ_β2ψ Fchar hi hj t u
+      · rw [triv_comm_symm.mpr]
+        trivial
+        exact comm_of_αβψ_β2ψ Fchar hj hi u t
       · exact comm_of_α_αβ2ψ Fchar hi hj t u
       · exact comm_of_ψ_αβ2ψ Fchar hi hj t u
       · exact comm_of_αβ_αβ2ψ Fchar F_sum_of_squares hi hj t u
@@ -608,9 +612,7 @@ theorem full_rels_satisfied_in_weak_group :
       · exact comm_of_β2ψ_α2β2ψ Fchar hi hj t u
       · exact comm_of_αβψ_α2β2ψ Fchar hi hj t u
       · exact comm_of_αβ2ψ_α2β2ψ Fchar hi hj t u
-  · intro p h
-    simp only [full_single_commutator_pairs] at h
-    rcases h with h_old|h_new
+  · rcases h with h_old|h_new
     · tauto
     · right
       simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at h_new
@@ -635,9 +637,7 @@ theorem full_rels_satisfied_in_weak_group :
       · have : -1 * t * u = -t * u := by ring_nf
         rw [this]
         exact (expr_α2β2ψ_as_comm_of_αβ2ψ_β Fchar hi hj t u).symm
-  · intro p h
-    simp only [double_comm_pairs] at h
-    rcases h with h_old|h_new
+  · rcases h with h_old|h_new
     · tauto
     · right
       simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at h_new
@@ -659,9 +659,7 @@ theorem full_rels_satisfied_in_weak_group :
         have : t * u * u = t * u^2 := by ring_nf
         rw [this]
         exact commutator_of_αβ_ψ_a Fchar hi hj t u
-  · intro p h
-    simp only [full_mixed_commutes_roots] at h
-    rcases h with h_old|h_new
+  · rcases h with h_old|h_new
     · tauto
     · right
       simp_all only [ne_eq, Set.mem_insert_iff, Set.mem_singleton_iff]
@@ -673,9 +671,7 @@ theorem full_rels_satisfied_in_weak_group :
       · exact comm_of_αβψ Fchar F_sum_of_squares hi hj t u
       · exact comm_of_αβ2ψ Fchar hi hj t u
       · exact comm_of_α2β2ψ Fchar hi hj t u
-  · intro p h
-    simp only [full_lin_roots] at h
-    rcases h with h_old|h_new
+  · rcases h with h_old|h_new
     · tauto
     · right
       simp_all only [ne_eq, Set.mem_insert_iff, Set.mem_singleton_iff]

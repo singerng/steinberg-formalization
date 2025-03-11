@@ -2,6 +2,5 @@
 import Steinberg.Defs.Commutator
 import Steinberg.Defs.Lattice
 import Steinberg.Defs.ReflDeg
-import Steinberg.Defs.Root
-import Steinberg.Defs.PartialChevalley
-import Steinberg.Defs.SteinbergPresentation
+import Steinberg.Defs.PositiveRootSystem
+import Steinberg.Defs.GradedPartialChevalleyGroup

@@ -18,7 +18,7 @@ import Steinberg.Upstream.FreeGroup
 
 namespace Steinberg.B3Small
 
-open Steinberg B3SmallPosRoot GradedChevalleyGenerator ReflDeg
+open Steinberg B3SmallPosRoot GradedPartialChevalley GradedPartialChevalleyGroup GradedChevalleyGenerator ReflDeg
 
 variable {F : Type TF} [Field F] (Fchar : (2 : F) ≠ 0)
 
@@ -26,7 +26,7 @@ variable {F : Type TF} [Field F] (Fchar : (2 : F) ≠ 0)
 
 theorem comm_of_β_ψ : double_commutator_of_root_pair (weakB3Small F).pres_mk β ψ βψ β2ψ 1 1 (by rfl) (by rfl) :=
   (weakB3Small F).double_commutator_helper β ψ βψ β2ψ 1 1 (by rfl) (by rfl)
-    (by rw [weakB3Small, trivial_commutator_pairs]; simp)
+    (by simp only [weakB3Small, trivial_commutator_pairs]; tauto)
 
 /-! ### Nonhomogeneous lift -/
 theorem nonhomog_lift_of_comm_of_βψ_ψω :
@@ -42,7 +42,7 @@ theorem def_of_βψω : forall_i_t βψω,
     , {ψω, (split_3_into_1_2 i hi).2, 1}'(correct_of_split_3_into_1_2 i hi).2 ⁆
       = {βψω, i, t} := by
   intro t i hi
-  apply PartialChevalley.helper
+  apply GradedPartialChevalleyGroup.helper
   apply (weakB3Small F).def_helper rels_of_def_of_βψω
   · simp only [weakB3Small, def_sets, Set.mem_singleton_iff]
   · exists t, i, hi
@@ -54,7 +54,7 @@ theorem refl_of_lifted :
   intro r h
   rcases h with ⟨ t₁, t₀, u₁, u₀, v₁, v₀, rfl ⟩
   simp only [free_mk, map_commutatorElement, map_mul, FreeGroup.map.of, refl_deg_of_gen,
-    PosRootSys.height, height, tsub_self, Nat.add_one_sub_one, tsub_zero]
+    PositiveRootSystem.height, height, tsub_self, Nat.add_one_sub_one, tsub_zero]
   repeat rw [← free_mk]
   rw [add_comm, add_comm (u₁ * v₀)]
   grw [expr_βψ_βψ_as_βψ_βψ, expr_βψ_βψ_as_βψ_βψ (i := 0), expr_βψ_βψ_as_βψ_βψ,
@@ -167,7 +167,7 @@ theorem comm_of_βψ_ψω : trivial_commutator_of_root_pair (weakB3Small F).pres
   intro i j hi hj t u
   have : (i = 0 ∧ j = 2) ∨ (i = 2 ∧ j = 0) ∨ ((i, j) ∈ ij_jk_image) := by
     rw [ij_jk_image]
-    simp only [PosRootSys.height] at *
+    simp only [PositiveRootSystem.height] at *
     simp only [B3SmallPosRoot.height] at *
     simp -- should fix
     omega
@@ -518,10 +518,12 @@ declare_B3Small_triv_expr_thm F β2ψ ω
 theorem full_rels_satisfied_in_weak_group :
   ∀ r ∈ (fullB3Small F).all_rels, (weakB3Small F).pres_mk r = 1 := by
   simp only [fullB3Small, weakB3Small]
-  apply PartialChevalley.graded_injection
-  · intro p h
-    simp only [full_trivial_commutator_pairs] at h
-    rcases h with h_old|h_new
+  apply GradedPartialChevalleyGroup.graded_injection
+  all_goals (
+    intro p h
+    simp only at h
+  )
+  · rcases h with h_old|h_new
     · tauto
     · right
       simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at h_new
@@ -542,9 +544,7 @@ theorem full_rels_satisfied_in_weak_group :
       · exact comm_of_βψω_ψω Fchar hi hj t u
       · apply triv_comm_symm.1
         exact comm_of_β2ψ_ω Fchar hj hi u t
-  · intro p h
-    simp only [full_single_commutator_pairs] at h
-    rcases h with h_old|h_new
+  · rcases h with h_old|h_new
     · tauto
     · right
       simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at h_new
@@ -560,11 +560,8 @@ theorem full_rels_satisfied_in_weak_group :
         rw [← this]
         exact (expand_βψω_as_commutator_of_β_ψω Fchar hi hj t u).symm
       · exact (expand_βψω_as_commutator_of_βψ_ω Fchar hi hj t u).symm
-  · simp only [full_double_commutator_pairs]
-    tauto
-  · intro p h
-    simp only [full_mixed_commutes_roots] at h
-    rcases h with h_old|h_new
+  · tauto
+  · rcases h with h_old|h_new
     · tauto
     · right
       simp_all only [Set.mem_singleton_iff]
@@ -573,9 +570,7 @@ theorem full_rels_satisfied_in_weak_group :
       rcases h_r with ⟨ i, j, hi, hj, t, u, goal ⟩
       subst r
       exact comm_of_βψω Fchar hi hj t u
-  · intro p h
-    simp only [full_lin_roots] at h
-    rcases h with h_old|h_new
+  · rcases h with h_old|h_new
     · tauto
     · right
       simp_all only [Set.mem_singleton_iff]

@@ -4,7 +4,7 @@ LICENSE goes here.
 
 -/
 
-import Steinberg.Defs.PartialChevalley
+import Steinberg.Defs.GradedPartialChevalleyGroup
 import Steinberg.Macro.Attr
 import Mathlib.Tactic.DeriveFintype
 
@@ -36,7 +36,7 @@ def toString : A3PosRoot → String
   | βγ => "β+γ"
   | αβγ => "α+β+γ"
 
-instance instPosRootSys : PosRootSys A3PosRoot where
+instance instPosRootSys : PositiveRootSystem A3PosRoot where
   height := height
   toString := toString
 
@@ -45,7 +45,7 @@ instance instCoeNat : Coe A3PosRoot Nat where
 
 end A3PosRoot
 
-open A3PosRoot GradedChevalleyGenerator
+open A3PosRoot GradedPartialChevalley GradedPartialChevalleyGroup GradedChevalleyGenerator PartialChevalleySystem
 
 variable {R : Type TR} [Ring R]
 
@@ -56,17 +56,20 @@ The specific relation arises from "nonhomogeneously lifting" the commutator of �
 of this relation for other root-pairs, since all other present pairs lie in a common two-dimensional subspace.)
 -/
 /-- Steinberg relations in the weak A3 group -/
+abbrev present_roots : Set (A3PosRoot) :=
+  {α, β, γ, αβ, βγ}
+
 abbrev trivial_commutator_pairs : Set (A3PosRoot × A3PosRoot) :=
   {(α, γ), (α, αβ), (β, αβ), (β, βγ), (γ, βγ)}
 
-abbrev single_commutator_pairs : Set (SingleSpanRootPair A3PosRoot R) :=
+abbrev single_commutator_pairs (R : Type TR) [Ring R] : Set (SingleSpanRootPair A3PosRoot R) :=
   {⟨ α, β, αβ, 1, (by ht)⟩, ⟨β, γ, βγ, 1, (by ht)⟩}
 
-abbrev mixed_commutes_roots : Set (A3PosRoot) :=
-  {α, β, γ, αβ, βγ}
-
-abbrev lin_roots : Set (A3PosRoot) :=
-  {α, β, γ, αβ, βγ}
+abbrev weakA3System := PartialChevalleySystem.mk
+  present_roots
+  trivial_commutator_pairs
+  (single_commutator_pairs R)
+  ∅
 
 /-- Additional relations (TBD title) -/
 
@@ -102,35 +105,30 @@ def lifted_sets (R : Type TR) [Ring R] : Set (Set (FreeGroup (GradedChevalleyGen
 def def_sets (R : Type TR) [Ring R] : Set (Set (FreeGroup (GradedChevalleyGenerator A3PosRoot R))) :=
   { rels_of_def_of_αβγ }
 
-def weakA3 (R : Type TR) [Ring R] := PartialChevalley.mk
-  trivial_commutator_pairs
-  single_commutator_pairs
-  ∅
-  mixed_commutes_roots
-  lin_roots
+def weakA3 (R : Type TR) [Ring R] := GradedPartialChevalleyGroup.mk
+  weakA3System
   (lifted_sets R)
   (def_sets R)
 
 /-! ### Additional relations which define the full A3 group -/
 
+abbrev full_present_roots : Set (A3PosRoot) :=
+  present_roots ∪ {αβγ}
+
 abbrev full_trivial_commutator_pairs : Set (A3PosRoot × A3PosRoot) :=
   trivial_commutator_pairs ∪ {(αβ, βγ), (α, αβγ), (β, αβγ), (γ, αβγ), (αβ, αβγ), (βγ, αβγ)}
 
-abbrev full_single_commutator_pairs : Set (SingleSpanRootPair A3PosRoot R) :=
-  single_commutator_pairs ∪ {⟨ α, βγ, αβγ, 1, (by ht)⟩, ⟨αβ, γ, αβγ, 1, (by ht)⟩}
+abbrev full_single_commutator_pairs (R : Type TR) [Ring R] : Set (SingleSpanRootPair A3PosRoot R) :=
+  (single_commutator_pairs R) ∪ {⟨ α, βγ, αβγ, 1, (by ht)⟩, ⟨αβ, γ, αβγ, 1, (by ht)⟩}
 
-abbrev full_mixed_commutes_roots : Set (A3PosRoot) :=
-  mixed_commutes_roots ∪ {αβγ}
-
-abbrev full_lin_roots : Set (A3PosRoot) :=
-  lin_roots ∪ {αβγ}
-
-def fullA3 (R : Type TR) [Ring R] := @PartialChevalley.mk _ _ R _
+abbrev fullA3System := PartialChevalleySystem.mk
+  full_present_roots
   full_trivial_commutator_pairs
-  full_single_commutator_pairs
+  (full_single_commutator_pairs R)
   ∅
-  full_mixed_commutes_roots
-  full_lin_roots
+
+def fullA3 (R : Type TR) [Ring R] := @GradedPartialChevalleyGroup.mk _ _ R _
+  fullA3System
   (∅)
   (∅)
 

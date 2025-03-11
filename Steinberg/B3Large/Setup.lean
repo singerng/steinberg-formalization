@@ -13,7 +13,7 @@ import Steinberg.Upstream.FreeGroup
 
 namespace Steinberg.B3Large
 
-open Steinberg B3LargePosRoot GradedChevalleyGenerator ReflDeg
+open Steinberg B3LargePosRoot GradedPartialChevalley GradedChevalleyGenerator GradedPartialChevalleyGroup ReflDeg
 
 variable {F : Type TF} [Field F] (Fchar : (2 : F) ≠ 0)
 variable (F_sum_of_squares : ∀ (a : F), ∃ (x y : F), a = x^2 + y^2)
@@ -26,10 +26,10 @@ theorem def_of_αβψ : forall_i_t αβψ,
   {βψ, (split_3_into_1_2 i hi).2, -1/2}'(correct_of_split_3_into_1_2 i hi).2
     = {αβψ, i, t} := by
   intro i hi t
-  apply PartialChevalley.helper
+  apply GradedPartialChevalleyGroup.helper
   apply (weakB3Large F).def_helper rels_of_def_of_αβψ
   · simp only [weakB3Large, def_sets]
-    exact Set.mem_insert rels_of_def_of_αβψ _
+    tauto
   · exists i, hi, t
 
 theorem def_of_αβ2ψ : forall_i_t αβ2ψ,
@@ -37,9 +37,10 @@ theorem def_of_αβ2ψ : forall_i_t αβ2ψ,
       ({β2ψ, (split_4_into_1_3 i hi).2, 1}'(correct_of_split_4_into_1_3 i hi).2)
     ⁆ = {αβ2ψ, i, t} := by
   intro i hi t
-  apply PartialChevalley.helper
+  apply GradedPartialChevalleyGroup.helper
   apply (weakB3Large F).def_helper rels_of_def_of_αβ2ψ
-  · simp only [weakB3Large, def_sets, Set.mem_insert_iff, Set.mem_singleton_iff, true_or, or_true]
+  · simp only [weakB3Large, def_sets]
+    tauto
   · exists i, hi, t
 
 theorem def_of_α2β2ψ : forall_i_t α2β2ψ,
@@ -47,9 +48,10 @@ theorem def_of_α2β2ψ : forall_i_t α2β2ψ,
       ({β2ψ, (split_5_into_2_3 i hi).2, 1}'(correct_of_split_5_into_2_3 i hi).2)
     ⁆ = {α2β2ψ, i, -t} := by
   intro i hi t
-  apply PartialChevalley.helper
+  apply GradedPartialChevalleyGroup.helper
   apply (weakB3Large F).def_helper rels_of_def_of_α2β2ψ
-  · simp only [weakB3Large, def_sets, Set.mem_insert_iff, Set.mem_singleton_iff, or_true]
+  · simp only [weakB3Large, def_sets]
+    tauto
   · exists i, hi, t
 
 /-! ### Nonhomogeneous lift -/
