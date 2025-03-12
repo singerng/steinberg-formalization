@@ -76,12 +76,12 @@ private lemma comm_of_ψ_α2β2ψ_11 :
   partial_comm_of_ψ_αβ2ψ_β (by trivial)]
 
 -- reflected theorems
-declare_B3Large_triv_comm_reflected_thm F b3large_valid ψ α2β2ψ heights 0 4 to 1 1
-declare_B3Large_triv_comm_reflected_thm F b3large_valid ψ α2β2ψ heights 0 5 to 1 0
-declare_B3Large_triv_comm_reflected_thm F b3large_valid ψ α2β2ψ heights 1 2 to 0 3
-declare_B3Large_triv_comm_reflected_thm F b3large_valid ψ α2β2ψ heights 1 3 to 0 2
-declare_B3Large_triv_comm_reflected_thm F b3large_valid ψ α2β2ψ heights 1 4 to 0 1
-declare_B3Large_triv_comm_reflected_thm F b3large_valid ψ α2β2ψ heights 1 5 to 0 0
+declare_B3Large_triv_comm_reflected_thm F (b3large_valid Fchar) ψ α2β2ψ heights 0 4 to 1 1
+declare_B3Large_triv_comm_reflected_thm F (b3large_valid Fchar) ψ α2β2ψ heights 0 5 to 1 0
+declare_B3Large_triv_comm_reflected_thm F (b3large_valid Fchar) ψ α2β2ψ heights 1 2 to 0 3
+declare_B3Large_triv_comm_reflected_thm F (b3large_valid Fchar) ψ α2β2ψ heights 1 3 to 0 2
+declare_B3Large_triv_comm_reflected_thm F (b3large_valid Fchar) ψ α2β2ψ heights 1 4 to 0 1
+declare_B3Large_triv_comm_reflected_thm F (b3large_valid Fchar) ψ α2β2ψ heights 1 5 to 0 0
 
 -- 8.186
 theorem comm_of_ψ_α2β2ψ :
@@ -488,12 +488,12 @@ private lemma comm_of_α_α2β2ψ_10 :
   partial_comm_of_α_α2β2ψ Fchar F_sum_of_squares
 
 -- reflected theorems
-declare_B3Large_triv_comm_reflected_thm F b3large_valid α α2β2ψ heights 0 5 to 1 0
-declare_B3Large_triv_comm_reflected_thm F b3large_valid α α2β2ψ heights 1 1 to 0 4
-declare_B3Large_triv_comm_reflected_thm F b3large_valid α α2β2ψ heights 1 2 to 0 3
-declare_B3Large_triv_comm_reflected_thm F b3large_valid α α2β2ψ heights 1 3 to 0 2
-declare_B3Large_triv_comm_reflected_thm F b3large_valid α α2β2ψ heights 1 4 to 0 1
-declare_B3Large_triv_comm_reflected_thm F b3large_valid α α2β2ψ heights 1 5 to 0 0
+declare_B3Large_triv_comm_reflected_thm F (b3large_valid Fchar) α α2β2ψ heights 0 5 to 1 0
+declare_B3Large_triv_comm_reflected_thm F (b3large_valid Fchar) α α2β2ψ heights 1 1 to 0 4
+declare_B3Large_triv_comm_reflected_thm F (b3large_valid Fchar) α α2β2ψ heights 1 2 to 0 3
+declare_B3Large_triv_comm_reflected_thm F (b3large_valid Fchar) α α2β2ψ heights 1 3 to 0 2
+declare_B3Large_triv_comm_reflected_thm F (b3large_valid Fchar) α α2β2ψ heights 1 4 to 0 1
+declare_B3Large_triv_comm_reflected_thm F (b3large_valid Fchar) α α2β2ψ heights 1 5 to 0 0
 
 -- 8.206
 theorem comm_of_α_α2β2ψ :

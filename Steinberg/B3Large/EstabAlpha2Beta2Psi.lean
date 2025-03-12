@@ -532,9 +532,8 @@ theorem sufficient_conditions_for_comm_of_αβ_and_β2ψ :
   rw [←inv_of_αβ2ψ Fchar (by ht)]
   grw [rfl, comm_left {αβψ, i + j, t * u}, ← inv_of_αβψ (by ht), h₂]
 
-omit Fchar
 -- 8.167
-include Fchar in
+include Fchar
 theorem sufficient_conditions_for_comm_of_αβ2ψ_and_βψ :
   ∀ ⦃i j k : ℕ⦄ (hi : i ≤ 4) (hj : j ≤ 1) (hk : k ≤ 1)
   (h44a : ∀ (t u v : F), ⁅⁅{αβ2ψ, i, t}, {β, j, u}⁆, {ψ, k, v}⁆ = 1)
@@ -589,7 +588,6 @@ theorem sufficient_conditions_for_comm_of_αβ2ψ_and_βψ :
   exact triv_comm_iff_commutes.mpr this
   exact Nat.add_comm k j
 
-include Fchar
 private lemma partial_comm_of_βψ_αβ2ψ_help : ∀ t u : F,
     ⁅{αβ2ψ, 2, t}, {β, 0, u}⁆ = ⁅{αβ, 1, t}, {β2ψ, 1, u}⁆ := by
   intro t u
@@ -675,7 +673,6 @@ theorem sufficient_conditions_for_comm_of_αβ2ψ_and_β :
   rw [eq_of_R_eq βψ 0 (by ring_nf; field_simp), id_of_βψ, mul_one]
 
 -- 8.171
-include Fchar
 theorem sufficient_conditions_for_comm_of_αβψ_and_β2ψ :
     ∀ ⦃i j k : ℕ⦄ (hi : i ≤ 1) (hj : j ≤ 2) (hk : k ≤ 3)
     (hyp : ∀ (t u : F), ⁅{αβ2ψ, i + k, u}, {βψ, j, t}⁆ = 1),
@@ -731,7 +728,6 @@ theorem partial_D_interchange_of_α2β2ψ :
 
 /- ### Establishing α + 2β + 2ψ -/
 
-include Fchar
 private lemma interchange_of_α2β2ψ_refl_u_αβ_β2ψ :
   forall_ijk_tu 1 1 1, ⁅{αβ, i + j, t}, {β2ψ, j + 2 * k, 2 * u}⁆ = ⁅{αβψ, i + j + k, t}, {βψ, j + k, u}⁆ := by
   intro i j k hi hj hk t u
@@ -820,7 +816,6 @@ private lemma interchange_D_refl_u :
   rw [←one_mul u, partial_D_interchange_of_α2β2ψ Fchar]
   simp only [mul_one, one_mul]
 
-include Fchar
 -- height 0
 private lemma expr_α2β2ψ_as_comm_of_αβ_β2ψ_00 :
   ∀ t u : F, {α2β2ψ, 0, -t * u} = ⁅{αβ, 0, t}, {β2ψ, 0, u}⁆:= by
@@ -952,10 +947,10 @@ private lemma expr_α2β2ψ_as_comm_of_αβ_β2ψ_12 :
   rw [neg_mul, ←this, @interchange_of_α2β2ψ_trans_αβ_β2ψ _ _ Fchar 1 0 1 (by trivial) (by trivial) (by trivial)]
 
 -- `A` edge
-declare_B3Large_reflected_thm F b3large_valid α2β2ψ αβψ βψ const neg 2 heights 3 1 2 to 2 2 0
+declare_B3Large_reflected_thm F (b3large_valid Fchar) α2β2ψ αβψ βψ const neg 2 heights 3 1 2 to 2 2 0
 
 -- `C` edge
-declare_B3Large_reflected_thm F b3large_valid α2β2ψ αβ β2ψ const neg 1 heights 3 0 3 to 2 2 0
+declare_B3Large_reflected_thm F (b3large_valid Fchar) α2β2ψ αβ β2ψ const neg 1 heights 3 0 3 to 2 2 0
 
 private lemma expr_α2β2ψ_as_comm_of_αβψ_βψ_21 :
   ∀ t u : F, {α2β2ψ, 3, -2 * t * u} = ⁅{αβψ, 2, t}, {βψ, 1, u}⁆ := by
@@ -964,23 +959,23 @@ private lemma expr_α2β2ψ_as_comm_of_αβψ_βψ_21 :
   rw [this, expr_α2β2ψ_as_comm_of_αβ_β2ψ_12 Fchar, @interchange_of_α2β2ψ_refl_v_αβ_β2ψ _ _ Fchar 1 0 1 (by trivial) (by trivial) (by trivial),
   interchange_of_α2β2ψ_trans_αβψ_βψ Fchar (by trivial) (by trivial) (by trivial)]
 
-declare_B3Large_reflected_thm F b3large_valid α2β2ψ αβ β2ψ const neg 1 heights 3 2 1 to 2 0 2
-declare_B3Large_reflected_thm F b3large_valid α2β2ψ αβψ βψ const neg 2 heights 3 3 0 to 2 0 2
-declare_B3Large_reflected_thm F b3large_valid α2β2ψ αβ2ψ β const neg 1 heights 3 3 0 to 2 1 1
-declare_B3Large_reflected_thm F b3large_valid α2β2ψ αβ2ψ β const neg 1 heights 3 2 1 to 2 2 0
+declare_B3Large_reflected_thm F (b3large_valid Fchar) α2β2ψ αβ β2ψ const neg 1 heights 3 2 1 to 2 0 2
+declare_B3Large_reflected_thm F (b3large_valid Fchar) α2β2ψ αβψ βψ const neg 2 heights 3 3 0 to 2 0 2
+declare_B3Large_reflected_thm F (b3large_valid Fchar) α2β2ψ αβ2ψ β const neg 1 heights 3 3 0 to 2 1 1
+declare_B3Large_reflected_thm F (b3large_valid Fchar) α2β2ψ αβ2ψ β const neg 1 heights 3 2 1 to 2 2 0
 
 -- height 4
-declare_B3Large_reflected_thm F b3large_valid α2β2ψ αβ β2ψ const neg 1 heights 4 2 2 to 1 0 1
-declare_B3Large_reflected_thm F b3large_valid α2β2ψ αβ β2ψ const neg 1 heights 4 1 3 to 1 1 0
-declare_B3Large_reflected_thm F b3large_valid α2β2ψ αβψ βψ const neg 2 heights 4 3 1 to 1 0 1
-declare_B3Large_reflected_thm F b3large_valid α2β2ψ αβψ βψ const neg 2 heights 4 2 2 to 1 1 0
-declare_B3Large_reflected_thm F b3large_valid α2β2ψ αβ2ψ β const neg 1 heights 4 4 0 to 1 0 1
-declare_B3Large_reflected_thm F b3large_valid α2β2ψ αβ2ψ β const neg 1 heights 4 3 1 to 1 1 0
+declare_B3Large_reflected_thm F (b3large_valid Fchar) α2β2ψ αβ β2ψ const neg 1 heights 4 2 2 to 1 0 1
+declare_B3Large_reflected_thm F (b3large_valid Fchar) α2β2ψ αβ β2ψ const neg 1 heights 4 1 3 to 1 1 0
+declare_B3Large_reflected_thm F (b3large_valid Fchar) α2β2ψ αβψ βψ const neg 2 heights 4 3 1 to 1 0 1
+declare_B3Large_reflected_thm F (b3large_valid Fchar) α2β2ψ αβψ βψ const neg 2 heights 4 2 2 to 1 1 0
+declare_B3Large_reflected_thm F (b3large_valid Fchar) α2β2ψ αβ2ψ β const neg 1 heights 4 4 0 to 1 0 1
+declare_B3Large_reflected_thm F (b3large_valid Fchar) α2β2ψ αβ2ψ β const neg 1 heights 4 3 1 to 1 1 0
 
 -- height 5
-declare_B3Large_reflected_thm F b3large_valid α2β2ψ αβ β2ψ const neg 1 heights 5 2 3 to 0 0 0
-declare_B3Large_reflected_thm F b3large_valid α2β2ψ αβψ βψ const neg 2 heights 5 3 2 to 0 0 0
-declare_B3Large_reflected_thm F b3large_valid α2β2ψ αβ2ψ β const neg 1 heights 5 4 1 to 0 0 0
+declare_B3Large_reflected_thm F (b3large_valid Fchar) α2β2ψ αβ β2ψ const neg 1 heights 5 2 3 to 0 0 0
+declare_B3Large_reflected_thm F (b3large_valid Fchar) α2β2ψ αβψ βψ const neg 2 heights 5 3 2 to 0 0 0
+declare_B3Large_reflected_thm F (b3large_valid Fchar) α2β2ψ αβ2ψ β const neg 1 heights 5 4 1 to 0 0 0
 
 -- 8.174a
 theorem expr_α2β2ψ_as_comm_of_αβ_β2ψ : forall_ij_tu αβ β2ψ,
