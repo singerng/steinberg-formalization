@@ -44,7 +44,7 @@ private theorem refl_deg_of_rels_of_trivial_commutator_of_root_pair (ζ η : Φ)
 
 /-- Degree-reflection preserves the set of single commutator relations for any root pair. -/
 private theorem refl_deg_of_rels_of_single_commutator_of_root_pair
-  (ζ η θ : Φ) (C : R) (h_height : height θ = height ζ + height η)
+  (ζ η θ : Φ) (C : ℤ) (h_height : height θ = height ζ + height η)
     : ∀ r ∈ rels_of_single_commutator_of_root_pair R ⟨ ζ, η, θ, C, h_height ⟩,
       FreeGroup.map refl_deg_of_gen r ∈ rels_of_single_commutator_of_root_pair R ⟨ ζ, η, θ, C, h_height ⟩ := by
   intro r h
@@ -58,7 +58,7 @@ private theorem refl_deg_of_rels_of_single_commutator_of_root_pair
 
 /-- Degree-reflection preserves the set of trivial commutator relations for any root pair. -/
 private theorem refl_deg_of_rels_of_double_commutator_of_root_pair
-  (ζ η θ₁ θ₂ : Φ) (C₁ C₂ : R) (h_height₁ : height θ₁ = height ζ + height η) (h_height₂ : height θ₂ = height ζ + 2 * height η)
+  (ζ η θ₁ θ₂ : Φ) (C₁ C₂ : ℤ) (h_height₁ : height θ₁ = height ζ + height η) (h_height₂ : height θ₂ = height ζ + 2 * height η)
     : ∀ r ∈ rels_of_double_commutator_of_root_pair R ⟨ ζ, η, θ₁, θ₂, C₁, C₂, h_height₁, h_height₂ ⟩,
       FreeGroup.map refl_deg_of_gen r ∈ rels_of_double_commutator_of_root_pair R ⟨ ζ, η, θ₁, θ₂, C₁, C₂, h_height₁, h_height₂ ⟩ := by
   intro r h

@@ -265,8 +265,10 @@ omit Fchar
 theorem expr_β_α_as_αβ_α_β : forall_ij_tu α β,
     {β, j, u} * {α, i, t} = {αβ, i + j, -t * u} * {α, i, t} * {β, j, u} := by
   intro i j hi hj t u
-  rw [neg_mul, ← inv_of_αβ, ← one_mul (t * u), ← mul_assoc, ← comm_of_α_β hi hj]
-  chev_simp
+  rw [neg_mul, ← inv_of_αβ]
+  have : t * u = ↑(1 : ℤ) * t * u := by chev_simp
+  rw [this]
+  rw [← comm_of_α_β hi hj]
   exact comm_left _ _
 
 -- 8.112a

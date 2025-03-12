@@ -171,7 +171,7 @@ theorem expr_β_γ_as_γ_βγ_β :
     reorder_mid({β, i, t}, {γ, j, u}, {βγ, i + j, t * u}) := by
   intro i j hi hj t u
   have := comm_of_β_γ hi hj t u
-  rw [one_mul] at this
+  chev_simp at this
   rw [← this, comm_mid, inv_of_γ, comm_of_β_γ]
   grw [comm_of_β_γ]
 
@@ -276,23 +276,23 @@ private lemma comm_of_αβ_γ_21 (t u : R) : ⁅ {αβ, 2, t}, {γ, 1, u} ⁆ = 
 theorem comm_of_α_βγ : single_commutator_of_root_pair (weakA3 R).pres_mk α βγ αβγ 1 (by ht) := by
   intro i j hi hj t u
   match i, j with
-  | 0, 0 => simp only [comm_of_α_βγ_00 t u, add_zero, one_mul]
-  | 0, 1 => simp only [comm_of_α_βγ_01 t u, zero_add, one_mul]
-  | 0, 2 => simp only [comm_of_α_βγ_02 t u, zero_add, one_mul]
-  | 1, 0 => simp only [comm_of_α_βγ_10 t u, add_zero, one_mul]
-  | 1, 1 => simp only [comm_of_α_βγ_11 t u, Nat.reduceAdd, one_mul]
-  | 1, 2 => simp only [comm_of_α_βγ_12 t u, Nat.reduceAdd, one_mul]
+  | 0, 0 => chev_simp [comm_of_α_βγ_00 t u]
+  | 0, 1 => chev_simp [comm_of_α_βγ_01 t u]
+  | 0, 2 => chev_simp [comm_of_α_βγ_02 t u]
+  | 1, 0 => chev_simp [comm_of_α_βγ_10 t u]
+  | 1, 1 => chev_simp [comm_of_α_βγ_11 t u]
+  | 1, 2 => chev_simp [comm_of_α_βγ_12 t u]
 
 /- Commutator relation for αβ and γ. -/
 theorem comm_of_αβ_γ : single_commutator_of_root_pair (weakA3 R).pres_mk αβ γ αβγ 1 (by ht) := by
   intro i j hi hj t u
   match i, j with
-  | 0, 0 => simp only [comm_of_αβ_γ_00 t u, add_zero, one_mul]
-  | 1, 0 => simp only [comm_of_αβ_γ_10 t u, add_zero, one_mul]
-  | 2, 0 => simp only [comm_of_αβ_γ_20 t u, add_zero, one_mul]
-  | 0, 1 => simp only [comm_of_αβ_γ_01 t u, zero_add, one_mul]
-  | 1, 1 => simp only [comm_of_αβ_γ_11 t u, Nat.reduceAdd, one_mul]
-  | 2, 1 => simp only [comm_of_αβ_γ_21 t u, Nat.reduceAdd, one_mul]
+  | 0, 0 => chev_simp [comm_of_αβ_γ_00 t u]
+  | 1, 0 => chev_simp [comm_of_αβ_γ_10 t u]
+  | 2, 0 => chev_simp [comm_of_αβ_γ_20 t u]
+  | 0, 1 => chev_simp [comm_of_αβ_γ_01 t u]
+  | 1, 1 => chev_simp [comm_of_αβ_γ_11 t u]
+  | 2, 1 => chev_simp [comm_of_αβ_γ_21 t u]
 
 declare_A3_single_expr_thms R α βγ αβγ
 declare_A3_single_expr_thms R αβ γ αβγ

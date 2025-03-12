@@ -542,8 +542,8 @@ theorem full_rels_satisfied_in_weak_group :
       · exact comm_of_βψω_βψ Fchar hi hj t u
       · exact comm_of_βψω_β2ψ Fchar hi hj t u
       · exact comm_of_βψω_ψω Fchar hi hj t u
-      · apply triv_comm_symm.1
-        exact comm_of_β2ψ_ω Fchar hj hi u t
+      · have := comm_of_β2ψ_ω Fchar hj hi u t
+        rwa [triv_comm_symm] at this
   · rcases h with h_old|h_new
     · tauto
     · right
@@ -556,10 +556,10 @@ theorem full_rels_satisfied_in_weak_group :
         subst p r
         simp only [map_mul, map_inv, mul_inv_eq_one]
       )
-      · have : t * u = 1 * t * u := by ring_nf
-        rw [← this]
+      · chev_simp
         exact (expand_βψω_as_commutator_of_β_ψω Fchar hi hj t u).symm
-      · exact (expand_βψω_as_commutator_of_βψ_ω Fchar hi hj t u).symm
+      · chev_simp
+        exact (expand_βψω_as_commutator_of_βψ_ω Fchar hi hj t u).symm
   · tauto
   · rcases h with h_old|h_new
     · tauto

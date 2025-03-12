@@ -58,17 +58,17 @@ abbrev present_roots : Set (B3SmallPosRoot) := {β, ψ, ω, βψ, ψω, β2ψ}
 abbrev trivial_commutator_pairs : Set (B3SmallPosRoot × B3SmallPosRoot) :=
   {(β, βψ), (β, β2ψ), (ψ, β2ψ), (βψ, β2ψ), (β, ω), (ψ, ψω), (ω, ψω)}
 
-abbrev single_commutator_pairs (F : Type TR) [Field F] : Set (SingleSpanRootPair B3SmallPosRoot F)
+abbrev single_commutator_pairs : Set (SingleSpanRootPair B3SmallPosRoot)
    := {⟨ ψ, βψ, β2ψ, 2, (by ht)⟩, ⟨ψ, ω, ψω, 2, (by ht)⟩}
 
-abbrev double_commutator_pairs (F : Type TR) [Field F] : Set (DoubleSpanRootPair B3SmallPosRoot F) :=
+abbrev double_commutator_pairs : Set (DoubleSpanRootPair B3SmallPosRoot) :=
     {⟨β, ψ, βψ, β2ψ, 1, 1, (by exact rfl), (by exact rfl)⟩}
 
 abbrev weakB3SmallSystem := PartialChevalleySystem.mk
   present_roots
   trivial_commutator_pairs
-  (single_commutator_pairs F)
-  (double_commutator_pairs F)
+  single_commutator_pairs
+  double_commutator_pairs
 
 /-
 The specific relation arises from "nonhomogeneously lifting" the commutator of βψ and ψω elements. (There is no analogue
@@ -123,19 +123,19 @@ abbrev full_present_roots : Set (B3SmallPosRoot) :=
 abbrev full_trivial_commutator_pairs : Set (B3SmallPosRoot × B3SmallPosRoot) :=
   trivial_commutator_pairs ∪ {(βψ, ψω), (βψω, β), (βψω, ψ), (βψω, ω), (βψω, βψ), (βψω, β2ψ), (βψω, ψω), (ω, β2ψ)}
 
-abbrev full_single_commutator_pairs (F : Type TR) [Field F] : Set (SingleSpanRootPair B3SmallPosRoot F) :=
-  (single_commutator_pairs F) ∪ {⟨ β, ψω, βψω, 1, (by ht)⟩, ⟨βψ, ω, βψω, 2, (by ht)⟩}
+abbrev full_single_commutator_pairs : Set (SingleSpanRootPair B3SmallPosRoot) :=
+  single_commutator_pairs ∪ {⟨ β, ψω, βψω, 1, (by ht)⟩, ⟨βψ, ω, βψω, 2, (by ht)⟩}
 
-abbrev full_double_commutator_pairs (F : Type TR) [Field F] : Set (DoubleSpanRootPair B3SmallPosRoot F) := double_commutator_pairs F
+abbrev full_double_commutator_pairs : Set (DoubleSpanRootPair B3SmallPosRoot) := double_commutator_pairs
 
-abbrev fullB3SmallSystem (F : Type TR) [Field F] := PartialChevalleySystem.mk
+abbrev fullB3SmallSystem := PartialChevalleySystem.mk
   full_present_roots
   full_trivial_commutator_pairs
-  (full_single_commutator_pairs F)
-  (full_double_commutator_pairs F)
+  full_single_commutator_pairs
+  full_double_commutator_pairs
 
-def fullB3Small (F : Type TR) [Field F] := GradedPartialChevalleyGroup.mk
-  (fullB3SmallSystem F)
+def fullB3Small (F : Type TR) [Field F] := @GradedPartialChevalleyGroup.mk B3SmallPosRoot _ F _
+  fullB3SmallSystem
   (∅)
   (∅)
 

@@ -43,6 +43,7 @@ attribute [chev_simps] neg_add_cancel add_neg_cancel
   map_one map_zero map_mul map_add map_neg map_commutatorElement
   commutatorElement_inv commutatorElement_one_left commutatorElement_one_right
   and_true true_and and_self or_self
+  Int.cast_ofNat Int.cast_one Int.cast_two Int.cast_three Int.cast_neg Int.reduceNeg
 
 /-- A macro for a common simplification when rewriting with ghost component equations. -/
 syntax (name := chevSimp) "chev_simp" (simpArgs)? (location)? : tactic

@@ -125,11 +125,11 @@ def rels_of_trivial_commutator_of_root_pair (R : Type TR) [Ring R] (ζη : Φ ×
 /-! #### Commutator for two generators from two roots which span one additional root -/
 
 def single_commutator_of_root_pair (f : FreeGroup (GradedChevalleyGenerator Φ R) →* G) (ζ η θ : Φ)
-    (C : R) (h_height : height θ = height ζ + height η) : Prop :=
+    (C : ℤ) (h_height : height θ = height ζ + height η) : Prop :=
   ∀ ⦃i j : ℕ⦄ (hi : i ≤ height ζ) (hj : j ≤ height η) (t u : R),
-    ⁅ f {ζ, i, t}, f {η, j, u} ⁆ = f {θ, i + j, C * t * u}
+    ⁅ f {ζ, i, t}, f {η, j, u} ⁆ = f {θ, i + j, ↑C * t * u}
 
-def rels_of_single_commutator_of_root_pair (R : Type TR) [Ring R] (p : SingleSpanRootPair Φ R) : Set (FreeGroup (GradedChevalleyGenerator Φ R)) :=
+def rels_of_single_commutator_of_root_pair (R : Type TR) [Ring R] (p : SingleSpanRootPair Φ) : Set (FreeGroup (GradedChevalleyGenerator Φ R)) :=
   let ⟨ ζ, η, θ, C, h_height ⟩ := p;
   { ⁅ {ζ, i, t}, {η, j, u} ⁆ * {θ, i + j, C * t * u}⁻¹
     | (i : ℕ) (j : ℕ) (hi : i ≤ height ζ) (hj : j ≤ height η) (t : R) (u : R) }
@@ -137,11 +137,11 @@ def rels_of_single_commutator_of_root_pair (R : Type TR) [Ring R] (p : SingleSpa
 /-! #### Commutator for two generators from two roots which span one additional root -/
 
 def double_commutator_of_root_pair (f : FreeGroup (GradedChevalleyGenerator Φ R) →* G) (ζ η θ₁ θ₂ : Φ)
-    (C₁ C₂ : R) (h_height₁ : height θ₁ = height ζ + height η) (h_height₂ : height θ₂ = height ζ + 2 * height η) : Prop :=
+    (C₁ C₂ : ℤ) (h_height₁ : height θ₁ = height ζ + height η) (h_height₂ : height θ₂ = height ζ + 2 * height η) : Prop :=
   ∀ ⦃i j : ℕ⦄ (hi : i ≤ height ζ) (hj : j ≤ height η) (t u : R),
-    ⁅ f {ζ, i, t}, f {η, j, u} ⁆ = f {θ₁, i + j, C₁ * t * u} * f {θ₂, i + 2 * j, C₂ * t * u * u}
+    ⁅ f {ζ, i, t}, f {η, j, u} ⁆ = f {θ₁, i + j, ↑C₁ * t * u} * f {θ₂, i + 2 * j, ↑C₂ * t * u * u}
 
-def rels_of_double_commutator_of_root_pair (R : Type TR) [Ring R] (p : DoubleSpanRootPair Φ R) : Set (FreeGroup (GradedChevalleyGenerator Φ R)) :=
+def rels_of_double_commutator_of_root_pair (R : Type TR) [Ring R] (p : DoubleSpanRootPair Φ) : Set (FreeGroup (GradedChevalleyGenerator Φ R)) :=
   let ⟨ ζ, η, θ₁, θ₂, C₁, C₂, h_height₁, h_height₂ ⟩ := p;
   { ⁅ {ζ, i, t}, {η, j, u} ⁆ *
     ({θ₁, i + j, C₁ * t * u} * {θ₂, i + 2 * j, C₂ * t * u * u})⁻¹
@@ -208,12 +208,14 @@ scoped notation "inv_of_root" "(" f ", " ζ ")" =>
     (f {ζ, i, t})⁻¹ = f {ζ, i, -t}
 
 /- Linearity implies identity (essentially a standard fact about group homomorphisms). -/
+-- TODO: Replace proof with map_one (use h_lin to show that t => f {ζ, i, t} is an instance of R →+ G)
 theorem id_of_lin_of_root {f : FreeGroup (GradedChevalleyGenerator Φ R) →* G} {ζ : Φ}
     : lin_of_root(f, ζ) → id_of_root(f, ζ) := by
   intro h_lin i hi
   apply @mul_left_cancel _ _ _ (f {ζ, i, 0})
   rw [mul_one, h_lin, add_zero]
 
+-- TODO: Replace proof with map_inv
 /- Linearity implies inverse-ness (essentially a standard fact about group homomorphisms). -/
 theorem inv_of_lin_of_root {f : FreeGroup (GradedChevalleyGenerator Φ R) →* G} {ζ : Φ}
     : lin_of_root(f, ζ) → inv_of_root(f, ζ) := by
@@ -227,7 +229,7 @@ end ofRoot
 
 structure GradedPartialChevalleyGroup (Φ : Type TΦ) [PositiveRootSystem Φ] (R : Type TR) [Ring R] where
   mk ::
-  sys : PartialChevalleySystem Φ R
+  sys : PartialChevalleySystem Φ
   lifted_rels_sets : Set (Set (FreeGroup (GradedChevalleyGenerator Φ R)))
   def_rels_sets : Set (Set (FreeGroup (GradedChevalleyGenerator Φ R)))
 
@@ -397,7 +399,7 @@ theorem helper {x y z : G} : x * y * z⁻¹ = 1 → x * y = z := by
   rw [mul_inv_cancel]
   exact h
 
-theorem single_commutator_helper (w : GradedPartialChevalleyGroup Φ R) (ζ η θ : Φ) (C : R)
+theorem single_commutator_helper (w : GradedPartialChevalleyGroup Φ R) (ζ η θ : Φ) (C : ℤ)
   (h_height : height θ = height ζ + height η)
   (h : ⟨ ζ, η, θ, C, h_height ⟩ ∈ w.sys.single_comm_root_pairs)
     : single_commutator_of_root_pair w.pres_mk ζ η θ C h_height := by
@@ -417,7 +419,7 @@ theorem single_commutator_helper (w : GradedPartialChevalleyGroup Φ R) (ζ η �
     · rw [rels_of_single_commutator_of_root_pair]
       exists i, j, hi, hj, t, u
 
-theorem double_commutator_helper (w : GradedPartialChevalleyGroup Φ R) (ζ η θ₁ θ₂ : Φ) (C₁ C₂ : R)
+theorem double_commutator_helper (w : GradedPartialChevalleyGroup Φ R) (ζ η θ₁ θ₂ : Φ) (C₁ C₂ : ℤ)
   (h_height₁ : height θ₁ = height ζ + height η)
   (h_height₂ : height θ₂ = height ζ + 2 * height η)
   (h : ⟨ ζ, η, θ₁, θ₂, C₁, C₂, h_height₁, h_height₂ ⟩ ∈ w.sys.double_comm_root_pairs)

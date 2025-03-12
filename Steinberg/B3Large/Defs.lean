@@ -66,18 +66,18 @@ abbrev trivial_commutator_pairs : Set (B3LargePosRoot × B3LargePosRoot) :=
   {(α, αβ), (β, αβ), (α, ψ), (β, βψ), (β, β2ψ), (ψ, β2ψ), (βψ, β2ψ)}
 
 -- relations 8.59, 8.66
-abbrev single_commutator_pairs (F : Type TR) [Field F] : Set (SingleSpanRootPair B3LargePosRoot F)
+abbrev single_commutator_pairs : Set (SingleSpanRootPair B3LargePosRoot)
   := {⟨α, β, αβ, 1, (by ht)⟩, ⟨ψ, βψ, β2ψ, 2, (by ht)⟩}
 
 -- relation 8.63
-abbrev double_commutator_pairs (F : Type TR) [Field F] : Set (DoubleSpanRootPair B3LargePosRoot F) :=
+abbrev double_commutator_pairs : Set (DoubleSpanRootPair B3LargePosRoot) :=
   {⟨β, ψ, βψ, β2ψ, 1, 1, rfl, rfl⟩}
 
-abbrev weakB3LargeSystem (F : Type TR) [Field F] := PartialChevalleySystem.mk
+abbrev weakB3LargeSystem := PartialChevalleySystem.mk
   present_roots
   trivial_commutator_pairs
-  (single_commutator_pairs F)
-  (double_commutator_pairs F)
+  single_commutator_pairs
+  double_commutator_pairs
 
 -- Relation 8.81
 def rels_of_nonhomog_lift_of_comm_of_αβ_βψ :=
@@ -409,7 +409,7 @@ def def_sets (F : Type TF) [Field F] : Set (Set (FreeGroup (GradedChevalleyGener
 }
 
 def weakB3Large (F : Type TF) [Field F] := GradedPartialChevalleyGroup.mk
-  (weakB3LargeSystem F)
+  weakB3LargeSystem
   (lifted_sets F)
   (def_sets F)
 
@@ -424,21 +424,21 @@ abbrev full_trivial_commutator_pairs : Set (B3LargePosRoot × B3LargePosRoot) :=
                               (α, αβ2ψ), (ψ, αβ2ψ), (αβ, αβ2ψ), (βψ, αβ2ψ), (β2ψ, αβ2ψ), (αβψ, αβ2ψ),
                               (α, α2β2ψ), (β, α2β2ψ), (ψ, α2β2ψ), (αβ, α2β2ψ), (βψ, α2β2ψ), (β2ψ, α2β2ψ), (αβψ, α2β2ψ), (αβ2ψ, α2β2ψ)}
 
-abbrev full_single_commutator_pairs (F : Type TR) [Field F] : Set (SingleSpanRootPair B3LargePosRoot F) :=
-  single_commutator_pairs F ∪ {⟨ α, β2ψ, αβ2ψ, 1, (by ht)⟩, ⟨αβψ, ψ, αβ2ψ, -2, (by ht)⟩,
+abbrev full_single_commutator_pairs : Set (SingleSpanRootPair B3LargePosRoot) :=
+  single_commutator_pairs ∪ {⟨ α, β2ψ, αβ2ψ, 1, (by ht)⟩, ⟨αβψ, ψ, αβ2ψ, -2, (by ht)⟩,
                             ⟨αβ, β2ψ, α2β2ψ, -1, (by ht)⟩, ⟨αβψ, βψ, α2β2ψ, -2, (by ht)⟩, ⟨αβ2ψ, β, α2β2ψ, -1, (by ht)⟩}
 
-abbrev full_double_commutator_pairs (F : Type TR) [Field F] : Set (DoubleSpanRootPair B3LargePosRoot F) :=
-  double_commutator_pairs F ∪ {⟨ α, βψ, αβψ, α2β2ψ, 1, 1, (by ht), (by ht)⟩, ⟨ αβ, ψ, αβψ, αβ2ψ, 1, 1, (by ht), (by ht)⟩}
+abbrev full_double_commutator_pairs : Set (DoubleSpanRootPair B3LargePosRoot) :=
+  double_commutator_pairs ∪ {⟨ α, βψ, αβψ, α2β2ψ, 1, 1, (by ht), (by ht)⟩, ⟨ αβ, ψ, αβψ, αβ2ψ, 1, 1, (by ht), (by ht)⟩}
 
-def fullB3LargeSystem (F : Type TR) [Field F] := PartialChevalleySystem.mk
+def fullB3LargeSystem := PartialChevalleySystem.mk
   full_present_roots
   full_trivial_commutator_pairs
-  (full_single_commutator_pairs F)
-  (full_double_commutator_pairs F)
+  full_single_commutator_pairs
+  full_double_commutator_pairs
 
-def fullB3Large (F : Type TR) [Field F] := GradedPartialChevalleyGroup.mk
-  (fullB3LargeSystem F)
+def fullB3Large (F : Type TR) [Field F] := @GradedPartialChevalleyGroup.mk B3LargePosRoot _ F _
+  fullB3LargeSystem
   (∅)
   (∅)
 
