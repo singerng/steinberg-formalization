@@ -74,6 +74,15 @@ theorem raw_nonhomog_lift_of_comm_of_α_α2β2ψ : ∀ (t₁ t₀ u₁ u₀ v₁
 /-! ### Homogeneous lift -/
 
 -- 8.83
+
+theorem raw_hom_lift_of_interchange_of_αβψ' : forall_ijk_tuv,
+    {ψ, k, -v / 2} * {αβ, i + j, t * u}'(add_le_add hi hj) *
+    {ψ, k, v} * {αβ, i + j, -t * u}'(add_le_add hi hj) *
+    {ψ, k, -v / 2} * ({βψ, j + k, -u * v / 2}'(add_le_add hj hk))⁻¹ *
+    {α, i, -t}⁻¹ * ({βψ, j + k, u * v}'(add_le_add hj hk))⁻¹ *
+    {α, i, t}⁻¹ * ({βψ, j + k,-u * v / 2}'(add_le_add hj hk))⁻¹ = 1 := by
+  hom_tac rels_of_hom_lift_of_interchange_of_αβψ [i, j, k, hi, hj, hk, t, u, v]
+
 theorem raw_hom_lift_of_interchange_of_αβψ : forall_ijk_tuv,
     {ψ, k, -v / 2} * {αβ, i + j, t * u} * {ψ, k, v} * {αβ, i + j, -t * u} * {ψ, k, -v / 2} =
     {βψ, j + k, -u * v / 2} * {α, i, t} * {βψ, j + k, u * v} * {α, i, -t} * {βψ, j + k, -u * v / 2} := by
@@ -206,8 +215,25 @@ theorem refl_of_lifted :
     ∀ r ∈ S, (weakB3Large F).pres_mk (FreeGroup.map refl_deg_of_gen r) = 1 := by
   simp only [lifted_sets]
   intro s hs r hr
-
-  sorry
+  simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hs
+  rcases hs with h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h
+  all_goals subst s
+  · sorry
+  · sorry
+  · simp only [rels_of_hom_lift_of_interchange_of_αβψ] at hr
+    rcases hr with ⟨ i, j, k, hi, hj, hk, t, u, v, rfl ⟩
+    simp only [free_mk, map_commutatorElement, map_mul, FreeGroup.map.of, refl_deg_of_gen,
+    PositiveRootSystem.height, height, tsub_self, Nat.add_one_sub_one, tsub_zero, neg_mul, map_inv, FreeGroup.map.of]
+    repeat rw [← free_mk]
+    have hi' : (1-i) ≤ α.height := by simp
+    have hj' : (1-j) ≤ β.height := by simp
+    have hk' : (1-k) ≤ ψ.height := by simp
+    have := raw_hom_lift_of_interchange_of_αβψ' hi' hj' hk' t u v
+    rw [← this]
+    congr
+    all_goals ht
+    all_goals group
+  · sorry
 
 theorem refl_of_def : ∀ S ∈ def_sets F, ∀ r ∈ S, FreeGroup.map refl_deg_of_gen r ∈ S := by
   intro s hs r hr
