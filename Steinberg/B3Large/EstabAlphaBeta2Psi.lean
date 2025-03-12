@@ -590,3 +590,45 @@ theorem id_of_αβ2ψ : id_of_root((weakB3Large F).pres_mk, αβ2ψ) := by
   have := doub_of_αβ2ψ Fchar hi 0
   rw [mul_zero] at this
   exact mul_right_eq_self.1 this
+
+theorem refl_of_def : ∀ S ∈ def_sets F, ∀ r ∈ S, (weakB3Large F).pres_mk (FreeGroup.map refl_deg_of_gen r) = 1 := by
+  intro s hs r hr
+  simp_all only [def_sets, Set.mem_insert_iff, Set.mem_singleton_iff]
+  rcases hs with hs | hs | hs
+  · apply eq_one_of_mem_rels
+    suffices (FreeGroup.map refl_deg_of_gen r) ∈ s by
+      simp only [all_rels, Set.sUnion_insert, Set.sUnion_singleton, Set.mem_union, Set.mem_sUnion]
+      tauto
+    simp only [rels_of_def_of_αβψ] at hs
+    rcases hs
+    rcases hr with ⟨i, hi, t, rfl⟩
+    chev_simp [split_3_into_1_2]
+    exists (αβψ.height - i), (by omega), t
+    split
+    all_goals (simp only; congr)
+  · rcases hs
+    rcases hr with ⟨i, hi, t, rfl⟩
+    chev_simp [split_4_into_1_3]
+    split
+    all_goals (
+      simp only [map_inv, map_commutatorElement, free_mk, FreeGroup.map.of, PositiveRootSystem.height, B3LargePosRoot.height, refl_deg_of_gen]
+      repeat rw [← free_mk]
+      norm_num
+      apply mul_eq_one_iff_eq_inv.2
+      rw [inv_inv, eq_of_R_eq αβ2ψ (t * 1) (by rw [mul_one])]
+      exact (expr_αβ2ψ_as_comm_of_α_β2ψ Fchar (by ht) (by ht) t 1).symm
+    )
+  · apply eq_one_of_mem_rels
+    suffices (FreeGroup.map refl_deg_of_gen r) ∈ s by
+      simp only [all_rels, weakB3Large, def_sets, Set.sUnion_insert, Set.sUnion_singleton, Set.mem_union, Set.mem_sUnion]
+      rw [← hs]
+      tauto
+    rcases hs
+    rcases hr with ⟨i, hi, t, rfl⟩
+    chev_simp [split_5_into_2_3]
+    exists (α2β2ψ.height - i), (by omega), t
+    split
+    all_goals (simp only; congr)
+
+theorem b3large_valid : ReflDeg.refl_valid (weakB3Large F) :=
+  ⟨refl_of_lifted, refl_of_def Fchar⟩

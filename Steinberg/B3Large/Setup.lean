@@ -234,35 +234,7 @@ theorem refl_of_lifted :
     all_goals ht
     all_goals group
   · sorry
-
-theorem refl_of_def : ∀ S ∈ def_sets F, ∀ r ∈ S, FreeGroup.map refl_deg_of_gen r ∈ S := by
-  intro s hs r hr
-  simp_all only [def_sets, rels_of_def_of_αβψ, rels_of_def_of_αβ2ψ, rels_of_def_of_α2β2ψ]
-  rcases hs with hs | hs | hs
-  · rcases hs
-    rcases hr with ⟨i, hi, t, rfl⟩
-    chev_simp [split_3_into_1_2]
-    exists (αβψ.height - i), (by omega), t
-    split
-    all_goals (simp only; congr)
-  · rcases hs
-    rcases hr with ⟨i, hi, t, rfl⟩
-    chev_simp [split_4_into_1_3]
-    exists (αβ2ψ.height - i), (by omega), t
-    split
-    all_goals (simp only; congr)
-    stop -- Ummmm what...
-    sorry
-  · rcases hs
-    rcases hr with ⟨i, hi, t, rfl⟩
-    chev_simp [split_5_into_2_3]
-    exists (α2β2ψ.height - i), (by omega), t
-    split
-    all_goals (simp only; congr)
-
-
-theorem b3large_valid : ReflDeg.refl_valid (weakB3Large F) :=
-  ⟨refl_of_lifted, refl_of_def⟩
+  stop sorry
 
 include Fchar
 

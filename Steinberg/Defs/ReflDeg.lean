@@ -97,7 +97,7 @@ private def pres_of_refl_deg_of_gen (w : GradedPartialChevalleyGroup Φ R) (g : 
 
 def refl_valid (w : GradedPartialChevalleyGroup Φ R) :=
   (∀ S ∈ w.lifted_rels_sets, ∀ r ∈ S, w.pres_mk (FreeGroup.map refl_deg_of_gen r) = 1) ∧
-  (∀ S ∈ w.def_rels_sets, ∀ r ∈ S, FreeGroup.map refl_deg_of_gen r ∈ S)
+  (∀ S ∈ w.def_rels_sets, ∀ r ∈ S, w.pres_mk (FreeGroup.map refl_deg_of_gen r) = 1)
 
 theorem reflect_degree_of_rels {w : GradedPartialChevalleyGroup Φ R} (h' : refl_valid w) :
     FreeGroup.lift (FreeGroup.of ∘ refl_deg_of_gen) '' w.all_rels ⊆ Subgroup.normalClosure w.all_rels := by
@@ -157,12 +157,9 @@ theorem reflect_degree_of_rels {w : GradedPartialChevalleyGroup Φ R} (h' : refl
   · apply eq_one_iff_mem_closure.mp
     rcases h_non with ⟨ T, ⟨ h_T, h_t_T ⟩ ⟩
     exact h'.1 T h_T t h_t_T
-  · apply all_rels_to_normal_closure_all_rels
+  · apply eq_one_iff_mem_closure.mp
     rcases h_def with ⟨ T, ⟨ h_T, h_t_T ⟩ ⟩
-    suffices (FreeGroup.map refl_deg_of_gen) t ∈ ⋃₀ w.def_rels_sets by
-      simp only [all_rels, sUnion_insert, sUnion_singleton, mem_union, mem_sUnion, true_or]
-      simp_all only [mem_sUnion, or_true]
-    use T, h_T, h'.2 T h_T t h_t_T
+    exact h'.2 T h_T t h_t_T
 
 def refl_symm {w : GradedPartialChevalleyGroup Φ R} (h : refl_valid w) : group w →* group w :=
   toPresentedGroup (reflect_degree_of_rels h)
