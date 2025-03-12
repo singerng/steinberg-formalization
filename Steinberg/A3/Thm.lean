@@ -68,11 +68,17 @@ theorem refl_of_lifted :
   exact nonhomog_lift_of_comm_of_αβ_βγ t₀ t₁ u₀ u₁ v₀ v₁
 
 -- def relations are preserved under reflection
-theorem refl_of_def : ∀ S ∈ def_sets R, ∀ r ∈ S, FreeGroup.map refl_deg_of_gen r ∈ S := by
-  simp only [def_sets, Set.mem_singleton_iff, forall_eq, rels_of_def_of_αβγ, Set.mem_setOf_eq]
-  intro r h
-  rcases h with ⟨ i, hi, t, rfl ⟩
-  simp only [map_mul, map_commutatorElement, split_3_into_1_2]
+theorem refl_of_def : ∀ S ∈ def_sets R, ∀ r ∈ S, (weakA3 R).pres_mk (FreeGroup.map refl_deg_of_gen r) = 1 := by
+  intro s hs r hr
+  simp_all only [def_sets, Set.mem_insert_iff, Set.mem_singleton_iff]
+  apply eq_one_of_mem_rels
+  suffices (FreeGroup.map refl_deg_of_gen r) ∈ s by
+    simp only [all_rels, Set.sUnion_insert, Set.sUnion_singleton, Set.mem_union, Set.mem_sUnion]
+    tauto
+  simp only [rels_of_def_of_αβγ] at hs
+  rcases hs
+  rcases hr with ⟨i, hi, t, rfl⟩
+  chev_simp [split_3_into_1_2]
   exists (αβγ.height - i), (by omega), t
   split
   all_goals (simp only; congr)
