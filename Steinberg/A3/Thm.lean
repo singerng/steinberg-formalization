@@ -136,7 +136,7 @@ private lemma comm_of_αβ_βγ_02 : ∀ (t u : R), ⁅ {αβ, 0, t}, {βγ, 2, 
     trivial
   rw [this, comm_of_αβ_βγ_20, map_one]
 
-theorem comm_of_αβ_βγ : trivial_commutator_of_root_pair (weakA3 R).pres_mk αβ βγ := by
+theorem comm_of_αβ_βγ : trivial_commutator_of_root_pair (weakA3 R).pres_mk (αβ, βγ) := by
   intro i j hi hj t u
   by_cases hij : (i, j) ∈ ij_jk_image
   · apply image_of_homog_lift_of_comm_of_αβ_βγ hi hj hij
@@ -261,7 +261,7 @@ private lemma comm_of_αβ_γ_21 (t u : R) : ⁅ {αβ, 2, t}, {γ, 1, u} ⁆ = 
         comm_of_α_βγ_12]
 
 /- Commutator relation for α and βγ. -/
-theorem comm_of_α_βγ : single_commutator_of_root_pair (weakA3 R).pres_mk α βγ αβγ 1 (by ht) := by
+theorem comm_of_α_βγ : single_commutator_of_root_pair (weakA3 R).pres_mk ⟨α, βγ, αβγ, 1, (by ht)⟩ := by
   intro i j hi hj t u
   match i, j with
   | 0, 0 => chev_simp [comm_of_α_βγ_00 t u]
@@ -272,7 +272,7 @@ theorem comm_of_α_βγ : single_commutator_of_root_pair (weakA3 R).pres_mk α �
   | 1, 2 => chev_simp [comm_of_α_βγ_12 t u]
 
 /- Commutator relation for αβ and γ. -/
-theorem comm_of_αβ_γ : single_commutator_of_root_pair (weakA3 R).pres_mk αβ γ αβγ 1 (by ht) := by
+theorem comm_of_αβ_γ : single_commutator_of_root_pair (weakA3 R).pres_mk ⟨αβ, γ, αβγ, 1, (by ht)⟩ := by
   intro i j hi hj t u
   match i, j with
   | 0, 0 => chev_simp [comm_of_αβ_γ_00 t u]
@@ -314,7 +314,7 @@ theorem expand_αβγ_as_αβ_γ_αβ_γ_mul_one : forall_ij_t αβ γ,
 /-! ### Commutators of αβγ with other roots -/
 
 /- α and αβγ commute. -/
-theorem comm_of_α_αβγ : trivial_commutator_of_root_pair (weakA3 R).pres_mk α αβγ := by
+theorem comm_of_α_αβγ : trivial_commutator_of_root_pair (weakA3 R).pres_mk (α, αβγ) := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.mpr
   rcases decompose αβ.height γ.height j hj with ⟨ j₁, j₂, ⟨ rfl, hj₁, hj₂ ⟩ ⟩
@@ -324,7 +324,7 @@ theorem comm_of_α_αβγ : trivial_commutator_of_root_pair (weakA3 R).pres_mk �
 
 /- β and αβγ commute. -/
 -- the only commutator proof where we have to do something 'interesting'
-theorem comm_of_β_αβγ : trivial_commutator_of_root_pair (weakA3 R).pres_mk β αβγ := by
+theorem comm_of_β_αβγ : trivial_commutator_of_root_pair (weakA3 R).pres_mk (β, αβγ) := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.mpr
   rcases decompose αβ.height γ.height j hj with ⟨ j₁, j₂, ⟨ rfl, hj₁, hj₂ ⟩ ⟩
@@ -334,7 +334,7 @@ theorem comm_of_β_αβγ : trivial_commutator_of_root_pair (weakA3 R).pres_mk �
       ← expr_αβ_βγ_as_βγ_αβ hj₁]
 
 /- γ and αβγ commute. -/
-theorem comm_of_γ_αβγ : trivial_commutator_of_root_pair (weakA3 R).pres_mk γ αβγ := by
+theorem comm_of_γ_αβγ : trivial_commutator_of_root_pair (weakA3 R).pres_mk (γ, αβγ) := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.mpr
   rcases decompose α.height βγ.height j hj with ⟨ j₁, j₂, ⟨ rfl, hj₁, hj₂ ⟩ ⟩
@@ -343,7 +343,7 @@ theorem comm_of_γ_αβγ : trivial_commutator_of_root_pair (weakA3 R).pres_mk �
     ← expr_α_γ_as_γ_α hj₁ hi, expr_γ_βγ_as_βγ_γ hi hj₂]
 
 /- αβ and αβγ commute. -/
-theorem comm_of_αβ_αβγ : trivial_commutator_of_root_pair (weakA3 R).pres_mk αβ αβγ := by
+theorem comm_of_αβ_αβγ : trivial_commutator_of_root_pair (weakA3 R).pres_mk (αβ, αβγ) := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.mpr
   rcases decompose α.height βγ.height j hj with ⟨ j₁, j₂, ⟨ rfl, hj₁, hj₂ ⟩ ⟩
@@ -352,7 +352,7 @@ theorem comm_of_αβ_αβγ : trivial_commutator_of_root_pair (weakA3 R).pres_mk
     ← expr_α_αβ_as_αβ_α hj₁ hi, expr_αβ_βγ_as_βγ_αβ hi hj₂]
 
 /- βγ and αβγ commute. -/
-theorem comm_of_βγ_αβγ : trivial_commutator_of_root_pair (weakA3 R).pres_mk βγ αβγ := by
+theorem comm_of_βγ_αβγ : trivial_commutator_of_root_pair (weakA3 R).pres_mk (βγ, αβγ) := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.mpr
   rcases decompose αβ.height γ.height j hj with ⟨ j₁, j₂, ⟨ rfl, hj₁, hj₂ ⟩ ⟩
@@ -391,64 +391,64 @@ theorem lin_of_αβγ : lin_of_root((weakA3 R).pres_mk, αβγ) := by
     ← neg_add, add_comm u t,
     ← expr_αβγ_as_α_βγ_α_βγ hi₁ hi₂]
 
--- theorem full_rels_satisfied_in_weak_group :
---   ∀ r ∈ (fullA3 R).all_rels, (weakA3 R).pres_mk r = 1 := by
---   simp only [fullA3, weakA3]
---   apply GradedPartialChevalleyGroup.graded_injection
---   all_goals (
---     intro p h
---     simp only at h
---   )
---   · rcases h with h_old|h_new
---     · tauto
---     · right
---       simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at h_new
---       intro r h_r
---       simp only [rels_of_trivial_commutator_of_root_pair] at h_r
---       rcases h_r with ⟨ i, j, hi, hj, t, u, goal ⟩
---       rcases h_new with h_αβ_βγ|h_α_αβγ|h_β_αβγ|h_γ_αβγ|h_αβ_αβγ|h_βγ_αβγ
---       all_goals subst p r
---       · exact comm_of_αβ_βγ hi hj t u
---       · exact comm_of_α_αβγ hi hj t u
---       · exact comm_of_β_αβγ hi hj t u
---       · exact comm_of_γ_αβγ hi hj t u
---       · exact comm_of_αβ_αβγ hi hj t u
---       · exact comm_of_βγ_αβγ hi hj t u
---   · rcases h with h_old|h_new
---     · tauto
---     · right
---       simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at h_new
---       intro r h_r
---       simp only [rels_of_single_commutator_of_root_pair] at h_r
---       rcases h_r with ⟨ i, j, hi, hj, t, u, goal ⟩
---       rcases h_new with h_α_βγ|h_αβ_γ
---       all_goals (
---         subst p r
---         simp only [map_mul, map_inv, mul_inv_eq_one]
---       )
---       · exact comm_of_α_βγ hi hj t u
---       · exact comm_of_αβ_γ hi hj t u
---   · tauto
---   · rcases h with h_old|h_new
---     · tauto
---     · right
---       simp_all only [Set.mem_singleton_iff]
---       intro r h_r
---       simp only [rels_of_mixed_commutes_of_root] at h_r
---       rcases h_r with ⟨ i, j, hi, hj, t, u, goal ⟩
---       subst r
---       exact comm_of_αβγ_αβγ hi hj t u
---   · rcases h with h_old|h_new
---     · tauto
---     · right
---       simp_all only [Set.mem_singleton_iff]
---       intro r h_r
---       simp only [rels_of_lin_of_root] at h_r
---       rcases h_r with ⟨ i, hi, t, u, goal ⟩
---       subst r
---       simp only [map_mul, map_inv, mul_inv_eq_one]
---       exact lin_of_αβγ hi t u
---   · tauto
---   · tauto
+theorem full_rels_satisfied_in_weak_group :
+  ∀ r ∈ (fullA3Graded R).all_rels, (weakA3 R).pres_mk r = 1 := by
+  simp only [fullA3, weakA3]
+  apply GradedPartialChevalleyGroup.graded_injection
+  all_goals (
+    intro p h
+    simp only at h
+  )
+  · rcases h with h_old|h_new
+    · tauto
+    · right
+      simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at h_new
+      intro r h_r
+      simp only [rels_of_trivial_commutator_of_root_pair] at h_r
+      rcases h_r with ⟨ i, j, hi, hj, t, u, goal ⟩
+      rcases h_new with h_αβ_βγ|h_α_αβγ|h_β_αβγ|h_γ_αβγ|h_αβ_αβγ|h_βγ_αβγ
+      all_goals subst p r
+      · exact comm_of_αβ_βγ hi hj t u
+      · exact comm_of_α_αβγ hi hj t u
+      · exact comm_of_β_αβγ hi hj t u
+      · exact comm_of_γ_αβγ hi hj t u
+      · exact comm_of_αβ_αβγ hi hj t u
+      · exact comm_of_βγ_αβγ hi hj t u
+  · rcases h with h_old|h_new
+    · tauto
+    · right
+      simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at h_new
+      intro r h_r
+      simp only [rels_of_single_commutator_of_root_pair] at h_r
+      rcases h_r with ⟨ i, j, hi, hj, t, u, goal ⟩
+      rcases h_new with h_α_βγ|h_αβ_γ
+      all_goals (
+        subst p r
+        simp only [map_mul, map_inv, mul_inv_eq_one]
+      )
+      · exact comm_of_α_βγ hi hj t u
+      · exact comm_of_αβ_γ hi hj t u
+  · tauto
+  · rcases h with h_old|h_new
+    · tauto
+    · right
+      simp_all only [Set.mem_singleton_iff]
+      intro r h_r
+      simp only [rels_of_mixed_commutes_of_root] at h_r
+      rcases h_r with ⟨ i, j, hi, hj, t, u, goal ⟩
+      subst r
+      exact comm_of_αβγ_αβγ hi hj t u
+  · rcases h with h_old|h_new
+    · tauto
+    · right
+      simp_all only [Set.mem_singleton_iff]
+      intro r h_r
+      simp only [rels_of_lin_of_root] at h_r
+      rcases h_r with ⟨ i, hi, t, u, goal ⟩
+      subst r
+      simp only [map_mul, map_inv, mul_inv_eq_one]
+      exact lin_of_αβγ hi t u
+  · tauto
+  · sorry -- this should be a helper fn
 
 end Steinberg.A3

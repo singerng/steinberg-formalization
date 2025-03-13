@@ -82,7 +82,8 @@ open ChevalleyGenerator
 /-! #### Commutator for generators from two roots which span no additional roots -/
 
 /- Theorem stating that commutator of generators for two roots vanishes. -/
-def trivial_commutator_of_root_pair (f : FreeGroup (ChevalleyGenerator Φ R) →* G) (ζ η : Φ) : Prop :=
+def trivial_commutator_of_root_pair (f : FreeGroup (ChevalleyGenerator Φ R) →* G) (p : Φ × Φ) : Prop :=
+  let (ζ, η) := p;
   ∀ (t u : R),
     ⁅ f {{ζ, t}}, f {{η, u}} ⁆ = 1
 
@@ -90,16 +91,16 @@ def trivial_commutator_of_root_pair (f : FreeGroup (ChevalleyGenerator Φ R) →
 The set of elements which must vanish according to the theorem that the commutator of generators
 for two roots vanishes. (Used to construct a `PresentedGroup`.)
 -/
-def rels_of_trivial_commutator_of_root_pair (R : Type TR) [Ring R] (ζη : Φ × Φ)
+def rels_of_trivial_commutator_of_root_pair (R : Type TR) [Ring R] (p : Φ × Φ)
     : Set (FreeGroup (ChevalleyGenerator Φ R)) :=
-  let (ζ, η) := ζη;
+  let (ζ, η) := p;
   { ⁅ {{ζ, t}}, {{η, u}} ⁆
     | (t : R) (u : R) }
 
 /-! #### Commutator for two generators from two roots which span one additional root -/
 
-def single_commutator_of_root_pair (f : FreeGroup (ChevalleyGenerator Φ R) →* G) (ζ η θ : Φ)
-    (C : ℤ)  : Prop :=
+def single_commutator_of_root_pair (f : FreeGroup (ChevalleyGenerator Φ R) →* G) (p : SingleSpanRootPair Φ) : Prop :=
+  let ⟨ ζ, η, θ, C, h_height ⟩ := p;
   ∀ (t u : R),
     ⁅ f {{ζ, t}}, f {{η, u}} ⁆ = f {{θ, ↑C * t * u}}
 
@@ -110,8 +111,8 @@ def rels_of_single_commutator_of_root_pair (R : Type TR) [Ring R] (p : SingleSpa
 
 /-! #### Commutator for two generators from two roots which span one additional root -/
 
-def double_commutator_of_root_pair (f : FreeGroup (ChevalleyGenerator Φ R) →* G) (ζ η θ₁ θ₂ : Φ)
-    (C₁ C₂ : ℤ) : Prop :=
+def double_commutator_of_root_pair (f : FreeGroup (ChevalleyGenerator Φ R) →* G) (p : DoubleSpanRootPair Φ) : Prop :=
+  let ⟨ ζ, η, θ₁, θ₂, C₁, C₂, h_height₁, h_height₂ ⟩ := p;
   ∀ (t u : R),
     ⁅ f {{ζ, t}}, f {{η, u}} ⁆ = f {{θ₁, ↑C₁ * t * u}} * f {{θ₂, ↑C₂ * t * u * u}}
 
@@ -307,10 +308,9 @@ def delab_pres_mk' : Delab := do
 
 /-! ### Helpers -/
 
-
-theorem trivial_commutator_helper {w : PartialChevalleyGroup Φ R} {ζ η : Φ}
-    (h : (ζ, η) ∈ w.sys.trivial_comm_root_pairs)
-      : trivial_commutator_of_root_pair w.pres_mk ζ η := by
+theorem trivial_commutator_helper {w : PartialChevalleyGroup Φ R} {p : Φ × Φ}
+    (h : p ∈ w.sys.trivial_comm_root_pairs)
+      : trivial_commutator_of_root_pair w.pres_mk p := by
   intro t u
   apply eq_one_of_mem_rels
   apply Set.mem_sUnion.mpr
@@ -319,14 +319,13 @@ theorem trivial_commutator_helper {w : PartialChevalleyGroup Φ R} {ζ η : Φ}
   · tauto
   · simp only [trivial_comm_rels]
     simp only [Set.mem_iUnion]
-    use (ζ, η), h
+    use p, h
     rw [rels_of_trivial_commutator_of_root_pair]
     exists t, u
 
-theorem single_commutator_helper (w : PartialChevalleyGroup Φ R) (ζ η θ : Φ) (C : ℤ)
-  (h_height : height θ = height ζ + height η)
-  (h : ⟨ ζ, η, θ, C, h_height ⟩ ∈ w.sys.single_comm_root_pairs)
-    : single_commutator_of_root_pair w.pres_mk ζ η θ C := by
+theorem single_commutator_helper (w : PartialChevalleyGroup Φ R) (p : SingleSpanRootPair Φ)
+  (h : p ∈ w.sys.single_comm_root_pairs)
+    : single_commutator_of_root_pair w.pres_mk p := by
   intro t u
   apply eq_of_mul_inv_eq_one
   apply eq_one_of_mem_rels
@@ -336,15 +335,13 @@ theorem single_commutator_helper (w : PartialChevalleyGroup Φ R) (ζ η θ : Φ
   · tauto
   · simp only [single_comm_rels]
     simp only [Set.mem_iUnion]
-    use ⟨ ζ, η, θ, C, h_height ⟩, h
+    use p, h
     rw [rels_of_single_commutator_of_root_pair]
     exists t, u
 
-theorem double_commutator_helper (w : PartialChevalleyGroup Φ R) (ζ η θ₁ θ₂ : Φ) (C₁ C₂ : ℤ)
-  (h_height₁ : height θ₁ = height ζ + height η)
-  (h_height₂ : height θ₂ = height ζ + 2 * height η)
-  (h : ⟨ ζ, η, θ₁, θ₂, C₁, C₂, h_height₁, h_height₂ ⟩ ∈ w.sys.double_comm_root_pairs)
-    : double_commutator_of_root_pair w.pres_mk ζ η θ₁ θ₂ C₁ C₂ := by
+theorem double_commutator_helper (w : PartialChevalleyGroup Φ R) (p : DoubleSpanRootPair Φ)
+  (h : p ∈ w.sys.double_comm_root_pairs)
+    : double_commutator_of_root_pair w.pres_mk p := by
   intro t u
   apply eq_of_mul_inv_eq_one
   apply eq_one_of_mem_rels
@@ -354,7 +351,7 @@ theorem double_commutator_helper (w : PartialChevalleyGroup Φ R) (ζ η θ₁ �
   · tauto
   · simp only [double_comm_rels]
     simp only [Set.mem_iUnion]
-    use ⟨ ζ, η, θ₁, θ₂, C₁, C₂, h_height₁, h_height₂ ⟩, h
+    use p, h
     rw [rels_of_double_commutator_of_root_pair]
     exists t, u
 
