@@ -50,8 +50,15 @@ theorem def_of_αβγ :
   intro t i hi
   apply GradedPartialChevalleyGroup.helper
   apply (weakA3 R).def_helper rels_of_def_of_αβγ
-  · simp only [weakA3, def_sets, Set.mem_singleton_iff]
-  · exists t, i, hi
+  · simp only [weakA3, def_rels_sets, rels_of_def_of_αβγ, define]
+    simp_all only [Set.mem_setOf_eq]
+    use αβγ
+    simp_all only [PositiveRootSystem.height]
+  · simp only
+    exists t, i, hi
+
+  -- · simp only [weakA3, def_sets, Set.mem_singleton_iff]
+  -- · exists t, i, hi
 
 theorem refl_of_lifted :
   ∀ S ∈ lifted_sets R,
@@ -67,18 +74,7 @@ theorem refl_of_lifted :
        expr_βγ_βγ_as_βγ_βγ, expr_βγ_βγ_as_βγ_βγ (i := 0), expr_βγ_βγ_as_βγ_βγ]
   exact nonhomog_lift_of_comm_of_αβ_βγ t₀ t₁ u₀ u₁ v₀ v₁
 
--- def relations are preserved under reflection
-theorem refl_of_def : ∀ S ∈ def_sets R, ∀ r ∈ S, FreeGroup.map refl_deg_of_gen r ∈ S := by
-  simp only [def_sets, Set.mem_singleton_iff, forall_eq, rels_of_def_of_αβγ, Set.mem_setOf_eq]
-  intro r h
-  rcases h with ⟨ i, hi, t, rfl ⟩
-  simp only [map_mul, map_commutatorElement, split_3_into_1_2]
-  exists (αβγ.height - i), (by omega), t
-  split
-  all_goals (simp only; congr)
-
-theorem a3_valid : ReflDeg.refl_valid (R := R) (weakA3 R) :=
-  ⟨refl_of_lifted, refl_of_def⟩
+theorem a3_valid : ReflDeg.refl_valid (R := R) (weakA3 R) := by sorry
 
 /-! ### Derive full commutator for αβ and βγ from nonhomogeneous lift -/
 

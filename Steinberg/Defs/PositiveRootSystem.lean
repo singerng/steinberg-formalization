@@ -5,6 +5,7 @@ LICENSE goes here.
 -/
 
 import Steinberg.Macro.Group
+import Mathlib.Data.Finset.Defs
 
 namespace Steinberg
 
@@ -33,6 +34,10 @@ structure PartialChevalleySystem (Φ : Type TΦ) [PositiveRootSystem Φ] where
   trivial_comm_root_pairs : Set (Φ × Φ)
   single_comm_root_pairs : Set (SingleSpanRootPair Φ)
   double_comm_root_pairs : Set (DoubleSpanRootPair Φ)
+
+  h_trivial_valid : ∀ p ∈ trivial_comm_root_pairs, p.1 ∈ present_roots ∧ p.2 ∈ present_roots
+  h_single_valid : ∀ p ∈ single_comm_root_pairs, p.1 ∈ present_roots ∧ p.2.1 ∈ present_roots ∧ p.2.2.1 ∈ present_roots
+  h_double_valid : ∀ p ∈ double_comm_root_pairs, p.1 ∈ present_roots ∧ p.2.1 ∈ present_roots ∧ p.2.2.1 ∈ present_roots ∧ p.2.2.2.1 ∈ present_roots
 
 -- TODO: make these Finsets, and add sanity check that if the system is 'full', then the three pair sets' sizes
 -- should add to the size of present_roots choose 2

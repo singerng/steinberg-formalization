@@ -101,14 +101,20 @@ def rels_of_def_of_αβγ :=
 def lifted_sets (R : Type TR) [Ring R] : Set (Set (FreeGroup (GradedChevalleyGenerator A3PosRoot R))) :=
   { rels_of_nonhomog_lift_of_comm_of_αβ_βγ }
 
--- definition of αβγ
-def def_sets (R : Type TR) [Ring R] : Set (Set (FreeGroup (GradedChevalleyGenerator A3PosRoot R))) :=
-  { rels_of_def_of_αβγ }
+def define (R : Type TR) [Ring R] (ζ : A3PosRoot) (i : ℕ) (hi : i ≤ height ζ) (t : R) : FreeGroup (GradedChevalleyGenerator A3PosRoot R) :=
+  match ζ with
+  | αβγ => ⁅ {α,(split_3_into_1_2 i hi).1, t}'(correct_of_split_3_into_1_2 i hi).1,
+    {βγ, (split_3_into_1_2 i hi).2, 1}'(correct_of_split_3_into_1_2 i hi).2 ⁆
+  | ζ => {ζ, i, t}
+
+-- -- definition of αβγ
+-- def def_sets (R : Type TR) [Ring R] : Set (Set (FreeGroup (GradedChevalleyGenerator A3PosRoot R))) :=
+--   { rels_of_def_of_αβγ }
 
 def weakA3 (R : Type TR) [Ring R] := GradedPartialChevalleyGroup.mk
   weakA3System
   (lifted_sets R)
-  (def_sets R)
+  (define R)
 
 /-! ### Additional relations which define the full A3 group -/
 
@@ -130,7 +136,7 @@ abbrev fullA3System := PartialChevalleySystem.mk
 def fullA3 (R : Type TR) [Ring R] := @GradedPartialChevalleyGroup.mk _ _ R _
   fullA3System
   (∅)
-  (∅)
+  (define R)
 
 /-! # Notation and macros -/
 
