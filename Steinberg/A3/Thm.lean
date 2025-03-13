@@ -47,34 +47,26 @@ theorem def_of_αβγ :
     ⁅ {α, (split_3_into_1_2 i hi).1, t}'(correct_of_split_3_into_1_2 i hi).1
     , {βγ, (split_3_into_1_2 i hi).2, 1}'(correct_of_split_3_into_1_2 i hi).2 ⁆
     = {αβγ, i, t} := by
-  intro t i hi
-  apply GradedPartialChevalleyGroup.helper
-  apply (weakA3 R).def_helper rels_of_def_of_αβγ
-  · simp only [weakA3, def_rels_sets, rels_of_def_of_αβγ, define]
-    simp_all only [Set.mem_setOf_eq]
-    use αβγ
-    simp_all only [PositiveRootSystem.height]
-  · simp only
-    exists t, i, hi
+  intro i hi t
+  symm
+  apply (weakA3 R).def_helper
 
-  -- · simp only [weakA3, def_sets, Set.mem_singleton_iff]
-  -- · exists t, i, hi
-
-theorem refl_of_lifted :
-  ∀ S ∈ lifted_sets R,
-    ∀ r ∈ S, (weakA3 R).pres_mk (FreeGroup.map refl_deg_of_gen r) = 1 := by
+theorem a3_valid :
+  refl_valid (weakA3 R) := by
+  simp only [refl_valid]
+  nth_rewrite 1 [weakA3]
   simp only [lifted_sets, Set.mem_singleton_iff, forall_eq, rels_of_nonhomog_lift_of_comm_of_αβ_βγ, Set.mem_setOf_eq]
   intro r h
   rcases h with ⟨ t₁, t₀, u₁, u₀, v₁, v₀, rfl ⟩
-  simp only [map_mul, map_commutatorElement, free_mk, FreeGroup.map.of, refl_deg_of_gen, PositiveRootSystem.height, height]
+  simp only [map_mul, map_commutatorElement, free_mk, FreeGroup.lift.of]
+  repeat rw [refl_def_of_present _ _ (by tauto)]
+  simp only [refl_of_gen, PositiveRootSystem.height, height]
   simp_arith
   repeat rw [← free_mk]
   rw [add_comm (t₁ * u₀), add_comm (u₁ * v₀)]
   grw [expr_αβ_αβ_as_αβ_αβ, expr_αβ_αβ_as_αβ_αβ (i := 0), expr_αβ_αβ_as_αβ_αβ,
        expr_βγ_βγ_as_βγ_βγ, expr_βγ_βγ_as_βγ_βγ (i := 0), expr_βγ_βγ_as_βγ_βγ]
   exact nonhomog_lift_of_comm_of_αβ_βγ t₀ t₁ u₀ u₁ v₀ v₁
-
-theorem a3_valid : ReflDeg.refl_valid (R := R) (weakA3 R) := by sorry
 
 /-! ### Derive full commutator for αβ and βγ from nonhomogeneous lift -/
 
@@ -399,64 +391,64 @@ theorem lin_of_αβγ : lin_of_root((weakA3 R).pres_mk, αβγ) := by
     ← neg_add, add_comm u t,
     ← expr_αβγ_as_α_βγ_α_βγ hi₁ hi₂]
 
-theorem full_rels_satisfied_in_weak_group :
-  ∀ r ∈ (fullA3 R).all_rels, (weakA3 R).pres_mk r = 1 := by
-  simp only [fullA3, weakA3]
-  apply GradedPartialChevalleyGroup.graded_injection
-  all_goals (
-    intro p h
-    simp only at h
-  )
-  · rcases h with h_old|h_new
-    · tauto
-    · right
-      simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at h_new
-      intro r h_r
-      simp only [rels_of_trivial_commutator_of_root_pair] at h_r
-      rcases h_r with ⟨ i, j, hi, hj, t, u, goal ⟩
-      rcases h_new with h_αβ_βγ|h_α_αβγ|h_β_αβγ|h_γ_αβγ|h_αβ_αβγ|h_βγ_αβγ
-      all_goals subst p r
-      · exact comm_of_αβ_βγ hi hj t u
-      · exact comm_of_α_αβγ hi hj t u
-      · exact comm_of_β_αβγ hi hj t u
-      · exact comm_of_γ_αβγ hi hj t u
-      · exact comm_of_αβ_αβγ hi hj t u
-      · exact comm_of_βγ_αβγ hi hj t u
-  · rcases h with h_old|h_new
-    · tauto
-    · right
-      simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at h_new
-      intro r h_r
-      simp only [rels_of_single_commutator_of_root_pair] at h_r
-      rcases h_r with ⟨ i, j, hi, hj, t, u, goal ⟩
-      rcases h_new with h_α_βγ|h_αβ_γ
-      all_goals (
-        subst p r
-        simp only [map_mul, map_inv, mul_inv_eq_one]
-      )
-      · exact comm_of_α_βγ hi hj t u
-      · exact comm_of_αβ_γ hi hj t u
-  · tauto
-  · rcases h with h_old|h_new
-    · tauto
-    · right
-      simp_all only [Set.mem_singleton_iff]
-      intro r h_r
-      simp only [rels_of_mixed_commutes_of_root] at h_r
-      rcases h_r with ⟨ i, j, hi, hj, t, u, goal ⟩
-      subst r
-      exact comm_of_αβγ_αβγ hi hj t u
-  · rcases h with h_old|h_new
-    · tauto
-    · right
-      simp_all only [Set.mem_singleton_iff]
-      intro r h_r
-      simp only [rels_of_lin_of_root] at h_r
-      rcases h_r with ⟨ i, hi, t, u, goal ⟩
-      subst r
-      simp only [map_mul, map_inv, mul_inv_eq_one]
-      exact lin_of_αβγ hi t u
-  · tauto
-  · tauto
+-- theorem full_rels_satisfied_in_weak_group :
+--   ∀ r ∈ (fullA3 R).all_rels, (weakA3 R).pres_mk r = 1 := by
+--   simp only [fullA3, weakA3]
+--   apply GradedPartialChevalleyGroup.graded_injection
+--   all_goals (
+--     intro p h
+--     simp only at h
+--   )
+--   · rcases h with h_old|h_new
+--     · tauto
+--     · right
+--       simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at h_new
+--       intro r h_r
+--       simp only [rels_of_trivial_commutator_of_root_pair] at h_r
+--       rcases h_r with ⟨ i, j, hi, hj, t, u, goal ⟩
+--       rcases h_new with h_αβ_βγ|h_α_αβγ|h_β_αβγ|h_γ_αβγ|h_αβ_αβγ|h_βγ_αβγ
+--       all_goals subst p r
+--       · exact comm_of_αβ_βγ hi hj t u
+--       · exact comm_of_α_αβγ hi hj t u
+--       · exact comm_of_β_αβγ hi hj t u
+--       · exact comm_of_γ_αβγ hi hj t u
+--       · exact comm_of_αβ_αβγ hi hj t u
+--       · exact comm_of_βγ_αβγ hi hj t u
+--   · rcases h with h_old|h_new
+--     · tauto
+--     · right
+--       simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at h_new
+--       intro r h_r
+--       simp only [rels_of_single_commutator_of_root_pair] at h_r
+--       rcases h_r with ⟨ i, j, hi, hj, t, u, goal ⟩
+--       rcases h_new with h_α_βγ|h_αβ_γ
+--       all_goals (
+--         subst p r
+--         simp only [map_mul, map_inv, mul_inv_eq_one]
+--       )
+--       · exact comm_of_α_βγ hi hj t u
+--       · exact comm_of_αβ_γ hi hj t u
+--   · tauto
+--   · rcases h with h_old|h_new
+--     · tauto
+--     · right
+--       simp_all only [Set.mem_singleton_iff]
+--       intro r h_r
+--       simp only [rels_of_mixed_commutes_of_root] at h_r
+--       rcases h_r with ⟨ i, j, hi, hj, t, u, goal ⟩
+--       subst r
+--       exact comm_of_αβγ_αβγ hi hj t u
+--   · rcases h with h_old|h_new
+--     · tauto
+--     · right
+--       simp_all only [Set.mem_singleton_iff]
+--       intro r h_r
+--       simp only [rels_of_lin_of_root] at h_r
+--       rcases h_r with ⟨ i, hi, t, u, goal ⟩
+--       subst r
+--       simp only [map_mul, map_inv, mul_inv_eq_one]
+--       exact lin_of_αβγ hi t u
+--   · tauto
+--   · tauto
 
 end Steinberg.A3

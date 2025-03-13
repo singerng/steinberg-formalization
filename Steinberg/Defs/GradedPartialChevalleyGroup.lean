@@ -36,7 +36,7 @@ structure GradedChevalleyGenerator (Φ : Type TΦ) [PositiveRootSystem Φ] (R : 
   mk ::
   ζ : Φ
   i : ℕ
-  hi :  i ≤ height ζ
+  hi : i ≤ height ζ
   t : R
 
 namespace GradedChevalleyGenerator
@@ -225,19 +225,23 @@ theorem inv_of_lin_of_root {f : FreeGroup (GradedChevalleyGenerator Φ R) →* G
 
 end ofRoot
 
-/-! ### ASDFJKL; -/
+/-! ### Graded partial Chevalley groups -/
 
 structure GradedPartialChevalleyGroup (Φ : Type TΦ) [PositiveRootSystem Φ] (R : Type TR) [Ring R] where
   mk ::
   sys : PartialChevalleySystem Φ
   lifted_rels_sets : Set (Set (FreeGroup (GradedChevalleyGenerator Φ R)))
   define : GradedChevalleyGenerator Φ R → FreeGroup (GradedChevalleyGenerator Φ R)
-  h_define : ∀ {g : GradedChevalleyGenerator Φ R}, g.ζ ∈ sys.present_roots →
-    define g = FreeGroup.of g
+  h_define_of_present : ∀ {g : GradedChevalleyGenerator Φ R}, g.ζ ∈ sys.present_roots → define g = FreeGroup.of g
+  h_define_is_projection : ∀ {g : GradedChevalleyGenerator Φ R}, (FreeGroup.lift define) (define g) = define g
 
 namespace GradedPartialChevalleyGroup
 
 open GradedPartialChevalleyGroup
+
+def full_mk (Φ : Type TΦ) [PositiveRootSystem Φ] (R : Type TR) [Ring R] (sys : PartialChevalleySystem Φ)
+  : GradedPartialChevalleyGroup Φ R :=
+  GradedPartialChevalleyGroup.mk sys ∅ FreeGroup.of (by tauto) (by tauto)
 
 /-! ### Sets of relations -/
 def trivial_comm_rels (w : GradedPartialChevalleyGroup Φ R) :=

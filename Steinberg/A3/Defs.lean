@@ -65,11 +65,19 @@ abbrev trivial_commutator_pairs : Set (A3PosRoot × A3PosRoot) :=
 abbrev single_commutator_pairs : Set (SingleSpanRootPair A3PosRoot) :=
   {⟨ α, β, αβ, 1, (by ht)⟩, ⟨β, γ, βγ, 1, (by ht)⟩}
 
+theorem trivial_commutator_pairs_valid :
+  ∀ p ∈ trivial_commutator_pairs, p.1 ∈ present_roots ∧ p.2 ∈ present_roots := by
+  simp only [trivial_commutator_pairs, Set.mem_insert_iff, Set.mem_singleton_iff, forall_eq_or_imp, forall_eq]
+  tauto
+
 abbrev weakA3System := PartialChevalleySystem.mk
   present_roots
   trivial_commutator_pairs
   single_commutator_pairs
   ∅
+  (by simp only [trivial_commutator_pairs, Set.mem_insert_iff, Set.mem_singleton_iff, forall_eq_or_imp, forall_eq]; tauto)
+  (by simp only [single_comm_root_pairs, Set.mem_insert_iff, Set.mem_singleton_iff, forall_eq_or_imp, forall_eq]; tauto)
+  (by simp only [double_comm_root_pairs, Set.mem_insert_iff, Set.mem_singleton_iff, forall_eq_or_imp, forall_eq]; tauto)
 
 /-- Additional relations (TBD title) -/
 
@@ -101,20 +109,37 @@ def rels_of_def_of_αβγ :=
 def lifted_sets (R : Type TR) [Ring R] : Set (Set (FreeGroup (GradedChevalleyGenerator A3PosRoot R))) :=
   { rels_of_nonhomog_lift_of_comm_of_αβ_βγ }
 
-def define (R : Type TR) [Ring R] (ζ : A3PosRoot) (i : ℕ) (hi : i ≤ height ζ) (t : R) : FreeGroup (GradedChevalleyGenerator A3PosRoot R) :=
+def weak_define (R : Type TR) [Ring R] (g : GradedChevalleyGenerator A3PosRoot R) : FreeGroup (GradedChevalleyGenerator A3PosRoot R) :=
+  let ⟨ ζ, i, hi, t ⟩ := g;
   match ζ with
-  | αβγ => ⁅ {α,(split_3_into_1_2 i hi).1, t}'(correct_of_split_3_into_1_2 i hi).1,
-    {βγ, (split_3_into_1_2 i hi).2, 1}'(correct_of_split_3_into_1_2 i hi).2 ⁆
-  | ζ => {ζ, i, t}
+  | αβγ => ⁅ {α,(split_3_into_1_2 i (by ht)).1, g.t}'(correct_of_split_3_into_1_2 i (by ht)).1,
+    {βγ, (split_3_into_1_2 i (by ht)).2, 1}'(correct_of_split_3_into_1_2 i (by ht)).2 ⁆
+  | ζ => FreeGroup.of g
 
--- -- definition of αβγ
--- def def_sets (R : Type TR) [Ring R] : Set (Set (FreeGroup (GradedChevalleyGenerator A3PosRoot R))) :=
---   { rels_of_def_of_αβγ }
+theorem weak_define_of_present (R : Type TR) [Ring R] :
+  ∀ {g : GradedChevalleyGenerator A3PosRoot R}, g.ζ ∈ weakA3System.present_roots → weak_define R g = FreeGroup.of g := by
+  intro g h_g_in_present
+  rcases g with ⟨ ζ, i, hi, t ⟩
+  cases ζ
+  all_goals simp only [weak_define] -- this will close all present roots
+  all_goals ( -- this will close the remaining (nonpresent) roots
+    simp only [present_roots] at h_g_in_present
+    contradiction
+  )
+
+theorem weak_define_is_projection (R : Type TR) [Ring R] :
+  ∀ {g : GradedChevalleyGenerator A3PosRoot R}, (FreeGroup.lift (weak_define R)) (weak_define R g) = weak_define R g := by
+  intro g
+  rcases g with ⟨ ζ, i, hi, t ⟩
+  cases ζ
+  all_goals simp only [weak_define, FreeGroup.lift.of, map_commutatorElement, free_mk]
 
 def weakA3 (R : Type TR) [Ring R] := GradedPartialChevalleyGroup.mk
   weakA3System
   (lifted_sets R)
-  (define R)
+  (weak_define R)
+  (weak_define_of_present R)
+  (weak_define_is_projection R)
 
 /-! ### Additional relations which define the full A3 group -/
 
@@ -127,16 +152,20 @@ abbrev full_trivial_commutator_pairs : Set (A3PosRoot × A3PosRoot) :=
 abbrev full_single_commutator_pairs : Set (SingleSpanRootPair A3PosRoot) :=
   (single_commutator_pairs) ∪ {⟨ α, βγ, αβγ, 1, (by ht)⟩, ⟨αβ, γ, αβγ, 1, (by ht)⟩}
 
-abbrev fullA3System := PartialChevalleySystem.mk
+theorem full_forall_roots_mem_present :
+  ∀ (ζ : A3PosRoot), ζ ∈ full_present_roots := by
+    intro ζ
+    cases ζ
+    all_goals tauto
+
+abbrev fullA3System := PartialChevalleySystem.mk_full A3PosRoot
   full_present_roots
   full_trivial_commutator_pairs
   full_single_commutator_pairs
   ∅
+  full_forall_roots_mem_present
 
-def fullA3 (R : Type TR) [Ring R] := @GradedPartialChevalleyGroup.mk _ _ R _
-  fullA3System
-  (∅)
-  (define R)
+def fullA3 (R : Type TR) [Ring R] := GradedPartialChevalleyGroup.full_mk A3PosRoot R fullA3System
 
 /-! # Notation and macros -/
 
@@ -199,7 +228,7 @@ scoped notation "forall_ijk_tuv" h₁:max h₂:max h₃:max "," e =>
   ∀ ⦃i j k : ℕ⦄ (hi : i ≤ h₁) (hj : j ≤ h₂) (hk : k ≤ h₃) (t u v : R), e
 
 scoped notation "forall_ijk_tuv" "," e =>
-  ∀ ⦃i j k : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t u v : R), e
+  ∀ ⦃i j k : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ γ.height) (t u v : R), e
 
 end forallNotation
 

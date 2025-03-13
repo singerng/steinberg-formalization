@@ -39,7 +39,13 @@ structure PartialChevalleySystem (Φ : Type TΦ) [PositiveRootSystem Φ] where
   h_single_valid : ∀ p ∈ single_comm_root_pairs, p.1 ∈ present_roots ∧ p.2.1 ∈ present_roots ∧ p.2.2.1 ∈ present_roots
   h_double_valid : ∀ p ∈ double_comm_root_pairs, p.1 ∈ present_roots ∧ p.2.1 ∈ present_roots ∧ p.2.2.1 ∈ present_roots ∧ p.2.2.2.1 ∈ present_roots
 
--- TODO: make these Finsets, and add sanity check that if the system is 'full', then the three pair sets' sizes
--- should add to the size of present_roots choose 2
+namespace PartialChevalleySystem
+
+def mk_full (Φ : Type TΦ) [PositiveRootSystem Φ]
+  (present_roots : Set Φ) (trivial_comm_root_pairs : Set (Φ × Φ)) (single_comm_root_pairs : Set (SingleSpanRootPair Φ))
+  (double_comm_root_pairs : Set (DoubleSpanRootPair Φ)) (h_full : ∀ (ζ : Φ), ζ ∈ present_roots) : PartialChevalleySystem Φ :=
+  PartialChevalleySystem.mk present_roots trivial_comm_root_pairs single_comm_root_pairs double_comm_root_pairs (by tauto) (by tauto) (by tauto)
+
+end PartialChevalleySystem
 
 end Steinberg
