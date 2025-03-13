@@ -111,7 +111,7 @@ def rels_of_single_commutator_of_root_pair (R : Type TR) [Ring R] (p : SingleSpa
 /-! #### Commutator for two generators from two roots which span one additional root -/
 
 def double_commutator_of_root_pair (f : FreeGroup (ChevalleyGenerator Φ R) →* G) (ζ η θ₁ θ₂ : Φ)
-    (C₁ C₂ : ℤ) (h_height₁ : height θ₁ = height ζ + height η) (h_height₂ : height θ₂ = height ζ + 2 * height η) : Prop :=
+    (C₁ C₂ : ℤ) : Prop :=
   ∀ (t u : R),
     ⁅ f {{ζ, t}}, f {{η, u}} ⁆ = f {{θ₁, ↑C₁ * t * u}} * f {{θ₂, ↑C₂ * t * u * u}}
 
@@ -195,17 +195,17 @@ namespace PartialChevalleyGroup
 open PartialChevalleyGroup
 
 /-! ### Sets of relations -/
-def trivial_comm_rels (w : PartialChevalleyGroup Φ R) :=
-  ⋃₀ (rels_of_trivial_commutator_of_root_pair R '' w.sys.trivial_comm_root_pairs)
+def trivial_comm_rels (w : PartialChevalleyGroup Φ R) : Set (FreeGroup (ChevalleyGenerator Φ R)) :=
+  ⋃ (p ∈ w.sys.trivial_comm_root_pairs), rels_of_trivial_commutator_of_root_pair R p
 
-def single_comm_rels (w : PartialChevalleyGroup Φ R) :=
-  ⋃₀ (rels_of_single_commutator_of_root_pair R '' w.sys.single_comm_root_pairs)
+def single_comm_rels (w : PartialChevalleyGroup Φ R) : Set (FreeGroup (ChevalleyGenerator Φ R)) :=
+  ⋃ (p ∈ w.sys.single_comm_root_pairs), rels_of_single_commutator_of_root_pair R p
 
-def double_comm_rels (w : PartialChevalleyGroup Φ R) :=
-  ⋃₀ (rels_of_double_commutator_of_root_pair R  '' w.sys.double_comm_root_pairs)
+def double_comm_rels (w : PartialChevalleyGroup Φ R) : Set (FreeGroup (ChevalleyGenerator Φ R)) :=
+  ⋃ (p ∈ w.sys.double_comm_root_pairs), rels_of_double_commutator_of_root_pair R p
 
-def lin_rels (w : PartialChevalleyGroup Φ R) :=
-  ⋃₀ (rels_of_lin_of_root R '' w.sys.present_roots)
+def lin_rels (w : PartialChevalleyGroup Φ R) : Set (FreeGroup (ChevalleyGenerator Φ R)) :=
+  ⋃ (ζ ∈ w.sys.present_roots), rels_of_lin_of_root R ζ
 
 def all_rels (w : PartialChevalleyGroup Φ R) :=
   ⋃₀ {trivial_comm_rels w, single_comm_rels w, double_comm_rels w, lin_rels w}
@@ -219,7 +219,7 @@ def pres_mk (w : PartialChevalleyGroup Φ R) : FreeGroup (ChevalleyGenerator Φ 
   PresentedGroup.mk (PartialChevalleyGroup.all_rels w)
 
 /-- Mapping between two PartialChevalleyGroup graded groups -/
-theorem graded_injection (w₁ w₂ : PartialChevalleyGroup Φ R)
+theorem injection (w₁ w₂ : PartialChevalleyGroup Φ R)
   (h_triv : ∀ p ∈ w₁.sys.trivial_comm_root_pairs, p ∈ w₂.sys.trivial_comm_root_pairs ∨
     (∀ r ∈ (rels_of_trivial_commutator_of_root_pair R p), w₂.pres_mk r = 1))
   (h_single : ∀ p ∈ w₁.sys.single_comm_root_pairs, p ∈ w₂.sys.single_comm_root_pairs ∨
@@ -307,88 +307,70 @@ def delab_pres_mk' : Delab := do
 
 /-! ### Helpers -/
 
+
 theorem trivial_commutator_helper {w : PartialChevalleyGroup Φ R} {ζ η : Φ}
     (h : (ζ, η) ∈ w.sys.trivial_comm_root_pairs)
       : trivial_commutator_of_root_pair w.pres_mk ζ η := by
-  intro i j
+  intro t u
   apply eq_one_of_mem_rels
   apply Set.mem_sUnion.mpr
   use w.trivial_comm_rels
   constructor
   · tauto
-  · rw [trivial_comm_rels]
-    apply Set.mem_sUnion.mpr
-    use rels_of_trivial_commutator_of_root_pair R (ζ, η)
-    constructor
-    · simp only [Set.mem_image]
-      use (ζ, η)
-    · rw [rels_of_trivial_commutator_of_root_pair]
-      exists i, j
-
--- TODO: Move this to a different file?
-theorem helper {x y z : G} : x * y * z⁻¹ = 1 → x * y = z := by
-  intro h
-  apply @mul_right_cancel _ _ _ _ z⁻¹
-  rw [mul_inv_cancel]
-  exact h
+  · simp only [trivial_comm_rels]
+    simp only [Set.mem_iUnion]
+    use (ζ, η), h
+    rw [rels_of_trivial_commutator_of_root_pair]
+    exists t, u
 
 theorem single_commutator_helper (w : PartialChevalleyGroup Φ R) (ζ η θ : Φ) (C : ℤ)
   (h_height : height θ = height ζ + height η)
   (h : ⟨ ζ, η, θ, C, h_height ⟩ ∈ w.sys.single_comm_root_pairs)
     : single_commutator_of_root_pair w.pres_mk ζ η θ C := by
   intro t u
-  apply helper
+  apply eq_of_mul_inv_eq_one
   apply eq_one_of_mem_rels
   apply Set.mem_sUnion.mpr
   use w.single_comm_rels
   constructor
   · tauto
-  · rw [single_comm_rels]
-    apply Set.mem_sUnion.mpr
-    use (rels_of_single_commutator_of_root_pair R ⟨ ζ, η, θ, C, h_height ⟩)
-    constructor
-    · simp only [Set.mem_image]
-      use ⟨ ζ, η, θ, C, h_height ⟩
-    · rw [rels_of_single_commutator_of_root_pair]
-      exists t, u
+  · simp only [single_comm_rels]
+    simp only [Set.mem_iUnion]
+    use ⟨ ζ, η, θ, C, h_height ⟩, h
+    rw [rels_of_single_commutator_of_root_pair]
+    exists t, u
 
 theorem double_commutator_helper (w : PartialChevalleyGroup Φ R) (ζ η θ₁ θ₂ : Φ) (C₁ C₂ : ℤ)
   (h_height₁ : height θ₁ = height ζ + height η)
   (h_height₂ : height θ₂ = height ζ + 2 * height η)
   (h : ⟨ ζ, η, θ₁, θ₂, C₁, C₂, h_height₁, h_height₂ ⟩ ∈ w.sys.double_comm_root_pairs)
-    : double_commutator_of_root_pair w.pres_mk ζ η θ₁ θ₂ C₁ C₂ h_height₁ h_height₂ := by
+    : double_commutator_of_root_pair w.pres_mk ζ η θ₁ θ₂ C₁ C₂ := by
   intro t u
-  apply helper
+  apply eq_of_mul_inv_eq_one
   apply eq_one_of_mem_rels
   apply Set.mem_sUnion.mpr
   use w.double_comm_rels
   constructor
   · tauto
-  · rw [double_comm_rels]
-    apply Set.mem_sUnion.mpr
-    use (rels_of_double_commutator_of_root_pair R ⟨ ζ, η, θ₁, θ₂, C₁, C₂, h_height₁, h_height₂ ⟩)
-    constructor
-    · simp only [Set.mem_image]
-      use ⟨ ζ, η, θ₁, θ₂, C₁, C₂, h_height₁, h_height₂ ⟩
-    · rw [rels_of_double_commutator_of_root_pair]
-      exists t, u
+  · simp only [double_comm_rels]
+    simp only [Set.mem_iUnion]
+    use ⟨ ζ, η, θ₁, θ₂, C₁, C₂, h_height₁, h_height₂ ⟩, h
+    rw [rels_of_double_commutator_of_root_pair]
+    exists t, u
 
 theorem lin_helper (w : PartialChevalleyGroup Φ R) {ζ : Φ} (h : ζ ∈ w.sys.present_roots)
     : lin_of_root(w.pres_mk, ζ) := by
   intro t u
-  apply helper
+  apply eq_of_mul_inv_eq_one
   apply eq_one_of_mem_rels
   apply Set.mem_sUnion.mpr
   use w.lin_rels
   constructor
   · tauto
-  · rw [lin_rels]
-    apply Set.mem_sUnion.mpr
-    use rels_of_lin_of_root R ζ
-    constructor
-    · simp only [Set.mem_image]
-      use ζ
-    · rw [rels_of_lin_of_root]
-      exists t, u
+  · simp only [lin_rels]
+    simp only [Set.mem_iUnion]
+    use ζ, h
+    rw [rels_of_lin_of_root]
+    exists t, u
 
 end PartialChevalleyGroup

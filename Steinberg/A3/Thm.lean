@@ -36,7 +36,7 @@ theorem nonhomog_lift_of_comm_of_αβ_βγ :
     , {βγ, 2, u₁ * v₁} * {βγ, 1, u₁ * v₀ + u₀ * v₁} * {βγ, 0, u₀ * v₀} ⁆
     = 1 := by
   intro t₁ t₀ u₁ u₀ v₁ v₀
-  apply GradedPartialChevalleyGroup.helper
+  apply eq_of_mul_inv_eq_one
   apply (weakA3 R).lifted_helper rels_of_nonhomog_lift_of_comm_of_αβ_βγ
   · simp only [weakA3, lifted_sets, Set.mem_singleton_iff]
   · exists t₁, t₀, u₁, u₀, v₁, v₀

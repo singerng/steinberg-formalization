@@ -244,30 +244,29 @@ def full_mk (Φ : Type TΦ) [PositiveRootSystem Φ] (R : Type TR) [Ring R] (sys 
   GradedPartialChevalleyGroup.mk sys ∅ FreeGroup.of (by tauto) (by tauto)
 
 /-! ### Sets of relations -/
-def trivial_comm_rels (w : GradedPartialChevalleyGroup Φ R) :=
-  ⋃₀ (rels_of_trivial_commutator_of_root_pair R '' w.sys.trivial_comm_root_pairs)
+def trivial_comm_rels (w : GradedPartialChevalleyGroup Φ R) : Set (FreeGroup (GradedChevalleyGenerator Φ R)) :=
+  ⋃ (p ∈ w.sys.trivial_comm_root_pairs), rels_of_trivial_commutator_of_root_pair R p
 
-def single_comm_rels (w : GradedPartialChevalleyGroup Φ R) :=
-  ⋃₀ (rels_of_single_commutator_of_root_pair R '' w.sys.single_comm_root_pairs)
+def single_comm_rels (w : GradedPartialChevalleyGroup Φ R) : Set (FreeGroup (GradedChevalleyGenerator Φ R)) :=
+  ⋃ (p ∈ w.sys.single_comm_root_pairs), rels_of_single_commutator_of_root_pair R p
 
-def double_comm_rels (w : GradedPartialChevalleyGroup Φ R) :=
-  ⋃₀ (rels_of_double_commutator_of_root_pair R  '' w.sys.double_comm_root_pairs)
+def double_comm_rels (w : GradedPartialChevalleyGroup Φ R) : Set (FreeGroup (GradedChevalleyGenerator Φ R)) :=
+  ⋃ (p ∈ w.sys.double_comm_root_pairs), rels_of_double_commutator_of_root_pair R p
 
-def mixed_commutes_rels (w : GradedPartialChevalleyGroup Φ R) :=
-  ⋃₀ (rels_of_mixed_commutes_of_root R '' w.sys.present_roots)
+def mixed_commutes_rels (w : GradedPartialChevalleyGroup Φ R) : Set (FreeGroup (GradedChevalleyGenerator Φ R)) :=
+  ⋃ (ζ ∈ w.sys.present_roots), rels_of_mixed_commutes_of_root R ζ
 
-def lin_rels (w : GradedPartialChevalleyGroup Φ R) :=
-  ⋃₀ (rels_of_lin_of_root R '' w.sys.present_roots)
+def lin_rels (w : GradedPartialChevalleyGroup Φ R) : Set (FreeGroup (GradedChevalleyGenerator Φ R)) :=
+  ⋃ (ζ ∈ w.sys.present_roots), rels_of_lin_of_root R ζ
 
-def def_rels_sets (w : GradedPartialChevalleyGroup Φ R) :
-  Set (Set (FreeGroup (GradedChevalleyGenerator Φ R))) :=
-    { {
-      ({ζ, i, t}⁻¹ * w.define (GradedChevalleyGenerator.mk ζ i hi t)) | (i : ℕ) (hi : i ≤ height ζ) (t : R)
-    } | (ζ : Φ ) }
+def def_rels (w : GradedPartialChevalleyGroup Φ R) : Set (FreeGroup (GradedChevalleyGenerator Φ R)) :=
+  ⋃ (ζ : Φ), {
+      {ζ, i, t}⁻¹ * w.define (GradedChevalleyGenerator.mk ζ i hi t) | (i : ℕ) (hi : i ≤ height ζ) (t : R)
+  }
 
 def all_rels (w : GradedPartialChevalleyGroup Φ R) :=
   ⋃₀ {trivial_comm_rels w, single_comm_rels w, double_comm_rels w, mixed_commutes_rels w,
-      lin_rels w, ⋃₀ lifted_rels_sets w, ⋃₀ def_rels_sets w}
+      lin_rels w, ⋃₀ lifted_rels_sets w, def_rels w}
 
 /-! ### The group and the embedding -/
 
@@ -290,7 +289,7 @@ theorem graded_injection (w₁ w₂ : GradedPartialChevalleyGroup Φ R)
   (h_lin : ∀ p ∈ w₁.sys.present_roots, p ∈ w₂.sys.present_roots ∨
     (∀ r ∈ (rels_of_lin_of_root R p), w₂.pres_mk r = 1))
   (h_lift : ∀ S ∈ w₁.lifted_rels_sets, ∀ p ∈ S, w₂.pres_mk p = 1)
-  (h_def : ∀ S ∈ w₁.def_rels_sets, ∀ p ∈ S, w₂.pres_mk p = 1)
+  (h_def : ∀ p ∈ w₁.def_rels, w₂.pres_mk p = 1)
   : ∀ r ∈ w₁.all_rels, w₂.pres_mk r = 1 := by
   simp only [all_rels]
   intro r h
@@ -395,21 +394,11 @@ theorem trivial_commutator_helper {w : GradedPartialChevalleyGroup Φ R} {ζ η 
   use w.trivial_comm_rels
   constructor
   · tauto
-  · rw [trivial_comm_rels]
-    apply Set.mem_sUnion.mpr
-    use rels_of_trivial_commutator_of_root_pair R (ζ, η)
-    constructor
-    · simp only [Set.mem_image]
-      use (ζ, η)
-    · rw [rels_of_trivial_commutator_of_root_pair]
-      exists i, j, hi, hj, t, u
-
--- TODO: Move this to a different file?
-theorem helper {x y z : G} : x * y * z⁻¹ = 1 → x * y = z := by
-  intro h
-  apply @mul_right_cancel _ _ _ _ z⁻¹
-  rw [mul_inv_cancel]
-  exact h
+  · simp only [trivial_comm_rels]
+    simp only [Set.mem_iUnion]
+    use (ζ, η), h
+    rw [rels_of_trivial_commutator_of_root_pair]
+    exists i, j, hi, hj, t, u
 
 theorem single_commutator_helper (w : GradedPartialChevalleyGroup Φ R) (ζ η θ : Φ) (C : ℤ)
   (h_height : height θ = height ζ + height η)
@@ -422,14 +411,11 @@ theorem single_commutator_helper (w : GradedPartialChevalleyGroup Φ R) (ζ η �
   use w.single_comm_rels
   constructor
   · tauto
-  · rw [single_comm_rels]
-    apply Set.mem_sUnion.mpr
-    use (rels_of_single_commutator_of_root_pair R ⟨ ζ, η, θ, C, h_height ⟩)
-    constructor
-    · simp only [Set.mem_image]
-      use ⟨ ζ, η, θ, C, h_height ⟩
-    · rw [rels_of_single_commutator_of_root_pair]
-      exists i, j, hi, hj, t, u
+  · simp only [single_comm_rels]
+    simp only [Set.mem_iUnion]
+    use ⟨ ζ, η, θ, C, h_height ⟩, h
+    rw [rels_of_single_commutator_of_root_pair]
+    exists i, j, hi, hj, t, u
 
 theorem double_commutator_helper (w : GradedPartialChevalleyGroup Φ R) (ζ η θ₁ θ₂ : Φ) (C₁ C₂ : ℤ)
   (h_height₁ : height θ₁ = height ζ + height η)
@@ -443,14 +429,11 @@ theorem double_commutator_helper (w : GradedPartialChevalleyGroup Φ R) (ζ η �
   use w.double_comm_rels
   constructor
   · tauto
-  · rw [double_comm_rels]
-    apply Set.mem_sUnion.mpr
-    use (rels_of_double_commutator_of_root_pair R ⟨ ζ, η, θ₁, θ₂, C₁, C₂, h_height₁, h_height₂ ⟩)
-    constructor
-    · simp only [Set.mem_image]
-      use ⟨ ζ, η, θ₁, θ₂, C₁, C₂, h_height₁, h_height₂ ⟩
-    · rw [rels_of_double_commutator_of_root_pair]
-      exists i, j, hi, hj, t, u
+  · simp only [double_comm_rels]
+    simp only [Set.mem_iUnion]
+    use ⟨ ζ, η, θ₁, θ₂, C₁, C₂, h_height₁, h_height₂ ⟩, h
+    rw [rels_of_double_commutator_of_root_pair]
+    exists i, j, hi, hj, t, u
 
 theorem mixed_commutes_helper (w : GradedPartialChevalleyGroup Φ R)
   {ζ : Φ} (h : ζ ∈ w.sys.present_roots)
@@ -461,14 +444,11 @@ theorem mixed_commutes_helper (w : GradedPartialChevalleyGroup Φ R)
   use w.mixed_commutes_rels
   constructor
   · tauto
-  · rw [mixed_commutes_rels]
-    apply Set.mem_sUnion.mpr
-    use rels_of_mixed_commutes_of_root R ζ
-    constructor
-    · simp only [Set.mem_image]
-      use ζ
-    · rw [rels_of_mixed_commutes_of_root]
-      exists i, j, hi, hj, t, u
+  · simp only [mixed_commutes_rels]
+    simp only [Set.mem_iUnion]
+    use ζ, h
+    rw [rels_of_mixed_commutes_of_root]
+    exists i, j, hi, hj, t, u
 
 theorem lin_helper (w : GradedPartialChevalleyGroup Φ R) {ζ : Φ} (h : ζ ∈ w.sys.present_roots)
     : lin_of_root(w.pres_mk, ζ) := by
@@ -479,14 +459,11 @@ theorem lin_helper (w : GradedPartialChevalleyGroup Φ R) {ζ : Φ} (h : ζ ∈ 
   use w.lin_rels
   constructor
   · tauto
-  · rw [lin_rels]
-    apply Set.mem_sUnion.mpr
-    use rels_of_lin_of_root R ζ
-    constructor
-    · simp only [Set.mem_image]
-      use ζ
-    · rw [rels_of_lin_of_root]
-      exists i, hi, t, u
+  · simp only [lin_rels]
+    simp only [Set.mem_iUnion]
+    use ζ, h
+    rw [rels_of_lin_of_root]
+    exists i, hi, t, u
 
 theorem lifted_helper (w : GradedPartialChevalleyGroup Φ R)
     : ∀ S ∈ w.lifted_rels_sets, ∀ r ∈ S, w.pres_mk r = 1 := by
@@ -506,13 +483,14 @@ theorem def_helper (w : GradedPartialChevalleyGroup Φ R)
   apply eq_of_inv_mul_eq_one
   apply eq_one_of_mem_rels
   apply Set.mem_sUnion.mpr
-  use ⋃₀ def_rels_sets w
+  use w.def_rels
   constructor
   · tauto
-  · simp only [def_rels_sets]
-    apply Set.mem_sUnion.mpr
-    simp only [Set.mem_setOf_eq, exists_exists_eq_and]
-    use ζ, i, hi, t
+  · simp only [def_rels]
+    simp only [Set.mem_iUnion]
+    use ζ
+    simp only [Set.mem_setOf_eq]
+    use i, hi, t
 
 section declareThms
 

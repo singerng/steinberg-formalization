@@ -132,37 +132,36 @@ theorem reflect_degree_of_rels {w : GradedPartialChevalleyGroup Φ R} (h' : refl
   intro r h_r
   simp only [sUnion_insert, sUnion_singleton, mem_image, mem_union, mem_sUnion] at h_r
   rcases h_r with ⟨ r, ⟨ h_r, rfl ⟩ ⟩
-  -- have all_rels_to_normal_closure_all_rels := @Subgroup.subset_normalClosure _ _ (w.all_rels)
-  rcases h_r with (h_triv | h_sing | h_doub | h_mix | h_lin | h_non | h_def)
+  rcases h_r with (h_triv | h_sing | h_doub | h_mix | h_lin | h_lift | h_def)
   · apply Subgroup.subset_normalClosure
-    simp only [trivial_comm_rels, sUnion_image, mem_iUnion, exists_prop, Prod.exists] at h_triv
+    simp only [trivial_comm_rels, mem_iUnion, exists_prop, Prod.exists] at h_triv
     rcases h_triv with ⟨ ζ, η, h_in_pairs, h_t_in_rels ⟩
     suffices (FreeGroup.lift (refl_def w)) r ∈ w.trivial_comm_rels by
-      simp only [all_rels, sUnion_insert, sUnion_singleton, mem_union, mem_sUnion]
+      simp only [all_rels, sUnion_insert]
       tauto
     rw [trivial_comm_rels]
-    simp only [sUnion_image, mem_iUnion, exists_prop, Prod.exists]
+    simp only [mem_iUnion, exists_prop, Prod.exists]
     use ζ, η, h_in_pairs
     exact refl_deg_of_rels_of_trivial_commutator_of_root_pair ζ η (w.sys.h_trivial_valid (ζ, η) h_in_pairs).1 (w.sys.h_trivial_valid (ζ, η) h_in_pairs).2 r h_t_in_rels
   · apply Subgroup.subset_normalClosure
-    simp only [single_comm_rels, sUnion_image, mem_iUnion, exists_prop, Sigma.exists, PProd.exists] at h_sing
+    simp only [single_comm_rels, mem_iUnion, exists_prop, Sigma.exists, PProd.exists] at h_sing
     rcases h_sing with ⟨ ζ, η, θ, C, h_height, h_in_pairs, h_t_in_rels ⟩
     suffices (FreeGroup.lift (refl_def w)) r ∈ w.single_comm_rels by
-      simp only [all_rels, sUnion_insert, sUnion_singleton, mem_union, mem_sUnion]
+      simp only [all_rels, sUnion_insert]
       tauto
-    simp only [single_comm_rels, sUnion_image, mem_iUnion, exists_prop, Prod.exists]
+    simp only [single_comm_rels, mem_iUnion, exists_prop, Prod.exists]
     use ⟨ ζ, η, θ, C, h_height ⟩, h_in_pairs
     exact refl_deg_of_rels_of_single_commutator_of_root_pair ζ η θ C h_height
       (w.sys.h_single_valid ⟨ ζ, η, θ, C, h_height ⟩ h_in_pairs).1 (w.sys.h_single_valid ⟨ ζ, η, θ, C, h_height ⟩ h_in_pairs).2.1
       (w.sys.h_single_valid ⟨ ζ, η, θ, C, h_height ⟩ h_in_pairs).2.2
       r h_t_in_rels
   · apply Subgroup.subset_normalClosure
-    simp only [double_comm_rels, sUnion_image, mem_iUnion, exists_prop, Sigma.exists, PProd.exists] at h_doub
+    simp only [double_comm_rels, mem_iUnion, exists_prop, Sigma.exists, PProd.exists] at h_doub
     rcases h_doub with ⟨ ζ, η, θ₁, θ₂, ⟨ C₁, C₂, h_height₁, h_height₂ ⟩ , h_in_pairs, h_t_in_rels ⟩
     suffices (FreeGroup.lift (refl_def w)) r ∈ w.double_comm_rels by
-      simp only [all_rels, sUnion_insert, sUnion_singleton, mem_union, mem_sUnion]
+      simp only [all_rels, sUnion_insert]
       tauto
-    simp only [double_comm_rels, sUnion_image, mem_iUnion, exists_prop, Prod.exists]
+    simp only [double_comm_rels, mem_iUnion, exists_prop, Prod.exists]
     use ⟨ ζ, η, θ₁, θ₂, C₁, C₂, h_height₁, h_height₂ ⟩, h_in_pairs
     exact refl_deg_of_rels_of_double_commutator_of_root_pair ζ η θ₁ θ₂ C₁ C₂ h_height₁ h_height₂
       (w.sys.h_double_valid ⟨ ζ, η, θ₁, θ₂, C₁, C₂, h_height₁, h_height₂ ⟩ h_in_pairs).1
@@ -171,32 +170,33 @@ theorem reflect_degree_of_rels {w : GradedPartialChevalleyGroup Φ R} (h' : refl
       (w.sys.h_double_valid ⟨ ζ, η, θ₁, θ₂, C₁, C₂, h_height₁, h_height₂ ⟩ h_in_pairs).2.2.2
       r h_t_in_rels
   · apply Subgroup.subset_normalClosure
-    simp only [mixed_commutes_rels, sUnion_image, mem_iUnion, exists_prop, Prod.exists] at h_mix
+    simp only [mixed_commutes_rels, mem_iUnion, exists_prop, Prod.exists] at h_mix
     rcases h_mix with ⟨ ζ, h_in_present, h_t_in_rels ⟩
     suffices (FreeGroup.lift (refl_def w)) r ∈ w.mixed_commutes_rels by
       simp only [all_rels, sUnion_insert, sUnion_singleton, mem_union, mem_sUnion]
       tauto
-    simp only [mixed_commutes_rels, sUnion_image, mem_iUnion, exists_prop, Prod.exists]
+    simp only [mixed_commutes_rels, mem_iUnion, exists_prop, Prod.exists]
     use ζ, h_in_present
     exact refl_deg_of_rels_of_mixed_commutes_of_root ζ h_in_present r h_t_in_rels
   · apply Subgroup.subset_normalClosure
-    simp only [lin_rels, sUnion_image, mem_iUnion, exists_prop, Prod.exists] at h_lin
+    simp only [lin_rels, mem_iUnion, exists_prop, Prod.exists] at h_lin
     rcases h_lin with ⟨ ζ, h_in_present, h_t_in_rels ⟩
     suffices (FreeGroup.lift (refl_def w)) r ∈ w.lin_rels by
-      simp only [all_rels, sUnion_insert, sUnion_singleton, mem_union, mem_sUnion]
+      simp only [all_rels, sUnion_insert]
       tauto
-    simp only [lin_rels, sUnion_image, mem_iUnion, exists_prop, Prod.exists]
+    simp only [lin_rels, mem_iUnion, exists_prop, Prod.exists]
     use ζ, h_in_present
     exact refl_deg_of_rels_of_lin_of_root ζ h_in_present r h_t_in_rels
   · apply eq_one_iff_mem_closure.mp
-    rcases h_non with ⟨ T, ⟨ h_T, h_t_T ⟩ ⟩
+    rcases h_lift with ⟨ T, ⟨ h_T, h_t_T ⟩ ⟩
     exact h' T h_T r h_t_T
-  · rcases h_def with ⟨ S, h_S, h_r_in_S ⟩
-    simp only [def_rels_sets, mem_setOf_eq] at h_S
-    rcases h_S with ⟨ ζ, h_S ⟩
+  · simp only [def_rels, mem_setOf_eq] at h_def
+    rcases h_def with ⟨ S, h_S, h_r ⟩
+    simp only [mem_range, SetLike.mem_coe] at h_S
+    rcases h_S with ⟨ ζ, h_ζ ⟩
     subst S
-    simp only [mem_setOf_eq] at h_r_in_S
-    rcases h_r_in_S with ⟨ i, hi, t, h ⟩
+    simp only [mem_setOf_eq] at h_r
+    rcases h_r with ⟨ i, hi, t, h ⟩
     subst r
     simp only [map_mul, map_inv, SetLike.mem_coe, lift_of_refl_eq_comp, MonoidHom.coe_comp, Function.comp_apply, w.h_define_is_projection,
               free_mk, FreeGroup.lift.of, inv_mul_cancel, OneMemClass.one_mem]

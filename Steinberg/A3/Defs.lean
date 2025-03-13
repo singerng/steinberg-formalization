@@ -5,6 +5,7 @@ LICENSE goes here.
 -/
 
 import Steinberg.Defs.GradedPartialChevalleyGroup
+import Steinberg.Defs.PartialChevalleyGroup
 import Steinberg.Macro.Attr
 import Mathlib.Tactic.DeriveFintype
 
@@ -45,7 +46,7 @@ instance instCoeNat : Coe A3PosRoot Nat where
 
 end A3PosRoot
 
-open A3PosRoot GradedPartialChevalley GradedPartialChevalleyGroup GradedChevalleyGenerator PartialChevalleySystem
+open A3PosRoot PartialChevalley GradedPartialChevalley GradedChevalleyGenerator PartialChevalleySystem
 
 variable {R : Type TR} [Ring R]
 
@@ -165,7 +166,8 @@ abbrev fullA3System := PartialChevalleySystem.mk_full A3PosRoot
   ∅
   full_forall_roots_mem_present
 
-def fullA3 (R : Type TR) [Ring R] := GradedPartialChevalleyGroup.full_mk A3PosRoot R fullA3System
+def fullA3 (R : Type TR) [Ring R] := @PartialChevalleyGroup.mk A3PosRoot _ R _ fullA3System
+def fullA3Graded (R : Type TR) [Ring R] := GradedPartialChevalleyGroup.full_mk A3PosRoot R fullA3System
 
 /-! # Notation and macros -/
 
