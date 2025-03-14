@@ -17,6 +17,10 @@ import Mathlib.Tactic.DeriveFintype
 
 namespace Steinberg.A3
 
+open PartialChevalley GradedPartialChevalley GradedChevalleyGenerator PartialChevalleySystem
+
+/-! # The A3 positive root system -/
+
 inductive A3PosRoot
   | α | β | γ | αβ | βγ | αβγ
 deriving Fintype, DecidableEq
@@ -46,17 +50,14 @@ instance instCoeNat : Coe A3PosRoot Nat where
 
 end A3PosRoot
 
-open A3PosRoot PartialChevalley GradedPartialChevalley GradedChevalleyGenerator PartialChevalleySystem
+open A3PosRoot
 
 variable {R : Type TR} [Ring R]
 
-/-! # Relations -/
+/-! # Definition of the 'weak' A3 graded group -/
 
-/-
-The specific relation arises from "nonhomogeneously lifting" the commutator of αβ and βγ elements. (There is no analogue
-of this relation for other root-pairs, since all other present pairs lie in a common two-dimensional subspace.)
--/
-/-- Steinberg relations in the weak A3 group -/
+/-! ## Defining the 'weak' positive root system -/
+
 abbrev present_roots : Set (A3PosRoot) :=
   {α, β, γ, αβ, βγ}
 
@@ -65,11 +66,6 @@ abbrev trivial_commutator_pairs : Set (A3PosRoot × A3PosRoot) :=
 
 abbrev single_commutator_pairs : Set (SingleSpanRootPair A3PosRoot) :=
   {⟨ α, β, αβ, 1, (by ht)⟩, ⟨β, γ, βγ, 1, (by ht)⟩}
-
-theorem trivial_commutator_pairs_valid :
-  ∀ p ∈ trivial_commutator_pairs, p.1 ∈ present_roots ∧ p.2 ∈ present_roots := by
-  simp only [trivial_commutator_pairs, Set.mem_insert_iff, Set.mem_singleton_iff, forall_eq_or_imp, forall_eq]
-  tauto
 
 abbrev weakA3System := PartialChevalleySystem.mk
   present_roots
@@ -80,12 +76,17 @@ abbrev weakA3System := PartialChevalleySystem.mk
   (by simp only [single_comm_root_pairs, Set.mem_insert_iff, Set.mem_singleton_iff, forall_eq_or_imp, forall_eq]; tauto)
   (by simp only [double_comm_root_pairs, Set.mem_insert_iff, Set.mem_singleton_iff, forall_eq_or_imp, forall_eq]; tauto)
 
-/-- Additional relations (TBD title) -/
+/-! ## Lifted relations -/
 
 def rels_of_nonhomog_lift_of_comm_of_αβ_βγ :=
   { ⁅ {αβ, 2, t₁ * u₁} * {αβ, 1, t₁ * u₀ + t₀ * u₁} * {αβ, 0, t₀ * u₀},
       {βγ, 2, u₁ * v₁} * {βγ, 1, u₁ * v₀ + u₀ * v₁} * {βγ, 0, u₀ * v₀} ⁆
     | (t₁ : R) (t₀ : R) (u₁ : R) (u₀ : R) (v₁ : R) (v₀ : R) }
+
+def lifted_sets (R : Type TR) [Ring R] : Set (Set (FreeGroup (GradedChevalleyGenerator A3PosRoot R))) :=
+  { rels_of_nonhomog_lift_of_comm_of_αβ_βγ }
+
+/-! ## Definition for missing root (αβγ) -/
 
 def split_3_into_1_2 (i : ℕ) (hi : i ≤ 3) :=
   match i with
@@ -99,16 +100,6 @@ theorem correct_of_split_3_into_1_2 (i : ℕ) (hi : i ≤ 3) :
   simp only [split_3_into_1_2]
   split
   all_goals trivial
-
-def rels_of_def_of_αβγ :=
-  { ⁅ {α, (split_3_into_1_2 i hi).1, t}'(correct_of_split_3_into_1_2 i hi).1,
-      {βγ, (split_3_into_1_2 i hi).2, 1}'(correct_of_split_3_into_1_2 i hi).2 ⁆
-      * {αβγ, i, t}⁻¹
-    | (i : ℕ) (hi : i ≤ αβγ.height) (t : R) }
-
--- lifted commutator of αβ and βγ
-def lifted_sets (R : Type TR) [Ring R] : Set (Set (FreeGroup (GradedChevalleyGenerator A3PosRoot R))) :=
-  { rels_of_nonhomog_lift_of_comm_of_αβ_βγ }
 
 def weak_define (R : Type TR) [Ring R] (g : GradedChevalleyGenerator A3PosRoot R) : FreeGroup (GradedChevalleyGenerator A3PosRoot R) :=
   let ⟨ ζ, i, hi, t ⟩ := g;
@@ -142,7 +133,7 @@ def weakA3 (R : Type TR) [Ring R] := GradedPartialChevalleyGroup.mk
   (weak_define_of_present R)
   (weak_define_is_projection R)
 
-/-! ### Additional relations which define the full A3 group -/
+/-! # Definition of the 'full' A3 ungraded and graded groups -/
 
 abbrev full_present_roots : Set (A3PosRoot) :=
   present_roots ∪ {αβγ}

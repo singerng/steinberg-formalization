@@ -4,6 +4,7 @@ LICENSE goes here.
 
 -/
 
+import Steinberg.Defs.PartialChevalleyGroup
 import Steinberg.Defs.GradedPartialChevalleyGroup
 import Mathlib.Tactic.DeriveFintype
 
@@ -15,7 +16,9 @@ import Mathlib.Tactic.DeriveFintype
 
 namespace Steinberg.B3Large
 
-/-! ### Defining the B3 large positive root system -/
+open PartialChevalley GradedPartialChevalley GradedChevalleyGenerator PartialChevalleySystem
+
+/-! # The B3-large positive root system -/
 
 inductive B3LargePosRoot
   | α | β | ψ | αβ | βψ | β2ψ | αβψ | αβ2ψ | α2β2ψ
@@ -51,11 +54,13 @@ instance instCoeNat : Coe B3LargePosRoot Nat where
 
 end B3LargePosRoot
 
-open B3LargePosRoot GradedPartialChevalley GradedChevalleyGenerator GradedPartialChevalleyGroup
+open B3LargePosRoot
 
 variable {F : Type TR} [Field F]
 
-/-! # Relations -/
+/-! # Definition of the 'weak' B3-large graded group -/
+
+/-! ## Defining the 'weak' positive root system -/
 
 -- relations 8.69, 8.70, 8.71, 8.72, 8.73, 8.74
 abbrev present_roots : Set B3LargePosRoot :=
@@ -78,6 +83,14 @@ abbrev weakB3LargeSystem := PartialChevalleySystem.mk
   trivial_commutator_pairs
   single_commutator_pairs
   double_commutator_pairs
+  (by simp only [Set.mem_insert_iff, Set.mem_singleton_iff, forall_eq_or_imp, reduceCtorEq, or_self,
+    or_false, or_true, and_self, forall_eq])
+  (by simp only [Set.mem_insert_iff, Set.mem_singleton_iff, forall_eq_or_imp, reduceCtorEq, or_self,
+    or_false, or_true, and_self, forall_eq])
+  (by simp only [Set.mem_insert_iff, Set.mem_singleton_iff, forall_eq_or_imp, reduceCtorEq, or_self,
+    or_false, or_true, and_self, forall_eq])
+
+/-! ## Lifted relations -/
 
 -- Relation 8.81
 def rels_of_nonhomog_lift_of_comm_of_αβ_βψ :=
@@ -326,6 +339,20 @@ def rels_of_hom_lift_of_comm_of_β2ψ_αβ2ψ :=
       (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height)
       (t : F) (u : F) (v : F) }
 
+def lifted_sets (F : Type TF) [Field F] : Set (Set (FreeGroup (GradedChevalleyGenerator B3LargePosRoot F))) := {
+  rels_of_nonhomog_lift_of_comm_of_αβ_βψ, rels_of_nonhomog_lift_of_comm_of_α_α2β2ψ,
+  rels_of_hom_lift_of_interchange_of_αβψ, rels_of_hom_lift_of_doub_of_αβψ,
+  rels_of_hom_lift_of_interchange_of_αβ2ψ, rels_of_hom_lift_of_comm_of_βψ_α_β2ψ,
+  rels_of_hom_lift_of_inv_doub_of_α_β2ψ_a, rels_of_hom_lift_of_inv_doub_of_α_β2ψ_b, rels_of_hom_lift_of_inv_doub_of_α_β2ψ_c,
+  rels_of_hom_lift_of_comm_of_β2ψ_αβψ, rels_of_hom_lift_of_interchange_of_α2β2ψ_a, rels_of_hom_lift_of_interchange_of_α2β2ψ_b,
+  rels_of_hom_lift_of_comm_of_ψ_αβ_β2ψ, rels_of_hom_lift_of_comm_of_αβ_αβ_β2ψ_a, rels_of_hom_lift_of_comm_of_αβ_αβ_β2ψ_b,
+  rels_of_hom_lift_of_inv_doub_of_αβ_β2ψ_a, rels_of_hom_lift_of_inv_doub_of_αβ_β2ψ_b, rels_of_hom_lift_of_inv_doub_of_αβ_β2ψ_c,
+  rels_of_hom_lift_of_inv_doub_of_β_αβ2ψ_a, rels_of_hom_lift_of_inv_doub_of_β_αβ2ψ_b, rels_of_hom_lift_of_inv_doub_of_β_αβ2ψ_c,
+  rels_of_hom_lift_of_comm_of_βψ_αβ2ψ, rels_of_hom_lift_of_comm_of_β2ψ_αβ2ψ
+}
+
+/-! ## Definition for missing root (αβψ, αβ2ψ, α2β2ψ) -/
+
 def split_3_into_1_2 (i : ℕ) (hi : i ≤ 3) :=
   match i with
   | 0 => (0, 0)
@@ -368,52 +395,46 @@ theorem correct_of_split_5_into_2_3 (i : ℕ) (hi : i ≤ 5) :
   split
   all_goals trivial
 
--- 8.116, second relation (top of page 68)
-def rels_of_def_of_αβψ :=
-  { {βψ, (split_3_into_1_2 i hi).2, -1/2}'(correct_of_split_3_into_1_2 i hi).2 *
+def weak_define (F : Type TR) [Field F] (g : GradedChevalleyGenerator B3LargePosRoot F) : FreeGroup (GradedChevalleyGenerator B3LargePosRoot F) :=
+  let ⟨ ζ, i, hi, t ⟩ := g;
+  match ζ with
+  | αβψ => {βψ, (split_3_into_1_2 i hi).2, -1/2}'(correct_of_split_3_into_1_2 i hi).2 *
     {α, (split_3_into_1_2 i hi).1, t}'(correct_of_split_3_into_1_2 i hi).1 *
     {βψ, (split_3_into_1_2 i hi).2, 1}'(correct_of_split_3_into_1_2 i hi).2 *
     {α, (split_3_into_1_2 i hi).1, -t}'(correct_of_split_3_into_1_2 i hi).1 *
-    {βψ, (split_3_into_1_2 i hi).2, -1/2}'(correct_of_split_3_into_1_2 i hi).2 *
-    {αβψ, i, t}⁻¹
-    | (i : ℕ) (hi : i ≤ αβψ.height) (t : F) }
-
--- 8.135, first relation (page 76)
-def rels_of_def_of_αβ2ψ :=
-  { ⁅ {α, (split_4_into_1_3 i hi).1, t}'(correct_of_split_4_into_1_3 i hi).1,
+    {βψ, (split_3_into_1_2 i hi).2, -1/2}'(correct_of_split_3_into_1_2 i hi).2
+  | αβ2ψ => ⁅ {α, (split_4_into_1_3 i hi).1, t}'(correct_of_split_4_into_1_3 i hi).1,
       {β2ψ, (split_4_into_1_3 i hi).2, 1}'(correct_of_split_4_into_1_3 i hi).2 ⁆
-    * {αβ2ψ, i, t}⁻¹
-    | (i : ℕ) (hi : i ≤ αβ2ψ.height) (t : F) }
-
--- 8.174
-def rels_of_def_of_α2β2ψ :=
-  { ⁅ {αβ, (split_5_into_2_3 i hi).1, t}'(correct_of_split_5_into_2_3 i hi).1,
+  | α2β2ψ => ⁅ {αβ, (split_5_into_2_3 i hi).1, t}'(correct_of_split_5_into_2_3 i hi).1,
       {β2ψ, (split_5_into_2_3 i hi).2, 1}'(correct_of_split_5_into_2_3 i hi).2 ⁆
-    * ({α2β2ψ, i, -t} : FreeGroup (GradedChevalleyGenerator _ _))⁻¹
-    | (i : ℕ) (hi : i ≤ α2β2ψ.height) (t : F) }
+  | ζ => FreeGroup.of g
 
-def lifted_sets (F : Type TF) [Field F] : Set (Set (FreeGroup (GradedChevalleyGenerator B3LargePosRoot F))) := {
-  rels_of_nonhomog_lift_of_comm_of_αβ_βψ, rels_of_nonhomog_lift_of_comm_of_α_α2β2ψ,
-  rels_of_hom_lift_of_interchange_of_αβψ, rels_of_hom_lift_of_doub_of_αβψ,
-  rels_of_hom_lift_of_interchange_of_αβ2ψ, rels_of_hom_lift_of_comm_of_βψ_α_β2ψ,
-  rels_of_hom_lift_of_inv_doub_of_α_β2ψ_a, rels_of_hom_lift_of_inv_doub_of_α_β2ψ_b, rels_of_hom_lift_of_inv_doub_of_α_β2ψ_c,
-  rels_of_hom_lift_of_comm_of_β2ψ_αβψ, rels_of_hom_lift_of_interchange_of_α2β2ψ_a, rels_of_hom_lift_of_interchange_of_α2β2ψ_b,
-  rels_of_hom_lift_of_comm_of_ψ_αβ_β2ψ, rels_of_hom_lift_of_comm_of_αβ_αβ_β2ψ_a, rels_of_hom_lift_of_comm_of_αβ_αβ_β2ψ_b,
-  rels_of_hom_lift_of_inv_doub_of_αβ_β2ψ_a, rels_of_hom_lift_of_inv_doub_of_αβ_β2ψ_b, rels_of_hom_lift_of_inv_doub_of_αβ_β2ψ_c,
-  rels_of_hom_lift_of_inv_doub_of_β_αβ2ψ_a, rels_of_hom_lift_of_inv_doub_of_β_αβ2ψ_b, rels_of_hom_lift_of_inv_doub_of_β_αβ2ψ_c,
-  rels_of_hom_lift_of_comm_of_βψ_αβ2ψ, rels_of_hom_lift_of_comm_of_β2ψ_αβ2ψ
-}
+theorem weak_define_of_present (F : Type TR) [Field F] :
+  ∀ {g : GradedChevalleyGenerator B3LargePosRoot F}, g.ζ ∈ weakB3LargeSystem.present_roots → weak_define F g = FreeGroup.of g := by
+  intro g h_g_in_present
+  rcases g with ⟨ ζ, i, hi, t ⟩
+  cases ζ
+  all_goals simp only [weak_define] -- this will close all present roots
+  all_goals ( -- this will close the remaining (nonpresent) roots
+    simp only [present_roots] at h_g_in_present
+    contradiction
+  )
 
-def def_sets (F : Type TF) [Field F] : Set (Set (FreeGroup (GradedChevalleyGenerator B3LargePosRoot F))) := {
-  rels_of_def_of_αβψ, rels_of_def_of_αβ2ψ, rels_of_def_of_α2β2ψ
-}
+theorem weak_define_is_projection (F : Type TR) [Field F] :
+  ∀ {g : GradedChevalleyGenerator B3LargePosRoot F}, (FreeGroup.lift (weak_define F)) (weak_define F g) = weak_define F g := by
+  intro g
+  rcases g with ⟨ ζ, i, hi, t ⟩
+  cases ζ
+  all_goals simp only [weak_define, FreeGroup.lift.of, map_commutatorElement, map_inv, map_mul, free_mk]
 
 def weakB3Large (F : Type TF) [Field F] := GradedPartialChevalleyGroup.mk
   weakB3LargeSystem
   (lifted_sets F)
-  (def_sets F)
+  (weak_define F)
+  (weak_define_of_present F)
+  (weak_define_is_projection F)
 
-/-! ### Additional relations which define the full B3-large group -/
+/-! # Definition of the 'full' A3 ungraded and graded groups -/
 
 abbrev full_present_roots : Set (B3LargePosRoot) :=
   present_roots ∪ {αβψ, αβ2ψ, α2β2ψ}
@@ -431,16 +452,21 @@ abbrev full_single_commutator_pairs : Set (SingleSpanRootPair B3LargePosRoot) :=
 abbrev full_double_commutator_pairs : Set (DoubleSpanRootPair B3LargePosRoot) :=
   double_commutator_pairs ∪ {⟨ α, βψ, αβψ, α2β2ψ, 1, 1, (by ht), (by ht)⟩, ⟨ αβ, ψ, αβψ, αβ2ψ, 1, 1, (by ht), (by ht)⟩}
 
-def fullB3LargeSystem := PartialChevalleySystem.mk
+theorem full_forall_roots_mem_present :
+  ∀ (ζ : B3LargePosRoot), ζ ∈ full_present_roots := by
+    intro ζ
+    cases ζ
+    all_goals tauto
+
+def fullB3LargeSystem := PartialChevalleySystem.mk_full B3LargePosRoot
   full_present_roots
   full_trivial_commutator_pairs
   full_single_commutator_pairs
   full_double_commutator_pairs
+  full_forall_roots_mem_present
 
-def fullB3Large (F : Type TR) [Field F] := @GradedPartialChevalleyGroup.mk B3LargePosRoot _ F _
-  fullB3LargeSystem
-  (∅)
-  (∅)
+def fullB3Large (R : Type TR) [Ring R] := @PartialChevalleyGroup.mk B3LargePosRoot _ R _ fullB3LargeSystem
+def fullB3LargeGraded (F : Type TR) [Field F] := GradedPartialChevalleyGroup.full_mk B3LargePosRoot F fullB3LargeSystem
 
 /-! # Notation and macros -/
 

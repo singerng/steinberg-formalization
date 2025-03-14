@@ -508,8 +508,8 @@ theorem comm_of_β2ψ_ω :
 declare_B3Small_triv_expr_thm F β2ψ ω
 
 theorem full_rels_satisfied_in_weak_group :
-  ∀ r ∈ (fullB3Small F).all_rels, (weakB3Small F).pres_mk r = 1 := by
-  simp only [fullB3Small, weakB3Small]
+  ∀ r ∈ (fullB3SmallGraded F).all_rels, (weakB3Small F).pres_mk r = 1 := by
+  simp only [fullB3SmallGraded, weakB3Small]
   apply GradedPartialChevalleyGroup.graded_injection
   all_goals (
     intro p h

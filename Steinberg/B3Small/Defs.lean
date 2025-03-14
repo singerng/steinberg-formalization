@@ -4,6 +4,7 @@ LICENSE goes here.
 
 -/
 
+import Steinberg.Defs.PartialChevalleyGroup
 import Steinberg.Defs.GradedPartialChevalleyGroup
 import Mathlib.Tactic.DeriveFintype
 
@@ -15,7 +16,9 @@ import Mathlib.Tactic.DeriveFintype
 
 namespace Steinberg.B3Small
 
-/-! ### Defining the B3 small positive root system -/
+open PartialChevalley GradedPartialChevalley GradedChevalleyGenerator PartialChevalleySystem
+
+/-! # The B3-small positive root system -/
 
 inductive B3SmallPosRoot
   | β | ψ | ω | βψ | ψω | β2ψ | βψω
@@ -47,11 +50,13 @@ instance instCoeNat : Coe B3SmallPosRoot Nat where
 
 end B3SmallPosRoot
 
-open B3SmallPosRoot GradedPartialChevalley GradedPartialChevalleyGroup GradedChevalleyGenerator
+open B3SmallPosRoot
 
 variable {F : Type TR} [Field F]
 
-/-! # Relations -/
+/-! # Definition of the 'weak' B3-small graded group -/
+
+/-! ## Defining the 'weak' positive root system -/
 
 abbrev present_roots : Set (B3SmallPosRoot) := {β, ψ, ω, βψ, ψω, β2ψ}
 
@@ -76,6 +81,8 @@ abbrev weakB3SmallSystem := PartialChevalleySystem.mk
   (by simp only [Set.mem_singleton_iff, Set.mem_insert_iff, forall_eq, reduceCtorEq, or_self,
     or_false, or_true, and_self])
 
+/-! ## Lifted relations -/
+
 /-
 The specific relation arises from "nonhomogeneously lifting" the commutator of βψ and ψω elements. (There is no analogue
 of this relation for other root-pairs, since all other present pairs lie in a common two-dimensional subspace.)
@@ -84,6 +91,13 @@ def rels_of_nonhomog_lift_of_comm_of_βψ_ψω :=
    { ⁅ {βψ, 2, t₁ * u₁} * {βψ, 1, t₁ * u₀ + t₀ * u₁} * {βψ, 0, t₀ * u₀},
        {ψω, 2, u₁ * v₁} * {ψω, 1, u₁ * v₀ + u₀ * v₁} * {ψω, 0, u₀ * v₀} ⁆
      | (t₁ : F) (t₀ : F) (u₁ : F) (u₀ : F) (v₁ : F) (v₀ : F) }
+
+-- lifted commutator of βψ and ψω
+def lifted_sets (F : Type TR) [Field F] : Set (Set (FreeGroup (GradedChevalleyGenerator B3SmallPosRoot F))) := {
+  rels_of_nonhomog_lift_of_comm_of_βψ_ψω
+}
+
+/-! ## Definition for missing root (βψω) -/
 
 def split_3_into_1_2 (i : ℕ) (hi : i ≤ 3) :=
   match i with
@@ -97,24 +111,6 @@ theorem correct_of_split_3_into_1_2 (i : ℕ) (hi : i ≤ 3) :
   simp only [split_3_into_1_2]
   split
   all_goals trivial
-
--- There's also an alternative definition for βψω
-
-def rels_of_def_of_βψω :=
-  { ⁅ {β, (split_3_into_1_2 i hi).1, t}'(correct_of_split_3_into_1_2 i hi).1,
-      {ψω, (split_3_into_1_2 i hi).2, 1}'(correct_of_split_3_into_1_2 i hi).2 ⁆
-      * {βψω, i, t}⁻¹
-    | (i : ℕ) (hi : i ≤ βψω.height) (t : F) }
-
--- lifted commutator of βψ and ψω
-def lifted_sets (F : Type TR) [Field F] : Set (Set (FreeGroup (GradedChevalleyGenerator B3SmallPosRoot F))) := {
-  rels_of_nonhomog_lift_of_comm_of_βψ_ψω
-}
-
--- definition of βψω
-def def_sets (F : Type TR) [Field F] : Set (Set (FreeGroup (GradedChevalleyGenerator B3SmallPosRoot F))) := {
-  rels_of_def_of_βψω
-}
 
 def weak_define (F : Type TR) [Field F] (g : GradedChevalleyGenerator B3SmallPosRoot F) : FreeGroup (GradedChevalleyGenerator B3SmallPosRoot F) :=
   let ⟨ ζ, i, hi, t ⟩ := g;
@@ -148,8 +144,7 @@ def weakB3Small (F : Type TR) [Field F] := GradedPartialChevalleyGroup.mk
   (weak_define_of_present F)
   (weak_define_is_projection F)
 
-
-/-! ### Additional relations which define the full B3-small group -/
+/-! # Definition of the 'full' A3 ungraded and graded groups -/
 
 abbrev full_present_roots : Set (B3SmallPosRoot) :=
   present_roots ∪ {βψω}
@@ -175,10 +170,8 @@ abbrev fullB3SmallSystem := PartialChevalleySystem.mk_full B3SmallPosRoot
   full_double_commutator_pairs
   full_forall_roots_mem_present
 
-def fullB3Small (F : Type TR) [Field F] := @GradedPartialChevalleyGroup.mk B3SmallPosRoot _ F _
-  fullB3SmallSystem
-  (∅)
-  (by sorry)
+def fullB3Small (R : Type TR) [Ring R] := @PartialChevalleyGroup.mk B3SmallPosRoot _ R _ fullB3SmallSystem
+def fullB3SmallGraded (R : Type TR) [Ring R] := GradedPartialChevalleyGroup.full_mk B3SmallPosRoot R fullB3SmallSystem
 
 /-! # Notation and macros -/
 
