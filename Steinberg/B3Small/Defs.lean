@@ -69,6 +69,12 @@ abbrev weakB3SmallSystem := PartialChevalleySystem.mk
   trivial_commutator_pairs
   single_commutator_pairs
   double_commutator_pairs
+  (by simp only [Set.mem_insert_iff, Set.mem_singleton_iff, forall_eq_or_imp, reduceCtorEq, or_self,
+    or_false, or_true, and_self, forall_eq])
+  (by simp only [Set.mem_insert_iff, Set.mem_singleton_iff, forall_eq_or_imp, reduceCtorEq, or_self,
+    or_false, or_true, and_self, forall_eq])
+  (by simp only [Set.mem_singleton_iff, Set.mem_insert_iff, forall_eq, reduceCtorEq, or_self,
+    or_false, or_true, and_self])
 
 /-
 The specific relation arises from "nonhomogeneously lifting" the commutator of βψ and ψω elements. (There is no analogue
@@ -110,10 +116,38 @@ def def_sets (F : Type TR) [Field F] : Set (Set (FreeGroup (GradedChevalleyGener
   rels_of_def_of_βψω
 }
 
+def weak_define (F : Type TR) [Field F] (g : GradedChevalleyGenerator B3SmallPosRoot F) : FreeGroup (GradedChevalleyGenerator B3SmallPosRoot F) :=
+  let ⟨ ζ, i, hi, t ⟩ := g;
+  match ζ with
+  | βψω => ⁅ {β,(split_3_into_1_2 i (by ht)).1, g.t}'(correct_of_split_3_into_1_2 i (by ht)).1,
+    {ψω, (split_3_into_1_2 i (by ht)).2, 1}'(correct_of_split_3_into_1_2 i (by ht)).2 ⁆
+  | ζ => FreeGroup.of g
+
+theorem weak_define_of_present (F : Type TR) [Field F] :
+  ∀ {g : GradedChevalleyGenerator B3SmallPosRoot F}, g.ζ ∈ weakB3SmallSystem.present_roots → weak_define F g = FreeGroup.of g := by
+  intro g h_g_in_present
+  rcases g with ⟨ ζ, i, hi, t ⟩
+  cases ζ
+  all_goals simp only [weak_define] -- this will close all present roots
+  all_goals ( -- this will close the remaining (nonpresent) roots
+    simp only [present_roots] at h_g_in_present
+    contradiction
+  )
+
+theorem weak_define_is_projection (F : Type TR) [Field F] :
+  ∀ {g : GradedChevalleyGenerator B3SmallPosRoot F}, (FreeGroup.lift (weak_define F)) (weak_define F g) = weak_define F g := by
+  intro g
+  rcases g with ⟨ ζ, i, hi, t ⟩
+  cases ζ
+  all_goals simp only [weak_define, FreeGroup.lift.of, map_commutatorElement, free_mk]
+
 def weakB3Small (F : Type TR) [Field F] := GradedPartialChevalleyGroup.mk
   weakB3SmallSystem
   (lifted_sets F)
-  (def_sets F)
+  (weak_define F)
+  (weak_define_of_present F)
+  (weak_define_is_projection F)
+
 
 /-! ### Additional relations which define the full B3-small group -/
 
@@ -128,16 +162,23 @@ abbrev full_single_commutator_pairs : Set (SingleSpanRootPair B3SmallPosRoot) :=
 
 abbrev full_double_commutator_pairs : Set (DoubleSpanRootPair B3SmallPosRoot) := double_commutator_pairs
 
-abbrev fullB3SmallSystem := PartialChevalleySystem.mk
+theorem full_forall_roots_mem_present :
+  ∀ (ζ : B3SmallPosRoot), ζ ∈ full_present_roots := by
+    intro ζ
+    cases ζ
+    all_goals tauto
+
+abbrev fullB3SmallSystem := PartialChevalleySystem.mk_full B3SmallPosRoot
   full_present_roots
   full_trivial_commutator_pairs
   full_single_commutator_pairs
   full_double_commutator_pairs
+  full_forall_roots_mem_present
 
 def fullB3Small (F : Type TR) [Field F] := @GradedPartialChevalleyGroup.mk B3SmallPosRoot _ F _
   fullB3SmallSystem
   (∅)
-  (∅)
+  (by sorry)
 
 /-! # Notation and macros -/
 

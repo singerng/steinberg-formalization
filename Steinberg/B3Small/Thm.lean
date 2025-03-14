@@ -24,8 +24,8 @@ variable {F : Type TF} [Field F] (Fchar : (2 : F) ≠ 0)
 
 /-! ### Double commutator theorem -/
 
-theorem comm_of_β_ψ : double_commutator_of_root_pair (weakB3Small F).pres_mk β ψ βψ β2ψ 1 1 (by rfl) (by rfl) :=
-  (weakB3Small F).double_commutator_helper β ψ βψ β2ψ 1 1 (by rfl) (by rfl)
+theorem comm_of_β_ψ : double_commutator_of_root_pair (weakB3Small F).pres_mk ⟨β, ψ, βψ, β2ψ, 1, 1, rfl, by rfl⟩ :=
+  (weakB3Small F).double_commutator_helper ⟨β, ψ, βψ, β2ψ, 1, 1, by rfl, by rfl⟩
     (by simp only [weakB3Small, trivial_commutator_pairs]; tauto)
 
 /-! ### Nonhomogeneous lift -/
@@ -34,7 +34,11 @@ theorem nonhomog_lift_of_comm_of_βψ_ψω :
     ⁅ {βψ, 2, t₁ * u₁} * {βψ, 1, t₁ * u₀ + t₀ * u₁} * {βψ, 0, t₀ * u₀}
     , {ψω, 2, u₁ * v₁} * {ψω, 1, u₁ * v₀ + u₀ * v₁} * {ψω, 0, u₀ * v₀} ⁆
     = 1 := by
-  hom_tac rels_of_nonhomog_lift_of_comm_of_βψ_ψω [t₁, t₀, u₁, u₀, v₁, v₀]
+  intro t₁ t₀ u₁ u₀ v₁ v₀
+  apply eq_of_mul_inv_eq_one
+  apply (weakB3Small F).lifted_helper rels_of_nonhomog_lift_of_comm_of_βψ_ψω
+  · simp only [weakB3Small, lifted_sets, Set.mem_singleton_iff]
+  · exists t₁, t₀, u₁, u₀, v₁, v₀
 
 /-! ### Definition of missing root -/
 theorem def_of_βψω : forall_i_t βψω,
@@ -42,43 +46,25 @@ theorem def_of_βψω : forall_i_t βψω,
     , {ψω, (split_3_into_1_2 i hi).2, 1}'(correct_of_split_3_into_1_2 i hi).2 ⁆
       = {βψω, i, t} := by
   intro t i hi
-  apply GradedPartialChevalleyGroup.helper
-  apply (weakB3Small F).def_helper rels_of_def_of_βψω
-  · simp only [weakB3Small, def_sets, Set.mem_singleton_iff]
-  · exists t, i, hi
+  symm
+  apply (weakB3Small F).def_helper
 
-theorem refl_of_lifted :
-  ∀ S ∈ lifted_sets F,
-    ∀ r ∈ S, (weakB3Small F).pres_mk (FreeGroup.map refl_deg_of_gen r) = 1 := by
+theorem b3small_valid :
+  refl_valid (weakB3Small F) := by
+  simp only [refl_valid]
+  nth_rewrite 1 [weakB3Small]
   simp only [lifted_sets, Set.mem_singleton_iff, forall_eq, rels_of_nonhomog_lift_of_comm_of_βψ_ψω, Set.mem_setOf_eq]
   intro r h
   rcases h with ⟨ t₁, t₀, u₁, u₀, v₁, v₀, rfl ⟩
-  simp only [free_mk, map_commutatorElement, map_mul, FreeGroup.map.of, refl_deg_of_gen,
-    PositiveRootSystem.height, height, tsub_self, Nat.add_one_sub_one, tsub_zero]
+  simp only [map_mul, map_commutatorElement, free_mk, FreeGroup.lift.of]
+  repeat rw [refl_def_of_present _ _ (by tauto)]
+  simp only [refl_of_gen, PositiveRootSystem.height, height]
+  simp_arith
   repeat rw [← free_mk]
-  rw [add_comm, add_comm (u₁ * v₀)]
+  rw [add_comm (t₁ * u₀), add_comm (u₁ * v₀)]
   grw [expr_βψ_βψ_as_βψ_βψ, expr_βψ_βψ_as_βψ_βψ (i := 0), expr_βψ_βψ_as_βψ_βψ,
-    expr_ψω_ψω_as_ψω_ψω, expr_ψω_ψω_as_ψω_ψω (i := 0), expr_ψω_ψω_as_ψω_ψω]
+       expr_ψω_ψω_as_ψω_ψω, expr_ψω_ψω_as_ψω_ψω (i := 0), expr_ψω_ψω_as_ψω_ψω]
   exact nonhomog_lift_of_comm_of_βψ_ψω t₀ t₁ u₀ u₁ v₀ v₁
-
--- def relations are preserved under reflection
-theorem refl_of_def : ∀ S ∈ def_sets F, ∀ r ∈ S, (weakB3Small F).pres_mk (FreeGroup.map refl_deg_of_gen r) = 1 := by
-  intro s hs r hr
-  simp_all only [def_sets, Set.mem_insert_iff, Set.mem_singleton_iff]
-  apply eq_one_of_mem_rels
-  suffices (FreeGroup.map refl_deg_of_gen r) ∈ s by
-    simp only [all_rels, Set.sUnion_insert, Set.sUnion_singleton, Set.mem_union, Set.mem_sUnion]
-    tauto
-  simp only [rels_of_def_of_βψω] at hs
-  rcases hs
-  rcases hr with ⟨i, hi, t, rfl⟩
-  chev_simp [split_3_into_1_2]
-  exists (βψω.height - i), (by omega), t
-  split
-  all_goals (simp only; congr)
-
-theorem b3small_valid : ReflDeg.refl_valid (weakB3Small F) :=
-  ⟨refl_of_lifted, refl_of_def⟩
 
 /-! ### 8.37 -/
 
@@ -170,7 +156,7 @@ private lemma comm_of_βψ_ψω_02 : ∀ (t u : F), ⁅ {βψ, 0, t}, {ψω, 2, 
   rw [this, comm_of_βψ_ψω_20, map_one]
 
 -- 8.42
-theorem comm_of_βψ_ψω : trivial_commutator_of_root_pair (weakB3Small F).pres_mk βψ ψω := by
+theorem comm_of_βψ_ψω : trivial_commutator_of_root_pair (weakB3Small F).pres_mk ⟨βψ, ψω⟩ := by
   intro i j hi hj t u
   have : (i = 0 ∧ j = 2) ∨ (i = 2 ∧ j = 0) ∨ ((i, j) ∈ ij_jk_image) := by
     rw [ij_jk_image]
@@ -234,14 +220,13 @@ private lemma write_t_as_2tu (t : F) : ∃ (x y : F), t = 2 * x * y := ⟨1/2, t
 
 -- 8.43
 theorem comm_of_β2ψ_ψω :
-    trivial_commutator_of_root_pair (weakB3Small F).pres_mk β2ψ ψω := by
+    trivial_commutator_of_root_pair (weakB3Small F).pres_mk ⟨β2ψ, ψω⟩ := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.2
   rcases write_t_as_2tu Fchar t with ⟨x, y, rfl⟩
   rcases decompose 1 2 i hi with ⟨i₁, i₂, rfl, hi₁, hi₂⟩
   grw [expr_β2ψ_as_ψ_βψ_ψ_βψ hi₁ hi₂, expr_βψ_ψω_as_ψω_βψ,
     expr_ψ_ψω_as_ψω_ψ, expr_βψ_ψω_as_ψω_βψ, expr_ψ_ψω_as_ψω_ψ]
-
 declare_B3Small_triv_expr_thm F β2ψ ψω
 
 -- 8.44
@@ -392,7 +377,7 @@ theorem expr_βψω_as_β_ψω_β_ψω :
 
 -- 8.48
 theorem comm_of_βψω_ω :
-    trivial_commutator_of_root_pair (weakB3Small F).pres_mk βψω ω := by
+    trivial_commutator_of_root_pair (weakB3Small F).pres_mk ⟨βψω, ω⟩ := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.2
   rcases decompose 1 2 i hi with ⟨i₁, i₂, rfl, hi₁, hi₂⟩
@@ -402,7 +387,7 @@ declare_B3Small_triv_expr_thm F βψω ω
 
 -- 8.49
 theorem comm_of_βψω_β :
-    trivial_commutator_of_root_pair (weakB3Small F).pres_mk βψω β := by
+    trivial_commutator_of_root_pair (weakB3Small F).pres_mk ⟨βψω, β⟩ := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.2
   rcases decompose 2 1 i hi with ⟨i₁, i₂, rfl, hi₁, hi₂⟩
@@ -413,7 +398,7 @@ declare_B3Small_triv_expr_thm F βψω β
 
 -- 8.50
 theorem comm_of_βψω_ψ :
-    trivial_commutator_of_root_pair (weakB3Small F).pres_mk βψω ψ := by
+    trivial_commutator_of_root_pair (weakB3Small F).pres_mk ⟨βψω, ψ⟩ := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.2
   rcases decompose 1 2 i hi with ⟨i₁, i₂, rfl, hi₁, hi₂⟩
@@ -427,7 +412,7 @@ declare_B3Small_triv_expr_thm F βψω ψ
 
 -- 8.51
 theorem comm_of_βψω_ψω :
-    trivial_commutator_of_root_pair (weakB3Small F).pres_mk βψω ψω := by
+    trivial_commutator_of_root_pair (weakB3Small F).pres_mk ⟨βψω, ψω⟩ := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.2
   rcases decompose 1 1 j hj with ⟨j₁, j₂, rfl, hj₁, hj₂⟩
@@ -438,7 +423,7 @@ declare_B3Small_triv_expr_thm F βψω ψω
 
 -- 8.52
 theorem comm_of_βψω_βψ :
-    trivial_commutator_of_root_pair (weakB3Small F).pres_mk βψω βψ := by
+    trivial_commutator_of_root_pair (weakB3Small F).pres_mk ⟨βψω, βψ⟩ := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.2
   rcases decompose 1 1 j hj with ⟨j₁, j₂, rfl, hj₁, hj₂⟩
@@ -450,7 +435,7 @@ declare_B3Small_triv_expr_thm F βψω βψ
 
 -- 8.53
 theorem comm_of_βψω_β2ψ :
-    trivial_commutator_of_root_pair (weakB3Small F).pres_mk βψω β2ψ := by
+    trivial_commutator_of_root_pair (weakB3Small F).pres_mk ⟨βψω, β2ψ⟩ := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.2
   rcases decompose 1 2 j hj with ⟨j₁, j₂, rfl, hj₁, hj₂⟩
@@ -509,7 +494,7 @@ theorem expr_βψ_ω_as_ω_βψω_βψ : forall_ij_tu βψ ω,
 
 -- 8.58
 theorem comm_of_β2ψ_ω :
-    trivial_commutator_of_root_pair (weakB3Small F).pres_mk β2ψ ω := by
+    trivial_commutator_of_root_pair (weakB3Small F).pres_mk ⟨β2ψ, ω⟩ := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.2
   rcases decompose 1 2 i hi with ⟨i₁, i₂, rfl, hi₁, hi₂⟩
