@@ -554,10 +554,10 @@ end forallNotation
 
 macro "hom_tac " rel:ident " [" intros:ident,* "]" : tactic => `(tactic|
   ( intros $intros*;
-    apply GradedPartialChevalleyGroup.helper;
+    apply eq_of_mul_inv_eq_one;
     apply (weakB3Large _).lifted_helper $rel;
-    simp only [weakB3Large, lifted_sets, Set.mem_insert_iff,
-      Set.mem_singleton_iff, true_or, or_true];
+    simp only [weakB3Large, lifted_sets, Set.mem_singleton_iff,
+      Set.mem_insert_iff, Set.mem_singleton_iff, true_or, or_true];
     exists $intros,* ))
 
 end Steinberg.B3Large

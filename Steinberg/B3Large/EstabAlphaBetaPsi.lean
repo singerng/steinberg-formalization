@@ -143,7 +143,7 @@ theorem expr_αβψ_as_βψ_α_βψ_α_βψ : forall_ij_tu α βψ,
 
 -- 8.117
 theorem comm_of_α_αβψ :
-    trivial_commutator_of_root_pair (weakB3Large F).pres_mk α αβψ := by
+    trivial_commutator_of_root_pair (weakB3Large F).pres_mk ⟨α, αβψ⟩ := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.mpr
   rcases decompose αβ.height ψ.height j hj with ⟨ j₁, j₂, ⟨ rfl, hj₁, hj₂ ⟩ ⟩
@@ -155,7 +155,7 @@ declare_B3Large_triv_expr_thm F α αβψ
 
 -- 8.118
 theorem comm_of_αβ_αβψ :
-    trivial_commutator_of_root_pair (weakB3Large F).pres_mk αβ αβψ := by
+    trivial_commutator_of_root_pair (weakB3Large F).pres_mk ⟨αβ, αβψ⟩ := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.mpr
   rcases decompose αβ.height ψ.height j hj with ⟨ j₁, j₂, ⟨ rfl, hj₁, hj₂ ⟩ ⟩
@@ -167,7 +167,7 @@ declare_B3Large_triv_expr_thm F αβ αβψ
 
 -- 8.119
 theorem comm_of_β_αβψ :
-    trivial_commutator_of_root_pair (weakB3Large F).pres_mk β αβψ := by
+    trivial_commutator_of_root_pair (weakB3Large F).pres_mk ⟨β, αβψ⟩ := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.mpr
   rcases decompose αβ.height ψ.height j hj with ⟨ j₁, j₂, ⟨ rfl, hj₁, hj₂ ⟩ ⟩
@@ -383,7 +383,6 @@ theorem comm_of_α_α_β2ψ : forall_ijk_tuv α α β2ψ,
   exact triv_comm_iff_commutes.1 (comm_of_α_α_β2ψ Fchar hi hj hk t u v)
 
 -- Proposition 8.130
-set_option linter.unusedVariables false in
 theorem sufficient_conditions_for_comm_of_αβψ_and_ψ :
   ∀ ⦃i j k : ℕ⦄ (hi : i ≤ α.height) (hj : j ≤ βψ.height) (hk : k ≤ ψ.height)
   (hyp : ∀ (t u v : F), ⁅{βψ, j, t}, ⁅{α, i, u}, {β2ψ, j + k, v}⁆⁆ = 1),

@@ -822,6 +822,7 @@ private lemma expr_α2β2ψ_as_comm_of_αβ_β2ψ_00 :
   intro t u
   have := @def_of_α2β2ψ _ _ 0 (by trivial) (t * u)
   unfold split_5_into_2_3 at this
+  simp only at this
   rw [neg_mul, ←this, @interchange_of_α2β2ψ_trans_αβ_β2ψ _ _ Fchar 0 0 0 (by trivial) (by trivial) (by trivial)]
 
 private lemma expr_α2β2ψ_as_comm_of_αβψ_βψ_00 :

@@ -39,8 +39,8 @@ declare_B3Large_single_comm_of_root_pair_thms F α β αβ 1
 declare_B3Large_single_comm_of_root_pair_thms F ψ βψ β2ψ 2
 
 -- Double: {(β, ψ)}
-theorem comm_of_β_ψ : double_commutator_of_root_pair (weakB3Large F).pres_mk β ψ βψ β2ψ 1 1 (by rfl) (by rfl) :=
-  (weakB3Large F).double_commutator_helper β ψ βψ β2ψ 1 1 (by rfl) (by rfl)
+theorem comm_of_β_ψ : double_commutator_of_root_pair (weakB3Large F).pres_mk ⟨β, ψ, βψ, β2ψ, 1, 1, by rfl, by rfl⟩ :=
+  (weakB3Large F).double_commutator_helper ⟨β, ψ, βψ, β2ψ, 1, 1, by rfl, by rfl⟩
     (by unfold weakB3Large; simp)
 
 /-! ### Mixed-degree theorem for specific roots -/

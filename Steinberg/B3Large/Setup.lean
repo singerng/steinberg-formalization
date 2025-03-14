@@ -26,33 +26,25 @@ theorem def_of_αβψ : forall_i_t αβψ,
   {βψ, (split_3_into_1_2 i hi).2, -1/2}'(correct_of_split_3_into_1_2 i hi).2
     = {αβψ, i, t} := by
   intro i hi t
-  apply GradedPartialChevalleyGroup.helper
-  apply (weakB3Large F).def_helper rels_of_def_of_αβψ
-  · simp only [weakB3Large, def_sets]
-    tauto
-  · exists i, hi, t
+  symm
+  apply (weakB3Large F).def_helper
 
 theorem def_of_αβ2ψ : forall_i_t αβ2ψ,
     ⁅ ({α, (split_4_into_1_3 i hi).1, t}'(correct_of_split_4_into_1_3 i hi).1),
       ({β2ψ, (split_4_into_1_3 i hi).2, 1}'(correct_of_split_4_into_1_3 i hi).2)
     ⁆ = {αβ2ψ, i, t} := by
   intro i hi t
-  apply GradedPartialChevalleyGroup.helper
-  apply (weakB3Large F).def_helper rels_of_def_of_αβ2ψ
-  · simp only [weakB3Large, def_sets]
-    tauto
-  · exists i, hi, t
+  symm
+  apply (weakB3Large F).def_helper
 
 theorem def_of_α2β2ψ : forall_i_t α2β2ψ,
     ⁅ ({αβ, (split_5_into_2_3 i hi).1, t}'(correct_of_split_5_into_2_3 i hi).1),
       ({β2ψ, (split_5_into_2_3 i hi).2, 1}'(correct_of_split_5_into_2_3 i hi).2)
     ⁆ = {α2β2ψ, i, -t} := by
   intro i hi t
-  apply GradedPartialChevalleyGroup.helper
-  apply (weakB3Large F).def_helper rels_of_def_of_α2β2ψ
-  · simp only [weakB3Large, def_sets]
-    tauto
-  · exists i, hi, t
+  symm
+  sorry
+  --apply (weakB3Large F).def_helper
 
 /-! ### Nonhomogeneous lift -/
 
@@ -210,31 +202,37 @@ theorem raw_hom_lift_of_comm_of_β2ψ_αβ2ψ : forall_ijk_tuv,
     ⁅ {β2ψ, j + 2 * k, u * v^2}, ⁅ {α, i, t}, {β2ψ, j + 2 * k, u * v^2} ⁆ ⁆ = 1 := by
   hom_tac rels_of_hom_lift_of_comm_of_β2ψ_αβ2ψ [i, j, k, hi, hj, hk, t, u, v]
 
-theorem refl_of_lifted :
-  ∀ S ∈ lifted_sets F,
-    ∀ r ∈ S, (weakB3Large F).pres_mk (FreeGroup.map refl_deg_of_gen r) = 1 := by
-  simp only [lifted_sets]
-  intro s hs r hr
-  simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hs
-  rcases hs with h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h
-  all_goals subst s
-  · sorry
-  · sorry
-  · simp only [rels_of_hom_lift_of_interchange_of_αβψ] at hr
-    rcases hr with ⟨ i, j, k, hi, hj, hk, t, u, v, rfl ⟩
-    simp only [free_mk, map_commutatorElement, map_mul, FreeGroup.map.of, refl_deg_of_gen,
-    PositiveRootSystem.height, height, tsub_self, Nat.add_one_sub_one, tsub_zero, neg_mul, map_inv, FreeGroup.map.of]
-    repeat rw [← free_mk]
-    have hi' : (1-i) ≤ α.height := by simp
-    have hj' : (1-j) ≤ β.height := by simp
-    have hk' : (1-k) ≤ ψ.height := by simp
-    have := raw_hom_lift_of_interchange_of_αβψ' hi' hj' hk' t u v
-    rw [← this]
-    congr
-    all_goals ht
-    all_goals group
-  · sorry
-  stop sorry
+-- theorem refl_of_lifted :
+--   ∀ S ∈ lifted_sets F,
+--     ∀ r ∈ S, (weakB3Large F).pres_mk (FreeGroup.map refl_deg_of_gen r) = 1 := by
+--   simp only [lifted_sets]
+--   intro s hs r hr
+--   simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hs
+--   rcases hs with h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h
+--   all_goals subst s
+--   · sorry
+--   · sorry
+--   · simp only [rels_of_hom_lift_of_interchange_of_αβψ] at hr
+--     rcases hr with ⟨ i, j, k, hi, hj, hk, t, u, v, rfl ⟩
+--     simp only [free_mk, map_commutatorElement, map_mul, FreeGroup.map.of, refl_deg_of_gen,
+--     PositiveRootSystem.height, height, tsub_self, Nat.add_one_sub_one, tsub_zero, neg_mul, map_inv, FreeGroup.map.of]
+--     repeat rw [← free_mk]
+--     have hi' : (1-i) ≤ α.height := by simp
+--     have hj' : (1-j) ≤ β.height := by simp
+--     have hk' : (1-k) ≤ ψ.height := by simp
+--     have := raw_hom_lift_of_interchange_of_αβψ' hi' hj' hk' t u v
+--     rw [← this]
+--     congr
+--     all_goals ht
+--     all_goals group
+--   · sorry
+--   stop sorry
+
+theorem b3large_valid :
+  refl_valid (weakB3Large F) := by
+  simp only [refl_valid]
+  nth_rewrite 1 [weakB3Large]
+  sorry
 
 include Fchar
 
@@ -423,7 +421,7 @@ private lemma comm_of_αβ_βψ_02 : ∀ (t u : F), ⁅ {αβ, 0, t}, {βψ, 2, 
 
 -- 8.115
 theorem comm_of_αβ_βψ :
-    trivial_commutator_of_root_pair (weakB3Large F).pres_mk αβ βψ := by
+    trivial_commutator_of_root_pair (weakB3Large F).pres_mk ⟨αβ, βψ⟩ := by
   intro i j hi hj t u
   by_cases hij : (i, j) ∈ ij_jk_image
   · apply image_of_homog_lift_of_comm_of_αβ_βψ hi hj hij
