@@ -77,7 +77,7 @@ theorem raw_hom_lift_of_doub_of_αβψ' : forall_ijk_tuv,
     {ψ, k, -v / 2} * {αβ, i + j, t * u} * {ψ, k, v} * {αβ, i + j, -t * u} * {ψ, k, -v / 2} *
     {ψ, k, -v / 2} * {αβ, i + j, t * u} * {ψ, k, v} * {αβ, i + j, -t * u} * {ψ, k, -v / 2} =
     {ψ, k, -v} * {αβ, i + j, t * u} * {ψ, k, 2 * v} * {αβ, i + j, -t * u} * {ψ, k, -v} := by
-  hom_tac rels_of_hom_lift_of_doub_of_αβψ [i, j, k, hi, hj, hk, t, u, v]
+  hom_tac base_rel_of_hom_lift_of_doub_of_αβψ [i, j, k, hi, hj, hk, t, u, v]
 
 -- this is slightly annoying b/c we want to switch the index on i to (0,1,2)
 theorem raw_hom_lift_of_doub_of_αβψ : forall_ik_tuv αβ ψ,
@@ -95,145 +95,116 @@ theorem raw_hom_lift_of_interchange_of_αβ2ψ : forall_ijk_tuv,
     ⁅ {ψ, k, -v / 2} * {αβ, i + j, t * u} * {ψ, k, v} * {αβ, i + j, -t * u} * {ψ, k, -v / 2},
       {ψ, k, v} ⁆
       = ⁅ {α, i, t}, {β2ψ, j + 2 * k, -2 * u * v^2} ⁆ := by
-  hom_tac rels_of_hom_lift_of_interchange_of_αβ2ψ [i, j, k, hi, hj, hk, t, u, v]
+  hom_tac base_rel_of_hom_lift_of_interchange_of_αβ2ψ [i, j, k, hi, hj, hk, t, u, v]
 
 -- 8.86
 theorem raw_hom_lift_of_comm_of_βψ_α_β2ψ : forall_ijk_tuv,
     ⁅ {βψ, j + k, u * v}, ⁅ {α, i, t}, {β2ψ, j + 2 * k, u * v^2} ⁆ ⁆ = 1 := by
-  hom_tac rels_of_hom_lift_of_comm_of_βψ_α_β2ψ [i, j, k, hi, hj, hk, t, u, v]
+  hom_tac base_rel_of_hom_lift_of_comm_of_βψ_α_β2ψ [i, j, k, hi, hj, hk, t, u, v]
 
 -- 8.87a
 theorem raw_hom_lift_of_inv_doub_of_α_β2ψ_a : forall_ijk_tuv,
     ⁅ {α, i, t}, {β2ψ, j + 2 * k, u * v^2} ⁆ = ⁅ {α, i, -t}, {β2ψ, j + 2 * k, -u * v^2} ⁆ := by
-  hom_tac rels_of_hom_lift_of_inv_doub_of_α_β2ψ_a [i, j, k, hi, hj, hk, t, u, v]
+  hom_tac base_rel_of_hom_lift_of_inv_doub_of_α_β2ψ_a [i, j, k, hi, hj, hk, t, u, v]
 
 -- 8.87b
 theorem raw_hom_lift_of_inv_doub_of_α_β2ψ_b : forall_ijk_tuv,
     ⁅ {α, i, t}, {β2ψ, j + 2 * k, u * v^2} ⁆ * ⁅ {α, i, t}, {β2ψ, j + 2 * k, -u * v^2} ⁆ = 1 := by
-  hom_tac rels_of_hom_lift_of_inv_doub_of_α_β2ψ_b [i, j, k, hi, hj, hk, t, u, v]
+  hom_tac base_rel_of_hom_lift_of_inv_doub_of_α_β2ψ_b [i, j, k, hi, hj, hk, t, u, v]
 
 -- 8.87c
 theorem raw_hom_lift_of_inv_doub_of_α_β2ψ_c : forall_ijk_tuv,
     ⁅ {α, i, t} , {β2ψ, j + 2 * k, u * v^2} ⁆
     * ⁅ {α, i, t}, {β2ψ, j + 2 * k, u * v^2} ⁆
       = ⁅{α, i, t}, {β2ψ, j + 2 * k, 2 * u * v^2} ⁆ := by
-  hom_tac rels_of_hom_lift_of_inv_doub_of_α_β2ψ_c [i, j, k, hi, hj, hk, t, u, v]
+  hom_tac base_rel_of_hom_lift_of_inv_doub_of_α_β2ψ_c [i, j, k, hi, hj, hk, t, u, v]
 
 -- 8.88
 theorem raw_hom_lift_of_comm_of_β2ψ_αβψ : forall_ijk_tuv,
     ⁅ {β2ψ, j + 2 * k, u * v^2},
       {ψ, k, -v / 2} * {αβ, i + j, t * u} * {ψ, k, v} * {αβ, i + j, -t * u} * {ψ, k, -v / 2} ⁆ = 1 := by
-  hom_tac rels_of_hom_lift_of_comm_of_β2ψ_αβψ [i, j, k, hi, hj, hk, t, u, v]
+  hom_tac base_rel_of_hom_lift_of_comm_of_β2ψ_αβψ [i, j, k, hi, hj, hk, t, u, v]
 
 -- 8.89a
 theorem raw_hom_lift_of_interchange_of_α2β2ψ_a : forall_ijk_tuv,
     ⁅ {αβ, i + j, t * u}, {β2ψ, j + 2 * k, 2 * u * v^2} ⁆
       = ⁅ {ψ, k, -v / 2} * {αβ, i + j, t * u} * {ψ, k, v} * {αβ, i + j, -t * u} * {ψ, k, -v / 2},
           {βψ, j + k, u * v} ⁆ := by
-  hom_tac rels_of_hom_lift_of_interchange_of_α2β2ψ_a [i, j, k, hi, hj, hk, t, u, v]
+  hom_tac base_rel_of_hom_lift_of_interchange_of_α2β2ψ_a [i, j, k, hi, hj, hk, t, u, v]
 
 -- 8.89b
 theorem raw_hom_lift_of_interchange_of_α2β2ψ_b : forall_ijk_tuv,
     ⁅ {ψ, k, -v / 2} * {αβ, i + j, t * u} * {ψ, k, v} * {αβ, i + j, -t * u} * {ψ, k, -v / 2},
       {βψ, j + k, u * v} ⁆
       = ⁅ ⁅ {α, i, t}, {β2ψ, j + 2 * k, 2 * u * v^2} ⁆, {β, j, u} ⁆ := by
-  hom_tac rels_of_hom_lift_of_interchange_of_α2β2ψ_b [i, j, k, hi, hj, hk, t, u, v]
+  hom_tac base_rel_of_hom_lift_of_interchange_of_α2β2ψ_b [i, j, k, hi, hj, hk, t, u, v]
 
 -- 8.90
 theorem raw_hom_lift_of_comm_of_ψ_αβ_β2ψ : forall_ijk_tuv,
     ⁅ {ψ, k, v}, ⁅ {αβ, i + j, t * u}, {β2ψ, j + 2 * k, u * v^2} ⁆ ⁆ = 1 := by
-  hom_tac rels_of_hom_lift_of_comm_of_ψ_αβ_β2ψ [i, j, k, hi, hj, hk, t, u, v]
+  hom_tac base_rel_of_hom_lift_of_comm_of_ψ_αβ_β2ψ [i, j, k, hi, hj, hk, t, u, v]
 
 -- 8.91a
 theorem raw_hom_lift_of_comm_of_αβ_αβ_β2ψ_a : forall_ijk_tuv,
     ⁅ {αβ, i + j, t * u}, ⁅ {αβ, i + j, t * u}, {β2ψ, j + 2 * k, u * v^2} ⁆ ⁆ = 1 := by
-  hom_tac rels_of_hom_lift_of_comm_of_αβ_αβ_β2ψ_a [i, j, k, hi, hj, hk, t, u, v]
+  hom_tac base_rel_of_hom_lift_of_comm_of_αβ_αβ_β2ψ_a [i, j, k, hi, hj, hk, t, u, v]
 
 -- 8.91b
 theorem raw_hom_lift_of_comm_of_αβ_αβ_β2ψ_b : forall_ijk_tuv,
     ⁅ {αβ, i + j, t * u}, ⁅ {αβ, i + j, -t * u}, {β2ψ, j + 2 * k, u * v^2} ⁆ ⁆ = 1 := by
-  hom_tac rels_of_hom_lift_of_comm_of_αβ_αβ_β2ψ_b [i, j, k, hi, hj, hk, t, u, v]
+  hom_tac base_rel_of_hom_lift_of_comm_of_αβ_αβ_β2ψ_b [i, j, k, hi, hj, hk, t, u, v]
 
 -- 8.92a
 theorem raw_hom_lift_of_inv_doub_of_αβ_β2ψ_a : forall_ijk_tuv,
     ⁅ {αβ, i + j, t * u}, {β2ψ, j + 2 * k, u * v^2} ⁆
       = ⁅ {αβ, i + j, -t * u}, {β2ψ, j + 2 * k, -u * v^2} ⁆ := by
-  hom_tac rels_of_hom_lift_of_inv_doub_of_αβ_β2ψ_a [i, j, k, hi, hj, hk, t, u, v]
+  hom_tac base_rel_of_hom_lift_of_inv_doub_of_αβ_β2ψ_a [i, j, k, hi, hj, hk, t, u, v]
 
 -- 8.92b
 theorem raw_hom_lift_of_inv_doub_of_αβ_β2ψ_b : forall_ijk_tuv,
     ⁅ {αβ, i + j, t * u}, {β2ψ, j + 2 * k, u * v^2} ⁆
     * ⁅ {αβ, i + j, -t * u}, {β2ψ, j + 2 * k, u * v^2} ⁆ = 1 := by
-  hom_tac rels_of_hom_lift_of_inv_doub_of_αβ_β2ψ_b [i, j, k, hi, hj, hk, t, u, v]
+  hom_tac base_rel_of_hom_lift_of_inv_doub_of_αβ_β2ψ_b [i, j, k, hi, hj, hk, t, u, v]
 
 -- 8.92c
 theorem raw_hom_lift_of_inv_doub_of_αβ_β2ψ_c : forall_ijk_tuv,
     ⁅ {αβ, i + j, t * u}, {β2ψ, j + 2 * k, u * v^2} ⁆
     * ⁅ {αβ, i + j, t * u}, {β2ψ, j + 2 * k, u * v^2} ⁆
       = ⁅ {αβ, i + j, 2 * t * u}, {β2ψ, j + 2 * k, u * v^2} ⁆ := by
-  hom_tac rels_of_hom_lift_of_inv_doub_of_αβ_β2ψ_c [i, j, k, hi, hj, hk, t, u, v]
+  hom_tac base_rel_of_hom_lift_of_inv_doub_of_αβ_β2ψ_c [i, j, k, hi, hj, hk, t, u, v]
 
 -- 8.93a
 theorem raw_hom_lift_of_inv_doub_of_β_αβ2ψ_a : forall_ijk_tuv,
     ⁅ {β, j, u},
       ⁅ {α, i, t}, {β2ψ, j + 2 * k, u * v^2} ⁆ ⁆
       = ⁅ {β, j, -u}, ⁅ {α, i, -t}, {β2ψ, j + 2 * k, u * v^2} ⁆ ⁆ := by
-  hom_tac rels_of_hom_lift_of_inv_doub_of_β_αβ2ψ_a [i, j, k, hi, hj, hk, t, u, v]
+  hom_tac base_rel_of_hom_lift_of_inv_doub_of_β_αβ2ψ_a [i, j, k, hi, hj, hk, t, u, v]
 
 -- 8.93b
 theorem raw_hom_lift_of_inv_doub_of_β_αβ2ψ_b : forall_ijk_tuv,
     ⁅ {β, j, u}, ⁅ {α, i, t}, {β2ψ, j + 2 * k, u * v^2} ⁆ ⁆
     * ⁅ {β, j, -u}, ⁅ {α, i, t}, {β2ψ, j + 2 * k, u * v^2} ⁆ ⁆ = 1 := by
-  hom_tac rels_of_hom_lift_of_inv_doub_of_β_αβ2ψ_b [i, j, k, hi, hj, hk, t, u, v]
+  hom_tac base_rel_of_hom_lift_of_inv_doub_of_β_αβ2ψ_b [i, j, k, hi, hj, hk, t, u, v]
 
 -- 8.93c
 theorem raw_hom_lift_of_inv_doub_of_β_αβ2ψ_c : forall_ijk_tuv,
     ⁅ {β, j, u}, ⁅ {α, i, t}, {β2ψ, j + 2 * k, u * v^2} ⁆ ⁆
     * ⁅ {β, j, u}, ⁅ {α, i, t}, {β2ψ, j + 2 * k, u * v^2} ⁆ ⁆
       = ⁅ {β, j, 2 * u}, ⁅ {α, i, t}, {β2ψ, j + 2 * k, u * v^2} ⁆ ⁆ := by
-  hom_tac rels_of_hom_lift_of_inv_doub_of_β_αβ2ψ_c [i, j, k, hi, hj, hk, t, u, v]
+  hom_tac base_rel_of_hom_lift_of_inv_doub_of_β_αβ2ψ_c [i, j, k, hi, hj, hk, t, u, v]
 
 -- 8.94
 theorem raw_hom_lift_of_comm_of_βψ_αβ2ψ : forall_ijk_tuv,
     ⁅ {βψ, j + k, u * v}, ⁅ {α, i, t}, {β2ψ, j + 2 * k, u * v^2} ⁆ ⁆ = 1 := by
-  hom_tac rels_of_hom_lift_of_comm_of_βψ_αβ2ψ [i, j, k, hi, hj, hk, t, u, v]
+  hom_tac base_rel_of_hom_lift_of_comm_of_βψ_αβ2ψ [i, j, k, hi, hj, hk, t, u, v]
 
 -- 8.95
 theorem raw_hom_lift_of_comm_of_β2ψ_αβ2ψ : forall_ijk_tuv,
     ⁅ {β2ψ, j + 2 * k, u * v^2}, ⁅ {α, i, t}, {β2ψ, j + 2 * k, u * v^2} ⁆ ⁆ = 1 := by
-  hom_tac rels_of_hom_lift_of_comm_of_β2ψ_αβ2ψ [i, j, k, hi, hj, hk, t, u, v]
-
--- theorem refl_of_lifted :
---   ∀ S ∈ lifted_sets F,
---     ∀ r ∈ S, (weakB3Large F).pres_mk (FreeGroup.map refl_deg_of_gen r) = 1 := by
---   simp only [lifted_sets]
---   intro s hs r hr
---   simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hs
---   rcases hs with h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h
---   all_goals subst s
---   · sorry
---   · sorry
---   · simp only [rels_of_hom_lift_of_interchange_of_αβψ] at hr
---     rcases hr with ⟨ i, j, k, hi, hj, hk, t, u, v, rfl ⟩
---     simp only [free_mk, map_commutatorElement, map_mul, FreeGroup.map.of, refl_deg_of_gen,
---     PositiveRootSystem.height, height, tsub_self, Nat.add_one_sub_one, tsub_zero, neg_mul, map_inv, FreeGroup.map.of]
---     repeat rw [← free_mk]
---     have hi' : (1-i) ≤ α.height := by simp
---     have hj' : (1-j) ≤ β.height := by simp
---     have hk' : (1-k) ≤ ψ.height := by simp
---     have := raw_hom_lift_of_interchange_of_αβψ' hi' hj' hk' t u v
---     rw [← this]
---     congr
---     all_goals ht
---     all_goals group
---   · sorry
---   stop sorry
+  hom_tac base_rel_of_hom_lift_of_comm_of_β2ψ_αβ2ψ [i, j, k, hi, hj, hk, t, u, v]
 
 theorem b3large_valid :
-  refl_valid (weakB3Large F) := by
-  simp only [refl_valid]
-  nth_rewrite 1 [weakB3Large]
-  sorry
+  refl_valid (weakB3Large F) := by sorry
 
 include Fchar
 
