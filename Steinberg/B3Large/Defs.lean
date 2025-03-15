@@ -129,48 +129,48 @@ section homog_rels
 open ChevalleyGenerator
 
 -- Relation 8.83
-def rels_of_hom_lift_of_interchange_of_αβψ :=
-  hom_lift_set ({{ψ, ((-1/2):F)}} * {{αβ, (1:F)}} * {{ψ, (1:F)}} * {{αβ, -(1:F)}} * {{ψ, ((-1 / 2):F)}}
+def base_rel_of_hom_lift_of_interchange_of_αβψ :=
+  ({{ψ, ((-1/2):F)}} * {{αβ, (1:F)}} * {{ψ, (1:F)}} * {{αβ, -(1:F)}} * {{ψ, ((-1 / 2):F)}}
     * ({{βψ, ((-1/2):F)}} * {{α, (1:F)}} * ({{βψ, (1:F)}}) * {{α, -(1:F)}} * {{βψ, -(1/2:F)}})⁻¹)
 
 -- Relation 8.84
-def rels_of_hom_lift_of_doub_of_αβψ :=
-  hom_lift_set ({{ψ, ((-1 / 2):F)}} * {{αβ, (1:F)}} * {{ψ, (1:F)}} * {{αβ, -(1:F)}} * {{ψ, ((-1 / 2):F)}} * {{ψ, ((-1 / 2):F)}} *
+def base_rel_of_hom_lift_of_doub_of_αβψ :=
+  ({{ψ, ((-1 / 2):F)}} * {{αβ, (1:F)}} * {{ψ, (1:F)}} * {{αβ, -(1:F)}} * {{ψ, ((-1 / 2):F)}} * {{ψ, ((-1 / 2):F)}} *
     {{αβ, (1:F)}} * {{ψ, (1:F)}} * {{αβ, -(1:F)}} * {{ψ, ((-1 / 2):F)}}
     * ({{ψ, -(1:F)}} * {{αβ, (1:F)}} * {{ψ, (2:F)}} * {{αβ, -(1:F)}} * {{ψ, -(1:F)}})⁻¹)
 
 -- Relation 8.85
-def rels_of_hom_lift_of_interchange_of_αβ2ψ :=
-  hom_lift_set (⁅ {{ψ, ((-1 / 2):F)}} * {{αβ, (1:F)}} *
+def base_rel_of_hom_lift_of_interchange_of_αβ2ψ :=
+  (⁅ {{ψ, ((-1 / 2):F)}} * {{αβ, (1:F)}} *
       {{ψ, (1:F)}} * {{αβ, -(1:F)}} *
       {{ψ, ((-1 / 2):F)}}, {{ψ, (1:F)}} ⁆
     * ⁅ {{α, (1:F)}},
         {{β2ψ, -(2:F)}} ⁆⁻¹)
 
 -- Relation 8.86
-def rels_of_hom_lift_of_comm_of_βψ_α_β2ψ :=
-  hom_lift_set (⁅ {{βψ, (1:F)}},
+def base_rel_of_hom_lift_of_comm_of_βψ_α_β2ψ :=
+  (⁅ {{βψ, (1:F)}},
       ⁅ {{α, (1:F)}},
         {{β2ψ, (1:F)}} ⁆ ⁆)
 
 -- Relation 8.87a
-def rels_of_hom_lift_of_inv_doub_of_α_β2ψ_a :=
-  hom_lift_set (⁅ {{α, (1:F)}},
+def base_rel_of_hom_lift_of_inv_doub_of_α_β2ψ_a :=
+  (⁅ {{α, (1:F)}},
       {{β2ψ, (1:F)}} ⁆
     * ⁅ {{α, -(1:F)}},
         {{β2ψ, -(1:F)}}⁆⁻¹)
 
 -- Relation 8.87b
-def rels_of_hom_lift_of_inv_doub_of_α_β2ψ_b :=
-  hom_lift_set (⁅ {{α, (1:F)}}, {{β2ψ, (1:F)}} ⁆ * ⁅ {{α, (1:F)}}, {{β2ψ, -(1:F)}} ⁆)
+def base_rel_of_hom_lift_of_inv_doub_of_α_β2ψ_b :=
+  (⁅ {{α, (1:F)}}, {{β2ψ, (1:F)}} ⁆ * ⁅ {{α, (1:F)}}, {{β2ψ, -(1:F)}} ⁆)
 
 -- Relation 8.87c
-def rels_of_hom_lift_of_inv_doub_of_α_β2ψ_c :=
-  hom_lift_set (⁅ {{α, (1:F)}}, {{β2ψ, (1:F)}} ⁆ * ⁅ {{α, (1:F)}}, {{β2ψ, (1:F)}} ⁆ * ⁅ {{α, (1:F)}}, {{β2ψ, (2:F)}} ⁆⁻¹)
+def base_rel_of_hom_lift_of_inv_doub_of_α_β2ψ_c :=
+  (⁅ {{α, (1:F)}}, {{β2ψ, (1:F)}} ⁆ * ⁅ {{α, (1:F)}}, {{β2ψ, (1:F)}} ⁆ * ⁅ {{α, (1:F)}}, {{β2ψ, (2:F)}} ⁆⁻¹)
 
 -- Relation 8.88
-def rels_of_hom_lift_of_comm_of_β2ψ_αβψ :=
-  hom_lift_set (⁅ {{β2ψ, (1:F)}},
+def base_rel_of_hom_lift_of_comm_of_β2ψ_αβψ :=
+  (⁅ {{β2ψ, (1:F)}},
       {{ψ, ((-1 / 2):F)}} *
       {{αβ, (1:F)}} *
       {{ψ, (1:F)}} *
@@ -178,8 +178,8 @@ def rels_of_hom_lift_of_comm_of_β2ψ_αβψ :=
       {{ψ, ((-1 / 2):F)}} ⁆)
 
 -- Relation 8.89a
-def rels_of_hom_lift_of_interchange_of_α2β2ψ_a :=
-  hom_lift_set (⁅ {{αβ, (1:F)}},
+def base_rel_of_hom_lift_of_interchange_of_α2β2ψ_a :=
+  (⁅ {{αβ, (1:F)}},
       {{β2ψ, (2:F)}} ⁆
     * ⁅ {{ψ, ((-1 / 2):F)}} *
         {{αβ, (1:F)}} *
@@ -189,8 +189,8 @@ def rels_of_hom_lift_of_interchange_of_α2β2ψ_a :=
         {{βψ, (1:F)}} ⁆⁻¹)
 
 -- Relation 8.89b
-def rels_of_hom_lift_of_interchange_of_α2β2ψ_b :=
-  hom_lift_set (⁅ {{ψ, ((-1 / 2):F)}} *
+def base_rel_of_hom_lift_of_interchange_of_α2β2ψ_b :=
+  (⁅ {{ψ, ((-1 / 2):F)}} *
       {{αβ, (1:F)}} *
       {{ψ, (1:F)}} *
       {{αβ, -(1:F)}} *
@@ -201,40 +201,40 @@ def rels_of_hom_lift_of_interchange_of_α2β2ψ_b :=
         {{β, (1:F)}} ⁆⁻¹)
 
 -- Relation 8.90
-def rels_of_hom_lift_of_comm_of_ψ_αβ_β2ψ :=
-  hom_lift_set (⁅ {{ψ, (1:F)}},
+def base_rel_of_hom_lift_of_comm_of_ψ_αβ_β2ψ :=
+  (⁅ {{ψ, (1:F)}},
       ⁅ {{αβ, (1:F)}},
         {{β2ψ, (1:F)}} ⁆ ⁆)
 
 -- Relation 8.91a (s = 1)
-def rels_of_hom_lift_of_comm_of_αβ_αβ_β2ψ_a :=
-  hom_lift_set (⁅ {{αβ, (1:F)}},
+def base_rel_of_hom_lift_of_comm_of_αβ_αβ_β2ψ_a :=
+  (⁅ {{αβ, (1:F)}},
       ⁅ {{αβ, (1:F)}},
         {{β2ψ, (1:F)}} ⁆ ⁆)
 
 -- Relation 8.91b (s = -1)
-def rels_of_hom_lift_of_comm_of_αβ_αβ_β2ψ_b :=
-  hom_lift_set (⁅ {{αβ, (1:F)}},
+def base_rel_of_hom_lift_of_comm_of_αβ_αβ_β2ψ_b :=
+  (⁅ {{αβ, (1:F)}},
       ⁅ {{αβ, -(1:F)}},
         {{β2ψ, (1:F)}} ⁆ ⁆)
 
 -- Relation 8.92a
-def rels_of_hom_lift_of_inv_doub_of_αβ_β2ψ_a :=
-  hom_lift_set (⁅ {{αβ, (1:F)}},
+def base_rel_of_hom_lift_of_inv_doub_of_αβ_β2ψ_a :=
+  (⁅ {{αβ, (1:F)}},
       {{β2ψ, (1:F)}} ⁆
     * ⁅ {{αβ, -(1:F)}},
         {{β2ψ, -(1:F)}} ⁆⁻¹)
 
 -- Relation 8.92b
-def rels_of_hom_lift_of_inv_doub_of_αβ_β2ψ_b :=
-  hom_lift_set (⁅ {{αβ, (1:F)}},
+def base_rel_of_hom_lift_of_inv_doub_of_αβ_β2ψ_b :=
+  (⁅ {{αβ, (1:F)}},
       {{β2ψ, (1:F)}} ⁆
     * ⁅ {{αβ, -(1:F)}},
         {{β2ψ, (1:F)}} ⁆)
 
 -- Relation 8.92c
-def rels_of_hom_lift_of_inv_doub_of_αβ_β2ψ_c :=
-  hom_lift_set (⁅ {{αβ, (1:F)}},
+def base_rel_of_hom_lift_of_inv_doub_of_αβ_β2ψ_c :=
+  (⁅ {{αβ, (1:F)}},
       {{β2ψ, (1:F)}} ⁆
     * ⁅ {{αβ, (1:F)}},
         {{β2ψ, (1:F)}} ⁆
@@ -242,8 +242,8 @@ def rels_of_hom_lift_of_inv_doub_of_αβ_β2ψ_c :=
         {{β2ψ, (1:F)}} ⁆⁻¹)
 
 -- Relation 8.93a
-def rels_of_hom_lift_of_inv_doub_of_β_αβ2ψ_a :=
-  hom_lift_set (⁅ {{β, (1:F)}},
+def base_rel_of_hom_lift_of_inv_doub_of_β_αβ2ψ_a :=
+  (⁅ {{β, (1:F)}},
       ⁅ {{α, (1:F)}},
         {{β2ψ, (1:F)}} ⁆ ⁆
     * ⁅ {{β, (-1:F)}},
@@ -251,8 +251,8 @@ def rels_of_hom_lift_of_inv_doub_of_β_αβ2ψ_a :=
           {{β2ψ, (1:F)}} ⁆ ⁆⁻¹)
 
 -- Relation 8.93b
-def rels_of_hom_lift_of_inv_doub_of_β_αβ2ψ_b :=
-  hom_lift_set (⁅ {{β, (1:F)}},
+def base_rel_of_hom_lift_of_inv_doub_of_β_αβ2ψ_b :=
+  (⁅ {{β, (1:F)}},
       ⁅ {{α, (1:F)}},
         {{β2ψ, (1:F)}} ⁆ ⁆
     * ⁅ {{β, (-1:F)}},
@@ -260,8 +260,8 @@ def rels_of_hom_lift_of_inv_doub_of_β_αβ2ψ_b :=
           {{β2ψ, (1:F)}} ⁆ ⁆)
 
 -- Relation 8.93c
-def rels_of_hom_lift_of_inv_doub_of_β_αβ2ψ_c :=
-  hom_lift_set (⁅ {{β, (1:F)}},
+def base_rel_of_hom_lift_of_inv_doub_of_β_αβ2ψ_c :=
+  (⁅ {{β, (1:F)}},
       ⁅ {{α, (1:F)}},
         {{β2ψ, (1:F)}} ⁆ ⁆
     * ⁅ {{β, (1:F)}},
@@ -272,14 +272,14 @@ def rels_of_hom_lift_of_inv_doub_of_β_αβ2ψ_c :=
           {{β2ψ, (1:F)}} ⁆ ⁆⁻¹)
 
 -- Relation 8.94
-def rels_of_hom_lift_of_comm_of_βψ_αβ2ψ :=
-  hom_lift_set (⁅ {{βψ, (1:F)}},
+def base_rel_of_hom_lift_of_comm_of_βψ_αβ2ψ :=
+  (⁅ {{βψ, (1:F)}},
       ⁅ {{α, (1:F)}},
         {{β2ψ, (1:F)}} ⁆ ⁆)
 
 -- Relation 8.95
-def rels_of_hom_lift_of_comm_of_β2ψ_αβ2ψ :=
-  hom_lift_set (⁅ {{β2ψ, (1:F)}},
+def base_rel_of_hom_lift_of_comm_of_β2ψ_αβ2ψ :=
+  (⁅ {{β2ψ, (1:F)}},
       ⁅ {{α, (1:F)}},
         {{β2ψ, (1:F)}} ⁆ ⁆)
 
@@ -288,15 +288,16 @@ end homog_rels
 def nonhom_lifted_sets (F : Type TF) [Field F] : Set (Set (FreeGroup (GradedChevalleyGenerator B3LargePosRoot F))) := {
   rels_of_nonhomog_lift_of_comm_of_αβ_βψ, rels_of_nonhomog_lift_of_comm_of_α_α2β2ψ}
 
-def hom_lifted_sets (F : Type TF) [Field F] : Set (Set (FreeGroup (GradedChevalleyGenerator B3LargePosRoot F))) := {
-  rels_of_hom_lift_of_interchange_of_αβψ, rels_of_hom_lift_of_doub_of_αβψ,
-  rels_of_hom_lift_of_interchange_of_αβ2ψ, rels_of_hom_lift_of_comm_of_βψ_α_β2ψ,
-  rels_of_hom_lift_of_inv_doub_of_α_β2ψ_a, rels_of_hom_lift_of_inv_doub_of_α_β2ψ_b, rels_of_hom_lift_of_inv_doub_of_α_β2ψ_c,
-  rels_of_hom_lift_of_comm_of_β2ψ_αβψ, rels_of_hom_lift_of_interchange_of_α2β2ψ_a, rels_of_hom_lift_of_interchange_of_α2β2ψ_b,
-  rels_of_hom_lift_of_comm_of_ψ_αβ_β2ψ, rels_of_hom_lift_of_comm_of_αβ_αβ_β2ψ_a, rels_of_hom_lift_of_comm_of_αβ_αβ_β2ψ_b,
-  rels_of_hom_lift_of_inv_doub_of_αβ_β2ψ_a, rels_of_hom_lift_of_inv_doub_of_αβ_β2ψ_b, rels_of_hom_lift_of_inv_doub_of_αβ_β2ψ_c,
-  rels_of_hom_lift_of_inv_doub_of_β_αβ2ψ_a, rels_of_hom_lift_of_inv_doub_of_β_αβ2ψ_b, rels_of_hom_lift_of_inv_doub_of_β_αβ2ψ_c,
-  rels_of_hom_lift_of_comm_of_βψ_αβ2ψ, rels_of_hom_lift_of_comm_of_β2ψ_αβ2ψ
+def hom_lifted_sets (F : Type TF) [Field F] : Set (Set (FreeGroup (GradedChevalleyGenerator B3LargePosRoot F))) :=
+  hom_lift_set '' {
+  base_rel_of_hom_lift_of_interchange_of_αβψ, base_rel_of_hom_lift_of_doub_of_αβψ,
+  base_rel_of_hom_lift_of_interchange_of_αβ2ψ, base_rel_of_hom_lift_of_comm_of_βψ_α_β2ψ,
+  base_rel_of_hom_lift_of_inv_doub_of_α_β2ψ_a, base_rel_of_hom_lift_of_inv_doub_of_α_β2ψ_b, base_rel_of_hom_lift_of_inv_doub_of_α_β2ψ_c,
+  base_rel_of_hom_lift_of_comm_of_β2ψ_αβψ, base_rel_of_hom_lift_of_interchange_of_α2β2ψ_a, base_rel_of_hom_lift_of_interchange_of_α2β2ψ_b,
+  base_rel_of_hom_lift_of_comm_of_ψ_αβ_β2ψ, base_rel_of_hom_lift_of_comm_of_αβ_αβ_β2ψ_a, base_rel_of_hom_lift_of_comm_of_αβ_αβ_β2ψ_b,
+  base_rel_of_hom_lift_of_inv_doub_of_αβ_β2ψ_a, base_rel_of_hom_lift_of_inv_doub_of_αβ_β2ψ_b, base_rel_of_hom_lift_of_inv_doub_of_αβ_β2ψ_c,
+  base_rel_of_hom_lift_of_inv_doub_of_β_αβ2ψ_a, base_rel_of_hom_lift_of_inv_doub_of_β_αβ2ψ_b, base_rel_of_hom_lift_of_inv_doub_of_β_αβ2ψ_c,
+  base_rel_of_hom_lift_of_comm_of_βψ_αβ2ψ, base_rel_of_hom_lift_of_comm_of_β2ψ_αβ2ψ
 }
 
 def lifted_sets (F : Type TF) [Field F] := (nonhom_lifted_sets F) ∪ (hom_lifted_sets F)
@@ -523,12 +524,13 @@ macro "nonhom_tac " rel:ident " [" intros:ident,* "]" : tactic => `(tactic|
 macro "hom_tac " rel:ident " [" intros:ident,* "]" : tactic => `(tactic|
   ( intros $intros*;
     apply eq_of_mul_inv_eq_one;
-    apply (weakB3Large _).lifted_helper $rel;
+    apply (weakB3Large _).lifted_helper (hom_lift_set $rel);
     simp only [weakB3Large, lifted_sets];
     right;
-    simp only [hom_lifted_sets, Set.mem_singleton_iff,
-      Set.mem_insert_iff, Set.mem_singleton_iff, true_or, or_true];
+    simp only [hom_lifted_sets, Set.mem_image, Set.mem_insert_iff, Set.mem_singleton_iff, exists_eq_or_imp,
+    exists_eq_left, true_or, or_true];
     exists $intros,*;
+    unfold $rel;
     simp only [map_mul, map_inv, map_commutatorElement, commutatorElement_def, FreeGroup.map.of, PartialChevalley.ChevalleyGenerator.free_mk, hom_lift];
     repeat rw [← free_mk];
     simp only [one_mul, inv_one, mul_one, ←mul_assoc];

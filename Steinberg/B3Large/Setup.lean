@@ -69,7 +69,8 @@ theorem raw_nonhomog_lift_of_comm_of_α_α2β2ψ : ∀ (t₁ t₀ u₁ u₀ v₁
 theorem raw_hom_lift_of_interchange_of_αβψ : forall_ijk_tuv,
     {ψ, k, -v / 2} * {αβ, i + j, t * u} * {ψ, k, v} * {αβ, i + j, -t * u} * {ψ, k, -v / 2} =
     {βψ, j + k, -u * v / 2} * {α, i, t} * {βψ, j + k, u * v} * {α, i, -t} * {βψ, j + k, -u * v / 2} := by
-  hom_tac rels_of_hom_lift_of_interchange_of_αβψ [i, j, k, hi, hj, hk, t, u, v]
+  hom_tac base_rel_of_hom_lift_of_interchange_of_αβψ [i, j, k, hi, hj, hk, t, u, v]
+
 
 -- 8.84
 theorem raw_hom_lift_of_doub_of_αβψ' : forall_ijk_tuv,
