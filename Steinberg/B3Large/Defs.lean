@@ -285,8 +285,10 @@ def rels_of_hom_lift_of_comm_of_β2ψ_αβ2ψ :=
 
 end homog_rels
 
-def lifted_sets (F : Type TF) [Field F] : Set (Set (FreeGroup (GradedChevalleyGenerator B3LargePosRoot F))) := {
-  rels_of_nonhomog_lift_of_comm_of_αβ_βψ, rels_of_nonhomog_lift_of_comm_of_α_α2β2ψ,
+def nonhom_lifted_sets (F : Type TF) [Field F] : Set (Set (FreeGroup (GradedChevalleyGenerator B3LargePosRoot F))) := {
+  rels_of_nonhomog_lift_of_comm_of_αβ_βψ, rels_of_nonhomog_lift_of_comm_of_α_α2β2ψ}
+
+def hom_lifted_sets (F : Type TF) [Field F] : Set (Set (FreeGroup (GradedChevalleyGenerator B3LargePosRoot F))) := {
   rels_of_hom_lift_of_interchange_of_αβψ, rels_of_hom_lift_of_doub_of_αβψ,
   rels_of_hom_lift_of_interchange_of_αβ2ψ, rels_of_hom_lift_of_comm_of_βψ_α_β2ψ,
   rels_of_hom_lift_of_inv_doub_of_α_β2ψ_a, rels_of_hom_lift_of_inv_doub_of_α_β2ψ_b, rels_of_hom_lift_of_inv_doub_of_α_β2ψ_c,
@@ -296,6 +298,8 @@ def lifted_sets (F : Type TF) [Field F] : Set (Set (FreeGroup (GradedChevalleyGe
   rels_of_hom_lift_of_inv_doub_of_β_αβ2ψ_a, rels_of_hom_lift_of_inv_doub_of_β_αβ2ψ_b, rels_of_hom_lift_of_inv_doub_of_β_αβ2ψ_c,
   rels_of_hom_lift_of_comm_of_βψ_αβ2ψ, rels_of_hom_lift_of_comm_of_β2ψ_αβ2ψ
 }
+
+def lifted_sets (F : Type TF) [Field F] := (nonhom_lifted_sets F) ∪ (hom_lifted_sets F)
 
 /-! ## Definition for missing root (αβψ, αβ2ψ, α2β2ψ) -/
 
@@ -503,11 +507,15 @@ scoped notation "forall_ijk_tuv" "," e =>
 
 end forallNotation
 
+example (S T : Set ℕ) (h : x ∈ S ∨ x ∈ T) : x ∈ S ∪ T := by exact h
+
 macro "nonhom_tac " rel:ident " [" intros:ident,* "]" : tactic => `(tactic|
   ( intros $intros*;
     apply eq_of_mul_inv_eq_one;
     apply (weakB3Large _).lifted_helper $rel;
-    simp only [weakB3Large, lifted_sets, Set.mem_singleton_iff,
+    simp only [weakB3Large, lifted_sets];
+    left;
+    simp only [nonhom_lifted_sets, Set.mem_singleton_iff,
       Set.mem_insert_iff, Set.mem_singleton_iff, true_or, or_true];
     exists $intros,*
      ))
@@ -516,7 +524,9 @@ macro "hom_tac " rel:ident " [" intros:ident,* "]" : tactic => `(tactic|
   ( intros $intros*;
     apply eq_of_mul_inv_eq_one;
     apply (weakB3Large _).lifted_helper $rel;
-    simp only [weakB3Large, lifted_sets, Set.mem_singleton_iff,
+    simp only [weakB3Large, lifted_sets];
+    right;
+    simp only [hom_lifted_sets, Set.mem_singleton_iff,
       Set.mem_insert_iff, Set.mem_singleton_iff, true_or, or_true];
     exists $intros,*;
     simp only [map_mul, map_inv, map_commutatorElement, commutatorElement_def, FreeGroup.map.of, PartialChevalley.ChevalleyGenerator.free_mk, hom_lift];

@@ -55,7 +55,6 @@ theorem raw_nonhomog_lift_of_comm_of_αβ_βψ : ∀ (t₁ t₀ u₁ u₀ v₁ v
     = 1 := by
   nonhom_tac rels_of_nonhomog_lift_of_comm_of_αβ_βψ [t₁, t₀, u₁, u₀, v₁, v₀]
 
-
 -- 8.82
 theorem raw_nonhomog_lift_of_comm_of_α_α2β2ψ : ∀ (t₁ t₀ u₁ u₀ v₁ v₀ : F),
     ⁅ {α, 1, t₁} * {α, 0, t₀},
