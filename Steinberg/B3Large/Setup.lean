@@ -261,21 +261,56 @@ theorem b3large_valid :
   refl_valid (weakB3Large F) := by
   simp only [refl_valid]
   intro S h_S
-  suffices (FreeGroup.lift (refl_def (weakB3Large F))) '' S = S by
-    intro r h_r
-    apply eq_one_of_mem_rels
-    have : (FreeGroup.lift (refl_def (weakB3Large F))) r ∈ S := by
-      rw [←this]
-      simp only [Set.mem_image]
-      use r
-    simp only [all_rels]
-    simp only [Set.sUnion_insert, Set.sUnion_singleton, Set.mem_union, Set.mem_sUnion]
-    right; right; right; right; right; left
-    use S
   simp only [weakB3Large, lifted_sets, Set.mem_union] at h_S
   rcases h_S with h_nonhom|h_hom
-  · sorry
-  · simp only [hom_lifted_sets, Set.mem_image] at h_hom
+  · simp only [nonhom_lifted_sets, Set.mem_insert_iff,
+    Set.mem_singleton_iff] at h_nonhom
+    rcases h_nonhom with h | h
+    · subst h
+      intro r hr
+      simp only [rels_of_nonhomog_lift_of_comm_of_αβ_βψ] at hr
+      rcases hr with ⟨ t₁, t₀, u₁, u₀, v₁, v₀, rfl ⟩
+      simp only [map_mul, map_commutatorElement, free_mk, FreeGroup.lift.of]
+      repeat rw [refl_def_of_present _ _ (by tauto)]
+      simp only [refl_of_gen, PositiveRootSystem.height, height]
+      simp_arith
+      rw [← free_mk, ← free_mk, ← free_mk, ← free_mk, ← free_mk, ← free_mk]
+      rw [add_comm, add_comm (u₁ * v₀)]
+      grw [expr_αβ_αβ_as_αβ_αβ (i := 1), expr_αβ_αβ_as_αβ_αβ, expr_αβ_αβ_as_αβ_αβ (i := 0)]
+      grw [expr_βψ_βψ_as_βψ_βψ (i := 1), expr_βψ_βψ_as_βψ_βψ, expr_βψ_βψ_as_βψ_βψ (i := 0)]
+      exact raw_nonhomog_lift_of_comm_of_αβ_βψ t₀ t₁ u₀ u₁ v₀ v₁
+    · subst h
+      intro r hr
+      simp only [rels_of_nonhomog_lift_of_comm_of_α_α2β2ψ] at hr
+      rcases hr with ⟨ t₁, t₀, u₁, u₀, v₁, v₀, rfl ⟩
+      simp only [map_mul, map_commutatorElement, free_mk, FreeGroup.lift.of]
+      repeat rw [refl_def_of_present _ _ (by tauto)]
+      simp only [refl_of_gen, PositiveRootSystem.height, height]
+      simp_arith
+      rw [← free_mk, ← free_mk, ← free_mk, ← free_mk, ← free_mk, ← free_mk,
+          ← free_mk, ← free_mk, ← free_mk]
+      rw [add_comm]
+      have := raw_nonhomog_lift_of_comm_of_α_α2β2ψ t₀ t₁ u₀ u₁ v₀ v₁
+      norm_num at this
+      grw [expr_α_α_as_α_α, expr_αβ_αβ_as_αβ_αβ (i := 1), expr_αβ_αβ_as_αβ_αβ (i := 0),
+          expr_αβ_αβ_as_αβ_αβ (i := 0), expr_β2ψ_β2ψ_as_β2ψ_β2ψ (i := 2),
+          expr_β2ψ_β2ψ_as_β2ψ_β2ψ (i := 1), expr_β2ψ_β2ψ_as_β2ψ_β2ψ (i := 0), expr_β2ψ_β2ψ_as_β2ψ_β2ψ (i := 1),
+          expr_β2ψ_β2ψ_as_β2ψ_β2ψ (i := 0), expr_β2ψ_β2ψ_as_β2ψ_β2ψ (i := 0)]
+      rw [← this]
+      grw [pow_two, mul_comm v₁ v₀, mul_comm v₁ v₀]
+  · stop
+    -- suffices (FreeGroup.lift (refl_def (weakB3Large F))) '' S = S by
+  --   intro r h_r
+  --   apply eq_one_of_mem_rels
+  --   have : (FreeGroup.lift (refl_def (weakB3Large F))) r ∈ S := by
+  --     rw [←this]
+  --     simp only [Set.mem_image]
+  --     use r
+  --   simp only [all_rels]
+  --   simp only [Set.sUnion_insert, Set.sUnion_singleton, Set.mem_union, Set.mem_sUnion]
+  --   right; right; right; right; right; left
+  --   use S
+    simp only [hom_lifted_sets, Set.mem_image] at h_hom
     rcases h_hom with ⟨ b, h, h_hom ⟩
     subst S
     nth_rewrite 2 [←map_refl_gen_of_hom]
