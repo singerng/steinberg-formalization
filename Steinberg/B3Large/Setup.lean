@@ -53,7 +53,8 @@ theorem raw_nonhomog_lift_of_comm_of_αβ_βψ : ∀ (t₁ t₀ u₁ u₀ v₁ v
     ⁅ {αβ, 2, t₁ * u₁} * {αβ, 1, t₁ * u₀ + t₀ * u₁} * {αβ, 0, t₀ * u₀}
     , {βψ, 2, u₁ * v₁} * {βψ, 1, u₁ * v₀ + u₀ * v₁} * {βψ, 0, u₀ * v₀} ⁆
     = 1 := by
-  hom_tac rels_of_nonhomog_lift_of_comm_of_αβ_βψ [t₁, t₀, u₁, u₀, v₁, v₀]
+  nonhom_tac rels_of_nonhomog_lift_of_comm_of_αβ_βψ [t₁, t₀, u₁, u₀, v₁, v₀]
+
 
 -- 8.82
 theorem raw_nonhomog_lift_of_comm_of_α_α2β2ψ : ∀ (t₁ t₀ u₁ u₀ v₁ v₀ : F),
@@ -61,31 +62,33 @@ theorem raw_nonhomog_lift_of_comm_of_α_α2β2ψ : ∀ (t₁ t₀ u₁ u₀ v₁
       ⁅ {αβ, 2, t₁ * u₁} * {αβ, 1, t₁ * u₀ + t₀ * u₁} * {αβ, 0, t₀ * u₀},
         {β2ψ, 3, u₁ * v₁^2} * {β2ψ, 2, u₀ * v₁^2 + 2 * u₁ * v₀ * v₁}
           * {β2ψ, 1, u₁ * v₀^2 + 2 * u₀ * v₀ * v₁} * {β2ψ, 0, u₀ * v₀^2} ⁆⁆ = 1 := by
-  hom_tac rels_of_nonhomog_lift_of_comm_of_α_α2β2ψ [t₁, t₀, u₁, u₀, v₁, v₀]
+  nonhom_tac rels_of_nonhomog_lift_of_comm_of_α_α2β2ψ [t₁, t₀, u₁, u₀, v₁, v₀]
 
 /-! ### Homogeneous lift -/
 
 -- 8.83
-
-theorem raw_hom_lift_of_interchange_of_αβψ' : forall_ijk_tuv,
-    {ψ, k, -v / 2} * {αβ, i + j, t * u}'(add_le_add hi hj) *
-    {ψ, k, v} * {αβ, i + j, -t * u}'(add_le_add hi hj) *
-    {ψ, k, -v / 2} * ({βψ, j + k, -u * v / 2}'(add_le_add hj hk))⁻¹ *
-    {α, i, -t}⁻¹ * ({βψ, j + k, u * v}'(add_le_add hj hk))⁻¹ *
-    {α, i, t}⁻¹ * ({βψ, j + k,-u * v / 2}'(add_le_add hj hk))⁻¹ = 1 := by
-  hom_tac rels_of_hom_lift_of_interchange_of_αβψ [i, j, k, hi, hj, hk, t, u, v]
-
 theorem raw_hom_lift_of_interchange_of_αβψ : forall_ijk_tuv,
     {ψ, k, -v / 2} * {αβ, i + j, t * u} * {ψ, k, v} * {αβ, i + j, -t * u} * {ψ, k, -v / 2} =
     {βψ, j + k, -u * v / 2} * {α, i, t} * {βψ, j + k, u * v} * {α, i, -t} * {βψ, j + k, -u * v / 2} := by
   hom_tac rels_of_hom_lift_of_interchange_of_αβψ [i, j, k, hi, hj, hk, t, u, v]
 
 -- 8.84
+theorem raw_hom_lift_of_doub_of_αβψ' : forall_ijk_tuv,
+    {ψ, k, -v / 2} * {αβ, i + j, t * u} * {ψ, k, v} * {αβ, i + j, -t * u} * {ψ, k, -v / 2} *
+    {ψ, k, -v / 2} * {αβ, i + j, t * u} * {ψ, k, v} * {αβ, i + j, -t * u} * {ψ, k, -v / 2} =
+    {ψ, k, -v} * {αβ, i + j, t * u} * {ψ, k, 2 * v} * {αβ, i + j, -t * u} * {ψ, k, -v} := by
+  hom_tac rels_of_hom_lift_of_doub_of_αβψ [i, j, k, hi, hj, hk, t, u, v]
+
+-- this is slightly annoying b/c we want to switch the index on i to (0,1,2)
 theorem raw_hom_lift_of_doub_of_αβψ : forall_ik_tuv αβ ψ,
     {ψ, k, -v / 2} * {αβ, i, t * u} * {ψ, k, v} * {αβ, i, -t * u} * {ψ, k, -v / 2} *
     {ψ, k, -v / 2} * {αβ, i, t * u} * {ψ, k, v} * {αβ, i, -t * u} * {ψ, k, -v / 2} =
     {ψ, k, -v} * {αβ, i, t * u} * {ψ, k, 2 * v} * {αβ, i, -t * u} * {ψ, k, -v} := by
-  hom_tac rels_of_hom_lift_of_doub_of_αβψ [i, k, hi, hk, t, u, v]
+  intro i k hi hk
+  have : ∃ i₁ i₂ : ℕ, i = i₁ + i₂ ∧ i₁ ≤ 1 ∧ i₂ ≤ 1 := decompose 1 1 i (by tauto)
+  rcases this with ⟨ i₁, i₂,h,  hi₁, hi₂ ⟩
+  simp only [h]
+  exact raw_hom_lift_of_doub_of_αβψ' hi₁ hi₂ hk
 
 -- 8.85
 theorem raw_hom_lift_of_interchange_of_αβ2ψ : forall_ijk_tuv,
@@ -101,14 +104,12 @@ theorem raw_hom_lift_of_comm_of_βψ_α_β2ψ : forall_ijk_tuv,
 
 -- 8.87a
 theorem raw_hom_lift_of_inv_doub_of_α_β2ψ_a : forall_ijk_tuv,
-    ⁅ {α, i, t}, {β2ψ, j + 2 * k, u * v^2} ⁆
-      = ⁅ {α, i, -t}, {β2ψ, j + 2 * k, -u * v^2} ⁆ := by
+    ⁅ {α, i, t}, {β2ψ, j + 2 * k, u * v^2} ⁆ = ⁅ {α, i, -t}, {β2ψ, j + 2 * k, -u * v^2} ⁆ := by
   hom_tac rels_of_hom_lift_of_inv_doub_of_α_β2ψ_a [i, j, k, hi, hj, hk, t, u, v]
 
 -- 8.87b
 theorem raw_hom_lift_of_inv_doub_of_α_β2ψ_b : forall_ijk_tuv,
-    ⁅ {α, i, t}, {β2ψ, j + 2 * k, u * v^2} ⁆
-    * ⁅ {α, i, t}, {β2ψ, j + 2 * k, -u * v^2} ⁆ = 1 := by
+    ⁅ {α, i, t}, {β2ψ, j + 2 * k, u * v^2} ⁆ * ⁅ {α, i, t}, {β2ψ, j + 2 * k, -u * v^2} ⁆ = 1 := by
   hom_tac rels_of_hom_lift_of_inv_doub_of_α_β2ψ_b [i, j, k, hi, hj, hk, t, u, v]
 
 -- 8.87c

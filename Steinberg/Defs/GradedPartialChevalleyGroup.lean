@@ -43,7 +43,7 @@ namespace GradedChevalleyGenerator
 
 /-- Helper function to construct and inject a `GradedChevalleyGenerator`. -/
 def free_mk (ζ : Φ) (i : ℕ) (hi : i ≤ height ζ) (t : R) : FreeGroup (GradedChevalleyGenerator Φ R) :=
-  FreeGroup.of <| (mk ζ i hi t)
+  FreeGroup.of (mk ζ i hi t)
 
 set_option hygiene false in
 /--

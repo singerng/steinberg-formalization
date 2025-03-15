@@ -7,6 +7,7 @@ LICENSE goes here.
 import Steinberg.Defs.PartialChevalleyGroup
 import Steinberg.Defs.GradedPartialChevalleyGroup
 import Mathlib.Tactic.DeriveFintype
+import Mathlib.Tactic.FieldSimp
 
 /-!
 
@@ -58,6 +59,26 @@ open B3LargePosRoot
 
 variable {F : Type TR} [Field F]
 
+/-! # Lifting -/
+
+def hom_lift (i j k : ℕ) (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t u v : F) (g : ChevalleyGenerator B3LargePosRoot F)
+  : GradedChevalleyGenerator B3LargePosRoot F :=
+  match g.ζ with
+  | α => GradedChevalleyGenerator.mk α i (by ht) (g.t * t)
+  | β => GradedChevalleyGenerator.mk β j (by ht) (g.t * u)
+  | ψ => GradedChevalleyGenerator.mk ψ k (by ht) (g.t * v)
+  | αβ => GradedChevalleyGenerator.mk αβ (i+j) (by ht) (g.t * t * u)
+  | βψ => GradedChevalleyGenerator.mk βψ (j+k) (by ht) (g.t * u * v)
+  | β2ψ => GradedChevalleyGenerator.mk β2ψ (j+2*k) (by ht) (g.t * u * v^2)
+  | αβψ => GradedChevalleyGenerator.mk αβψ (i+j+k) (by ht) (g.t * t * u * v)
+  | αβ2ψ => GradedChevalleyGenerator.mk αβ2ψ (i+j+2*k) (by ht) (g.t * t * u * v^2)
+  | α2β2ψ => GradedChevalleyGenerator.mk α2β2ψ (i+2*j+2*k) (by ht) (g.t * t * u^2 * v^2)
+
+def hom_lift_set (r : FreeGroup (ChevalleyGenerator B3LargePosRoot F)) :=
+  { FreeGroup.map (hom_lift i j k hi hj hk t u v) r | (i : ℕ) (j : ℕ) (k : ℕ)
+      (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height)
+      (t : F) (u : F) (v : F) }
+
 /-! # Definition of the 'weak' B3-large graded group -/
 
 /-! ## Defining the 'weak' positive root system -/
@@ -90,8 +111,6 @@ abbrev weakB3LargeSystem := PartialChevalleySystem.mk
   (by simp only [Set.mem_insert_iff, Set.mem_singleton_iff, forall_eq_or_imp, reduceCtorEq, or_self,
     or_false, or_true, and_self, forall_eq])
 
-/-! ## Lifted relations -/
-
 -- Relation 8.81
 def rels_of_nonhomog_lift_of_comm_of_αβ_βψ :=
   { ⁅ {αβ, 2, t₁ * u₁} * {αβ, 1, t₁ * u₀ + t₀ * u₁} * {αβ, 0, t₀ * u₀},
@@ -106,238 +125,165 @@ def rels_of_nonhomog_lift_of_comm_of_α_α2β2ψ :=
           * {β2ψ, 1, u₁ * v₀^2 + 2 * u₀ * v₀ * v₁} * {β2ψ, 0, u₀ * v₀^2} ⁆ ⁆
     | (t₁ : F) (t₀ : F) (u₁ : F) (u₀ : F) (v₁ : F) (v₀ : F) }
 
+section homog_rels
+open ChevalleyGenerator
+
 -- Relation 8.83
 def rels_of_hom_lift_of_interchange_of_αβψ :=
-  { {ψ, k, -v / 2} * {αβ, i + j, t * u}'(add_le_add hi hj) *
-    {ψ, k, v} * {αβ, i + j, -t * u}'(add_le_add hi hj) *
-    {ψ, k, -v / 2} * ({βψ, j + k, -u * v / 2}'(add_le_add hj hk))⁻¹ *
-    {α, i, -t}⁻¹ * ({βψ, j + k, u * v}'(add_le_add hj hk))⁻¹ *
-    {α, i, t}⁻¹ * ({βψ, j + k,-u * v / 2}'(add_le_add hj hk))⁻¹
-    | (i : ℕ) (j : ℕ) (k : ℕ)
-      (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height)
-      (t : F) (u : F) (v : F) }
+  hom_lift_set ({{ψ, ((-1/2):F)}} * {{αβ, (1:F)}} * {{ψ, (1:F)}} * {{αβ, -(1:F)}} * {{ψ, ((-1 / 2):F)}}
+    * ({{βψ, ((-1/2):F)}} * {{α, (1:F)}} * ({{βψ, (1:F)}}) * {{α, -(1:F)}} * {{βψ, -(1/2:F)}})⁻¹)
 
 -- Relation 8.84
 def rels_of_hom_lift_of_doub_of_αβψ :=
-  { {ψ, k, -v / 2} * {αβ, i, t * u} *
-    {ψ, k, v} * {αβ, i, -t * u} *
-    {ψ, k, -v / 2} * {ψ, k, -v / 2} *
-    {αβ, i, t * u} * {ψ, k, v} *
-    {αβ, i, -t * u} * {ψ, k, -v / 2} *
-    {ψ, k, -v}⁻¹ * {αβ, i, -t * u}⁻¹ *
-    {ψ, k, 2 * v}⁻¹ * {αβ, i, t * u}⁻¹ * {ψ, k, -v}⁻¹
-    | (i : ℕ) (k : ℕ)
-      (hi : i ≤ αβ.height) (hk : k ≤ ψ.height)
-      (t : F) (u : F) (v : F) }
+  hom_lift_set ({{ψ, ((-1 / 2):F)}} * {{αβ, (1:F)}} * {{ψ, (1:F)}} * {{αβ, -(1:F)}} * {{ψ, ((-1 / 2):F)}} * {{ψ, ((-1 / 2):F)}} *
+    {{αβ, (1:F)}} * {{ψ, (1:F)}} * {{αβ, -(1:F)}} * {{ψ, ((-1 / 2):F)}}
+    * ({{ψ, -(1:F)}} * {{αβ, (1:F)}} * {{ψ, (2:F)}} * {{αβ, -(1:F)}} * {{ψ, -(1:F)}})⁻¹)
 
 -- Relation 8.85
 def rels_of_hom_lift_of_interchange_of_αβ2ψ :=
-  { ⁅ {ψ, k, -v / 2} * {αβ, i + j, t * u}'(add_le_add hi hj) *
-      {ψ, k, v} * {αβ, i + j, -t * u}'(add_le_add hi hj) *
-      {ψ, k, -v / 2}, {ψ, k, v} ⁆
-    * ⁅ {α, i, t},
-        {β2ψ, j + 2 * k, -2 * u * v^2}'(add_le_add hj (mul_le_mul_of_nonneg_left hk (by trivial))) ⁆⁻¹
-    | (i : ℕ) (j : ℕ) (k : ℕ)
-      (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height)
-      (t : F) (u : F) (v : F) }
+  hom_lift_set (⁅ {{ψ, ((-1 / 2):F)}} * {{αβ, (1:F)}} *
+      {{ψ, (1:F)}} * {{αβ, -(1:F)}} *
+      {{ψ, ((-1 / 2):F)}}, {{ψ, (1:F)}} ⁆
+    * ⁅ {{α, (1:F)}},
+        {{β2ψ, -(2:F)}} ⁆⁻¹)
 
 -- Relation 8.86
 def rels_of_hom_lift_of_comm_of_βψ_α_β2ψ :=
-  { ⁅ {βψ, j + k, u * v}'(add_le_add hj hk),
-      ⁅ {α, i, t},
-        {β2ψ, j + 2 * k, u * v^2}'(add_le_add hj (mul_le_mul_of_nonneg_left hk (by trivial))) ⁆ ⁆
-    | (i : ℕ) (j : ℕ) (k : ℕ)
-      (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height)
-      (t : F) (u : F) (v : F) }
+  hom_lift_set (⁅ {{βψ, (1:F)}},
+      ⁅ {{α, (1:F)}},
+        {{β2ψ, (1:F)}} ⁆ ⁆)
 
 -- Relation 8.87a
 def rels_of_hom_lift_of_inv_doub_of_α_β2ψ_a :=
-  { ⁅ {α, i, t},
-      {β2ψ, j + 2 * k, u * v^2}'(add_le_add hj (mul_le_mul_of_nonneg_left hk (by trivial))) ⁆
-    * ⁅ {α, i, -t},
-        {β2ψ, j + 2 * k, -u * v^2}'(add_le_add hj (mul_le_mul_of_nonneg_left hk (by trivial)))⁆⁻¹
-    | (i : ℕ) (j : ℕ) (k : ℕ)
-      (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height)
-      (t : F) (u : F) (v : F) }
+  hom_lift_set (⁅ {{α, (1:F)}},
+      {{β2ψ, (1:F)}} ⁆
+    * ⁅ {{α, -(1:F)}},
+        {{β2ψ, -(1:F)}}⁆⁻¹)
 
 -- Relation 8.87b
 def rels_of_hom_lift_of_inv_doub_of_α_β2ψ_b :=
-  { ⁅ {α, i, t},
-      {β2ψ, j + 2 * k, u * v^2}'(add_le_add hj (mul_le_mul_of_nonneg_left hk (by trivial))) ⁆
-    * ⁅ {α, i, t},
-        {β2ψ, j + 2 * k, -u * v^2}'(add_le_add hj (mul_le_mul_of_nonneg_left hk (by trivial))) ⁆
-    | (i : ℕ) (j : ℕ) (k : ℕ)
-      (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height)
-      (t : F) (u : F) (v : F) }
+  hom_lift_set (⁅ {{α, (1:F)}}, {{β2ψ, (1:F)}} ⁆ * ⁅ {{α, (1:F)}}, {{β2ψ, -(1:F)}} ⁆)
 
 -- Relation 8.87c
 def rels_of_hom_lift_of_inv_doub_of_α_β2ψ_c :=
-  { ⁅ {α, i, t},
-      {β2ψ, j + 2 * k, u * v^2}'(add_le_add hj (mul_le_mul_of_nonneg_left hk (by trivial))) ⁆
-    * ⁅ {α, i, t},
-        {β2ψ, j + 2 * k, u * v^2}'(add_le_add hj (mul_le_mul_of_nonneg_left hk (by trivial))) ⁆
-      * ⁅ {α, i, t},
-          {β2ψ, j + 2 * k, 2 * u * v^2}'(add_le_add hj (mul_le_mul_of_nonneg_left hk (by trivial))) ⁆⁻¹
-    | (i : ℕ) (j : ℕ) (k : ℕ)
-      (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height)
-      (t : F) (u : F) (v : F) }
+  hom_lift_set (⁅ {{α, (1:F)}}, {{β2ψ, (1:F)}} ⁆ * ⁅ {{α, (1:F)}}, {{β2ψ, (1:F)}} ⁆ * ⁅ {{α, (1:F)}}, {{β2ψ, (2:F)}} ⁆⁻¹)
 
 -- Relation 8.88
 def rels_of_hom_lift_of_comm_of_β2ψ_αβψ :=
-  { ⁅ {β2ψ, j + 2 * k, u * v^2}'(add_le_add hj (mul_le_mul_of_nonneg_left hk (by trivial))),
-      {ψ, k, -v / 2} *
-      {αβ, i + j, t * u}'(add_le_add hi hj) *
-      {ψ, k, v} *
-      {αβ, i + j, -t * u}'(add_le_add hi hj) *
-      {ψ, k, -v / 2} ⁆
-    | (i : ℕ) (j : ℕ) (k : ℕ)
-      (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height)
-      (t : F) (u : F) (v : F) }
+  hom_lift_set (⁅ {{β2ψ, (1:F)}},
+      {{ψ, ((-1 / 2):F)}} *
+      {{αβ, (1:F)}} *
+      {{ψ, (1:F)}} *
+      {{αβ, -(1:F)}} *
+      {{ψ, ((-1 / 2):F)}} ⁆)
 
 -- Relation 8.89a
 def rels_of_hom_lift_of_interchange_of_α2β2ψ_a :=
-  { ⁅ {αβ, i + j, t * u}'(add_le_add hi hj),
-      {β2ψ, j + 2 * k, 2 * u * v^2}'(add_le_add hj (mul_le_mul_of_nonneg_left hk (by trivial))) ⁆
-    * ⁅ {ψ, k, -v / 2} *
-        {αβ, i + j, t * u}'(add_le_add hi hj) *
-        {ψ, k, v} *
-        {αβ, i + j, -t * u}'(add_le_add hi hj) *
-        {ψ, k, -v / 2},
-        {βψ, j + k, u * v}'(add_le_add hj hk) ⁆⁻¹
-    | (i : ℕ) (j : ℕ) (k : ℕ)
-      (hi : i ≤ α.height) (hj : j ≤ β.height)
-      (hk : k ≤ ψ.height) (t : F) (u : F) (v : F) }
+  hom_lift_set (⁅ {{αβ, (1:F)}},
+      {{β2ψ, (2:F)}} ⁆
+    * ⁅ {{ψ, ((-1 / 2):F)}} *
+        {{αβ, (1:F)}} *
+        {{ψ, (1:F)}} *
+        {{αβ, -(1:F)}} *
+        {{ψ, ((-1 / 2):F)}},
+        {{βψ, (1:F)}} ⁆⁻¹)
 
 -- Relation 8.89b
 def rels_of_hom_lift_of_interchange_of_α2β2ψ_b :=
-  { ⁅ {ψ, k, -v / 2} *
-      {αβ, i + j, t * u}'(add_le_add hi hj) *
-      {ψ, k, v} *
-      {αβ, i + j, -t * u}'(add_le_add hi hj) *
-      {ψ, k, -v / 2},
-      {βψ, j + k, u * v}'(add_le_add hj hk) ⁆
-    * ⁅ ⁅ {α, i, t},
-          {β2ψ, j + 2 * k, 2 * u * v^2}'(add_le_add hj (mul_le_mul_of_nonneg_left hk (by trivial))) ⁆,
-        {β, j, u} ⁆⁻¹
-    | (i : ℕ) (j : ℕ) (k : ℕ)
-      (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height)
-      (t : F) (u : F) (v : F) }
+  hom_lift_set (⁅ {{ψ, ((-1 / 2):F)}} *
+      {{αβ, (1:F)}} *
+      {{ψ, (1:F)}} *
+      {{αβ, -(1:F)}} *
+      {{ψ, ((-1 / 2):F)}},
+      {{βψ, (1:F)}} ⁆
+    * ⁅ ⁅ {{α, (1:F)}},
+          {{β2ψ, (2:F)}} ⁆,
+        {{β, (1:F)}} ⁆⁻¹)
 
 -- Relation 8.90
 def rels_of_hom_lift_of_comm_of_ψ_αβ_β2ψ :=
-  { ⁅ {ψ, k, v},
-      ⁅ {αβ, i + j, t * u}'(add_le_add hi hj),
-        {β2ψ, j + 2 * k, u * v^2}'(add_le_add hj (mul_le_mul_of_nonneg_left hk (by trivial))) ⁆ ⁆
-    | (i : ℕ) (j : ℕ) (k : ℕ)
-      (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height)
-      (t : F) (u : F) (v : F) }
+  hom_lift_set (⁅ {{ψ, (1:F)}},
+      ⁅ {{αβ, (1:F)}},
+        {{β2ψ, (1:F)}} ⁆ ⁆)
 
 -- Relation 8.91a (s = 1)
 def rels_of_hom_lift_of_comm_of_αβ_αβ_β2ψ_a :=
-  { ⁅ {αβ, i + j, t * u}'(add_le_add hi hj),
-      ⁅ {αβ, i + j, t * u}'(add_le_add hi hj),
-        {β2ψ, j + 2 * k, u * v^2}'(add_le_add hj (mul_le_mul_of_nonneg_left hk (by trivial))) ⁆ ⁆
-    | (i : ℕ) (j : ℕ) (k : ℕ)
-      (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height)
-      (t : F) (u : F) (v : F) }
+  hom_lift_set (⁅ {{αβ, (1:F)}},
+      ⁅ {{αβ, (1:F)}},
+        {{β2ψ, (1:F)}} ⁆ ⁆)
 
 -- Relation 8.91b (s = -1)
 def rels_of_hom_lift_of_comm_of_αβ_αβ_β2ψ_b :=
-  { ⁅ {αβ, i + j, t * u}'(add_le_add hi hj),
-      ⁅ {αβ, i + j, -t * u}'(add_le_add hi hj),
-        {β2ψ, j + 2 * k, u * v^2}'(add_le_add hj (mul_le_mul_of_nonneg_left hk (by trivial))) ⁆ ⁆
-    | (i : ℕ) (j : ℕ) (k : ℕ)
-      (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height)
-      (t : F) (u : F) (v : F) }
+  hom_lift_set (⁅ {{αβ, (1:F)}},
+      ⁅ {{αβ, -(1:F)}},
+        {{β2ψ, (1:F)}} ⁆ ⁆)
 
 -- Relation 8.92a
 def rels_of_hom_lift_of_inv_doub_of_αβ_β2ψ_a :=
-  { ⁅ {αβ, i + j, t * u}'(add_le_add hi hj),
-      {β2ψ, j + 2 * k, u * v^2}'(add_le_add hj (mul_le_mul_of_nonneg_left hk (by trivial))) ⁆
-    * ⁅ {αβ, i + j, -t * u}'(add_le_add hi hj),
-        {β2ψ, j + 2 * k, -u * v^2}'(add_le_add hj (mul_le_mul_of_nonneg_left hk (by trivial))) ⁆⁻¹
-    | (i : ℕ) (j : ℕ) (k : ℕ)
-      (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height)
-      (t : F) (u : F) (v : F) }
+  hom_lift_set (⁅ {{αβ, (1:F)}},
+      {{β2ψ, (1:F)}} ⁆
+    * ⁅ {{αβ, -(1:F)}},
+        {{β2ψ, -(1:F)}} ⁆⁻¹)
 
 -- Relation 8.92b
 def rels_of_hom_lift_of_inv_doub_of_αβ_β2ψ_b :=
-  { ⁅ {αβ, i + j, t * u}'(add_le_add hi hj),
-      {β2ψ, j + 2 * k, u * v^2}'(add_le_add hj (mul_le_mul_of_nonneg_left hk (by trivial))) ⁆
-    * ⁅ {αβ, i + j, -t * u}'(add_le_add hi hj),
-        {β2ψ, j + 2 * k, u * v^2}'(add_le_add hj (mul_le_mul_of_nonneg_left hk (by trivial))) ⁆
-    | (i : ℕ) (j : ℕ) (k : ℕ)
-      (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height)
-      (t : F) (u : F) (v : F) }
+  hom_lift_set (⁅ {{αβ, (1:F)}},
+      {{β2ψ, (1:F)}} ⁆
+    * ⁅ {{αβ, -(1:F)}},
+        {{β2ψ, (1:F)}} ⁆)
 
 -- Relation 8.92c
 def rels_of_hom_lift_of_inv_doub_of_αβ_β2ψ_c :=
-  { ⁅ {αβ, i + j, t * u}'(add_le_add hi hj),
-      {β2ψ, j + 2 * k, u * v^2}'(add_le_add hj (mul_le_mul_of_nonneg_left hk (by trivial))) ⁆
-    * ⁅ {αβ, i + j, t * u}'(add_le_add hi hj),
-        {β2ψ, j + 2 * k, u * v^2}'(add_le_add hj (mul_le_mul_of_nonneg_left hk (by trivial))) ⁆
-    * ⁅ {αβ, i + j, 2 * t * u}'(add_le_add hi hj),
-        {β2ψ, j + 2 * k, u * v^2}'(add_le_add hj (mul_le_mul_of_nonneg_left hk (by trivial))) ⁆⁻¹
-    | (i : ℕ) (j : ℕ) (k : ℕ)
-      (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height)
-      (t : F) (u : F) (v : F) }
+  hom_lift_set (⁅ {{αβ, (1:F)}},
+      {{β2ψ, (1:F)}} ⁆
+    * ⁅ {{αβ, (1:F)}},
+        {{β2ψ, (1:F)}} ⁆
+    * ⁅ {{αβ, (2:F)}},
+        {{β2ψ, (1:F)}} ⁆⁻¹)
 
 -- Relation 8.93a
 def rels_of_hom_lift_of_inv_doub_of_β_αβ2ψ_a :=
-  { ⁅ {β, j, u},
-      ⁅ {α, i, t},
-        {β2ψ, j + 2 * k, u * v^2}'(add_le_add hj (mul_le_mul_of_nonneg_left hk (by trivial))) ⁆ ⁆
-    * ⁅ {β, j, -u},
-        ⁅ {α, i, -t},
-          {β2ψ, j + 2 * k, u * v^2}'(add_le_add hj (mul_le_mul_of_nonneg_left hk (by trivial))) ⁆ ⁆⁻¹
-    | (i : ℕ) (j : ℕ) (k : ℕ)
-      (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height)
-      (t : F) (u : F) (v : F) }
+  hom_lift_set (⁅ {{β, (1:F)}},
+      ⁅ {{α, (1:F)}},
+        {{β2ψ, (1:F)}} ⁆ ⁆
+    * ⁅ {{β, (-1:F)}},
+        ⁅ {{α, -(1:F)}},
+          {{β2ψ, (1:F)}} ⁆ ⁆⁻¹)
 
 -- Relation 8.93b
 def rels_of_hom_lift_of_inv_doub_of_β_αβ2ψ_b :=
-  { ⁅ {β, j, u},
-      ⁅ {α, i, t},
-        {β2ψ, j + 2 * k, u * v^2}'(add_le_add hj (mul_le_mul_of_nonneg_left hk (by trivial))) ⁆ ⁆
-    * ⁅ {β, j, -u},
-        ⁅ {α, i, t},
-          {β2ψ, j + 2 * k, u * v^2}'(add_le_add hj (mul_le_mul_of_nonneg_left hk (by trivial))) ⁆ ⁆
-    | (i : ℕ) (j : ℕ) (k : ℕ)
-      (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height)
-      (t : F) (u : F) (v : F) }
+  hom_lift_set (⁅ {{β, (1:F)}},
+      ⁅ {{α, (1:F)}},
+        {{β2ψ, (1:F)}} ⁆ ⁆
+    * ⁅ {{β, (-1:F)}},
+        ⁅ {{α, (1:F)}},
+          {{β2ψ, (1:F)}} ⁆ ⁆)
 
 -- Relation 8.93c
 def rels_of_hom_lift_of_inv_doub_of_β_αβ2ψ_c :=
-  { ⁅ {β, j, u},
-      ⁅ {α, i, t},
-        {β2ψ, j + 2 * k, u * v^2}'(add_le_add hj (mul_le_mul_of_nonneg_left hk (by trivial))) ⁆ ⁆
-    * ⁅ {β, j, u},
-        ⁅ {α, i, t},
-          {β2ψ, j + 2 * k, u * v^2}'(add_le_add hj (mul_le_mul_of_nonneg_left hk (by trivial))) ⁆ ⁆
-    * ⁅ {β, j, 2 * u},
-        ⁅ {α, i, t},
-          {β2ψ, j + 2 * k, u * v^2}'(add_le_add hj (mul_le_mul_of_nonneg_left hk (by trivial))) ⁆ ⁆⁻¹
-    | (i : ℕ) (j : ℕ) (k : ℕ)
-      (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height)
-      (t : F) (u : F) (v : F) }
+  hom_lift_set (⁅ {{β, (1:F)}},
+      ⁅ {{α, (1:F)}},
+        {{β2ψ, (1:F)}} ⁆ ⁆
+    * ⁅ {{β, (1:F)}},
+        ⁅ {{α, (1:F)}},
+          {{β2ψ, (1:F)}} ⁆ ⁆
+    * ⁅ {{β, (2:F)}},
+        ⁅ {{α, (1:F)}},
+          {{β2ψ, (1:F)}} ⁆ ⁆⁻¹)
 
 -- Relation 8.94
 def rels_of_hom_lift_of_comm_of_βψ_αβ2ψ :=
-  { ⁅ {βψ, j + k, u * v}'(add_le_add hj hk),
-      ⁅ {α, i, t},
-        {β2ψ, j + 2 * k, u * v^2}'(add_le_add hj (mul_le_mul_of_nonneg_left hk (by trivial))) ⁆ ⁆
-    | (i : ℕ) (j : ℕ) (k : ℕ)
-      (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height)
-      (t : F) (u : F) (v : F) }
+  hom_lift_set (⁅ {{βψ, (1:F)}},
+      ⁅ {{α, (1:F)}},
+        {{β2ψ, (1:F)}} ⁆ ⁆)
 
 -- Relation 8.95
 def rels_of_hom_lift_of_comm_of_β2ψ_αβ2ψ :=
-  { ⁅ {β2ψ, j + 2 * k, u * v^2}'(add_le_add hj (mul_le_mul_of_nonneg_left hk (by trivial))),
-      ⁅ {α, i, t},
-        {β2ψ, j + 2 * k, u * v^2}'(add_le_add hj (mul_le_mul_of_nonneg_left hk (by trivial))) ⁆ ⁆
-    | (i : ℕ) (j : ℕ) (k : ℕ)
-      (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height)
-      (t : F) (u : F) (v : F) }
+  hom_lift_set (⁅ {{β2ψ, (1:F)}},
+      ⁅ {{α, (1:F)}},
+        {{β2ψ, (1:F)}} ⁆ ⁆)
+
+end homog_rels
 
 def lifted_sets (F : Type TF) [Field F] : Set (Set (FreeGroup (GradedChevalleyGenerator B3LargePosRoot F))) := {
   rels_of_nonhomog_lift_of_comm_of_αβ_βψ, rels_of_nonhomog_lift_of_comm_of_α_α2β2ψ,
@@ -395,13 +341,6 @@ theorem correct_of_split_5_into_2_3 (i : ℕ) (hi : i ≤ 5) :
   simp only [split_5_into_2_3]
   split
   all_goals trivial
-
-
-private theorem asdf (F : Type TR) [Field F] (g : GradedChevalleyGenerator B3LargePosRoot F) (h : g.ζ = αβψ) :
-    g.i ≤ 3 := by
-  have : 3 = PositiveRootSystem.height αβψ := by ht
-  rw [this, ←h]
-  exact g.hi
 
 def weak_define (F : Type TR) [Field F] (g : GradedChevalleyGenerator B3LargePosRoot F) : FreeGroup (GradedChevalleyGenerator B3LargePosRoot F) :=
   let ⟨ ζ, i, hi, t ⟩ := g;
@@ -474,8 +413,11 @@ def fullB3LargeSystem := PartialChevalleySystem.mk_full B3LargePosRoot
   full_double_commutator_pairs
   full_forall_roots_mem_present
 
-def fullB3Large (R : Type TR) [Ring R] := @PartialChevalleyGroup.mk B3LargePosRoot _ R _ fullB3LargeSystem
+def fullB3Large (F : Type TR) [Field F] := @PartialChevalleyGroup.mk B3LargePosRoot _ F _ fullB3LargeSystem
 def fullB3LargeGraded (F : Type TR) [Field F] := GradedPartialChevalleyGroup.full_mk B3LargePosRoot F fullB3LargeSystem
+
+--   ∀ S ∈ lifted_sets F,
+--     ∀ r ∈ S, (weakB3Large F).pres_mk (FreeGroup.map refl_deg_of_gen r) = 1 := by
 
 /-! # Notation and macros -/
 
@@ -561,12 +503,27 @@ scoped notation "forall_ijk_tuv" "," e =>
 
 end forallNotation
 
+macro "nonhom_tac " rel:ident " [" intros:ident,* "]" : tactic => `(tactic|
+  ( intros $intros*;
+    apply eq_of_mul_inv_eq_one;
+    apply (weakB3Large _).lifted_helper $rel;
+    simp only [weakB3Large, lifted_sets, Set.mem_singleton_iff,
+      Set.mem_insert_iff, Set.mem_singleton_iff, true_or, or_true];
+    exists $intros,*
+     ))
+
 macro "hom_tac " rel:ident " [" intros:ident,* "]" : tactic => `(tactic|
   ( intros $intros*;
     apply eq_of_mul_inv_eq_one;
     apply (weakB3Large _).lifted_helper $rel;
     simp only [weakB3Large, lifted_sets, Set.mem_singleton_iff,
       Set.mem_insert_iff, Set.mem_singleton_iff, true_or, or_true];
-    exists $intros,* ))
+    exists $intros,*;
+    simp only [map_mul, map_inv, map_commutatorElement, commutatorElement_def, FreeGroup.map.of, PartialChevalley.ChevalleyGenerator.free_mk, hom_lift];
+    repeat rw [← free_mk];
+    simp only [one_mul, inv_one, mul_one, ←mul_assoc];
+    try congr;
+    try all_goals field_simp
+     ))
 
 end Steinberg.B3Large
