@@ -417,3 +417,17 @@ theorem sufficient_conditions_for_comm_of_αβψ_and_ψ :
         hyp' (-(u / 2)),
         expr_ψ_comm_α_β2ψ_as_comm_α_β2ψ_ψ hk hi hjk,
         lift_hom_inv_doub_of_α_β2ψ_c hi hjk, mul_assoc]
+
+theorem refl_def_of_αβψ (g : GradedChevalleyGenerator B3LargePosRoot F)
+  (h : g.ζ = αβψ) :
+  (weakB3Large F).pres_mk (refl_def (weakB3Large F) g) = (weakB3Large F).pres_mk (FreeGroup.of (refl_of_gen g)) := by
+  simp only [refl_def, MonoidHom.coe_comp, Function.comp_apply, FreeGroup.lift.of]
+  -- have : ().define g = FreeGroup.of g := by exact w.h_define_of_present h
+  simp only [weakB3Large, weak_define]
+  split
+  · simp only [free_mk, map_mul, FreeGroup.map.of, refl_of_gen, h]
+    simp only [←free_mk]
+    rw [expr_αβψ_as_βψ_α_βψ_α_βψ]
+  · simp_all only [ne_eq, heq_eq_eq]; contradiction
+  · simp_all only [ne_eq, heq_eq_eq]; contradiction
+  · sorry

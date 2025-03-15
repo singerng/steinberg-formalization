@@ -43,8 +43,8 @@ theorem def_of_α2β2ψ : forall_i_t α2β2ψ,
     ⁆ = {α2β2ψ, i, -t} := by
   intro i hi t
   symm
-  sorry
-  --apply (weakB3Large F).def_helper
+  nth_rewrite 2 [←neg_neg t]
+  apply (weakB3Large F).def_helper
 
 /-! ### Nonhomogeneous lift -/
 
