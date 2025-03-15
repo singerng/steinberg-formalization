@@ -19,11 +19,11 @@ variable {F : Type TF} [Field F] (Fchar : (2 : F) ≠ 0)
 variable (F_sum_of_squares : ∀ (a : F), ∃ (x y : F), a = x^2 + y^2)
 
 theorem def_of_αβψ : forall_i_t αβψ,
-  {βψ, (split_3_into_1_2 i hi).2, -1/2}'(correct_of_split_3_into_1_2 i hi).2 *
+  {βψ, (split_3_into_1_2 i hi).2, -1/2}'(correct_of_split_3_into_1_2 i hi).2.1 *
   {α, (split_3_into_1_2 i hi).1, t}'(correct_of_split_3_into_1_2 i hi).1 *
-  {βψ, (split_3_into_1_2 i hi).2, 1}'(correct_of_split_3_into_1_2 i hi).2 *
+  {βψ, (split_3_into_1_2 i hi).2, 1}'(correct_of_split_3_into_1_2 i hi).2.1 *
   {α, (split_3_into_1_2 i hi).1, -t}'(correct_of_split_3_into_1_2 i hi).1 *
-  {βψ, (split_3_into_1_2 i hi).2, -1/2}'(correct_of_split_3_into_1_2 i hi).2
+  {βψ, (split_3_into_1_2 i hi).2, -1/2}'(correct_of_split_3_into_1_2 i hi).2.1
     = {αβψ, i, t} := by
   intro i hi t
   symm

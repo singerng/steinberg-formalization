@@ -361,10 +361,11 @@ def split_3_into_1_2 (i : ℕ) (hi : i ≤ 3) :=
   | 3 => (1, 2)
 
 theorem correct_of_split_3_into_1_2 (i : ℕ) (hi : i ≤ 3) :
-  (split_3_into_1_2 i hi).1 ≤ 1 ∧ (split_3_into_1_2 i hi).2 ≤ 2 := by
+  (split_3_into_1_2 i hi).1 ≤ 1 ∧ (split_3_into_1_2 i hi).2 ≤ 2 ∧ (split_3_into_1_2 i hi).1 + (split_3_into_1_2 i hi).2 = i := by
   simp only [split_3_into_1_2]
   split
   all_goals trivial
+
 
 def split_4_into_1_3 (i : ℕ) (hi : i ≤ 4) :=
   match i with
@@ -403,17 +404,18 @@ private theorem asdf (F : Type TR) [Field F] (g : GradedChevalleyGenerator B3Lar
   exact g.hi
 
 def weak_define (F : Type TR) [Field F] (g : GradedChevalleyGenerator B3LargePosRoot F) : FreeGroup (GradedChevalleyGenerator B3LargePosRoot F) :=
-  --let ⟨ ζ, i, hi, t ⟩ := g;
-  match h : g.ζ with
-  | αβψ => {βψ, (split_3_into_1_2 g.i (asdf F g h)).2, -1/2}'(correct_of_split_3_into_1_2 g.i (asdf F g h)).2 *
-    {α, (split_3_into_1_2 g.i (asdf F g h)).1, g.t}'(correct_of_split_3_into_1_2 g.i (asdf F g h)).1 *
-    {βψ, (split_3_into_1_2 g.i (by sorry)).2, 1}'(correct_of_split_3_into_1_2 g.i (by sorry)).2 *
-    {α, (split_3_into_1_2 g.i (by sorry)).1, -g.t}'(correct_of_split_3_into_1_2 g.i (by sorry)).1 *
-    {βψ, (split_3_into_1_2 g.i (by sorry)).2, -1/2}'(correct_of_split_3_into_1_2 g.i (by sorry)).2
-  | αβ2ψ => ⁅ {α, (split_4_into_1_3 g.i (by sorry)).1, g.t}'(correct_of_split_4_into_1_3 g.i (by sorry)).1,
-      {β2ψ, (split_4_into_1_3 g.i (by sorry)).2, 1}'(correct_of_split_4_into_1_3 g.i (by sorry)).2 ⁆
-  | α2β2ψ => ⁅ {αβ, (split_5_into_2_3 g.i (by sorry)).1, -g.t}'(correct_of_split_5_into_2_3 g.i (by sorry)).1,
-      {β2ψ, (split_5_into_2_3 g.i (by sorry)).2, 1}'(correct_of_split_5_into_2_3 g.i (by sorry)).2 ⁆
+  let ⟨ ζ, i, hi, t ⟩ := g;
+  match ζ with
+  | αβψ =>
+    {βψ, (split_3_into_1_2 i hi).2, -1/2}'(correct_of_split_3_into_1_2 i hi).2.1 *
+    {α, (split_3_into_1_2 i hi).1, t}'(correct_of_split_3_into_1_2 i hi).1 *
+    {βψ, (split_3_into_1_2 i hi).2, 1}'(correct_of_split_3_into_1_2 i hi).2.1 *
+    {α, (split_3_into_1_2 i hi).1, -t}'(correct_of_split_3_into_1_2 i hi).1 *
+    {βψ, (split_3_into_1_2 i hi).2, -1/2}'(correct_of_split_3_into_1_2 i hi).2.1
+  | αβ2ψ => ⁅ {α, (split_4_into_1_3 i hi).1, t}'(correct_of_split_4_into_1_3 i hi).1,
+      {β2ψ, (split_4_into_1_3 i hi).2, 1}'(correct_of_split_4_into_1_3 i hi).2 ⁆
+  | α2β2ψ => ⁅ {αβ, (split_5_into_2_3 i hi).1, -t}'(correct_of_split_5_into_2_3 i hi).1,
+      {β2ψ, (split_5_into_2_3 i hi).2, 1}'(correct_of_split_5_into_2_3 i hi).2 ⁆
   | ζ => FreeGroup.of g
 
 theorem weak_define_of_present (F : Type TR) [Field F] :

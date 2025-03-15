@@ -420,14 +420,24 @@ theorem sufficient_conditions_for_comm_of_αβψ_and_ψ :
 
 theorem refl_def_of_αβψ (g : GradedChevalleyGenerator B3LargePosRoot F)
   (h : g.ζ = αβψ) :
-  (weakB3Large F).pres_mk (refl_def (weakB3Large F) g) = (weakB3Large F).pres_mk (FreeGroup.of (refl_of_gen g)) := by
+  (weakB3Large F).pres_mk (refl_def (weakB3Large F) g)
+    = (weakB3Large F).pres_mk (FreeGroup.of (refl_of_gen g)) := by
+  rcases g with ⟨ ζ, i, hi, t ⟩
+  simp only at h
+  subst ζ
   simp only [refl_def, MonoidHom.coe_comp, Function.comp_apply, FreeGroup.lift.of]
-  -- have : ().define g = FreeGroup.of g := by exact w.h_define_of_present h
-  simp only [weakB3Large, weak_define]
-  split
-  · simp only [free_mk, map_mul, FreeGroup.map.of, refl_of_gen, h]
-    simp only [←free_mk]
-    rw [expr_αβψ_as_βψ_α_βψ_α_βψ]
-  · simp_all only [ne_eq, heq_eq_eq]; contradiction
-  · simp_all only [ne_eq, heq_eq_eq]; contradiction
-  · sorry
+  rw [weakB3Large]
+  simp only
+  rw [weak_define]
+  simp only [map_mul, map_inv, free_mk, FreeGroup.map.of, refl_of_gen, PositiveRootSystem.height]
+  repeat rw [←free_mk]
+  rw [←weakB3Large, ←expr_αβψ_as_βψ_α_βψ_α_βψ]
+  · congr
+    · simp only [height]
+      nth_rewrite 3 [←(correct_of_split_3_into_1_2 i hi).2.2]
+      have := (correct_of_split_3_into_1_2 i hi).1
+      have := (correct_of_split_3_into_1_2 i hi).2.1
+      omega
+    · rw [mul_one]
+  · simp only [tsub_le_iff_right, le_add_iff_nonneg_right, zero_le]
+  · simp only [tsub_le_iff_right, le_add_iff_nonneg_right, zero_le]
