@@ -538,4 +538,213 @@ macro "hom_tac " rel:ident " [" intros:ident,* "]" : tactic => `(tactic|
     try all_goals field_simp
      ))
 
+theorem refl_of_lifted :
+  ∀ S ∈ lifted_sets F,
+    ∀ r ∈ S, (weakB3Large F).pres_mk (FreeGroup.map refl_deg_of_gen r) = 1 := by
+  simp only [lifted_sets, nonhom_lifted_sets, hom_lifted_sets, Set.mem_union, Set.mem_insert_iff,
+    Set.mem_singleton_iff, Set.mem_image, exists_eq_or_imp, exists_eq_left]
+  intro s hs r hr
+  simp only [or_assoc] at hs
+  rcases hs with h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h
+  all_goals subst s
+  · simp only [rels_of_nonhomog_lift_of_comm_of_αβ_βψ] at hr
+    rcases hr with ⟨ t₁, t₀, u₁, u₀, v₁, v₀, rfl ⟩
+    simp [free_mk]
+    stop
+    repeat rw [← free_mk]
+    rw [add_comm, add_comm (u₁ * v₀)]
+    grw [expr_βψ_βψ_as_βψ_βψ, expr_βψ_βψ_as_βψ_βψ (i := 0), expr_βψ_βψ_as_βψ_βψ,
+    expr_αβ_αβ_as_αβ_αβ, expr_αβ_αβ_as_αβ_αβ (i := 0), expr_αβ_αβ_as_αβ_αβ]
+    exact raw_nonhomog_lift_of_comm_of_αβ_βψ t₀ t₁ u₀ u₁ v₀ v₁
+  · simp only [rels_of_nonhomog_lift_of_comm_of_α_α2β2ψ] at hr
+    rcases hr with ⟨ t₁, t₀, u₁, u₀, v₁, v₀, rfl ⟩
+    simp only [free_mk, map_commutatorElement, map_mul, FreeGroup.map.of, refl_deg_of_gen,
+    PositiveRootSystem.height, height, tsub_self, Nat.add_one_sub_one, tsub_zero, neg_mul, map_inv, FreeGroup.map.of]
+    repeat rw [← free_mk]
+    rw [add_comm]
+    have := raw_nonhomog_lift_of_comm_of_α_α2β2ψ t₀ t₁ u₀ u₁ v₀ v₁
+    norm_num; norm_num at this
+    grw [expr_α_α_as_α_α, expr_αβ_αβ_as_αβ_αβ (i := 1), expr_αβ_αβ_as_αβ_αβ (i := 0),
+         expr_αβ_αβ_as_αβ_αβ (i := 0), expr_β2ψ_β2ψ_as_β2ψ_β2ψ (i := 2),
+         expr_β2ψ_β2ψ_as_β2ψ_β2ψ (i := 1), expr_β2ψ_β2ψ_as_β2ψ_β2ψ (i := 0), expr_β2ψ_β2ψ_as_β2ψ_β2ψ (i := 1),
+         expr_β2ψ_β2ψ_as_β2ψ_β2ψ (i := 0), expr_β2ψ_β2ψ_as_β2ψ_β2ψ (i := 0)]
+    rw [← this]
+    grw [pow_two, mul_comm v₁ v₀, mul_comm v₁ v₀]
+  · simp only [rels_of_hom_lift_of_interchange_of_αβψ] at hr
+    rcases hr with ⟨ i, j, k, hi, hj, hk, t, u, v, rfl ⟩
+    simp only [free_mk, map_commutatorElement, map_mul, FreeGroup.map.of, refl_deg_of_gen,
+    PositiveRootSystem.height, height, tsub_self, Nat.add_one_sub_one, tsub_zero, neg_mul, map_inv, FreeGroup.map.of]
+    repeat rw [← free_mk]
+    have hi' : (1-i) ≤ α.height := by simp
+    have hj' : (1-j) ≤ β.height := by simp
+    have hk' : (1-k) ≤ ψ.height := by simp
+    have := raw_hom_lift_of_interchange_of_αβψ' hi' hj' hk' t u v
+    rw [← this]
+    congr
+    all_goals ht
+    all_goals group
+  · simp only [rels_of_hom_lift_of_doub_of_αβψ] at hr
+    rcases hr with ⟨ i, j, hi, hj, t, u, v, rfl ⟩
+    simp only [free_mk, map_commutatorElement, map_mul, FreeGroup.map.of, refl_deg_of_gen,
+    PositiveRootSystem.height, height, tsub_self, Nat.add_one_sub_one, tsub_zero, neg_mul, map_inv, FreeGroup.map.of]
+    repeat rw [← free_mk]
+    have hi' : (2-i) ≤ αβ.height := by ht
+    have hj' : (1-j) ≤ ψ.height := by simp
+    have := raw_hom_lift_of_doub_of_αβψ' hi' hj' t u v
+    rw [← this]
+    congr
+    all_goals group
+  · simp only [rels_of_hom_lift_of_interchange_of_αβ2ψ] at hr
+    rcases hr with ⟨ i, j, k, hi, hj, hk, t, u, v, rfl ⟩
+    simp only [free_mk, map_commutatorElement, map_mul, FreeGroup.map.of, refl_deg_of_gen,
+    PositiveRootSystem.height, height, tsub_self, Nat.add_one_sub_one, tsub_zero, neg_mul, map_inv, FreeGroup.map.of]
+    repeat rw [← free_mk]
+    have hi' : (1-i) ≤ α.height := by simp
+    have hj' : (1-j) ≤ β.height := by simp
+    have hk' : (1-k) ≤ ψ.height := by simp
+    have := raw_hom_lift_of_interchange_of_αβ2ψ' hi' hj' hk' t u v
+    rw [← this]
+    congr
+    all_goals ht
+    all_goals group
+  · simp only [rels_of_hom_lift_of_comm_of_βψ_α_β2ψ] at hr
+    rcases hr with ⟨ i, j, k, hi, hj, hk, t, u, v, rfl ⟩
+    simp only [free_mk, map_commutatorElement, map_mul, FreeGroup.map.of, refl_deg_of_gen,
+    PositiveRootSystem.height, height, tsub_self, Nat.add_one_sub_one, tsub_zero, neg_mul, map_inv, FreeGroup.map.of]
+    repeat rw [← free_mk]
+    have hi' : (1-i) ≤ α.height := by simp
+    have hj' : (1-j) ≤ β.height := by simp
+    have hk' : (1-k) ≤ ψ.height := by simp
+    have := raw_hom_lift_of_comm_of_βψ_α_β2ψ hi' hj' hk' t u v
+    rw [← this]
+    congr
+    all_goals ht
+  · simp only [rels_of_hom_lift_of_inv_doub_of_α_β2ψ_a] at hr
+    rcases hr with ⟨ i, j, k, hi, hj, hk, t, u, v, rfl ⟩
+    simp only [free_mk, map_commutatorElement, map_mul, FreeGroup.map.of, refl_deg_of_gen,
+    PositiveRootSystem.height, height, tsub_self, Nat.add_one_sub_one, tsub_zero, neg_mul, map_inv, FreeGroup.map.of]
+    repeat rw [← free_mk]
+    have hi' : (1-i) ≤ α.height := by simp
+    have hj' : (1-j) ≤ β.height := by simp
+    have hk' : (1-k) ≤ ψ.height := by simp
+    have := raw_hom_lift_of_inv_doub_of_α_β2ψ_a' hi' hj' hk' t u v
+    rw [← this]
+    congr
+    all_goals ht
+    all_goals group
+  · simp only [rels_of_hom_lift_of_inv_doub_of_α_β2ψ_b] at hr
+    rcases hr with ⟨ i, j, k, hi, hj, hk, t, u, v, rfl ⟩
+    simp only [free_mk, map_commutatorElement, map_mul, FreeGroup.map.of, refl_deg_of_gen,
+    PositiveRootSystem.height, height, tsub_self, Nat.add_one_sub_one, tsub_zero, neg_mul, map_inv, FreeGroup.map.of]
+    repeat rw [← free_mk]
+    have hi' : (1-i) ≤ α.height := by simp
+    have hj' : (1-j) ≤ β.height := by simp
+    have hk' : (1-k) ≤ ψ.height := by simp
+    have := raw_hom_lift_of_inv_doub_of_α_β2ψ_b hi' hj' hk' t u v
+    rw [← this]
+    congr
+    all_goals ht
+    all_goals group
+  · simp only [rels_of_hom_lift_of_inv_doub_of_α_β2ψ_c] at hr
+    rcases hr with ⟨ i, j, k, hi, hj, hk, t, u, v, rfl ⟩
+    simp only [free_mk, map_commutatorElement, map_mul, FreeGroup.map.of, refl_deg_of_gen,
+    PositiveRootSystem.height, height, tsub_self, Nat.add_one_sub_one, tsub_zero, neg_mul, map_inv, FreeGroup.map.of]
+    repeat rw [← free_mk]
+    have hi' : (1-i) ≤ α.height := by simp
+    have hj' : (1-j) ≤ β.height := by simp
+    have hk' : (1-k) ≤ ψ.height := by simp
+    have := raw_hom_lift_of_inv_doub_of_α_β2ψ_c' hi' hj' hk' t u v
+    rw [← this]
+    congr
+    all_goals ht
+  · simp only [rels_of_hom_lift_of_comm_of_β2ψ_αβψ] at hr
+    rcases hr with ⟨ i, j, k, hi, hj, hk, t, u, v, rfl ⟩
+    simp only [free_mk, map_commutatorElement, map_mul, FreeGroup.map.of, refl_deg_of_gen,
+    PositiveRootSystem.height, height, tsub_self, Nat.add_one_sub_one, tsub_zero, neg_mul, map_inv, FreeGroup.map.of]
+    repeat rw [← free_mk]
+    have hi' : (1-i) ≤ α.height := by simp
+    have hj' : (1-j) ≤ β.height := by simp
+    have hk' : (1-k) ≤ ψ.height := by simp
+    have := raw_hom_lift_of_comm_of_β2ψ_αβψ hi' hj' hk' t u v
+    rw [← this]
+    congr
+    all_goals ht
+    all_goals group
+  · simp only [rels_of_hom_lift_of_interchange_of_α2β2ψ_a] at hr
+    rcases hr with ⟨ i, j, k, hi, hj, hk, t, u, v, rfl ⟩
+    simp only [free_mk, map_commutatorElement, map_mul, FreeGroup.map.of, refl_deg_of_gen,
+    PositiveRootSystem.height, height, tsub_self, Nat.add_one_sub_one, tsub_zero, neg_mul, map_inv, FreeGroup.map.of]
+    repeat rw [← free_mk]
+    have hi' : (1-i) ≤ α.height := by simp
+    have hj' : (1-j) ≤ β.height := by simp
+    have hk' : (1-k) ≤ ψ.height := by simp
+    have := raw_hom_lift_of_interchange_of_α2β2ψ_a' hi' hj' hk' t u v
+    rw [← this]
+    congr
+    all_goals ht
+    all_goals group
+  · simp only [rels_of_hom_lift_of_interchange_of_α2β2ψ_b] at hr
+    rcases hr with ⟨ i, j, k, hi, hj, hk, t, u, v, rfl ⟩
+    simp only [free_mk, map_commutatorElement, map_mul, FreeGroup.map.of, refl_deg_of_gen,
+    PositiveRootSystem.height, height, tsub_self, Nat.add_one_sub_one, tsub_zero, neg_mul, map_inv, FreeGroup.map.of]
+    repeat rw [← free_mk]
+    have hi' : (1-i) ≤ α.height := by simp
+    have hj' : (1-j) ≤ β.height := by simp
+    have hk' : (1-k) ≤ ψ.height := by simp
+    have := raw_hom_lift_of_interchange_of_α2β2ψ_b' hi' hj' hk' t u v
+    rw [← this]
+    congr
+    all_goals ht
+    all_goals group
+  · simp only [rels_of_hom_lift_of_comm_of_ψ_αβ_β2ψ] at hr
+    rcases hr with ⟨ i, j, k, hi, hj, hk, t, u, v, rfl ⟩
+    simp only [free_mk, map_commutatorElement, map_mul, FreeGroup.map.of, refl_deg_of_gen,
+    PositiveRootSystem.height, height, tsub_self, Nat.add_one_sub_one, tsub_zero, neg_mul, map_inv, FreeGroup.map.of]
+    repeat rw [← free_mk]
+    have hi' : (1-i) ≤ α.height := by simp
+    have hj' : (1-j) ≤ β.height := by simp
+    have hk' : (1-k) ≤ ψ.height := by simp
+    have := raw_hom_lift_of_comm_of_ψ_αβ_β2ψ hi' hj' hk' t u v
+    rw [← this]
+    congr
+    all_goals ht
+  · simp only [rels_of_hom_lift_of_comm_of_αβ_αβ_β2ψ_a] at hr
+    rcases hr with ⟨ i, j, k, hi, hj, hk, t, u, v, rfl ⟩
+    simp only [free_mk, map_commutatorElement, map_mul, FreeGroup.map.of, refl_deg_of_gen,
+    PositiveRootSystem.height, height, tsub_self, Nat.add_one_sub_one, tsub_zero, neg_mul, map_inv, FreeGroup.map.of]
+    repeat rw [← free_mk]
+    have hi' : (1-i) ≤ α.height := by simp
+    have hj' : (1-j) ≤ β.height := by simp
+    have hk' : (1-k) ≤ ψ.height := by simp
+    have := raw_hom_lift_of_comm_of_αβ_αβ_β2ψ_a hi' hj' hk' t u v
+    rw [← this]
+    congr
+    all_goals ht
+  · simp only [rels_of_hom_lift_of_comm_of_αβ_αβ_β2ψ_b] at hr
+    rcases hr with ⟨ i, j, k, hi, hj, hk, t, u, v, rfl ⟩
+    simp only [free_mk, map_commutatorElement, map_mul, FreeGroup.map.of, refl_deg_of_gen,
+    PositiveRootSystem.height, height, tsub_self, Nat.add_one_sub_one, tsub_zero, neg_mul, map_inv, FreeGroup.map.of]
+    repeat rw [← free_mk]
+    have hi' : (1-i) ≤ α.height := by simp
+    have hj' : (1-j) ≤ β.height := by simp
+    have hk' : (1-k) ≤ ψ.height := by simp
+    have := raw_hom_lift_of_comm_of_αβ_αβ_β2ψ_b hi' hj' hk' t u v
+    rw [← this]
+    congr
+    all_goals ht
+    all_goals group
+  · simp only [rels_of_hom_lift_of_inv_doub_of_αβ_β2ψ_a] at hr
+    rcases hr with ⟨ i, j, k, hi, hj, hk, t, u, v, rfl ⟩
+    simp only [free_mk, map_commutatorElement, map_mul, FreeGroup.map.of, refl_deg_of_gen,
+    PositiveRootSystem.height, height, tsub_self, Nat.add_one_sub_one, tsub_zero, neg_mul, map_inv]
+    -- repeat rw [← free_mk]
+    sorry
+  · sorry
+  · sorry
+  · sorry
+  · sorry
+  · sorry
+  · sorry
+  · sorry
+
 end Steinberg.B3Large
