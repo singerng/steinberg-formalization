@@ -6,6 +6,7 @@ LICENSE goes here.
 
 import Steinberg.Defs.PartialChevalleyGroup
 import Steinberg.Defs.GradedPartialChevalleyGroup
+import Steinberg.Defs.ReflDeg
 import Mathlib.Tactic.DeriveFintype
 import Mathlib.Tactic.FieldSimp
 
@@ -17,7 +18,7 @@ import Mathlib.Tactic.FieldSimp
 
 namespace Steinberg.B3Large
 
-open PartialChevalley GradedPartialChevalley GradedChevalleyGenerator PartialChevalleySystem
+open PartialChevalley GradedPartialChevalley GradedChevalleyGenerator PartialChevalleySystem ReflDeg
 
 /-! # The B3-large positive root system -/
 
