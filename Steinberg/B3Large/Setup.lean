@@ -203,8 +203,123 @@ theorem raw_hom_lift_of_comm_of_β2ψ_αβ2ψ : forall_ijk_tuv,
     ⁅ {β2ψ, j + 2 * k, u * v^2}, ⁅ {α, i, t}, {β2ψ, j + 2 * k, u * v^2} ⁆ ⁆ = 1 := by
   hom_tac base_rel_of_hom_lift_of_comm_of_β2ψ_αβ2ψ [i, j, k, hi, hj, hk, t, u, v]
 
+/-- Reflecting the lift of a generator is the same as taking the opposite lift. -/
+theorem refl_gen_of_hom (g : PartialChevalley.ChevalleyGenerator B3LargePosRoot F)
+  (i j k : ℕ) (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height)
+  (t u v : F) :
+    refl_of_gen (hom_lift i j k hi hj hk t u v g) = hom_lift (1-i) (1-j) (1-k) (by ht) (by ht) (by ht) t u v g := by
+    rcases g with ⟨ ζ, t ⟩
+    simp only [refl_of_gen, hom_lift]
+    split
+    all_goals simp only [PositiveRootSystem.height, B3LargePosRoot.height]
+    all_goals congr; ht
+
+/-- Extends previous theorem to arbitrary relations. -/
+-- TODO: simplify?
+theorem refl_gen_of_hom' (r : FreeGroup (PartialChevalley.ChevalleyGenerator B3LargePosRoot F))
+  (i j k : ℕ) (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height)
+  (t u v : F) :
+    (FreeGroup.map refl_of_gen) (FreeGroup.map (hom_lift i j k hi hj hk t u v) r)
+      = FreeGroup.map (hom_lift (1-i) (1-j) (1-k) (by ht) (by ht) (by ht) t u v) r := by
+    suffices (FreeGroup.map refl_of_gen).comp (FreeGroup.map (hom_lift i j k hi hj hk t u v))
+      = FreeGroup.map (hom_lift (1-i) (1-j) (1-k) (by ht) (by ht) (by ht) t u v) by
+      have : (FreeGroup.map refl_of_gen).comp (FreeGroup.map (hom_lift i j k hi hj hk t u v)) r
+        = FreeGroup.map (hom_lift (1-i) (1-j) (1-k) (by ht) (by ht) (by ht) t u v) r := by
+          congr
+      rw [←this]
+      simp only [MonoidHom.coe_comp, Function.comp_apply]
+    ext g
+    simp only [MonoidHom.coe_comp, Function.comp_apply, FreeGroup.map.of]
+    congr
+    exact refl_gen_of_hom g i j k hi hj hk t u v
+
+theorem map_refl_gen_of_hom (r : FreeGroup (PartialChevalley.ChevalleyGenerator B3LargePosRoot F)) :
+  (FreeGroup.map refl_of_gen) '' (hom_lift_set r) = hom_lift_set r := by
+  simp only [hom_lift_set]
+  ext r'
+  simp only [Set.mem_image, Set.mem_setOf]
+  constructor
+  · intro h
+    rcases h with ⟨ x, h, _ ⟩
+    subst r'
+    rcases h with ⟨ i, j, k, hi, hj, hk, t, u, v, h ⟩
+    subst x
+    use (1-i), (1-j), (1-k), (by ht), (by ht), (by ht), t, u, v
+    exact (refl_gen_of_hom' r i j k hi hj hk t u v).symm
+  · intro h
+    rcases h with ⟨ i, j, k, hi, hj, hk, t, u, v, h ⟩
+    use (FreeGroup.map (hom_lift (1-i) (1-j) (1-k) (by ht) (by ht) (by ht) t u v)) r
+    constructor
+    · use (1-i), (1-j), (1-k), (by ht), (by ht), (by ht), t, u, v
+    · subst r'
+      rw [refl_gen_of_hom' r (1-i) (1-j) (1-k) (by ht) (by ht) (by ht) t u v]
+      congr
+      apply eq_of_hom_lift_eq
+      all_goals ht
+
 theorem b3large_valid :
-  refl_valid (weakB3Large F) := by sorry
+  refl_valid (weakB3Large F) := by
+  simp only [refl_valid]
+  intro S h_S
+  suffices (FreeGroup.lift (refl_def (weakB3Large F))) '' S = S by
+    intro r h_r
+    apply eq_one_of_mem_rels
+    have : (FreeGroup.lift (refl_def (weakB3Large F))) r ∈ S := by
+      rw [←this]
+      simp only [Set.mem_image]
+      use r
+    simp only [all_rels]
+    simp only [Set.sUnion_insert, Set.sUnion_singleton, Set.mem_union, Set.mem_sUnion]
+    right; right; right; right; right; left
+    use S
+  simp only [weakB3Large, lifted_sets, Set.mem_union] at h_S
+  rcases h_S with h_nonhom|h_hom
+  · sorry
+  · simp only [hom_lifted_sets, Set.mem_image] at h_hom
+    rcases h_hom with ⟨ b, h, h_hom ⟩
+    subst S
+    nth_rewrite 2 [←map_refl_gen_of_hom]
+    ext r
+    simp only [Set.mem_image]
+    -- TODO: this is quite long and can probably be made way shorter?
+    suffices ∀ r' ∈ hom_lift_set b, (FreeGroup.lift (refl_def (weakB3Large F))) r' = (FreeGroup.map refl_of_gen) r' by
+      constructor
+      · intro h
+        rcases h with ⟨ r', h_r', h ⟩
+        subst r
+        use r'
+        constructor
+        · exact h_r'
+        · exact (this r' h_r').symm
+      · intro h
+        rcases h with ⟨ r', h_r', h ⟩
+        subst r
+        use r'
+        constructor
+        · exact h_r'
+        · exact (this r' h_r')
+    intro r' h_r'
+    simp only [hom_lift_set, Set.mem_setOf] at h_r'
+    rcases h_r' with ⟨ i, j, k, hi, hj, hk, t, u, v, h_r' ⟩
+    subst r'
+    rcases h with h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h
+    -- TODO: abstract out a property that says "all the base_rels are present"
+    all_goals (
+      subst b
+      simp only [  base_rel_of_hom_lift_of_interchange_of_αβψ, base_rel_of_hom_lift_of_doub_of_αβψ,
+        base_rel_of_hom_lift_of_interchange_of_αβ2ψ, base_rel_of_hom_lift_of_comm_of_βψ_α_β2ψ,
+        base_rel_of_hom_lift_of_inv_doub_of_α_β2ψ_a, base_rel_of_hom_lift_of_inv_doub_of_α_β2ψ_b, base_rel_of_hom_lift_of_inv_doub_of_α_β2ψ_c,
+        base_rel_of_hom_lift_of_comm_of_β2ψ_αβψ, base_rel_of_hom_lift_of_interchange_of_α2β2ψ_a, base_rel_of_hom_lift_of_interchange_of_α2β2ψ_b,
+        base_rel_of_hom_lift_of_comm_of_ψ_αβ_β2ψ, base_rel_of_hom_lift_of_comm_of_αβ_αβ_β2ψ_a, base_rel_of_hom_lift_of_comm_of_αβ_αβ_β2ψ_b,
+        base_rel_of_hom_lift_of_inv_doub_of_αβ_β2ψ_a, base_rel_of_hom_lift_of_inv_doub_of_αβ_β2ψ_b, base_rel_of_hom_lift_of_inv_doub_of_αβ_β2ψ_c,
+        base_rel_of_hom_lift_of_inv_doub_of_β_αβ2ψ_a, base_rel_of_hom_lift_of_inv_doub_of_β_αβ2ψ_b, base_rel_of_hom_lift_of_inv_doub_of_β_αβ2ψ_c,
+        base_rel_of_hom_lift_of_comm_of_βψ_αβ2ψ, base_rel_of_hom_lift_of_comm_of_β2ψ_αβ2ψ,
+        map_mul, map_inv,
+        PartialChevalley.ChevalleyGenerator.free_mk, FreeGroup.map.of, FreeGroup.lift.of, hom_lift]
+      repeat rw [refl_def_of_present (weakB3Large F)]
+      all_goals (simp only [weakB3Large, present_roots]; tauto)
+    )
+
 
 include Fchar
 

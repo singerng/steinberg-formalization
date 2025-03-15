@@ -79,6 +79,13 @@ def hom_lift_set (r : FreeGroup (ChevalleyGenerator B3LargePosRoot F)) :=
       (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height)
       (t : F) (u : F) (v : F) }
 
+theorem eq_of_hom_lift_eq
+  (i j k : ℕ) (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t u v : F)
+  (i' j' k' : ℕ) (hi' : i' ≤ α.height) (hj' : j' ≤ β.height) (hk' : k' ≤ ψ.height) (t u v : F)
+  (hii' : i = i') (hjj' : j = j') (hkk' : k = k') : hom_lift i j k hi hj hk t u v = hom_lift i' j' k' hi' hj' hk' t u v := by
+  ext
+  simp only [hii', hjj', hkk']
+
 /-! # Definition of the 'weak' B3-large graded group -/
 
 /-! ## Defining the 'weak' positive root system -/
