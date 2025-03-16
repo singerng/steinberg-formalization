@@ -135,7 +135,7 @@ theorem weak_define_is_projection (F : Type TR) [Field F] :
   intro g
   rcases g with ⟨ ζ, i, hi, t ⟩
   cases ζ
-  all_goals simp only [weak_define, FreeGroup.lift.of, map_commutatorElement, free_mk]
+  all_goals simp only [weak_define, FreeGroup.lift.of, map_commutatorElement]
 
 def weakB3Small (F : Type TR) [Field F] := GradedPartialChevalleyGroup.mk
   weakB3SmallSystem
@@ -218,12 +218,12 @@ macro "declare_B3Small_triv_comm_reflected_thm"
 set_option hygiene false in
 /-- Shorthand for building free group elements from a root, degree, and ring element. -/
 scoped notation (priority:=high) "{" ζ ", " i ", " t "}" =>
-  (weakB3Small F).pres_mk (free_mk ζ i (by ht) t)
+  (weakB3Small F).pres_mk {ζ, i, t}
 
 set_option hygiene false in
 /-- Shorthand for building free group elements from a root, degree, and ring element. -/
 scoped notation (priority:=high) "{" ζ ", " i ", " t "}'" h:max =>
-  (weakB3Small F).pres_mk (free_mk ζ i h t)
+  (weakB3Small F).pres_mk ({ζ, i, t}'h)
 
 section forallNotation
 

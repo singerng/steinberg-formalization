@@ -269,8 +269,7 @@ theorem lift_hom_interchange_of_αβ2ψ :
 
 
 -- 8.124
-theorem lift_hom_comm_of_βψ_α_β2ψ :
-  forall_ijk_tuv,
+theorem lift_hom_comm_of_βψ_α_β2ψ : forall_ijk_tuv,
     ⁅{βψ, j + k, t}, ⁅{α, i, u}, {β2ψ, j + 2 * k, v}⁆⁆ = 1 := by
   intro i j k hi hj hk t u v
   rcases eq_or_ne v 0 with hv | hv
@@ -285,8 +284,7 @@ theorem lift_hom_comm_of_βψ_α_β2ψ :
   exact hβψ
 
 -- 8.125a
-theorem lift_hom_inv_doub_of_α_β2ψ_a :
-  forall_ij_tu 1 3,
+theorem lift_hom_inv_doub_of_α_β2ψ_a : forall_ij_tu α β2ψ,
     ⁅{α, i, t}, {β2ψ, j, u}⁆ = ⁅{α, i, -t}, {β2ψ, j, -u}⁆ := by
   intro i j hi hj t u
   rcases decompose_3_into_booleans_1_2 j hj with ⟨j₁, j₂, ⟨ rfl, hj₁, hj₂⟩ ⟩
@@ -295,8 +293,7 @@ theorem lift_hom_inv_doub_of_α_β2ψ_a :
   exact this
 
 -- 8.125b
-theorem lift_hom_inv_doub_of_α_β2ψ_b :
-  forall_ij_tu α β2ψ,
+theorem lift_hom_inv_doub_of_α_β2ψ_b : forall_ij_tu α β2ψ,
     ⁅{α, i, t}, {β2ψ, j, u}⁆ * ⁅{α, i, t}, {β2ψ, j, -u}⁆ = 1 := by
   intro i j hi hj t u
   rcases decompose_3_into_booleans_1_2 j hj with ⟨j₁, j₂, ⟨ rfl, hj₁, hj₂⟩ ⟩
@@ -304,15 +301,13 @@ theorem lift_hom_inv_doub_of_α_β2ψ_b :
   field_simp at this
   exact this
 
-theorem inv_of_comm_of_α_β2ψ :
-  forall_ij_tu α β2ψ,
+theorem inv_of_comm_of_α_β2ψ : forall_ij_tu α β2ψ,
     ⁅{α, i, t}, {β2ψ, j, u}⁆⁻¹ = ⁅{α, i, t}, {β2ψ, j, -u}⁆ := by
   intro i j hi hj t u
   exact inv_eq_of_mul_eq_one_right (lift_hom_inv_doub_of_α_β2ψ_b hi hj t u)
 
 -- 8.125c
-theorem lift_hom_inv_doub_of_α_β2ψ_c :
-  forall_ij_tu α β2ψ,
+theorem lift_hom_inv_doub_of_α_β2ψ_c : forall_ij_tu α β2ψ,
     ⁅{α, i, t}, {β2ψ, j, u}⁆ * ⁅{α, i, t}, {β2ψ, j, u}⁆ = ⁅{α, i, t}, {β2ψ, j, 2 * u}⁆ := by
   intro i j hi hj t u
   rcases decompose_3_into_booleans_1_2 j hj with ⟨j₁, j₂, ⟨ rfl, hj₁, hj₂⟩ ⟩
@@ -321,8 +316,7 @@ theorem lift_hom_inv_doub_of_α_β2ψ_c :
   exact this
 
 -- 8.126
-theorem lift_hom_comm_of_β2ψ_αβψ :
-  forall_ijk_tu α β ψ,
+theorem lift_hom_comm_of_β2ψ_αβψ : forall_ijk_tu α β ψ,
     ⁅{β2ψ, j + 2 * k, t}, {αβψ, i + j + k, u}⁆ = 1 := by
   intro i j k hi hj hk t u
   rcases eq_or_ne t 0 with (rfl | ht)
@@ -336,8 +330,7 @@ theorem lift_hom_comm_of_β2ψ_αβψ :
     exact expr_β2ψ
 
 -- 8.127
-theorem comm_of_ψ_α_β2ψ :
-  forall_ijk_tuv ψ α β2ψ,
+theorem comm_of_ψ_α_β2ψ : forall_ijk_tuv ψ α β2ψ,
     ⁅{ψ, i, t}, ⁅{α, j, u}, {β2ψ, k, v}⁆⁆ = 1 := by
   intro i j k hi hj hk t u v
   apply triv_comm_iff_commutes.mpr
@@ -345,8 +338,7 @@ theorem comm_of_ψ_α_β2ψ :
        ← expr_α_ψ_as_ψ_α hj hi, expr_ψ_β2ψ_as_β2ψ_ψ hi hk]
 
 @[group_reassoc]
-theorem expr_ψ_comm_α_β2ψ_as_comm_α_β2ψ_ψ :
-  forall_ijk_tuv ψ α β2ψ,
+theorem expr_ψ_comm_α_β2ψ_as_comm_α_β2ψ_ψ : forall_ijk_tuv ψ α β2ψ,
     {ψ, i, t} * ⁅{α, j, u}, {β2ψ, k, v}⁆ = ⁅{α, j, u}, {β2ψ, k, v}⁆ * {ψ, i, t} := by
   intro i j k hi hj hk t u v
   exact triv_comm_iff_commutes.1 (comm_of_ψ_α_β2ψ hi hj hk t u v)
@@ -430,8 +422,7 @@ theorem refl_def_of_αβψ (g : GradedChevalleyGenerator B3LargePosRoot F)
   rw [weakB3Large]
   simp only
   rw [weak_define]
-  simp only [map_mul, map_inv, free_mk, FreeGroup.map.of, refl_of_gen, PositiveRootSystem.height]
-  repeat rw [←free_mk]
+  simp only [map_mul, map_inv, FreeGroup.map.of, refl_of_gen, PositiveRootSystem.height]
   rw [←weakB3Large, ←expr_αβψ_as_βψ_α_βψ_α_βψ (by ht) (by ht)]
   · congr
     · simp only [height]

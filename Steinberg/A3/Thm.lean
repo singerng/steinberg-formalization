@@ -58,11 +58,10 @@ theorem a3_valid :
   simp only [lifted_sets, Set.mem_singleton_iff, forall_eq, rels_of_nonhomog_lift_of_comm_of_αβ_βγ, Set.mem_setOf_eq]
   intro r h
   rcases h with ⟨ t₁, t₀, u₁, u₀, v₁, v₀, rfl ⟩
-  simp only [map_mul, map_commutatorElement, free_mk, FreeGroup.lift.of]
+  simp only [map_mul, map_commutatorElement, FreeGroup.lift.of]
   repeat rw [refl_def_of_present _ _ (by tauto)]
   simp only [refl_of_gen, PositiveRootSystem.height, height]
   simp_arith
-  repeat rw [← free_mk]
   rw [add_comm (t₁ * u₀), add_comm (u₁ * v₀)]
   grw [expr_αβ_αβ_as_αβ_αβ, expr_αβ_αβ_as_αβ_αβ (i := 0), expr_αβ_αβ_as_αβ_αβ,
        expr_βγ_βγ_as_βγ_βγ, expr_βγ_βγ_as_βγ_βγ (i := 0), expr_βγ_βγ_as_βγ_βγ]

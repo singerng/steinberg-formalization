@@ -124,7 +124,7 @@ theorem weak_define_is_projection (R : Type TR) [Ring R] :
   intro g
   rcases g with ⟨ ζ, i, hi, t ⟩
   cases ζ
-  all_goals simp only [weak_define, FreeGroup.lift.of, map_commutatorElement, free_mk]
+  all_goals simp only [weak_define, FreeGroup.lift.of, map_commutatorElement]
 
 
 def weakA3 (R : Type TR) [Ring R] := GradedPartialChevalleyGroup.mk
@@ -192,7 +192,7 @@ macro "declare_A3_mixed_comm_thms" R:term:arg r:term:arg : command =>
 set_option hygiene false in
 /-- Shorthand for building free group elements from a root, degree, and ring element. -/
 scoped notation (priority:=high) "{" ζ ", " i ", " t "}" =>
-  (weakA3 R).pres_mk (free_mk ζ i (by ht) t)
+  (weakA3 R).pres_mk {ζ, i, t}
 
 set_option hygiene false in
 /-- Shorthand for building free group elements from a root, degree, and ring element. -/

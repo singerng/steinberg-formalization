@@ -56,11 +56,10 @@ theorem b3small_valid :
   simp only [lifted_sets, Set.mem_singleton_iff, forall_eq, rels_of_nonhomog_lift_of_comm_of_βψ_ψω, Set.mem_setOf_eq]
   intro r h
   rcases h with ⟨ t₁, t₀, u₁, u₀, v₁, v₀, rfl ⟩
-  simp only [map_mul, map_commutatorElement, free_mk, FreeGroup.lift.of]
+  simp only [map_mul, map_commutatorElement, FreeGroup.lift.of]
   repeat rw [refl_def_of_present _ _ (by tauto)]
   simp only [refl_of_gen, PositiveRootSystem.height, height]
   simp_arith
-  repeat rw [← free_mk]
   rw [add_comm (t₁ * u₀), add_comm (u₁ * v₀)]
   grw [expr_βψ_βψ_as_βψ_βψ, expr_βψ_βψ_as_βψ_βψ (i := 0), expr_βψ_βψ_as_βψ_βψ,
        expr_ψω_ψω_as_ψω_ψω, expr_ψω_ψω_as_ψω_ψω (i := 0), expr_ψω_ψω_as_ψω_ψω]
@@ -363,8 +362,7 @@ theorem refl_def_of_βψω (g : GradedChevalleyGenerator B3SmallPosRoot F)
   subst ζ
   simp only [refl_def, MonoidHom.coe_comp, Function.comp_apply, FreeGroup.lift.of]
   rw [weakB3Small]
-  simp only [weak_define, map_commutatorElement, free_mk, FreeGroup.map.of, refl_of_gen]
-  repeat rw [←free_mk]
+  simp only [weak_define, map_commutatorElement, FreeGroup.map.of, refl_of_gen]
   rw [←weakB3Small, ←def_of_βψω]
   congr
   all_goals (
@@ -388,16 +386,15 @@ lemma expr_βψω_as_comm_of_β_ψω_11' :
   intro t u
   --have := ReflDeg.refl_symm b3small_valid {βψω, 1, t * u}
   have : {βψω, 2, t * u} = ReflDeg.refl_symm b3small_valid ({βψω, 1, t * u}) := by
-        simp only [refl_symm_of_pres_mk, lift_of_free_mk]
+        simp only [refl_symm_of_pres_mk, FreeGroup.lift.of]
         rw [refl_def_of_βψω]
         simp only [refl_of_gen, PositiveRootSystem.height, height]
         congr
         all_goals trivial
   rw [this]; clear this
-  have : ⁅($w $R).pres_mk {$r₂:term, $n₂, t}, ($w $R).pres_mk {$r₃:term, $n₃, u}⁆
-      = ReflDeg.refl_symm $v
-          ⁅($w $R).pres_mk {$r₂:term, $n₅, t}, ($w $R).pres_mk {$r₃:term, $n₆, u}⁆ := by
+  have : ⁅{βψ, 1, t}, {ω, 1, u}⁆ = ReflDeg.refl_symm b3small_valid ⁅{βψ, 0, t}, {ω, 1, u}⁆ := by
     rw [map_commutatorElement]; trivial
+    done
   rw [this, $exprLemmaRw]
   <;> try assumption
   --rw [rewrite_2tu, expr_βψω_as_comm_of_β_ψω_01 Fchar,

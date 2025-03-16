@@ -39,38 +39,66 @@ structure ChevalleyGenerator (Φ : Type TΦ) [PositiveRootSystem Φ] (R : Type T
 
 namespace ChevalleyGenerator
 
-/-- Helper function to construct and inject a `ChevalleyGenerator`. -/
-def free_mk (ζ : Φ) (t : R) : FreeGroup (ChevalleyGenerator Φ R) :=
-  FreeGroup.of <| (mk ζ t)
+instance instCoeProd : Coe (Φ × R) (ChevalleyGenerator Φ R) :=
+  ⟨fun p => ⟨p.1, p.2⟩⟩
 
-set_option hygiene false in
 /--
   Shorthand for building free group elements from a root and ring element.
 
   Note: To re-use this notation for specific `Chevalley`-like groups,
   re-define it for that group and set the priority higher.
-
-  Then implement delaboration to use the `free_mk` delab here.
+  Then implement delaboration to use the delab defined below.
 -/
-scoped notation (priority:=1000) "{{" ζ ", " t "}}" =>
-  free_mk ζ t
+scoped notation (priority:=1000) "{" ζ ", " t "}" =>
+  FreeGroup.of (ChevalleyGenerator.mk ζ t)
 
-open Lean PrettyPrinter Delaborator SubExpr in
+section DelabBraces
+
+open Lean PrettyPrinter Delaborator SubExpr
+
 /--
-  Delaborates `free_mk` to use the `{ }` notation defined above.
+  Delaborates `ChevalleyGenerator.mk` to use the `{ }` notation.
 
   Delaboration makes it so that the infoview uses the nice notation.
 -/
-@[delab free_mk]
-def delab_free_mk : Delab := do
+@[delab app.Steinberg.PartialChevalley.ChevalleyGenerator.mk]
+def delab_generator_mk : Delab := do
   let e ← getExpr
-  guard $ e.isAppOfArity' ``free_mk 8
+
+  -- Only delab a full application of `.mk`
+  guard $ e.isAppOfArity' ``ChevalleyGenerator.mk 6
+
   let ζ ← withNaryArg 4 delab
   let t ← withNaryArg 5 delab
-  `({{ $(ζ):term, $(t):term }})
+  `({ $ζ:term, $t:term })
+
+
+/--
+  Delaborates `FreeGroup.of` to use the `{ }` notation.
+
+  Delaboration makes it so that the infoview uses the nice notation.
+-/
+@[delab app.FreeGroup.of]
+def delab_free_mk : Delab := do
+  let e ← getExpr
+
+  -- Only delab `FreeGroup.of` if its type and value are given to the app
+  guard $ e.isAppOfArity' ``FreeGroup.of 2
+
+  -- Only delab `FreeGroup.of` if the type is a Chevalley generator
+  let ty := e.getAppArgs.get! 0
+  guard $ ty.isAppOfArity' ``ChevalleyGenerator 4
+
+  -- Use the delaboration of the generator
+  -- Since this might be a more complicated term or calculation,
+  -- we don't call `delab_generator_mk` directly
+  let g ← withNaryArg 1 delab
+  `($g)
+
+end DelabBraces /- section -/
 
 theorem eq_of_R_eq (ζ : Φ) {t : R} (u : R) (h : t = u)
-    : {{ζ, t}} = {{ζ, u}} := by
+    : {ζ, t} = {ζ, u} := by
   congr
 
 end ChevalleyGenerator
@@ -85,7 +113,7 @@ open ChevalleyGenerator
 def trivial_commutator_of_root_pair (f : FreeGroup (ChevalleyGenerator Φ R) →* G) (p : Φ × Φ) : Prop :=
   let (ζ, η) := p;
   ∀ (t u : R),
-    ⁅ f {{ζ, t}}, f {{η, u}} ⁆ = 1
+    ⁅ f {ζ, t}, f {η, u} ⁆ = 1
 
 /-
 The set of elements which must vanish according to the theorem that the commutator of generators
@@ -94,39 +122,39 @@ for two roots vanishes. (Used to construct a `PresentedGroup`.)
 def rels_of_trivial_commutator_of_root_pair (R : Type TR) [Ring R] (p : Φ × Φ)
     : Set (FreeGroup (ChevalleyGenerator Φ R)) :=
   let (ζ, η) := p;
-  { ⁅ {{ζ, t}}, {{η, u}} ⁆
+  { ⁅ {ζ, t}, {η, u} ⁆
     | (t : R) (u : R) }
 
 /-! #### Commutator for two generators from two roots which span one additional root -/
 
 def single_commutator_of_root_pair (f : FreeGroup (ChevalleyGenerator Φ R) →* G) (p : SingleSpanRootPair Φ) : Prop :=
-  let ⟨ ζ, η, θ, C, h_height ⟩ := p;
+  let ⟨ ζ, η, θ, C, _ ⟩ := p;
   ∀ (t u : R),
-    ⁅ f {{ζ, t}}, f {{η, u}} ⁆ = f {{θ, ↑C * t * u}}
+    ⁅ f {ζ, t}, f {η, u} ⁆ = f {θ, ↑C * t * u}
 
 def rels_of_single_commutator_of_root_pair (R : Type TR) [Ring R] (p : SingleSpanRootPair Φ) : Set (FreeGroup (ChevalleyGenerator Φ R)) :=
-  let ⟨ ζ, η, θ, C, h_height ⟩ := p;
-  { ⁅ {{ζ, t}}, {{η, u}} ⁆ * {{θ, C * t * u}}⁻¹
+  let ⟨ ζ, η, θ, C, _ ⟩ := p;
+  { ⁅ {ζ, t}, {η, u} ⁆ * {θ, C * t * u}⁻¹
     | (t : R) (u : R) }
 
 /-! #### Commutator for two generators from two roots which span one additional root -/
 
 def double_commutator_of_root_pair (f : FreeGroup (ChevalleyGenerator Φ R) →* G) (p : DoubleSpanRootPair Φ) : Prop :=
-  let ⟨ ζ, η, θ₁, θ₂, C₁, C₂, h_height₁, h_height₂ ⟩ := p;
+  let ⟨ ζ, η, θ₁, θ₂, C₁, C₂, _, _ ⟩ := p;
   ∀ (t u : R),
-    ⁅ f {{ζ, t}}, f {{η, u}} ⁆ = f {{θ₁, ↑C₁ * t * u}} * f {{θ₂, ↑C₂ * t * u * u}}
+    ⁅ f {ζ, t}, f {η, u} ⁆ = f {θ₁, ↑C₁ * t * u} * f {θ₂, ↑C₂ * t * u * u}
 
 def rels_of_double_commutator_of_root_pair (R : Type TR) [Ring R] (p : DoubleSpanRootPair Φ) : Set (FreeGroup (ChevalleyGenerator Φ R)) :=
-  let ⟨ ζ, η, θ₁, θ₂, C₁, C₂, h_height₁, h_height₂ ⟩ := p;
-  { ⁅ {{ζ, t}}, {{η, u}} ⁆ *
-    ({{θ₁, C₁ * t * u}} * {{θ₂, C₂ * t * u * u}})⁻¹
+  let ⟨ ζ, η, θ₁, θ₂, C₁, C₂, _, _ ⟩ := p;
+  { ⁅ {ζ, t}, {η, u} ⁆ *
+    ({θ₁, C₁ * t * u} * {θ₂, C₂ * t * u * u})⁻¹
     | (t : R) (u : R) }
 
 /-! #### Linearity relation for products of generators from a single root -/
 
 /- Linearity of coefficients for products of generators of a single root (with the same degree). -/
 def rels_of_lin_of_root (R : Type TR) [Ring R] (ζ : Φ) : Set (FreeGroup (ChevalleyGenerator Φ R)) :=
-  { {{ζ, t}} * {{ζ, u}} * {{ζ, t + u}}⁻¹
+  { {ζ, t} * {ζ, u} * {ζ, t + u}⁻¹
     | (t : R) (u : R) }
 
 /-! ### Additional properties implied by linearity and implications therein -/
@@ -138,49 +166,47 @@ set_option quotPrecheck false
 /--
   Linearity of group elements on a particular root.
 
-  Equivalent to `∀ (i : ℕ) (hi : i ≤ height ζ) (t u), f {{ζ, t}} * f {ζ, i, u} = f {ζ, i, t + u}`.
+  Equivalent to `∀ (t u), f {ζ, t} * f {ζ, i, u} = f {ζ, i, t + u}`.
 
   `(f : FreeGroup (ChevalleyGenerator Φ R) →* G)`
   `(ζ : Φ)`
 -/
 scoped notation "lin_of_root" "(" f ", " ζ ")" =>
-  ∀ (t u),
-    f {{ζ, t}} * f {{ζ, u}} = f {{ζ, t + u}}
+  ∀ (t u), f {ζ, t} * f {ζ, u} = f {ζ, t + u}
 
 /--
   Ring coefficient 0 gives an identity element.
 
-  Equivalent to `∀ (i : ℕ) (hi : i ≤ height ζ), f {ζ, i, 0} = 1`.
+  Equivalent to `f {ζ, i, 0} = 1`.
 
   `(f : FreeGroup (ChevalleyGenerator Φ R) →* G)`
   `(ζ : Φ)`
 -/
 scoped notation "id_of_root" "(" f ", " ζ ")" =>
-  f {{ζ, 0}} = 1
+  f {ζ, 0} = 1
 /--
   Negating the coefficient inverts the generator.
 
-  Equivalent to `∀ (i : ℕ) (hi : i ≤ height ζ) (t : R), (f {{ζ, t}})⁻¹ = 1`.
+  Equivalent to `∀ (t : R), (f {ζ, t})⁻¹ = 1`.
 
   `(f : FreeGroup (ChevalleyGenerator Φ R) →* G)`
   `(ζ : Φ)`
 -/
 scoped notation "inv_of_root" "(" f ", " ζ ")" =>
-  ∀ ⦃i : ℕ⦄ (hi : i ≤ height ζ) (t),
-    (f {{ζ, t}})⁻¹ = f {{ζ, -t}}
+  ∀ (t), (f {ζ, t})⁻¹ = f {ζ, -t}
 
 /- Linearity implies identity (essentially a standard fact about group homomorphisms). -/
 theorem id_of_lin_of_root {f : FreeGroup (ChevalleyGenerator Φ R) →* G} {ζ : Φ}
     : lin_of_root(f, ζ) → id_of_root(f, ζ) := by
   intro h_lin
-  apply @mul_left_cancel _ _ _ (f {{ζ, 0}})
+  apply @mul_left_cancel _ _ _ (f {ζ, 0})
   rw [mul_one, h_lin, add_zero]
 
 /- Linearity implies inverse-ness (essentially a standard fact about group homomorphisms). -/
 theorem inv_of_lin_of_root {f : FreeGroup (ChevalleyGenerator Φ R) →* G} {ζ : Φ}
     : lin_of_root(f, ζ) → inv_of_root(f, ζ) := by
-  intro h_lin i hi t
-  apply @mul_left_cancel _ _ _ (f {{ζ, t}})
+  intro h_lin t
+  apply @mul_left_cancel _ _ _ (f {ζ, t})
   rw [mul_inv_cancel, h_lin, add_neg_cancel, id_of_lin_of_root h_lin]
 
 end ofRoot

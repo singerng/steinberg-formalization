@@ -175,8 +175,9 @@ theorem comm_of_βψ_αβ_β2ψ : forall_ijk_tuv βψ αβ β2ψ,
     ⁅{βψ, i, t}, ⁅{αβ, j, u}, {β2ψ, k, v}⁆⁆ = 1 := by
   intro i j k hi hj hk t u v
   apply triv_comm_iff_commutes.2
-  grw [commutatorElement_def, ←inv_of_αβ, ←inv_of_β2ψ, ←expr_αβ_βψ_as_βψ_αβ hj hi, expr_βψ_β2ψ_as_β2ψ_βψ hi hk,
-  ←expr_αβ_βψ_as_βψ_αβ hj hi, expr_βψ_β2ψ_as_β2ψ_βψ hi hk]
+  grw [commutatorElement_def,
+    ← expr_αβ_βψ_as_βψ_αβ hj hi, expr_βψ_β2ψ_as_β2ψ_βψ hi hk,
+    ← expr_αβ_βψ_as_βψ_αβ hj hi, expr_βψ_β2ψ_as_β2ψ_βψ hi hk]
 
 @[group_reassoc]
 theorem expr_βψ_comm_αβ_β2ψ_as_comm_αβ_β2ψ_βψ : forall_ijk_tuv βψ αβ β2ψ,
@@ -189,7 +190,7 @@ theorem comm_of_αβ_βψ_αβψ : forall_ijk_tuv αβ βψ αβψ,
     ⁅{αβ, i, t}, ⁅{βψ, j, u}, {αβψ, k, v}⁆⁆ = 1 := by
   intro i j k hi hj hk t u v
   apply triv_comm_iff_commutes.2
-  grw [commutatorElement_def, ←inv_of_βψ, inv_of_αβψ hk, expr_αβ_βψ_as_βψ_αβ hi hj, expr_αβ_αβψ_as_αβψ_αβ hi hk,
+  grw [commutatorElement_def, expr_αβ_βψ_as_βψ_αβ hi hj, expr_αβ_αβψ_as_αβψ_αβ hi hk,
   expr_αβ_βψ_as_βψ_αβ hi hj, expr_αβ_αβψ_as_αβψ_αβ hi hk]
 
 @[group_reassoc]
@@ -203,7 +204,7 @@ theorem comm_of_β_αβ_β2ψ : forall_ijk_tuv β αβ β2ψ,
     ⁅{β, i, t}, ⁅{αβ, j, u}, {β2ψ, k, v}⁆⁆ = 1 := by
   intro i j k hi hj hk t u v
   apply triv_comm_iff_commutes.2
-  grw [commutatorElement_def, ←inv_of_αβ, ←inv_of_β2ψ, expr_β_αβ_as_αβ_β hi hj, expr_β_β2ψ_as_β2ψ_β hi hk,
+  grw [commutatorElement_def, expr_β_αβ_as_αβ_β hi hj, expr_β_β2ψ_as_β2ψ_β hi hk,
   expr_β_αβ_as_αβ_β hi hj, expr_β_β2ψ_as_β2ψ_β hi hk]
 
 @[group_reassoc]
@@ -217,7 +218,7 @@ theorem comm_of_β_αβψ_βψ : forall_ijk_tuv β αβψ βψ,
     ⁅{β, i, t}, ⁅{αβψ, j, u}, {βψ, k, v}⁆⁆ = 1 := by
   intro i j k hi hj hk t u v
   apply triv_comm_iff_commutes.2
-  grw [commutatorElement_def, inv_of_αβψ hj, expr_β_αβψ_as_αβψ_β hi hj, expr_β_βψ_as_βψ_β hi hk,
+  grw [commutatorElement_def, expr_β_αβψ_as_αβψ_β hi hj, expr_β_βψ_as_βψ_β hi hk,
   expr_β_αβψ_as_αβψ_β hi hj, expr_β_βψ_as_βψ_β hi hk]
 
 @[group_reassoc]
@@ -344,8 +345,8 @@ theorem more_sufficient_conditions_for_comm_of_αβψ_and_βψ :
   have hk' : k ≤ β.height := by ht
   have h39 : {αβ2ψ, i + j, t * u} * {β, k, v} = ⁅{αβ2ψ, i + j, t * u}, {β, k, v}⁆ * {β, k, v} * {αβ2ψ, i + j, t * u} := by group
   have h40 : {β, k, -v} * {αβ2ψ, i + j, t * u}  = {αβ2ψ, i + j, t * u} * {β, k, -v} * ⁅{αβ2ψ, i + j, t * u}, {β, k, v}⁆ := by
-    simp [← h38c, commutatorElement_def, inv_of_β]
-    have h1 : {β, k, v}⁻¹ = {β, k, -v} := by grw [inv_of_β]
+    simp [← h38c, commutatorElement_def]
+    have h1 : {β, k, v}⁻¹ = {β, k, -v} := by chev_simp
     have h2 : {αβ2ψ, i + j, t * u}⁻¹ = {αβ2ψ, i + j, -(t * u)} := by
       rw [inv_of_αβ2ψ Fchar (by ht)]
     grw [← h1, ← h2]
@@ -419,7 +420,6 @@ theorem partial_comm_of_β2ψ_αβ2ψ_a :
   have := hom_lift_of_comm_of_β2ψ_αβ2ψ (i := 1) (j := 1) (k := 0) (by ht)
   norm_num at this
   exact this
-  ht
 
 -- 8.162b
 include Fchar in
@@ -1044,7 +1044,7 @@ omit Fchar in
 theorem expr_αβ_comm_αβψ_βψ_as_comm_αβψ_βψ_αβ : forall_ijk_tuv αβ αβψ βψ,
     {αβ, i, t} * ⁅{αβψ, j, u}, {βψ, k, v}⁆ = ⁅{αβψ, j, u}, {βψ, k, v}⁆ * {αβ, i, t} := by
   intro i j k hi hj hk t u v
-  grw [commutatorElement_def, inv_of_αβψ hj, inv_of_βψ,
+  grw [commutatorElement_def, inv_of_βψ,
     expr_αβ_αβψ_as_αβψ_αβ, expr_αβ_βψ_as_βψ_αβ hi hk,
     expr_αβ_αβψ_as_αβψ_αβ, expr_αβ_βψ_as_βψ_αβ hi hk]
 

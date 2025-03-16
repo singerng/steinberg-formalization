@@ -41,73 +41,95 @@ structure GradedChevalleyGenerator (Φ : Type TΦ) [PositiveRootSystem Φ] (R : 
 
 namespace GradedChevalleyGenerator
 
-/-- Helper function to construct and inject a `GradedChevalleyGenerator`. -/
-def free_mk (ζ : Φ) (i : ℕ) (hi : i ≤ height ζ) (t : R) : FreeGroup (GradedChevalleyGenerator Φ R) :=
-  FreeGroup.of (mk ζ i hi t)
+instance instCoeProd : Coe ((ζ : Φ) × (i : ℕ) × (i ≤ height ζ) ×' R) (GradedChevalleyGenerator Φ R) :=
+  ⟨fun ⟨ζ, i, hi, t⟩ => mk ζ i hi t⟩
 
-#check FreeGroup.map.of
-
-theorem map_of_free_mk (f : GradedChevalleyGenerator Φ R → GradedChevalleyGenerator Φ R) (ζ : Φ) (i : ℕ) (hi : i ≤ height ζ) (t : R) :
-  (FreeGroup.map f) (free_mk ζ i hi t) = free_mk (f (mk ζ i hi t)).ζ (f (mk ζ i hi t)).i (f (mk ζ i hi t)).hi (f (mk ζ i hi t)).t := by
-    simp only [free_mk, FreeGroup.map.of]
-
-theorem lift_of_free_mk (f : GradedChevalleyGenerator Φ R → FreeGroup (GradedChevalleyGenerator Φ R)) (ζ : Φ) (i : ℕ) (hi : i ≤ height ζ) (t : R) :
-  (FreeGroup.lift f) (free_mk ζ i hi t) = f (mk ζ i hi t) := by
-    simp only [free_mk, FreeGroup.lift.of]
-
-set_option hygiene false in
 /--
   Shorthand for building free group elements from a root, degree, and ring element.
 
   Note: To re-use this notation for specific `Chevalley`-like groups,
   re-define it for that group and set the priority higher.
-
-  Then implement delaboration to use the `free_mk` delab here.
+  Then implement delaboration to use the delab defined below.
 -/
 scoped notation (priority:=1000) "{" ζ ", " i ", " t "}" =>
-  free_mk ζ i (by ht) t
+  FreeGroup.of (GradedChevalleyGenerator.mk ζ i (by ht) t)
 
-/-- `free_mk` but with an explicit proof term provided. -/
+/-- Inject a generator but with an explicit proof term provided. -/
 scoped notation (priority:=1000) "{" ζ ", " i ", " t "}'" h:max =>
-  free_mk ζ i h t
+  FreeGroup.of (GradedChevalleyGenerator.mk ζ i h t)
 
-open Lean PrettyPrinter Delaborator SubExpr in
+/-- Inject an already-created generator, rather than data. -/
+scoped notation (priority:=999) "{{" g "}}" =>
+  FreeGroup.of g
+
+section DelabBraces
+
+open Lean PrettyPrinter Delaborator SubExpr
+
 /--
-  Delaborates `free_mk` to use the `{ }` notation defined above.
+  Delaborates `GradedChevalleyGenerator.mk` to use the `{ }` notation.
 
   Delaboration makes it so that the infoview uses the nice notation.
 -/
-@[delab free_mk]
-def delab_free_mk : Delab := do
+@[delab app.Steinberg.GradedPartialChevalley.GradedChevalleyGenerator.mk]
+def delab_generator_mk : Delab := do
   let e ← getExpr
-  guard $ e.isAppOfArity' ``free_mk 8
+
+  -- Only delab a full application of `.mk`
+  guard $ e.isAppOfArity' ``GradedChevalleyGenerator.mk 8
+
   let ζ ← withNaryArg 4 delab
   let i ← withNaryArg 5 delab
   let t ← withNaryArg 7 delab
-  `({ $(ζ):term, $(i):term, $(t):term })
+  `({ $ζ:term, $i:term, $t:term })
+
+
+/--
+  Delaborates `FreeGroup.of` to use the `{ }` notation.
+
+  Delaboration makes it so that the infoview uses the nice notation.
+-/
+@[delab app.FreeGroup.of]
+def delab_of : Delab := do
+  let e ← getExpr
+
+  -- Only delab `FreeGroup.of` if its type and value are given to the app
+  guard $ e.isAppOfArity' ``FreeGroup.of 2
+
+  -- Only delab `FreeGroup.of` if the type is a Chevalley generator
+  let ty := e.getAppArgs.get! 0
+  guard $ ty.isAppOfArity' ``GradedChevalleyGenerator 4
+
+  -- Use the delaboration of the generator
+  -- Since this might be a more complicated term or calculation,
+  -- we don't call `delab_generator_mk` directly
+  let g ← withNaryArg 1 delab
+  `($g)
+
+end DelabBraces /- section -/
 
 /-- Injected group elements can commute on their root heights `i` and `j`.  -/
 theorem h_add_comm (ζ : Φ) (i j : ℕ) (h : i + j ≤ height ζ) (t : R)
     : {ζ, i + j, t} = {ζ, j + i, t} := by
-  congr 1
+  congr 2
   exact add_comm i j
 
 theorem h_add_assoc (ζ : Φ) (i j k : ℕ) (h : i + j + k ≤ height ζ) (t : R)
     : {ζ, i + j + k, t} = {ζ, i + (j + k), t} := by
-  congr 1
+  congr 2
   exact add_assoc i j k
 
 theorem eq_of_h_eq (ζ : Φ) {i : ℕ} (j : ℕ) (hij : i = j)
     : ∀ {_ : i ≤ height ζ} {t : R}, {ζ, i, t} = {ζ, j, t} := by
-  intros; congr 1
+  intros; congr 2
 
 theorem eq_of_R_eq (ζ : Φ) {t : R} (u : R) (h : t = u)
     : ∀ {i : ℕ} {_ : i ≤ height ζ}, {ζ, i, t} = {ζ, i, u} := by
-  intros; congr 1
+  intros; congr 2
 
 theorem eq_of_hR_eq (ζ : Φ) {i : ℕ} (j : ℕ) (hij : i = j) {t : R} (u : R) (htu : t = u)
     : ∀ {_ : i ≤ height ζ}, {ζ, i, t} = {ζ, j, u} := by
-  intros; congr 1
+  intros; congr 2
 
 end GradedChevalleyGenerator
 
@@ -557,7 +579,7 @@ macro "declare_single_expr_thms" w:ident R:term:arg r₁:term:arg r₂:term:arg 
     theorem $exprAs
       : ∀ ⦃i j : ℕ⦄ (hi : i ≤ height $r₁) (hj : j ≤ height $r₂) (t u : $R),
         (($w $R).pres_mk
-          (free_mk $r₃ (i + j) (by ht) $innerTerm))
+          {$r₃, i + j, $innerTerm})
           = ($w $R).pres_mk {$r₁:term, i, t}
             * ($w $R).pres_mk {$r₂:term, j, u}
             * ($w $R).pres_mk {$r₁:term, i, -t}
@@ -575,7 +597,7 @@ macro "declare_single_expr_thms" w:ident R:term:arg r₁:term:arg r₂:term:arg 
           ($w $R).pres_mk {$r₁:term, i, t},
           ($w $R).pres_mk {$r₂:term, j, u},
           (($w $R).pres_mk
-            (free_mk $r₃ (i + j) (by ht) $innerTerm))
+            {$r₃, i + j, $innerTerm})
         ) := by
       intro i j hi hj t u
       have := $commOf hi hj t u

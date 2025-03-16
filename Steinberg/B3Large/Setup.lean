@@ -291,7 +291,7 @@ theorem b3large_valid :
       intro r hr
       simp only [rels_of_nonhomog_lift_of_comm_of_αβ_βψ] at hr
       rcases hr with ⟨ t₁, t₀, u₁, u₀, v₁, v₀, rfl ⟩
-      simp only [map_mul, map_commutatorElement, lift_of_free_mk]
+      simp only [map_commutatorElement, map_mul, FreeGroup.lift.of]
       repeat rw [refl_def_of_present _ _ (by tauto)]
       simp only [refl_of_gen, PositiveRootSystem.height, height]
       simp_arith
@@ -304,7 +304,7 @@ theorem b3large_valid :
       intro r hr
       simp only [rels_of_nonhomog_lift_of_comm_of_α_α2β2ψ] at hr
       rcases hr with ⟨ t₁, t₀, u₁, u₀, v₁, v₀, rfl ⟩
-      simp only [map_mul, map_commutatorElement, lift_of_free_mk]
+      simp only [map_commutatorElement, map_mul, FreeGroup.lift.of]
       repeat rw [refl_def_of_present _ _ (by tauto)]
       simp only [refl_of_gen, PositiveRootSystem.height, height]
       simp_arith
@@ -349,16 +349,29 @@ theorem b3large_valid :
     -- TODO: abstract out a property that says "all the base_rels are present"
     all_goals (
       subst b
-      simp only [base_rel_of_hom_lift_of_interchange_of_αβψ, base_rel_of_hom_lift_of_doub_of_αβψ,
-        base_rel_of_hom_lift_of_interchange_of_αβ2ψ, base_rel_of_hom_lift_of_comm_of_βψ_α_β2ψ,
-        base_rel_of_hom_lift_of_inv_doub_of_α_β2ψ_a, base_rel_of_hom_lift_of_inv_doub_of_α_β2ψ_b, base_rel_of_hom_lift_of_inv_doub_of_α_β2ψ_c,
-        base_rel_of_hom_lift_of_comm_of_β2ψ_αβψ, base_rel_of_hom_lift_of_interchange_of_α2β2ψ_a, base_rel_of_hom_lift_of_interchange_of_α2β2ψ_b,
-        base_rel_of_hom_lift_of_comm_of_ψ_αβ_β2ψ, base_rel_of_hom_lift_of_comm_of_αβ_αβ_β2ψ_a, base_rel_of_hom_lift_of_comm_of_αβ_αβ_β2ψ_b,
-        base_rel_of_hom_lift_of_inv_doub_of_αβ_β2ψ_a, base_rel_of_hom_lift_of_inv_doub_of_αβ_β2ψ_b, base_rel_of_hom_lift_of_inv_doub_of_αβ_β2ψ_c,
-        base_rel_of_hom_lift_of_inv_doub_of_β_αβ2ψ_a, base_rel_of_hom_lift_of_inv_doub_of_β_αβ2ψ_b, base_rel_of_hom_lift_of_inv_doub_of_β_αβ2ψ_c,
-        base_rel_of_hom_lift_of_comm_of_βψ_αβ2ψ, base_rel_of_hom_lift_of_comm_of_β2ψ_αβ2ψ]
-      simp only [map_mul, map_inv, map_commutatorElement,
-        PartialChevalley.ChevalleyGenerator.free_mk, FreeGroup.map.of, FreeGroup.lift.of, hom_lift]
+      simp only [
+        base_rel_of_hom_lift_of_interchange_of_αβψ,
+        base_rel_of_hom_lift_of_doub_of_αβψ,
+        base_rel_of_hom_lift_of_interchange_of_αβ2ψ,
+        base_rel_of_hom_lift_of_comm_of_βψ_α_β2ψ,
+        base_rel_of_hom_lift_of_inv_doub_of_α_β2ψ_a,
+        base_rel_of_hom_lift_of_inv_doub_of_α_β2ψ_b,
+        base_rel_of_hom_lift_of_inv_doub_of_α_β2ψ_c,
+        base_rel_of_hom_lift_of_comm_of_β2ψ_αβψ,
+        base_rel_of_hom_lift_of_interchange_of_α2β2ψ_a,
+        base_rel_of_hom_lift_of_interchange_of_α2β2ψ_b,
+        base_rel_of_hom_lift_of_comm_of_ψ_αβ_β2ψ,
+        base_rel_of_hom_lift_of_comm_of_αβ_αβ_β2ψ_a,
+        base_rel_of_hom_lift_of_comm_of_αβ_αβ_β2ψ_b,
+        base_rel_of_hom_lift_of_inv_doub_of_αβ_β2ψ_a,
+        base_rel_of_hom_lift_of_inv_doub_of_αβ_β2ψ_b,
+        base_rel_of_hom_lift_of_inv_doub_of_αβ_β2ψ_c,
+        base_rel_of_hom_lift_of_inv_doub_of_β_αβ2ψ_a,
+        base_rel_of_hom_lift_of_inv_doub_of_β_αβ2ψ_b,
+        base_rel_of_hom_lift_of_inv_doub_of_β_αβ2ψ_c,
+        base_rel_of_hom_lift_of_comm_of_βψ_αβ2ψ,
+        base_rel_of_hom_lift_of_comm_of_β2ψ_αβ2ψ]
+      simp only [one_mul, neg_mul, map_mul, map_inv, map_commutatorElement, FreeGroup.map.of, FreeGroup.lift.of, hom_lift]
       repeat rw [refl_def_of_present (weakB3Large F)]
       all_goals tauto
     )

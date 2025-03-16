@@ -81,7 +81,7 @@ def hom_lift_set (r : FreeGroup (ChevalleyGenerator B3LargePosRoot F)) :=
       (t : F) (u : F) (v : F) }
 
 theorem eq_of_hom_lift_eq
-  (i j k : ℕ) (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height) (t u v : F)
+  (i j k : ℕ) (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height)
   (i' j' k' : ℕ) (hi' : i' ≤ α.height) (hj' : j' ≤ β.height) (hk' : k' ≤ ψ.height) (t u v : F)
   (hii' : i = i') (hjj' : j = j') (hkk' : k = k') : hom_lift i j k hi hj hk t u v = hom_lift i' j' k' hi' hj' hk' t u v := by
   ext
@@ -138,158 +138,158 @@ open ChevalleyGenerator
 
 -- Relation 8.83
 def base_rel_of_hom_lift_of_interchange_of_αβψ :=
-  ({{ψ, ((-1/2):F)}} * {{αβ, (1:F)}} * {{ψ, (1:F)}} * {{αβ, -(1:F)}} * {{ψ, ((-1 / 2):F)}}
-    * ({{βψ, ((-1/2):F)}} * {{α, (1:F)}} * ({{βψ, (1:F)}}) * {{α, -(1:F)}} * {{βψ, -(1/2:F)}})⁻¹)
+  ({ψ, ((-1/2):F)} * {αβ, (1:F)} * {ψ, (1:F)} * {αβ, -(1:F)} * {ψ, ((-1 / 2):F)}
+    * ({βψ, ((-1/2):F)} * {α, (1:F)} * ({βψ, (1:F)}) * {α, -(1:F)} * {βψ, -(1/2:F)})⁻¹)
 
 -- Relation 8.84
 def base_rel_of_hom_lift_of_doub_of_αβψ :=
-  ({{ψ, ((-1 / 2):F)}} * {{αβ, (1:F)}} * {{ψ, (1:F)}} * {{αβ, -(1:F)}} * {{ψ, ((-1 / 2):F)}} * {{ψ, ((-1 / 2):F)}} *
-    {{αβ, (1:F)}} * {{ψ, (1:F)}} * {{αβ, -(1:F)}} * {{ψ, ((-1 / 2):F)}}
-    * ({{ψ, -(1:F)}} * {{αβ, (1:F)}} * {{ψ, (2:F)}} * {{αβ, -(1:F)}} * {{ψ, -(1:F)}})⁻¹)
+  ({ψ, ((-1 / 2):F)} * {αβ, (1:F)} * {ψ, (1:F)} * {αβ, -(1:F)} * {ψ, ((-1 / 2):F)} * {ψ, ((-1 / 2):F)} *
+    {αβ, (1:F)} * {ψ, (1:F)} * {αβ, -(1:F)} * {ψ, ((-1 / 2):F)}
+    * ({ψ, -(1:F)} * {αβ, (1:F)} * {ψ, (2:F)} * {αβ, -(1:F)} * {ψ, -(1:F)})⁻¹)
 
 -- Relation 8.85
 def base_rel_of_hom_lift_of_interchange_of_αβ2ψ :=
-  (⁅ {{ψ, ((-1 / 2):F)}} * {{αβ, (1:F)}} *
-      {{ψ, (1:F)}} * {{αβ, -(1:F)}} *
-      {{ψ, ((-1 / 2):F)}}, {{ψ, (1:F)}} ⁆
-    * ⁅ {{α, (1:F)}},
-        {{β2ψ, -(2:F)}} ⁆⁻¹)
+  (⁅ {ψ, ((-1 / 2):F)} * {αβ, (1:F)} *
+      {ψ, (1:F)} * {αβ, -(1:F)} *
+      {ψ, ((-1 / 2):F)}, {ψ, (1:F)} ⁆
+    * ⁅ {α, (1:F)},
+        {β2ψ, -(2:F)} ⁆⁻¹)
 
 -- Relation 8.86
 def base_rel_of_hom_lift_of_comm_of_βψ_α_β2ψ :=
-  (⁅ {{βψ, (1:F)}},
-      ⁅ {{α, (1:F)}},
-        {{β2ψ, (1:F)}} ⁆ ⁆)
+  (⁅ {βψ, (1:F)},
+      ⁅ {α, (1:F)},
+        {β2ψ, (1:F)} ⁆ ⁆)
 
 -- Relation 8.87a
 def base_rel_of_hom_lift_of_inv_doub_of_α_β2ψ_a :=
-  (⁅ {{α, (1:F)}},
-      {{β2ψ, (1:F)}} ⁆
-    * ⁅ {{α, -(1:F)}},
-        {{β2ψ, -(1:F)}}⁆⁻¹)
+  (⁅ {α, (1:F)},
+      {β2ψ, (1:F)} ⁆
+    * ⁅ {α, -(1:F)},
+        {β2ψ, -(1:F)}⁆⁻¹)
 
 -- Relation 8.87b
 def base_rel_of_hom_lift_of_inv_doub_of_α_β2ψ_b :=
-  (⁅ {{α, (1:F)}}, {{β2ψ, (1:F)}} ⁆ * ⁅ {{α, (1:F)}}, {{β2ψ, -(1:F)}} ⁆)
+  (⁅ {α, (1:F)}, {β2ψ, (1:F)} ⁆ * ⁅ {α, (1:F)}, {β2ψ, -(1:F)} ⁆)
 
 -- Relation 8.87c
 def base_rel_of_hom_lift_of_inv_doub_of_α_β2ψ_c :=
-  (⁅ {{α, (1:F)}}, {{β2ψ, (1:F)}} ⁆ * ⁅ {{α, (1:F)}}, {{β2ψ, (1:F)}} ⁆ * ⁅ {{α, (1:F)}}, {{β2ψ, (2:F)}} ⁆⁻¹)
+  (⁅ {α, (1:F)}, {β2ψ, (1:F)} ⁆ * ⁅ {α, (1:F)}, {β2ψ, (1:F)} ⁆ * ⁅ {α, (1:F)}, {β2ψ, (2:F)} ⁆⁻¹)
 
 -- Relation 8.88
 def base_rel_of_hom_lift_of_comm_of_β2ψ_αβψ :=
-  (⁅ {{β2ψ, (1:F)}},
-      {{ψ, ((-1 / 2):F)}} *
-      {{αβ, (1:F)}} *
-      {{ψ, (1:F)}} *
-      {{αβ, -(1:F)}} *
-      {{ψ, ((-1 / 2):F)}} ⁆)
+  (⁅ {β2ψ, (1:F)},
+      {ψ, ((-1 / 2):F)} *
+      {αβ, (1:F)} *
+      {ψ, (1:F)} *
+      {αβ, -(1:F)} *
+      {ψ, ((-1 / 2):F)} ⁆)
 
 -- Relation 8.89a
 def base_rel_of_hom_lift_of_interchange_of_α2β2ψ_a :=
-  (⁅ {{αβ, (1:F)}},
-      {{β2ψ, (2:F)}} ⁆
-    * ⁅ {{ψ, ((-1 / 2):F)}} *
-        {{αβ, (1:F)}} *
-        {{ψ, (1:F)}} *
-        {{αβ, -(1:F)}} *
-        {{ψ, ((-1 / 2):F)}},
-        {{βψ, (1:F)}} ⁆⁻¹)
+  (⁅ {αβ, (1:F)},
+      {β2ψ, (2:F)} ⁆
+    * ⁅ {ψ, ((-1 / 2):F)} *
+        {αβ, (1:F)} *
+        {ψ, (1:F)} *
+        {αβ, -(1:F)} *
+        {ψ, ((-1 / 2):F)},
+        {βψ, (1:F)} ⁆⁻¹)
 
 -- Relation 8.89b
 def base_rel_of_hom_lift_of_interchange_of_α2β2ψ_b :=
-  (⁅ {{ψ, ((-1 / 2):F)}} *
-      {{αβ, (1:F)}} *
-      {{ψ, (1:F)}} *
-      {{αβ, -(1:F)}} *
-      {{ψ, ((-1 / 2):F)}},
-      {{βψ, (1:F)}} ⁆
-    * ⁅ ⁅ {{α, (1:F)}},
-          {{β2ψ, (2:F)}} ⁆,
-        {{β, (1:F)}} ⁆⁻¹)
+  (⁅ {ψ, ((-1 / 2):F)} *
+      {αβ, (1:F)} *
+      {ψ, (1:F)} *
+      {αβ, -(1:F)} *
+      {ψ, ((-1 / 2):F)},
+      {βψ, (1:F)} ⁆
+    * ⁅ ⁅ {α, (1:F)},
+          {β2ψ, (2:F)} ⁆,
+        {β, (1:F)} ⁆⁻¹)
 
 -- Relation 8.90
 def base_rel_of_hom_lift_of_comm_of_ψ_αβ_β2ψ :=
-  (⁅ {{ψ, (1:F)}},
-      ⁅ {{αβ, (1:F)}},
-        {{β2ψ, (1:F)}} ⁆ ⁆)
+  (⁅ {ψ, (1:F)},
+      ⁅ {αβ, (1:F)},
+        {β2ψ, (1:F)} ⁆ ⁆)
 
 -- Relation 8.91a (s = 1)
 def base_rel_of_hom_lift_of_comm_of_αβ_αβ_β2ψ_a :=
-  (⁅ {{αβ, (1:F)}},
-      ⁅ {{αβ, (1:F)}},
-        {{β2ψ, (1:F)}} ⁆ ⁆)
+  (⁅ {αβ, (1:F)},
+      ⁅ {αβ, (1:F)},
+        {β2ψ, (1:F)} ⁆ ⁆)
 
 -- Relation 8.91b (s = -1)
 def base_rel_of_hom_lift_of_comm_of_αβ_αβ_β2ψ_b :=
-  (⁅ {{αβ, (1:F)}},
-      ⁅ {{αβ, -(1:F)}},
-        {{β2ψ, (1:F)}} ⁆ ⁆)
+  (⁅ {αβ, (1:F)},
+      ⁅ {αβ, -(1:F)},
+        {β2ψ, (1:F)} ⁆ ⁆)
 
 -- Relation 8.92a
 def base_rel_of_hom_lift_of_inv_doub_of_αβ_β2ψ_a :=
-  (⁅ {{αβ, (1:F)}},
-      {{β2ψ, (1:F)}} ⁆
-    * ⁅ {{αβ, -(1:F)}},
-        {{β2ψ, -(1:F)}} ⁆⁻¹)
+  (⁅ {αβ, (1:F)},
+      {β2ψ, (1:F)} ⁆
+    * ⁅ {αβ, -(1:F)},
+        {β2ψ, -(1:F)} ⁆⁻¹)
 
 -- Relation 8.92b
 def base_rel_of_hom_lift_of_inv_doub_of_αβ_β2ψ_b :=
-  (⁅ {{αβ, (1:F)}},
-      {{β2ψ, (1:F)}} ⁆
-    * ⁅ {{αβ, -(1:F)}},
-        {{β2ψ, (1:F)}} ⁆)
+  (⁅ {αβ, (1:F)},
+      {β2ψ, (1:F)} ⁆
+    * ⁅ {αβ, -(1:F)},
+        {β2ψ, (1:F)} ⁆)
 
 -- Relation 8.92c
 def base_rel_of_hom_lift_of_inv_doub_of_αβ_β2ψ_c :=
-  (⁅ {{αβ, (1:F)}},
-      {{β2ψ, (1:F)}} ⁆
-    * ⁅ {{αβ, (1:F)}},
-        {{β2ψ, (1:F)}} ⁆
-    * ⁅ {{αβ, (2:F)}},
-        {{β2ψ, (1:F)}} ⁆⁻¹)
+  (⁅ {αβ, (1:F)},
+      {β2ψ, (1:F)} ⁆
+    * ⁅ {αβ, (1:F)},
+        {β2ψ, (1:F)} ⁆
+    * ⁅ {αβ, (2:F)},
+        {β2ψ, (1:F)} ⁆⁻¹)
 
 -- Relation 8.93a
 def base_rel_of_hom_lift_of_inv_doub_of_β_αβ2ψ_a :=
-  (⁅ {{β, (1:F)}},
-      ⁅ {{α, (1:F)}},
-        {{β2ψ, (1:F)}} ⁆ ⁆
-    * ⁅ {{β, (-1:F)}},
-        ⁅ {{α, -(1:F)}},
-          {{β2ψ, (1:F)}} ⁆ ⁆⁻¹)
+  (⁅ {β, (1:F)},
+      ⁅ {α, (1:F)},
+        {β2ψ, (1:F)} ⁆ ⁆
+    * ⁅ {β, (-1:F)},
+        ⁅ {α, -(1:F)},
+          {β2ψ, (1:F)} ⁆ ⁆⁻¹)
 
 -- Relation 8.93b
 def base_rel_of_hom_lift_of_inv_doub_of_β_αβ2ψ_b :=
-  (⁅ {{β, (1:F)}},
-      ⁅ {{α, (1:F)}},
-        {{β2ψ, (1:F)}} ⁆ ⁆
-    * ⁅ {{β, (-1:F)}},
-        ⁅ {{α, (1:F)}},
-          {{β2ψ, (1:F)}} ⁆ ⁆)
+  (⁅ {β, (1:F)},
+      ⁅ {α, (1:F)},
+        {β2ψ, (1:F)} ⁆ ⁆
+    * ⁅ {β, (-1:F)},
+        ⁅ {α, (1:F)},
+          {β2ψ, (1:F)} ⁆ ⁆)
 
 -- Relation 8.93c
 def base_rel_of_hom_lift_of_inv_doub_of_β_αβ2ψ_c :=
-  (⁅ {{β, (1:F)}},
-      ⁅ {{α, (1:F)}},
-        {{β2ψ, (1:F)}} ⁆ ⁆
-    * ⁅ {{β, (1:F)}},
-        ⁅ {{α, (1:F)}},
-          {{β2ψ, (1:F)}} ⁆ ⁆
-    * ⁅ {{β, (2:F)}},
-        ⁅ {{α, (1:F)}},
-          {{β2ψ, (1:F)}} ⁆ ⁆⁻¹)
+  (⁅ {β, (1:F)},
+      ⁅ {α, (1:F)},
+        {β2ψ, (1:F)} ⁆ ⁆
+    * ⁅ {β, (1:F)},
+        ⁅ {α, (1:F)},
+          {β2ψ, (1:F)} ⁆ ⁆
+    * ⁅ {β, (2:F)},
+        ⁅ {α, (1:F)},
+          {β2ψ, (1:F)} ⁆ ⁆⁻¹)
 
 -- Relation 8.94
 def base_rel_of_hom_lift_of_comm_of_βψ_αβ2ψ :=
-  (⁅ {{βψ, (1:F)}},
-      ⁅ {{α, (1:F)}},
-        {{β2ψ, (1:F)}} ⁆ ⁆)
+  (⁅ {βψ, (1:F)},
+      ⁅ {α, (1:F)},
+        {β2ψ, (1:F)} ⁆ ⁆)
 
 -- Relation 8.95
 def base_rel_of_hom_lift_of_comm_of_β2ψ_αβ2ψ :=
-  (⁅ {{β2ψ, (1:F)}},
-      ⁅ {{α, (1:F)}},
-        {{β2ψ, (1:F)}} ⁆ ⁆)
+  (⁅ {β2ψ, (1:F)},
+      ⁅ {α, (1:F)},
+        {β2ψ, (1:F)} ⁆ ⁆)
 
 end homog_rels
 
@@ -368,7 +368,7 @@ def weak_define (F : Type TR) [Field F] (g : GradedChevalleyGenerator B3LargePos
       {β2ψ, (split_4_into_1_3 i hi).2, 1}'(correct_of_split_4_into_1_3 i hi).2.1 ⁆
   | α2β2ψ => ⁅ {αβ, (split_5_into_2_3 i hi).1, -t}'(correct_of_split_5_into_2_3 i hi).1,
       {β2ψ, (split_5_into_2_3 i hi).2, 1}'(correct_of_split_5_into_2_3 i hi).2.1 ⁆
-  | ζ => FreeGroup.of g
+  | _ => FreeGroup.of g
 
 theorem weak_define_of_present (F : Type TR) [Field F] :
   ∀ {g : GradedChevalleyGenerator B3LargePosRoot F}, g.ζ ∈ weakB3LargeSystem.present_roots → weak_define F g = FreeGroup.of g := by
@@ -386,7 +386,7 @@ theorem weak_define_is_projection (F : Type TR) [Field F] :
   intro g
   rcases g with ⟨ ζ, i, hi, t ⟩
   cases ζ
-  all_goals simp only [weak_define, FreeGroup.lift.of, map_commutatorElement, map_inv, map_mul, free_mk]
+  all_goals simp only [weak_define, FreeGroup.lift.of, map_commutatorElement, map_inv, map_mul]
 
 def weakB3Large (F : Type TF) [Field F] := GradedPartialChevalleyGroup.mk
   weakB3LargeSystem
@@ -482,14 +482,12 @@ macro "declare_B3Large_triv_comm_reflected_thm"
 set_option hygiene false in
 /-- Shorthand for building free group elements from a root, degree, and ring element. -/
 scoped notation (priority:=high) "{" ζ ", " i ", " t "}" =>
-  (weakB3Large F).pres_mk (free_mk ζ i (by
-    try simp only [PositiveRootSystem.height, height] at *
-    first | assumption | trivial | omega) t)
+  (weakB3Large F).pres_mk {ζ, i, t}
 
 set_option hygiene false in
 /-- Shorthand for building free group elements from a root, degree, and ring element. -/
 scoped notation (priority:=high) "{" ζ ", " i ", " t "}'" h:max =>
-  (weakB3Large F).pres_mk (free_mk ζ i h t)
+  (weakB3Large F).pres_mk ({ζ, i, t}'h)
 
 section forallNotation
 
@@ -539,8 +537,7 @@ macro "hom_tac " rel:ident " [" intros:ident,* "]" : tactic => `(tactic|
     exists_eq_left, true_or, or_true];
     exists $intros,*;
     unfold $rel;
-    simp only [map_mul, map_inv, map_commutatorElement, commutatorElement_def, FreeGroup.map.of, PartialChevalley.ChevalleyGenerator.free_mk, hom_lift];
-    repeat rw [← free_mk];
+    simp only [map_mul, map_inv, map_commutatorElement, commutatorElement_def, FreeGroup.map.of, hom_lift];
     simp only [one_mul, inv_one, mul_one, ←mul_assoc];
     try congr;
     try all_goals field_simp

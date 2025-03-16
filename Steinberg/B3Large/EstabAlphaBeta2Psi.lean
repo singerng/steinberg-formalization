@@ -65,7 +65,6 @@ theorem sufficient_conditions_for_comm_of_βψ_and_α_β2ψ :
   grw [this, commutatorElement_def, expr_βψ_β2ψ_as_β2ψ_βψ hi hk, inv_of_αβψ, ←hyp', ←hyp']
   rw [mul_assoc, hyp']
   grw [expr_βψ_β2ψ_as_β2ψ_βψ]
-  exact add_le_add hi hj
 
 -- 8.133
 theorem partial_comm_of_βψ_α_β2ψ :
@@ -603,8 +602,7 @@ theorem refl_def_of_αβ2ψ (g : GradedChevalleyGenerator B3LargePosRoot F)
   rw [weakB3Large]
   simp only
   rw [weak_define]
-  simp only [map_commutatorElement, map_mul, map_inv, free_mk, FreeGroup.map.of, refl_of_gen, PositiveRootSystem.height]
-  repeat rw [←free_mk]
+  simp only [map_commutatorElement, map_mul, map_inv, FreeGroup.map.of, refl_of_gen, PositiveRootSystem.height]
   rw [←weakB3Large, ←expr_αβ2ψ_as_comm_of_α_β2ψ Fchar (by ht) (by ht), mul_one,
     eq_of_h_eq αβ2ψ (αβ2ψ.height - i)]
   simp only [height]
