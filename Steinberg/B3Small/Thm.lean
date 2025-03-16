@@ -329,13 +329,62 @@ private lemma expr_βψω_as_comm_of_β_ψω_10 :
     ← @βt_ψω2u_to_βψt_ωu _ _ Fchar 1 0 0 (by trivial) (by trivial) (by trivial)]
   field_simp
 
+/-
+macro "declare_B3Small_reflected_thm"
+    F:term:arg v:term:arg r₁:term:arg r₂:term:arg r₃:term:arg
+    "const" C:num
+    "heights" n₁:num n₂:num n₃:num
+    "to" n₄:num n₅:num n₆:num : command =>
+  `(command| declare_reflected_thm weakB3Small $F $v $r₁ $r₂ $r₃ 0 $C $n₁ $n₂ $n₃ $n₄ $n₅ $n₆)
+
+    lemma $exprName :
+        ∀ (t u : $R),
+          (($w $R).pres_mk {$r₁:term, $n₁, $innerTerm})
+            = ⁅($w $R).pres_mk {$r₂:term, $n₂, t}, ($w $R).pres_mk {$r₃:term, $n₃, u}⁆ := by
+      intro t u
+      have : ($w $R).pres_mk {$r₁:term, $n₁, $innerTerm}
+        = ReflDeg.refl_symm $v (($w $R).pres_mk {$r₁:term, $n₄, $innerTerm}) := rfl
+      rw [this]; clear this
+      have : ⁅($w $R).pres_mk {$r₂:term, $n₂, t}, ($w $R).pres_mk {$r₃:term, $n₃, u}⁆
+          = ReflDeg.refl_symm $v
+              ⁅($w $R).pres_mk {$r₂:term, $n₅, t}, ($w $R).pres_mk {$r₃:term, $n₆, u}⁆ := by
+        rw [map_commutatorElement]; trivial
+      rw [this, $exprLemmaRw]
+      <;> try assumption
+-/
 -- height 2 (reflection of height 1)
+
+
 declare_B3Small_reflected_thm F b3small_valid βψω β ψω const 1 heights 2 1 1 to 1 0 1
 declare_B3Small_reflected_thm F b3small_valid βψω β ψω const 1 heights 2 0 2 to 1 1 0
 declare_B3Small_reflected_thm F b3small_valid βψω βψ ω const 2 heights 2 2 0 to 1 0 1
 declare_B3Small_reflected_thm F b3small_valid βψω βψ ω const 2 heights 2 1 1 to 1 1 0
 declare_B3Small_reflected_thm F b3small_valid βψω β ψω const 1 heights 3 1 2 to 0 0 0
 declare_B3Small_reflected_thm F b3small_valid βψω βψ ω const 2 heights 3 2 1 to 0 0 0
+
+#check expr_βψω_as_comm_of_β_ψω_01
+#check expr_βψω_as_comm_of_β_ψω_11
+
+lemma expr_βψω_as_comm_of_β_ψω_11' :
+    ∀ (t u : F), {βψω, 2, t * u} = ⁅{βψ, 1, t}, {ω, 1, u}⁆ := by
+  intro t u
+  --have := ReflDeg.refl_symm b3small_valid {βψω, 1, t * u}
+  have : {βψω, 2, t * u}
+      = ReflDeg.refl_symm b3small_valid ({βψω, 1, t * u}) := by
+        simp? [refl_symm, toPresentedGroup, PresentedGroup.toGroup, refl_def_of_present]--symm, toPresentedGroup, PresentedGroup.toGroup, weakB3Small]
+        done
+  stop
+  rw [this]; clear this
+  have : ⁅($w $R).pres_mk {$r₂:term, $n₂, t}, ($w $R).pres_mk {$r₃:term, $n₃, u}⁆
+      = ReflDeg.refl_symm $v
+          ⁅($w $R).pres_mk {$r₂:term, $n₅, t}, ($w $R).pres_mk {$r₃:term, $n₆, u}⁆ := by
+    rw [map_commutatorElement]; trivial
+  rw [this, $exprLemmaRw]
+  <;> try assumption
+  --rw [rewrite_2tu, expr_βψω_as_comm_of_β_ψω_01 Fchar,
+  --  @βt_ψω2u_to_βψt_ωu _ _ Fchar 1 0 1 (by trivial) (by trivial) (by trivial)]
+  done
+#exit
 
 -- 8.45a
 theorem expand_βψω_as_commutator_of_βψ_ω :
