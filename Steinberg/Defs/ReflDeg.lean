@@ -40,7 +40,7 @@ theorem lift_of_refl_eq_comp (w : GradedPartialChevalleyGroup Φ R) : FreeGroup.
   rfl
 
 -- reflecting a present root simply applies refl_of_gen to it
-theorem refl_def_of_present (w : GradedPartialChevalleyGroup Φ R) (g : GradedChevalleyGenerator Φ R) (h : g.ζ ∈ w.sys.present_roots) :
+theorem refl_def_of_present_eq_refl_of_gen (w : GradedPartialChevalleyGroup Φ R) (g : GradedChevalleyGenerator Φ R) (h : g.ζ ∈ w.sys.present_roots) :
   refl_def w g = FreeGroup.of (refl_of_gen g) := by
   simp only [refl_def, MonoidHom.coe_comp, Function.comp_apply, FreeGroup.lift.of]
   have : w.define g = FreeGroup.of g := by exact w.h_define_of_present h
@@ -58,8 +58,8 @@ private theorem refl_deg_of_rels_of_trivial_commutator_of_root_pair (ζ η : Φ)
   simp only [rels_of_trivial_commutator_of_root_pair, mem_setOf_eq] at h
   rcases h with ⟨ i, j, hi, hj, t, u, rfl ⟩
   simp only [map_commutatorElement, FreeGroup.lift.of]
-  rw [refl_def_of_present w (GradedChevalleyGenerator.mk ζ i hi t) h_ζ]
-  rw [refl_def_of_present w (GradedChevalleyGenerator.mk η j hj u) h_η]
+  rw [refl_def_of_present_eq_refl_of_gen w (GradedChevalleyGenerator.mk ζ i hi t) h_ζ]
+  rw [refl_def_of_present_eq_refl_of_gen w (GradedChevalleyGenerator.mk η j hj u) h_η]
   exists (height ζ - i), (height η - j), (by omega), (by omega), t, u
 
 /-- Degree-reflection preserves the set of single commutator relations for any root pair. -/
@@ -72,9 +72,9 @@ private theorem refl_deg_of_rels_of_single_commutator_of_root_pair
   simp only [rels_of_single_commutator_of_root_pair, mem_setOf_eq] at h
   rcases h with ⟨ i, j, hi, hj, t, u, rfl ⟩
   simp only [map_mul, map_commutatorElement, FreeGroup.lift.of, map_inv]
-  rw [refl_def_of_present w (GradedChevalleyGenerator.mk ζ i hi t) h_ζ]
-  rw [refl_def_of_present w (GradedChevalleyGenerator.mk η j hj u) h_η]
-  rw [refl_def_of_present w (GradedChevalleyGenerator.mk θ (i + j) (by omega) (C * t * u)) h_θ]
+  rw [refl_def_of_present_eq_refl_of_gen w (GradedChevalleyGenerator.mk ζ i hi t) h_ζ]
+  rw [refl_def_of_present_eq_refl_of_gen w (GradedChevalleyGenerator.mk η j hj u) h_η]
+  rw [refl_def_of_present_eq_refl_of_gen w (GradedChevalleyGenerator.mk θ (i + j) (by omega) (C * t * u)) h_θ]
   exists (height ζ - i), (height η - j), (by omega), (by omega), t, u
   congr
   simp only
@@ -90,10 +90,10 @@ private theorem refl_deg_of_rels_of_double_commutator_of_root_pair
   simp only [rels_of_double_commutator_of_root_pair, mem_setOf_eq] at h
   rcases h with ⟨ i, j, hi, hj, t, u, rfl ⟩
   simp only [mul_inv_rev, map_mul, map_commutatorElement, FreeGroup.lift.of, map_inv]
-  rw [refl_def_of_present w (GradedChevalleyGenerator.mk ζ i hi t) h_ζ]
-  rw [refl_def_of_present w (GradedChevalleyGenerator.mk η j hj u) h_η]
-  rw [refl_def_of_present w (GradedChevalleyGenerator.mk θ₁ (i + j) (by omega) (C₁ * t * u)) h_θ₁]
-  rw [refl_def_of_present w (GradedChevalleyGenerator.mk θ₂ (i + 2 * j) (by omega) (C₂ * t * u * u)) h_θ₂]
+  rw [refl_def_of_present_eq_refl_of_gen w (GradedChevalleyGenerator.mk ζ i hi t) h_ζ]
+  rw [refl_def_of_present_eq_refl_of_gen w (GradedChevalleyGenerator.mk η j hj u) h_η]
+  rw [refl_def_of_present_eq_refl_of_gen w (GradedChevalleyGenerator.mk θ₁ (i + j) (by omega) (C₁ * t * u)) h_θ₁]
+  rw [refl_def_of_present_eq_refl_of_gen w (GradedChevalleyGenerator.mk θ₂ (i + 2 * j) (by omega) (C₂ * t * u * u)) h_θ₂]
   exists (height ζ - i), (height η - j), (by omega), (by omega), t, u
   simp only [mul_inv_rev]
   congr
@@ -107,8 +107,8 @@ private theorem refl_deg_of_rels_of_mixed_commutes_of_root (ζ : Φ) (h_ζ : ζ 
   simp only [rels_of_mixed_commutes_of_root, mem_setOf_eq] at h
   rcases h with ⟨ i, j, hi, hj, t, u, rfl ⟩
   simp only [map_commutatorElement, FreeGroup.lift.of]
-  rw [refl_def_of_present w (GradedChevalleyGenerator.mk ζ i hi t) h_ζ]
-  rw [refl_def_of_present w (GradedChevalleyGenerator.mk ζ j hj u) h_ζ]
+  rw [refl_def_of_present_eq_refl_of_gen w (GradedChevalleyGenerator.mk ζ i hi t) h_ζ]
+  rw [refl_def_of_present_eq_refl_of_gen w (GradedChevalleyGenerator.mk ζ j hj u) h_ζ]
   exists (height ζ - i), (height ζ - j), (by omega), (by omega), t, u
 
 /-- Degree-reflection preserves the set of trivial commutator relations for any root pair. -/
@@ -119,9 +119,9 @@ private theorem refl_deg_of_rels_of_lin_of_root (ζ : Φ) (h_ζ : ζ ∈ w.sys.p
   simp only [rels_of_lin_of_root, mem_setOf_eq] at h
   rcases h with ⟨ i, hi, t, u, rfl ⟩
   simp only [map_mul, FreeGroup.lift.of, map_inv]
-  rw [refl_def_of_present w (GradedChevalleyGenerator.mk ζ i hi t) h_ζ]
-  rw [refl_def_of_present w (GradedChevalleyGenerator.mk ζ i hi u) h_ζ]
-  rw [refl_def_of_present w (GradedChevalleyGenerator.mk ζ i hi (t + u)) h_ζ]
+  rw [refl_def_of_present_eq_refl_of_gen w (GradedChevalleyGenerator.mk ζ i hi t) h_ζ]
+  rw [refl_def_of_present_eq_refl_of_gen w (GradedChevalleyGenerator.mk ζ i hi u) h_ζ]
+  rw [refl_def_of_present_eq_refl_of_gen w (GradedChevalleyGenerator.mk ζ i hi (t + u)) h_ζ]
   exists (height ζ - i), (by omega), t, u
 
 def refl_valid (w : GradedPartialChevalleyGroup Φ R) :=
@@ -208,6 +208,30 @@ def refl_symm {w : GradedPartialChevalleyGroup Φ R} (h : refl_valid w) : group 
 theorem refl_symm_of_pres_mk {w : GradedPartialChevalleyGroup Φ R} {h : refl_valid w} {g : FreeGroup (GradedChevalleyGenerator Φ R)} :
   refl_symm h (w.pres_mk g) = w.pres_mk (FreeGroup.lift (refl_def w) g) := by
   simp only [refl_symm, pres_mk, toPresentedGroup.mk]
+
+section declareThms
+
+open Lean Parser.Tactic
+set_option hygiene false
+
+-- macro "declare_refl_def_thm" Φ:ident w:ident R:term:arg r:term:arg : command => do
+--   let reflName := r.mapIdent (fun s => "refl_def_of" ++ s)
+--   let wDefRw ← `(rwRule| $w:term)
+--   let cmds ← Syntax.getArgs <$> `(
+--     section
+--     @[group_reassoc]
+--     theorem $reflName (g : GradedChevalleyGenerator $Φ $R) (h : g.ζ = $r) :
+--           ($w $R).pres_mk (refl_def $w g) = ($w $R).pres_mk (FreeGroup.of (refl_of_gen g)) := by
+--       congr
+--       apply refl_def_of_present
+--       rw [h]
+--       simp only [$wDefRw, present_roots]
+--       tauto
+--     end
+--   )
+--   return ⟨mkNullNode cmds⟩
+
+end declareThms
 
 end ReflDeg
 
