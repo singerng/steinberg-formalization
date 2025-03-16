@@ -354,6 +354,24 @@ macro "declare_B3Small_reflected_thm"
 -/
 -- height 2 (reflection of height 1)
 
+theorem refl_def_of_βψω (g : GradedChevalleyGenerator B3SmallPosRoot F)
+  (h : g.ζ = βψω) :
+  (weakB3Small F).pres_mk (refl_def (weakB3Small F) g)
+    = (weakB3Small F).pres_mk (FreeGroup.of (refl_of_gen g)) := by
+  rcases g with ⟨ ζ, i, hi, t ⟩
+  simp only at h
+  subst ζ
+  simp only [refl_def, MonoidHom.coe_comp, Function.comp_apply, FreeGroup.lift.of]
+  rw [weakB3Small]
+  simp only [weak_define, map_commutatorElement, free_mk, FreeGroup.map.of, refl_of_gen]
+  repeat rw [←free_mk]
+  rw [←weakB3Small, ←def_of_βψω]
+  congr
+  all_goals (
+    simp only [PositiveRootSystem.height, split_3_into_1_2]
+    split
+    all_goals trivial
+  )
 
 declare_B3Small_reflected_thm F b3small_valid βψω β ψω const 1 heights 2 1 1 to 1 0 1
 declare_B3Small_reflected_thm F b3small_valid βψω β ψω const 1 heights 2 0 2 to 1 1 0
@@ -369,11 +387,16 @@ lemma expr_βψω_as_comm_of_β_ψω_11' :
     ∀ (t u : F), {βψω, 2, t * u} = ⁅{βψ, 1, t}, {ω, 1, u}⁆ := by
   intro t u
   --have := ReflDeg.refl_symm b3small_valid {βψω, 1, t * u}
-  have : {βψω, 2, t * u}
-      = ReflDeg.refl_symm b3small_valid ({βψω, 1, t * u}) := by
-        simp? [refl_symm, toPresentedGroup, PresentedGroup.toGroup, refl_def_of_present]--symm, toPresentedGroup, PresentedGroup.toGroup, weakB3Small]
-        done
-  stop
+  have : {βψω, 2, t * u} = ReflDeg.refl_symm b3small_valid ({βψω, 1, t * u}) := by
+        simp only [refl_symm, toPresentedGroup, pres_mk, free_mk]
+        simp only [←PresentedGroup.of.eq_1]
+        simp only [PresentedGroup.toGroup.of]
+        simp only [Function.comp_apply]
+        rw [← pres_mk]
+        rw [refl_def_of_βψω]
+        simp only [refl_of_gen, PositiveRootSystem.height, height]
+        congr
+        all_goals trivial
   rw [this]; clear this
   have : ⁅($w $R).pres_mk {$r₂:term, $n₂, t}, ($w $R).pres_mk {$r₃:term, $n₃, u}⁆
       = ReflDeg.refl_symm $v
