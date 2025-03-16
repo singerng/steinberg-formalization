@@ -1032,7 +1032,7 @@ theorem expr_α2β2ψ_as_comm_of_αβ2ψ_β : forall_ij_tu αβ2ψ β,
 
 -- 8.175
 theorem comm_of_β_α2β2ψ :
-  trivial_commutator_of_root_pair (weakB3Large F).pres_mk β α2β2ψ := by
+  trivial_commutator_of_root_pair (weakB3Large F).pres_mk ⟨β, α2β2ψ⟩ := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.2
   rcases decompose 2 3 j hj with ⟨ j₁, j₂, rfl, hj₁, hj₂ ⟩
@@ -1050,7 +1050,7 @@ theorem expr_αβ_comm_αβψ_βψ_as_comm_αβψ_βψ_αβ : forall_ijk_tuv α�
 
 -- 8.176
 theorem comm_of_αβ_α2β2ψ :
-    trivial_commutator_of_root_pair (weakB3Large F).pres_mk αβ α2β2ψ := by
+    trivial_commutator_of_root_pair (weakB3Large F).pres_mk ⟨αβ, α2β2ψ⟩ := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.2
   rcases decompose 3 2 j hj with ⟨ j₁, j₂, rfl, hj₁, hj₂ ⟩
@@ -1061,7 +1061,7 @@ declare_B3Large_triv_expr_thm F αβ α2β2ψ
 
 -- 8.177
 theorem comm_of_βψ_α2β2ψ :
-    trivial_commutator_of_root_pair (weakB3Large F).pres_mk βψ α2β2ψ := by
+    trivial_commutator_of_root_pair (weakB3Large F).pres_mk ⟨βψ, α2β2ψ⟩ := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.2
   rcases decompose 2 3 j hj with ⟨ j₁, j₂, rfl, hj₁, hj₂ ⟩

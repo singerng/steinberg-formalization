@@ -418,6 +418,7 @@ theorem sufficient_conditions_for_comm_of_αβψ_and_ψ :
         expr_ψ_comm_α_β2ψ_as_comm_α_β2ψ_ψ hk hi hjk,
         lift_hom_inv_doub_of_α_β2ψ_c hi hjk, mul_assoc]
 
+omit Fchar in
 theorem refl_def_of_αβψ (g : GradedChevalleyGenerator B3LargePosRoot F)
   (h : g.ζ = αβψ) :
   (weakB3Large F).pres_mk (refl_def (weakB3Large F) g)
@@ -431,7 +432,7 @@ theorem refl_def_of_αβψ (g : GradedChevalleyGenerator B3LargePosRoot F)
   rw [weak_define]
   simp only [map_mul, map_inv, free_mk, FreeGroup.map.of, refl_of_gen, PositiveRootSystem.height]
   repeat rw [←free_mk]
-  rw [←weakB3Large, ←expr_αβψ_as_βψ_α_βψ_α_βψ]
+  rw [←weakB3Large, ←expr_αβψ_as_βψ_α_βψ_α_βψ (by ht) (by ht)]
   · congr
     · simp only [height]
       nth_rewrite 3 [←(correct_of_split_3_into_1_2 i hi).2.2]
@@ -439,5 +440,3 @@ theorem refl_def_of_αβψ (g : GradedChevalleyGenerator B3LargePosRoot F)
       have := (correct_of_split_3_into_1_2 i hi).2.1
       omega
     · rw [mul_one]
-  · simp only [tsub_le_iff_right, le_add_iff_nonneg_right, zero_le]
-  · simp only [tsub_le_iff_right, le_add_iff_nonneg_right, zero_le]

@@ -1,5 +1,6 @@
 import Steinberg.B3Large.Basic
 import Steinberg.B3Large.EstabAlphaBetaPsi
+import Mathlib.Tactic.Linarith
 
 namespace Steinberg.B3Large
 
@@ -590,6 +591,28 @@ theorem id_of_αβ2ψ : id_of_root((weakB3Large F).pres_mk, αβ2ψ) := by
   have := doub_of_αβ2ψ Fchar hi 0
   rw [mul_zero] at this
   exact mul_right_eq_self.1 this
+
+theorem refl_def_of_αβ2ψ (g : GradedChevalleyGenerator B3LargePosRoot F)
+  (h : g.ζ = αβ2ψ) :
+  (weakB3Large F).pres_mk (refl_def (weakB3Large F) g)
+    = (weakB3Large F).pres_mk (FreeGroup.of (refl_of_gen g)) := by
+  rcases g with ⟨ ζ, i, hi, t ⟩
+  simp only at h
+  subst ζ
+  simp only [refl_def, MonoidHom.coe_comp, Function.comp_apply, FreeGroup.lift.of]
+  rw [weakB3Large]
+  simp only
+  rw [weak_define]
+  simp only [map_commutatorElement, map_mul, map_inv, free_mk, FreeGroup.map.of, refl_of_gen, PositiveRootSystem.height]
+  repeat rw [←free_mk]
+  rw [←weakB3Large, ←expr_αβ2ψ_as_comm_of_α_β2ψ Fchar (by ht) (by ht), mul_one,
+    eq_of_h_eq αβ2ψ (αβ2ψ.height - i)]
+  simp only [height]
+  nth_rewrite 3 [←(correct_of_split_4_into_1_3 i hi).2.2]
+  have := (correct_of_split_4_into_1_3 i hi).1
+  have := (correct_of_split_4_into_1_3 i hi).2.1
+  omega
+
 
 -- theorem refl_of_def : ∀ S ∈ def_sets F, ∀ r ∈ S, (weakB3Large F).pres_mk (FreeGroup.map refl_deg_of_gen r) = 1 := by
 --   intro s hs r hr

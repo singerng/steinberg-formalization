@@ -31,7 +31,7 @@ theorem def_of_αβψ : forall_i_t αβψ,
 
 theorem def_of_αβ2ψ : forall_i_t αβ2ψ,
     ⁅ ({α, (split_4_into_1_3 i hi).1, t}'(correct_of_split_4_into_1_3 i hi).1),
-      ({β2ψ, (split_4_into_1_3 i hi).2, 1}'(correct_of_split_4_into_1_3 i hi).2)
+      ({β2ψ, (split_4_into_1_3 i hi).2, 1}'(correct_of_split_4_into_1_3 i hi).2.1)
     ⁆ = {αβ2ψ, i, t} := by
   intro i hi t
   symm
@@ -39,7 +39,7 @@ theorem def_of_αβ2ψ : forall_i_t αβ2ψ,
 
 theorem def_of_α2β2ψ : forall_i_t α2β2ψ,
     ⁅ ({αβ, (split_5_into_2_3 i hi).1, t}'(correct_of_split_5_into_2_3 i hi).1),
-      ({β2ψ, (split_5_into_2_3 i hi).2, 1}'(correct_of_split_5_into_2_3 i hi).2)
+      ({β2ψ, (split_5_into_2_3 i hi).2, 1}'(correct_of_split_5_into_2_3 i hi).2.1)
     ⁆ = {α2β2ψ, i, -t} := by
   intro i hi t
   symm
