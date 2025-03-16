@@ -257,6 +257,27 @@ theorem map_refl_gen_of_hom (r : FreeGroup (PartialChevalley.ChevalleyGenerator 
       apply eq_of_hom_lift_eq
       all_goals ht
 
+private theorem help1 (r : FreeGroup (GradedChevalleyGenerator B3LargePosRoot F))
+  (h : ∀ r' ∈ hom_lift_set b, (FreeGroup.lift (refl_def (weakB3Large F))) r' = (FreeGroup.map refl_of_gen) r') :
+  (∃ x ∈ hom_lift_set b, (FreeGroup.lift (refl_def (weakB3Large F))) x = r) ↔ ∃ x ∈ hom_lift_set b, (FreeGroup.map refl_of_gen) x = r := by
+  constructor
+  · intro h
+    rcases h with ⟨ r', h_r', h ⟩
+    subst r
+    use r'
+    constructor
+    · exact h_r'
+    · exact (h r' h_r').symm
+  · intro h
+    rcases h with ⟨ r', h_r', h ⟩
+    subst r
+    use r'
+    constructor
+    · exact h_r'
+    · exact (h r' h_r')
+
+set_option maxHeartbeats 0
+
 theorem b3large_valid :
   refl_valid (weakB3Large F) := by
   simp only [refl_valid]
@@ -270,11 +291,11 @@ theorem b3large_valid :
       intro r hr
       simp only [rels_of_nonhomog_lift_of_comm_of_αβ_βψ] at hr
       rcases hr with ⟨ t₁, t₀, u₁, u₀, v₁, v₀, rfl ⟩
-      simp only [map_mul, map_commutatorElement, free_mk, FreeGroup.lift.of]
+      simp only [map_mul, map_commutatorElement, lift_of_free_mk]
       repeat rw [refl_def_of_present _ _ (by tauto)]
       simp only [refl_of_gen, PositiveRootSystem.height, height]
       simp_arith
-      rw [← free_mk, ← free_mk, ← free_mk, ← free_mk, ← free_mk, ← free_mk]
+      repeat rw [← free_mk]
       rw [add_comm, add_comm (u₁ * v₀)]
       grw [expr_αβ_αβ_as_αβ_αβ (i := 1), expr_αβ_αβ_as_αβ_αβ, expr_αβ_αβ_as_αβ_αβ (i := 0)]
       grw [expr_βψ_βψ_as_βψ_βψ (i := 1), expr_βψ_βψ_as_βψ_βψ, expr_βψ_βψ_as_βψ_βψ (i := 0)]
@@ -283,12 +304,11 @@ theorem b3large_valid :
       intro r hr
       simp only [rels_of_nonhomog_lift_of_comm_of_α_α2β2ψ] at hr
       rcases hr with ⟨ t₁, t₀, u₁, u₀, v₁, v₀, rfl ⟩
-      simp only [map_mul, map_commutatorElement, free_mk, FreeGroup.lift.of]
+      simp only [map_mul, map_commutatorElement, lift_of_free_mk]
       repeat rw [refl_def_of_present _ _ (by tauto)]
       simp only [refl_of_gen, PositiveRootSystem.height, height]
       simp_arith
-      rw [← free_mk, ← free_mk, ← free_mk, ← free_mk, ← free_mk, ← free_mk,
-          ← free_mk, ← free_mk, ← free_mk]
+      repeat rw [← free_mk]
       rw [add_comm]
       have := raw_nonhomog_lift_of_comm_of_α_α2β2ψ t₀ t₁ u₀ u₁ v₀ v₁
       norm_num at this
@@ -298,41 +318,29 @@ theorem b3large_valid :
           expr_β2ψ_β2ψ_as_β2ψ_β2ψ (i := 0), expr_β2ψ_β2ψ_as_β2ψ_β2ψ (i := 0)]
       rw [← this]
       grw [pow_two, mul_comm v₁ v₀, mul_comm v₁ v₀]
-  · stop
-    -- suffices (FreeGroup.lift (refl_def (weakB3Large F))) '' S = S by
-  --   intro r h_r
-  --   apply eq_one_of_mem_rels
-  --   have : (FreeGroup.lift (refl_def (weakB3Large F))) r ∈ S := by
-  --     rw [←this]
-  --     simp only [Set.mem_image]
-  --     use r
-  --   simp only [all_rels]
-  --   simp only [Set.sUnion_insert, Set.sUnion_singleton, Set.mem_union, Set.mem_sUnion]
-  --   right; right; right; right; right; left
-  --   use S
+  · suffices (FreeGroup.lift (refl_def (weakB3Large F))) '' S = S by
+      intro r h_r
+      apply eq_one_of_mem_rels
+      have : (FreeGroup.lift (refl_def (weakB3Large F))) r ∈ S := by
+        rw [←this]
+        simp only [Set.mem_image]
+        use r
+      simp only [all_rels, lifted_sets]
+      simp only [Set.sUnion_insert, Set.sUnion_singleton, Set.mem_union, Set.mem_sUnion]
+      right; right; right; right; right; left
+      use S
+      constructor
+      · simp only [weakB3Large, lifted_rels_sets, lifted_sets, Set.mem_union]
+        right
+        exact h_hom
+      · exact this
     simp only [hom_lifted_sets, Set.mem_image] at h_hom
     rcases h_hom with ⟨ b, h, h_hom ⟩
     subst S
     nth_rewrite 2 [←map_refl_gen_of_hom]
     ext r
     simp only [Set.mem_image]
-    -- TODO: this is quite long and can probably be made way shorter?
-    suffices ∀ r' ∈ hom_lift_set b, (FreeGroup.lift (refl_def (weakB3Large F))) r' = (FreeGroup.map refl_of_gen) r' by
-      constructor
-      · intro h
-        rcases h with ⟨ r', h_r', h ⟩
-        subst r
-        use r'
-        constructor
-        · exact h_r'
-        · exact (this r' h_r').symm
-      · intro h
-        rcases h with ⟨ r', h_r', h ⟩
-        subst r
-        use r'
-        constructor
-        · exact h_r'
-        · exact (this r' h_r')
+    apply help1
     intro r' h_r'
     simp only [hom_lift_set, Set.mem_setOf] at h_r'
     rcases h_r' with ⟨ i, j, k, hi, hj, hk, t, u, v, h_r' ⟩
@@ -341,19 +349,21 @@ theorem b3large_valid :
     -- TODO: abstract out a property that says "all the base_rels are present"
     all_goals (
       subst b
-      simp only [  base_rel_of_hom_lift_of_interchange_of_αβψ, base_rel_of_hom_lift_of_doub_of_αβψ,
+      simp only [base_rel_of_hom_lift_of_interchange_of_αβψ, base_rel_of_hom_lift_of_doub_of_αβψ,
         base_rel_of_hom_lift_of_interchange_of_αβ2ψ, base_rel_of_hom_lift_of_comm_of_βψ_α_β2ψ,
         base_rel_of_hom_lift_of_inv_doub_of_α_β2ψ_a, base_rel_of_hom_lift_of_inv_doub_of_α_β2ψ_b, base_rel_of_hom_lift_of_inv_doub_of_α_β2ψ_c,
         base_rel_of_hom_lift_of_comm_of_β2ψ_αβψ, base_rel_of_hom_lift_of_interchange_of_α2β2ψ_a, base_rel_of_hom_lift_of_interchange_of_α2β2ψ_b,
         base_rel_of_hom_lift_of_comm_of_ψ_αβ_β2ψ, base_rel_of_hom_lift_of_comm_of_αβ_αβ_β2ψ_a, base_rel_of_hom_lift_of_comm_of_αβ_αβ_β2ψ_b,
         base_rel_of_hom_lift_of_inv_doub_of_αβ_β2ψ_a, base_rel_of_hom_lift_of_inv_doub_of_αβ_β2ψ_b, base_rel_of_hom_lift_of_inv_doub_of_αβ_β2ψ_c,
         base_rel_of_hom_lift_of_inv_doub_of_β_αβ2ψ_a, base_rel_of_hom_lift_of_inv_doub_of_β_αβ2ψ_b, base_rel_of_hom_lift_of_inv_doub_of_β_αβ2ψ_c,
-        base_rel_of_hom_lift_of_comm_of_βψ_αβ2ψ, base_rel_of_hom_lift_of_comm_of_β2ψ_αβ2ψ,
-        map_mul, map_inv,
+        base_rel_of_hom_lift_of_comm_of_βψ_αβ2ψ, base_rel_of_hom_lift_of_comm_of_β2ψ_αβ2ψ]
+      simp only [map_mul, map_inv, map_commutatorElement,
         PartialChevalley.ChevalleyGenerator.free_mk, FreeGroup.map.of, FreeGroup.lift.of, hom_lift]
       repeat rw [refl_def_of_present (weakB3Large F)]
-      all_goals (simp only [weakB3Large, present_roots]; tauto)
+      all_goals tauto
     )
+
+
 
 
 include Fchar

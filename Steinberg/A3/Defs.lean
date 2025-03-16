@@ -126,6 +126,7 @@ theorem weak_define_is_projection (R : Type TR) [Ring R] :
   cases ζ
   all_goals simp only [weak_define, FreeGroup.lift.of, map_commutatorElement, free_mk]
 
+
 def weakA3 (R : Type TR) [Ring R] := GradedPartialChevalleyGroup.mk
   weakA3System
   (lifted_sets R)
