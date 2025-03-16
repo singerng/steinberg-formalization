@@ -388,11 +388,7 @@ lemma expr_βψω_as_comm_of_β_ψω_11' :
   intro t u
   --have := ReflDeg.refl_symm b3small_valid {βψω, 1, t * u}
   have : {βψω, 2, t * u} = ReflDeg.refl_symm b3small_valid ({βψω, 1, t * u}) := by
-        simp only [refl_symm, toPresentedGroup, pres_mk, free_mk]
-        simp only [←PresentedGroup.of.eq_1]
-        simp only [PresentedGroup.toGroup.of]
-        simp only [Function.comp_apply]
-        rw [← pres_mk]
+        simp only [refl_symm_of_pres_mk, lift_of_free_mk]
         rw [refl_def_of_βψω]
         simp only [refl_of_gen, PositiveRootSystem.height, height]
         congr

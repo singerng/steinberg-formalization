@@ -45,6 +45,16 @@ namespace GradedChevalleyGenerator
 def free_mk (ζ : Φ) (i : ℕ) (hi : i ≤ height ζ) (t : R) : FreeGroup (GradedChevalleyGenerator Φ R) :=
   FreeGroup.of (mk ζ i hi t)
 
+#check FreeGroup.map.of
+
+theorem map_of_free_mk (f : GradedChevalleyGenerator Φ R → GradedChevalleyGenerator Φ R) (ζ : Φ) (i : ℕ) (hi : i ≤ height ζ) (t : R) :
+  (FreeGroup.map f) (free_mk ζ i hi t) = free_mk (f (mk ζ i hi t)).ζ (f (mk ζ i hi t)).i (f (mk ζ i hi t)).hi (f (mk ζ i hi t)).t := by
+    simp only [free_mk, FreeGroup.map.of]
+
+theorem lift_of_free_mk (f : GradedChevalleyGenerator Φ R → FreeGroup (GradedChevalleyGenerator Φ R)) (ζ : Φ) (i : ℕ) (hi : i ≤ height ζ) (t : R) :
+  (FreeGroup.lift f) (free_mk ζ i hi t) = f (mk ζ i hi t) := by
+    simp only [free_mk, FreeGroup.lift.of]
+
 set_option hygiene false in
 /--
   Shorthand for building free group elements from a root, degree, and ring element.

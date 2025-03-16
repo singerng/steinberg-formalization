@@ -57,7 +57,7 @@ private theorem refl_deg_of_rels_of_trivial_commutator_of_root_pair (ζ η : Φ)
   intro r h
   simp only [rels_of_trivial_commutator_of_root_pair, mem_setOf_eq] at h
   rcases h with ⟨ i, j, hi, hj, t, u, rfl ⟩
-  simp only [map_commutatorElement, free_mk, FreeGroup.lift.of]
+  simp only [map_commutatorElement, lift_of_free_mk]
   rw [refl_def_of_present w (GradedChevalleyGenerator.mk ζ i hi t) h_ζ]
   rw [refl_def_of_present w (GradedChevalleyGenerator.mk η j hj u) h_η]
   exists (height ζ - i), (height η - j), (by omega), (by omega), t, u
@@ -71,7 +71,7 @@ private theorem refl_deg_of_rels_of_single_commutator_of_root_pair
   intro r h
   simp only [rels_of_single_commutator_of_root_pair, mem_setOf_eq] at h
   rcases h with ⟨ i, j, hi, hj, t, u, rfl ⟩
-  simp only [map_mul, map_commutatorElement, map_inv, free_mk, FreeGroup.lift.of]
+  simp only [map_mul, map_commutatorElement, map_inv, lift_of_free_mk]
   rw [refl_def_of_present w (GradedChevalleyGenerator.mk ζ i hi t) h_ζ]
   rw [refl_def_of_present w (GradedChevalleyGenerator.mk η j hj u) h_η]
   rw [refl_def_of_present w (GradedChevalleyGenerator.mk θ (i + j) (by omega) (C * t * u)) h_θ]
@@ -89,7 +89,7 @@ private theorem refl_deg_of_rels_of_double_commutator_of_root_pair
   intro r h
   simp only [rels_of_double_commutator_of_root_pair, mem_setOf_eq] at h
   rcases h with ⟨ i, j, hi, hj, t, u, rfl ⟩
-  simp only [map_mul, map_commutatorElement, map_inv, free_mk, FreeGroup.lift.of]
+  simp only [map_mul, map_commutatorElement, map_inv, lift_of_free_mk]
   rw [refl_def_of_present w (GradedChevalleyGenerator.mk ζ i hi t) h_ζ]
   rw [refl_def_of_present w (GradedChevalleyGenerator.mk η j hj u) h_η]
   rw [refl_def_of_present w (GradedChevalleyGenerator.mk θ₁ (i + j) (by omega) (C₁ * t * u)) h_θ₁]
@@ -105,7 +105,7 @@ private theorem refl_deg_of_rels_of_mixed_commutes_of_root (ζ : Φ) (h_ζ : ζ 
   intro r h
   simp only [rels_of_mixed_commutes_of_root, mem_setOf_eq] at h
   rcases h with ⟨ i, j, hi, hj, t, u, rfl ⟩
-  simp only [map_commutatorElement, free_mk, FreeGroup.lift.of]
+  simp only [map_commutatorElement, lift_of_free_mk]
   rw [refl_def_of_present w (GradedChevalleyGenerator.mk ζ i hi t) h_ζ]
   rw [refl_def_of_present w (GradedChevalleyGenerator.mk ζ j hj u) h_ζ]
   exists (height ζ - i), (height ζ - j), (by omega), (by omega), t, u
@@ -117,7 +117,7 @@ private theorem refl_deg_of_rels_of_lin_of_root (ζ : Φ) (h_ζ : ζ ∈ w.sys.p
   intro r h
   simp only [rels_of_lin_of_root, mem_setOf_eq] at h
   rcases h with ⟨ i, hi, t, u, rfl ⟩
-  simp only [free_mk, map_mul, map_inv, FreeGroup.lift.of]
+  simp only [map_mul, map_inv, lift_of_free_mk]
   rw [refl_def_of_present w (GradedChevalleyGenerator.mk ζ i hi t) h_ζ]
   rw [refl_def_of_present w (GradedChevalleyGenerator.mk ζ i hi u) h_ζ]
   rw [refl_def_of_present w (GradedChevalleyGenerator.mk ζ i hi (t + u)) h_ζ]
@@ -199,10 +199,14 @@ theorem reflect_degree_of_rels {w : GradedPartialChevalleyGroup Φ R} (h' : refl
     rcases h_r with ⟨ i, hi, t, h ⟩
     subst r
     simp only [map_mul, map_inv, SetLike.mem_coe, lift_of_refl_eq_comp, MonoidHom.coe_comp, Function.comp_apply, w.h_define_is_projection,
-              free_mk, FreeGroup.lift.of, inv_mul_cancel, OneMemClass.one_mem]
+              lift_of_free_mk, inv_mul_cancel, OneMemClass.one_mem]
 
 def refl_symm {w : GradedPartialChevalleyGroup Φ R} (h : refl_valid w) : group w →* group w :=
   toPresentedGroup (reflect_degree_of_rels h)
+
+theorem refl_symm_of_pres_mk {w : GradedPartialChevalleyGroup Φ R} {h : refl_valid w} {g : FreeGroup (GradedChevalleyGenerator Φ R)} :
+  refl_symm h (w.pres_mk g) = w.pres_mk (FreeGroup.lift (refl_def w) g) := by
+  simp only [refl_symm, pres_mk, toPresentedGroup.mk]
 
 end ReflDeg
 
