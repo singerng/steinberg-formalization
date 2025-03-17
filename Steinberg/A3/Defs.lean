@@ -191,12 +191,12 @@ macro "declare_A3_mixed_comm_thms" R:term:arg r:term:arg : command =>
 
 set_option hygiene false in
 /-- Shorthand for building free group elements from a root, degree, and ring element. -/
-scoped notation (priority:=high) "{" ζ ", " i ", " t "}" =>
+scoped notation (priority:=high) "⸨" ζ ", " i ", " t "⸩" =>
   (weakA3 R).pres_mk {ζ, i, t}
 
 set_option hygiene false in
 /-- Shorthand for building free group elements from a root, degree, and ring element. -/
-scoped notation (priority:=high) "{" ζ ", " i ", " t "}'" h =>
+scoped notation (priority:=high) "⸨" ζ ", " i ", " t "⸩'" h =>
   (weakA3 R).pres_mk ({ζ, i, t}'h)
 
 section forallNotation

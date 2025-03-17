@@ -32,8 +32,8 @@ variable {R : Type TR} [Ring R]
 
 theorem nonhomog_lift_of_comm_of_αβ_βγ :
   ∀ (t₁ t₀ u₁ u₀ v₁ v₀ : R),
-    ⁅ {αβ, 2, t₁ * u₁} * {αβ, 1, t₁ * u₀ + t₀ * u₁} * {αβ, 0, t₀ * u₀}
-    , {βγ, 2, u₁ * v₁} * {βγ, 1, u₁ * v₀ + u₀ * v₁} * {βγ, 0, u₀ * v₀} ⁆
+    ⁅ ⸨αβ, 2, t₁ * u₁⸩ * ⸨αβ, 1, t₁ * u₀ + t₀ * u₁⸩ * ⸨αβ, 0, t₀ * u₀⸩
+    , ⸨βγ, 2, u₁ * v₁⸩ * ⸨βγ, 1, u₁ * v₀ + u₀ * v₁⸩ * ⸨βγ, 0, u₀ * v₀⸩ ⁆
     = 1 := by
   intro t₁ t₀ u₁ u₀ v₁ v₀
   apply eq_of_mul_inv_eq_one
@@ -44,9 +44,9 @@ theorem nonhomog_lift_of_comm_of_αβ_βγ :
 /-! ### Definition of missing root -/
 theorem def_of_αβγ :
   forall_i_t αβγ,
-    ⁅ {α, (split_3_into_1_2 i hi).1, t}'(correct_of_split_3_into_1_2 i hi).1
-    , {βγ, (split_3_into_1_2 i hi).2, 1}'(correct_of_split_3_into_1_2 i hi).2 ⁆
-    = {αβγ, i, t} := by
+    ⁅ ⸨α, (split_3_into_1_2 i hi).1, t⸩'(correct_of_split_3_into_1_2 i hi).1
+    , ⸨βγ, (split_3_into_1_2 i hi).2, 1⸩'(correct_of_split_3_into_1_2 i hi).2 ⁆
+    = ⸨αβγ, i, t⸩ := by
   intro i hi t
   symm
   apply (weakA3 R).def_helper
@@ -73,7 +73,7 @@ theorem a3_valid :
 
 /- Commutator relation in the case (i,j) is not (0,2) or (2,0) (via the previous theorem). -/
 private lemma homog_lift_of_comm_of_αβ_βγ (i j k : ℕ) (hi : i ≤ 1) (hj : j ≤ 1) (hk : k ≤ 1) :
-  ∀ (t u : R), ⁅ { αβ, i + j, t}, {βγ, j + k, u} ⁆ = 1 := by
+  ∀ (t u : R), ⁅ ⸨ αβ, i + j, t⸩, ⸨βγ, j + k, u⸩ ⁆ = 1 := by
     intro t u
     let t₁ : R := match i with
       | 1 => t
@@ -96,18 +96,18 @@ private lemma homog_lift_of_comm_of_αβ_βγ (i j k : ℕ) (hi : i ≤ 1) (hj :
     have hf_i : i ∈ [0,1] := by simp only [List.mem_cons, List.mem_singleton]; omega
     have hf_j : j ∈ [0,1] := by simp only [List.mem_cons, List.mem_singleton]; omega
     have hf_k : k ∈ [0,1] := by simp only [List.mem_cons, List.mem_singleton]; omega
-    have id₁ : {αβ, i + j, t} = {αβ, 2, t₁ * u₁} * {αβ, 1, t₁ * u₀ + t₀ * u₁} * {αβ, 0, t₀ * u₀} := by (
+    have id₁ : ⸨αβ, i + j, t⸩ = ⸨αβ, 2, t₁ * u₁⸩ * ⸨αβ, 1, t₁ * u₀ + t₀ * u₁⸩ * ⸨αβ, 0, t₀ * u₀⸩ := by (
       fin_cases hf_i, hf_j, hf_k
       <;> chev_simp [t₀, t₁, u₀, u₁, v₀, v₁]
     )
-    have id₂ : {βγ, j + k, u} = {βγ, 2, u₁ * v₁} * {βγ, 1, u₁ * v₀ + u₀ * v₁} * {βγ, 0, u₀ * v₀} := by (
+    have id₂ : ⸨βγ, j + k, u⸩ = ⸨βγ, 2, u₁ * v₁⸩ * ⸨βγ, 1, u₁ * v₀ + u₀ * v₁⸩ * ⸨βγ, 0, u₀ * v₀⸩ := by (
       fin_cases hf_i, hf_j, hf_k
       <;> chev_simp [t₀, t₁, u₀, u₁, v₀, v₁]
     )
     rw [id₁, id₂, nonhomog_lift_of_comm_of_αβ_βγ]
 
 private lemma image_of_homog_lift_of_comm_of_αβ_βγ {i j : ℕ} (hi : i ≤ αβ.height) (hj : j ≤ βγ.height)
-    : ((i, j) ∈ ij_jk_image) → ∀ (t u : R), ⁅ {αβ, i, t}, {βγ, j, u} ⁆ = 1 := by
+    : ((i, j) ∈ ij_jk_image) → ∀ (t u : R), ⁅ ⸨αβ, i, t⸩, ⸨βγ, j, u⸩ ⁆ = 1 := by
   intro h_in_image t u
   have : ∃ ijk' : ℕ × ℕ × ℕ, ijk' ∈ boolean_cube ∧ f_ij_jk ijk' = (i, j) := by
     rw [← Finset.mem_image, correct_of_ij_jk_image]; exact h_in_image
@@ -115,9 +115,9 @@ private lemma image_of_homog_lift_of_comm_of_αβ_βγ {i j : ℕ} (hi : i ≤ �
   rcases this with ⟨ i', j', k', ⟨ hi', hj', hk' ⟩, rfl, rfl ⟩
   rw [← homog_lift_of_comm_of_αβ_βγ i' j' k' hi' hj' hk' t u]
 
-private lemma comm_of_αβ_βγ_20 : ∀ (t u : R), ⁅ {αβ, 2, t}, {βγ, 0, u} ⁆ = 1 := by
+private lemma comm_of_αβ_βγ_20 : ∀ (t u : R), ⁅ ⸨αβ, 2, t⸩, ⸨βγ, 0, u⸩ ⁆ = 1 := by
   intro t u
-  apply @trivial_comm_from_embedded_comm_and_pairs _ _ {βγ, 1, u} _ ({αβ, 1, t + 1} * {αβ, 0, 1})
+  apply @trivial_comm_from_embedded_comm_and_pairs _ _ ⸨βγ, 1, u⸩ _ (⸨αβ, 1, t + 1⸩ * ⸨αβ, 0, 1⸩)
   grw [← nonhomog_lift_of_comm_of_αβ_βγ t 1 1 1 0 u]
   rw [← homog_lift_of_comm_of_αβ_βγ 1 1 0 (by trivial) (by trivial) (by trivial) t u]
   apply triv_comm_mul_left
@@ -128,9 +128,9 @@ private lemma comm_of_αβ_βγ_20 : ∀ (t u : R), ⁅ {αβ, 2, t}, {βγ, 0, 
   rw [← homog_lift_of_comm_of_αβ_βγ 0 0 0 (by trivial) (by trivial) (by trivial) 1 u]
 
 -- symmetric to proof of `comm_of_αβ_βγ_20`
-private lemma comm_of_αβ_βγ_02 : ∀ (t u : R), ⁅ {αβ, 0, t}, {βγ, 2, u} ⁆ = 1 := by
+private lemma comm_of_αβ_βγ_02 : ∀ (t u : R), ⁅ ⸨αβ, 0, t⸩, ⸨βγ, 2, u⸩ ⁆ = 1 := by
   intro t u
-  have : ⁅ {αβ, 0, t}, {βγ, 2, u} ⁆ = refl_symm a3_valid ⁅ {αβ, 2, t}, {βγ, 0, u} ⁆ := by
+  have : ⁅ ⸨αβ, 0, t⸩, ⸨βγ, 2, u⸩ ⁆ = refl_symm a3_valid ⁅ ⸨αβ, 2, t⸩, ⸨βγ, 0, u⸩ ⁆ := by
     rw [map_commutatorElement]; trivial
   rw [this, comm_of_αβ_βγ_20, map_one]
 
@@ -153,7 +153,7 @@ declare_A3_triv_expr_thm R αβ βγ
 @[group_reassoc]
 theorem expr_β_γ_as_γ_βγ_β :
   forall_ij_tu β γ,
-    reorder_mid({β, i, t}, {γ, j, u}, {βγ, i + j, t * u}) := by
+    reorder_mid(⸨β, i, t⸩, ⸨γ, j, u⸩, ⸨βγ, i + j, t * u⸩) := by
   intro i j hi hj t u
   have := comm_of_β_γ hi hj t u
   chev_simp at this
@@ -164,7 +164,7 @@ theorem expr_β_γ_as_γ_βγ_β :
 
 /- Interchange between ⁅α, βγ⁆ and ⁅αβ, γ⁆, "trading" a single degree j : Deg 1 and scalar u : R. -/
 theorem Interchange : forall_ijk_tuv α β γ,
-     ⁅ {α, i, t}, {βγ, j + k, u * v} ⁆ = ⁅ {αβ, i + j, t * u}, {γ, k, v} ⁆ := by
+     ⁅ ⸨α, i, t⸩, ⸨βγ, j + k, u * v⸩ ⁆ = ⁅ ⸨αβ, i + j, t * u⸩, ⸨γ, k, v⸩ ⁆ := by
   intro i j k hi hj hk t u v
   apply eq_comm_of_reorder_left
   have hij : i + j ≤ αβ.height := by ht
@@ -182,14 +182,14 @@ theorem Interchange : forall_ijk_tuv α β γ,
 
 /- Pass between ⁅α,βγ⁆ and ⁅αβ,γ⁆ forms (specializes `Interchange` to the case `u=1`). -/
 theorem InterchangeTrans : forall_ijk_tu α β γ,
-    ⁅ {α, i, t}, {βγ, j + k, u} ⁆ = ⁅ {αβ, i + j, t}, {γ, k, u} ⁆ := by
+    ⁅ ⸨α, i, t⸩, ⸨βγ, j + k, u⸩ ⁆ = ⁅ ⸨αβ, i + j, t⸩, ⸨γ, k, u⸩ ⁆ := by
   intro i j k hi hj hk t u
   have := Interchange hi hj hk t 1 u
   rwa [one_mul, mul_one] at this
 
 /- ⁅α,βγ⁆ forms depend only on product of coefficients. Applies `Interchange` twice. -/
 theorem InterchangeRefl : forall_ijk_tu α β γ,
-    ⁅ {α, i, t * u}, {βγ, j + k, 1} ⁆ = ⁅ {α, i, t}, {βγ, j + k, u} ⁆ := by
+    ⁅ ⸨α, i, t * u⸩, ⸨βγ, j + k, 1⸩ ⁆ = ⁅ ⸨α, i, t⸩, ⸨βγ, j + k, u⸩ ⁆ := by
   intro i j k hi hj hk t u
   nth_rewrite 2 [← mul_one u]
   rw [Interchange hi hj hk, InterchangeTrans hi hj hk]
@@ -200,60 +200,60 @@ theorem InterchangeRefl : forall_ijk_tu α β γ,
 
 -- height 0
 private lemma comm_of_α_βγ_00 (t u : R) :
-    ⁅ {α, 0, t}, {βγ, 0, u} ⁆ = {αβγ, 0, t * u} := by
+    ⁅ ⸨α, 0, t⸩, ⸨βγ, 0, u⸩ ⁆ = ⸨αβγ, 0, t * u⸩ := by
   rw [← @InterchangeRefl _ _ 0 0 0 (by trivial) (by trivial) (by trivial)]
   rw [← def_of_αβγ (by trivial) (t * u)]
   simp only [split_3_into_1_2]
 
 private lemma comm_of_αβ_γ_00 (t u : R) :
-    ⁅ {αβ, 0, t}, {γ, 0, u} ⁆ = {αβγ, 0, t * u} := by
+    ⁅ ⸨αβ, 0, t⸩, ⸨γ, 0, u⸩ ⁆ = ⸨αβγ, 0, t * u⸩ := by
   rw [← @InterchangeTrans _ _ 0 0 0 (by trivial) (by trivial) (by trivial)]
   rw [comm_of_α_βγ_00]
 
 -- height 1
 private lemma comm_of_α_βγ_01 (t u : R) :
-    ⁅ {α, 0, t}, {βγ, 1, u} ⁆ = {αβγ, 1, t * u} := by
+    ⁅ ⸨α, 0, t⸩, ⸨βγ, 1, u⸩ ⁆ = ⸨αβγ, 1, t * u⸩ := by
   rw [← @InterchangeRefl _ _ 0 0 1 (by trivial) (by trivial) (by trivial)]
   rw [← def_of_αβγ (by trivial) (t * u)]
   simp only [split_3_into_1_2]
 
-private lemma comm_of_αβ_γ_10 (t u : R) : ⁅ {αβ, 1, t}, {γ, 0, u} ⁆ = {αβγ, 1, t * u} := by
+private lemma comm_of_αβ_γ_10 (t u : R) : ⁅ ⸨αβ, 1, t⸩, ⸨γ, 0, u⸩ ⁆ = ⸨αβγ, 1, t * u⸩ := by
   rw [← @InterchangeTrans _ _ 0 1 0 (by trivial) (by trivial) (by trivial)]
   simp only [add_zero, comm_of_α_βγ_01, zero_add, one_mul]
 
-private lemma comm_of_α_βγ_10 (t u : R) : ⁅ {α, 1, t}, {βγ, 0, u} ⁆ = {αβγ, 1, t * u} := by
+private lemma comm_of_α_βγ_10 (t u : R) : ⁅ ⸨α, 1, t⸩, ⸨βγ, 0, u⸩ ⁆ = ⸨αβγ, 1, t * u⸩ := by
   rw [@InterchangeTrans _ _ 1 0 0 (by trivial) (by trivial) (by trivial),
         comm_of_αβ_γ_10]
 
-private lemma comm_of_αβ_γ_01 (t u : R) : ⁅ {αβ, 0, t}, {γ, 1, u} ⁆ = {αβγ, 1, t * u} := by
+private lemma comm_of_αβ_γ_01 (t u : R) : ⁅ ⸨αβ, 0, t⸩, ⸨γ, 1, u⸩ ⁆ = ⸨αβγ, 1, t * u⸩ := by
   rw [← @InterchangeTrans _ _ 0 0 1 (by trivial) (by trivial) (by trivial),
         comm_of_α_βγ_01]
 
 -- height 2
-private lemma comm_of_α_βγ_11 (t u : R) : ⁅ {α, 1, t}, {βγ, 1, u} ⁆ = {αβγ, 2, t * u} := by
+private lemma comm_of_α_βγ_11 (t u : R) : ⁅ ⸨α, 1, t⸩, ⸨βγ, 1, u⸩ ⁆ = ⸨αβγ, 2, t * u⸩ := by
   rw [← @InterchangeRefl _ _ 1 0 1 (by trivial) (by trivial) (by trivial),
         ← def_of_αβγ (by trivial) (t * u)]
   simp only [split_3_into_1_2]
 
-private lemma comm_of_αβ_γ_11 (t u : R) : ⁅ {αβ, 1, t}, {γ, 1, u} ⁆ = {αβγ, 2, t * u} := by
+private lemma comm_of_αβ_γ_11 (t u : R) : ⁅ ⸨αβ, 1, t⸩, ⸨γ, 1, u⸩ ⁆ = ⸨αβγ, 2, t * u⸩ := by
   rw [← @InterchangeTrans _ _ 1 0 1 (by trivial) (by trivial) (by trivial),
         comm_of_α_βγ_11]
 
-private lemma comm_of_α_βγ_02 (t u : R) : ⁅ {α, 0, t}, {βγ, 2, u} ⁆ = {αβγ, 2, t * u} := by
+private lemma comm_of_α_βγ_02 (t u : R) : ⁅ ⸨α, 0, t⸩, ⸨βγ, 2, u⸩ ⁆ = ⸨αβγ, 2, t * u⸩ := by
   rw [@InterchangeTrans _ _ 0 1 1 (by trivial) (by trivial) (by trivial),
         comm_of_αβ_γ_11]
 
-private lemma comm_of_αβ_γ_20 (t u : R) : ⁅ {αβ, 2, t}, {γ, 0, u} ⁆ = {αβγ, 2, t * u} := by
+private lemma comm_of_αβ_γ_20 (t u : R) : ⁅ ⸨αβ, 2, t⸩, ⸨γ, 0, u⸩ ⁆ = ⸨αβγ, 2, t * u⸩ := by
   rw [← @InterchangeTrans _ _ 1 1 0 (by trivial) (by trivial) (by trivial),
         comm_of_α_βγ_11]
 
 -- height 3
-private lemma comm_of_α_βγ_12 (t u : R) : ⁅ {α, 1, t}, {βγ, 2, u} ⁆ = {αβγ, 3, t * u} := by
+private lemma comm_of_α_βγ_12 (t u : R) : ⁅ ⸨α, 1, t⸩, ⸨βγ, 2, u⸩ ⁆ = ⸨αβγ, 3, t * u⸩ := by
   rw [← @InterchangeRefl _ _ 1 1 1 (by trivial) (by trivial) (by trivial),
         ← def_of_αβγ (by trivial) (t * u)]
   simp only [split_3_into_1_2]
 
-private lemma comm_of_αβ_γ_21 (t u : R) : ⁅ {αβ, 2, t}, {γ, 1, u} ⁆ = {αβγ, 3, t * u} := by
+private lemma comm_of_αβ_γ_21 (t u : R) : ⁅ ⸨αβ, 2, t⸩, ⸨γ, 1, u⸩ ⁆ = ⸨αβγ, 3, t * u⸩ := by
   rw [← @InterchangeTrans _ _ 1 1 1 (by trivial) (by trivial) (by trivial),
         comm_of_α_βγ_12]
 
@@ -284,25 +284,25 @@ declare_A3_single_expr_thms R αβ γ αβγ
 /-! ### More rewriting theorems -/
 
 theorem expr_αβγ_as_α_βγ_α_βγ_one_mul : forall_ij_t α βγ,
-    {αβγ, i + j, t} = {α, i, 1} * {βγ, j, t} * {α, i, -1} * {βγ, j, -t} := by
+    ⸨αβγ, i + j, t⸩ = ⸨α, i, 1⸩ * ⸨βγ, j, t⸩ * ⸨α, i, -1⸩ * ⸨βγ, j, -t⸩ := by
   intro i j hi hj u
   have := expr_αβγ_as_α_βγ_α_βγ hi hj 1 u
   rwa [one_mul] at this
 
 theorem expr_αβγ_as_α_βγ_α_βγ_mul_one : forall_ij_t α βγ,
-    {αβγ, i + j, t} = {α, i, t} * {βγ, j, 1} * {α, i, -t} * {βγ, j, -1} := by
+    ⸨αβγ, i + j, t⸩ = ⸨α, i, t⸩ * ⸨βγ, j, 1⸩ * ⸨α, i, -t⸩ * ⸨βγ, j, -1⸩ := by
   intro i j hi hj t
   have := expr_αβγ_as_α_βγ_α_βγ hi hj t 1
   rwa [mul_one] at this
 
 theorem expr_αβγ_as_αβ_γ_αβ_γ_one_mul : forall_ij_t αβ γ,
-    {αβγ, i + j, t} = {αβ, i, 1} * {γ, j, t} * {αβ, i, -1} * {γ, j, -t} := by
+    ⸨αβγ, i + j, t⸩ = ⸨αβ, i, 1⸩ * ⸨γ, j, t⸩ * ⸨αβ, i, -1⸩ * ⸨γ, j, -t⸩ := by
   intro i j hi hj u
   have := expr_αβγ_as_αβ_γ_αβ_γ hi hj 1 u
   rwa [one_mul] at this
 
 theorem expand_αβγ_as_αβ_γ_αβ_γ_mul_one : forall_ij_t αβ γ,
-    {αβγ, i + j, t} = {αβ, i, t} * {γ, j, 1} * {αβ, i, -t} * {γ, j, -1} := by
+    ⸨αβγ, i + j, t⸩ = ⸨αβ, i, t⸩ * ⸨γ, j, 1⸩ * ⸨αβ, i, -t⸩ * ⸨γ, j, -1⸩ := by
   intro i j hi hj t
   have := expr_αβγ_as_αβ_γ_αβ_γ hi hj t 1
   rwa [mul_one] at this
@@ -444,6 +444,11 @@ theorem full_rels_satisfied_in_weak_group :
       simp only [map_mul, map_inv, mul_inv_eq_one]
       exact lin_of_αβγ hi t u
   · tauto
-  · sorry -- this should be a helper fn
+  · simp only [def_rels, Set.mem_iUnion, Set.mem_setOf_eq] at h
+    rcases h with ⟨ζ, i, hi, t, h⟩
+    subst p
+    simp only [fullA3Graded, full_mk, inv_mul_cancel, map_one]
+
+
 
 end Steinberg.A3

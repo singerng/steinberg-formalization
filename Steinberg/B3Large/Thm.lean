@@ -18,6 +18,7 @@ open Steinberg B3LargePosRoot GradedPartialChevalley GradedChevalleyGenerator Gr
 
 -/
 
+
 variable {F : Type TF} [Field F] (Fchar : (2 : F) ≠ 0)
 variable (F_sum_of_squares : ∀ (a : F), ∃ (x y : F), a = x^2 + y^2)
 
@@ -27,7 +28,7 @@ set_option maxHeartbeats 0
 
 -- 8.185
 theorem partial_comm_of_ψ_α2β2ψ :
-    ∀ (t u : F), ⁅{ψ, 1, t}, {α2β2ψ, 0, u}⁆ = 1 := by
+    ∀ (t u : F), ⁅⸨ψ, 1, t⸩, ⸨α2β2ψ, 0, u⸩⁆ = 1 := by
   apply sufficient_conditions_for_comm_of_ψ_and_α2β2ψ Fchar (i := 1) (j := 0) (k := 0) (by trivial) (by trivial) (by trivial)
   · intro t u
     rw [triv_comm_symm, lift_hom_comm_of_β2ψ_αβψ (i := 1) (j := 0) (k := 0) (by trivial) (by trivial) (by trivial)]
@@ -37,39 +38,39 @@ theorem partial_comm_of_ψ_α2β2ψ :
 /- ### ψ and α + 2β + 2ψ commute -/
 
 private lemma comm_of_ψ_α2β2ψ_00 :
-    ∀ (t u : F), ⁅{ψ, 0, t}, {α2β2ψ, 0, u}⁆ = 1 := by
+    ∀ (t u : F), ⁅⸨ψ, 0, t⸩, ⸨α2β2ψ, 0, u⸩⁆ = 1 := by
   intro t u
   rw [eq_of_R_eq α2β2ψ (-u * -1) (by ring),
   expr_α2β2ψ_as_comm_of_αβ_β2ψ (i := 0) (j := 0) Fchar (by trivial) (by trivial),
   hom_lift_of_comm_ψ_αβ_β2ψ (i := 0) (j := 0) (k := 0) (by trivial) (by trivial) (by trivial)]
 
 private lemma comm_of_ψ_α2β2ψ_01 :
-    ∀ (t u : F), ⁅{ψ, 0, t}, {α2β2ψ, 1, u}⁆ = 1 := by
+    ∀ (t u : F), ⁅⸨ψ, 0, t⸩, ⸨α2β2ψ, 1, u⸩⁆ = 1 := by
   intro t u
   rw [eq_of_R_eq α2β2ψ (-u * -1) (by ring),
   expr_α2β2ψ_as_comm_of_αβ_β2ψ (i := 1) (j := 0) Fchar (by trivial) (by trivial),
   hom_lift_of_comm_ψ_αβ_β2ψ (i := 1) (j := 0) (k := 0) (by trivial) (by trivial) (by trivial)]
 
 private lemma comm_of_ψ_α2β2ψ_02 :
-    ∀ (t u : F), ⁅{ψ, 0, t}, {α2β2ψ, 2, u}⁆ = 1 := by
+    ∀ (t u : F), ⁅⸨ψ, 0, t⸩, ⸨α2β2ψ, 2, u⸩⁆ = 1 := by
   intro t u
   rw [eq_of_R_eq α2β2ψ (-u * -1) (by ring),
   expr_α2β2ψ_as_comm_of_αβ_β2ψ (i := 1) (j := 1) Fchar (by trivial) (by trivial),
   hom_lift_of_comm_ψ_αβ_β2ψ (i := 0) (j := 1) (k := 0) (by trivial) (by trivial) (by trivial)]
 
 private lemma comm_of_ψ_α2β2ψ_03 :
-    ∀ (t u : F), ⁅{ψ, 0, t}, {α2β2ψ, 3, u}⁆ = 1 := by
+    ∀ (t u : F), ⁅⸨ψ, 0, t⸩, ⸨α2β2ψ, 3, u⸩⁆ = 1 := by
   intro t u
   rw [eq_of_R_eq α2β2ψ (-u * -1) (by ring),
   expr_α2β2ψ_as_comm_of_αβ_β2ψ (i := 2) (j := 1) Fchar (by trivial) (by trivial),
   hom_lift_of_comm_ψ_αβ_β2ψ (i := 1) (j := 1) (k := 0) (by trivial) (by trivial) (by trivial)]
 
 private lemma comm_of_ψ_α2β2ψ_10 :
-    ∀ (t u : F), ⁅{ψ, 1, t}, {α2β2ψ, 0, u}⁆ = 1 :=
+    ∀ (t u : F), ⁅⸨ψ, 1, t⸩, ⸨α2β2ψ, 0, u⸩⁆ = 1 :=
   partial_comm_of_ψ_α2β2ψ Fchar
 
 private lemma comm_of_ψ_α2β2ψ_11 :
-    ∀ (t u : F), ⁅{ψ, 1, t}, {α2β2ψ, 1, u}⁆ = 1 := by
+    ∀ (t u : F), ⁅⸨ψ, 1, t⸩, ⸨α2β2ψ, 1, u⸩⁆ = 1 := by
   intro t u
   rw [eq_of_R_eq α2β2ψ (-u * -1) (by ring),
   expr_α2β2ψ_as_comm_of_αβ2ψ_β (i := 1) (j := 0) Fchar (by trivial) (by trivial),
@@ -248,7 +249,7 @@ theorem lin_of_α2β2ψ : lin_of_root((weakB3Large F).pres_mk, α2β2ψ) := by
 
 -- 8.198
 theorem hom_lift_of_comm_of_α_α2β2ψ_square : forall_ijk_tu α β ψ,
-    ⁅{α, i, t}, {α2β2ψ, i + 2 * j + 2 * k, -t * u^2}⁆ = 1 := by
+    ⁅⸨α, i, t⸩, ⸨α2β2ψ, i + 2 * j + 2 * k, -t * u^2⸩⁆ = 1 := by
   intro i j k hi hj hk t u
   have hi : i ≤ 1 := by ht
   have hj : j ≤ 1 := by ht
@@ -275,14 +276,14 @@ theorem hom_lift_of_comm_of_α_α2β2ψ_square : forall_ijk_tu α β ψ,
   have hf_i : i ∈ [0,1] := by simp only [List.mem_cons, List.mem_singleton]; omega
   have hf_j : j ∈ [0,1] := by simp only [List.mem_cons, List.mem_singleton]; omega
   have hf_k : k ∈ [0,1] := by simp only [List.mem_cons, List.mem_singleton]; omega
-  have aux₁ : {α, i, t} = {α, 1, t₁} * {α, 0, t₀} := by
+  have aux₁ : ⸨α, i, t⸩ = ⸨α, 1, t₁⸩ * ⸨α, 0, t₀⸩ := by
     fin_cases hf_i, hf_j, hf_k
     <;> chev_simp [t₀, t₁, u₀, u₁, v₀, v₁]
-  have aux₂ : {αβ, i + j, t} = {αβ, 2, t₁ * u₁} * {αβ, 1, t₁ * u₀ + t₀ * u₁} * {αβ, 0, t₀ * u₀} := by
+  have aux₂ : ⸨αβ, i + j, t⸩ = ⸨αβ, 2, t₁ * u₁⸩ * ⸨αβ, 1, t₁ * u₀ + t₀ * u₁⸩ * ⸨αβ, 0, t₀ * u₀⸩ := by
     fin_cases hf_i, hf_j, hf_k
     <;> chev_simp [t₀, t₁, u₀, u₁, v₀, v₁]
-  have aux₃ : {β2ψ, j + 2 * k, u^2} = {β2ψ, 3, u₁ * v₁^2} * {β2ψ, 2, u₀ * v₁^2 + 2 * u₁ * v₀ * v₁}
-          * {β2ψ, 1, u₁ * v₀^2 + 2 * u₀ * v₀ * v₁} * {β2ψ, 0, u₀ * v₀^2} := by
+  have aux₃ : ⸨β2ψ, j + 2 * k, u^2⸩ = ⸨β2ψ, 3, u₁ * v₁^2⸩ * ⸨β2ψ, 2, u₀ * v₁^2 + 2 * u₁ * v₀ * v₁⸩
+          * ⸨β2ψ, 1, u₁ * v₀^2 + 2 * u₀ * v₀ * v₁⸩ * ⸨β2ψ, 0, u₀ * v₀^2⸩ := by
     fin_cases hf_i, hf_j, hf_k
     <;> chev_simp [pow_two, t₀, t₁, u₀, u₁, v₀, v₁]
   rw [eq_of_h_eq α2β2ψ ((i + j) + (j + 2 * k)) (by omega),
@@ -294,7 +295,7 @@ include F_sum_of_squares
 
 -- 8.200
 theorem hom_lift_of_comm_of_α_α2β2ψ : forall_ijk_tu α β ψ,
-    ⁅{α, i, t}, {α2β2ψ, i + 2 * j + 2 * k, u}⁆ = 1 := by
+    ⁅⸨α, i, t⸩, ⸨α2β2ψ, i + 2 * j + 2 * k, u⸩⁆ = 1 := by
   intro i j k hi hj hk t u
   rcases eq_or_ne t 0 with (rfl | ht)
   · chev_simp
@@ -315,15 +316,14 @@ theorem hom_lift_of_comm_of_α_α2β2ψ : forall_ijk_tu α β ψ,
 
 @[group_reassoc]
 theorem expr_α_α2β2ψ_as_α2β2ψ_α_parity : forall_ijk_tu α β ψ,
-    {α, i, t} * {α2β2ψ, i + 2 * j + 2 * k, u} = {α2β2ψ, i + 2 * j + 2 * k, u} * {α, i, t} := by
+    ⸨α, i, t⸩ * ⸨α2β2ψ, i + 2 * j + 2 * k, u⸩ = ⸨α2β2ψ, i + 2 * j + 2 * k, u⸩ * ⸨α, i, t⸩ := by
   intro i j k hi hj hk t u
   apply triv_comm_iff_commutes.1
   exact hom_lift_of_comm_of_α_α2β2ψ Fchar F_sum_of_squares hi hj hk t u
-example {j : ℕ} (h : j ≤ 1) : j ≤ β2ψ.height := by ht
 
 -- 8.201
 theorem nonhomog_lift_of_comm_of_α_α2β2ψ : forall_ij_tu α β,
-    ⁅{α, i, t}, {α2β2ψ, i + 2 * j + 1, u}⁆ = 1 := by
+    ⁅⸨α, i, t⸩, ⸨α2β2ψ, i + 2 * j + 1, u⸩⁆ = 1 := by
   intro i j hi hj t u
   rcases eq_or_ne t 0 with ht | ht
   · rw [ht, id_of_α]; group
@@ -353,15 +353,15 @@ theorem nonhomog_lift_of_comm_of_α_α2β2ψ : forall_ij_tu α β,
       OfNat.ofNat_ne_zero, not_false_eq_true, pow_eq_zero_iff, inv_eq_zero];
     left
     rw [pow_two, mul_two, two_add_two_eq_four]
-  have hα : {α, 1, t₁} * {α, 0, t₀} = {α, i, t} := by
+  have hα : ⸨α, 1, t₁⸩ * ⸨α, 0, t₀⸩ = ⸨α, i, t⸩ := by
     fin_cases hf_i, hf_j
     <;> chev_simp [t₀, t₁, u₀, u₁, v₀, v₁]
-  have hαβ : {αβ, 2, t₁ * u₁} * {αβ, 1, t₁ * u₀ + t₀ * u₁} * {αβ, 0, t₀ * u₀} = {αβ, i + j, t} := by
+  have hαβ : ⸨αβ, 2, t₁ * u₁⸩ * ⸨αβ, 1, t₁ * u₀ + t₀ * u₁⸩ * ⸨αβ, 0, t₀ * u₀⸩ = ⸨αβ, i + j, t⸩ := by
     fin_cases hf_i, hf_j
     <;> chev_simp [t₀, t₁, u₀, u₁, v₀, v₁]
-  have hβ2ψ : {β2ψ, 3, u₁ * v₁^2} * {β2ψ, 2, u₀ * v₁^2 + 2 * u₁ * v₀ * v₁}
-          * {β2ψ, 1, u₁ * v₀^2 + 2 * u₀ * v₀ * v₁} * {β2ψ, 0, u₀ * v₀^2}
-          = {β2ψ, j + 2, 1} * {β2ψ, j + 1, -u / t} * {β2ψ, j, u^2 / (4 * t^2)} := by
+  have hβ2ψ : ⸨β2ψ, 3, u₁ * v₁^2⸩ * ⸨β2ψ, 2, u₀ * v₁^2 + 2 * u₁ * v₀ * v₁⸩
+          * ⸨β2ψ, 1, u₁ * v₀^2 + 2 * u₀ * v₀ * v₁⸩ * ⸨β2ψ, 0, u₀ * v₀^2⸩
+          = ⸨β2ψ, j + 2, 1⸩ * ⸨β2ψ, j + 1, -u / t⸩ * ⸨β2ψ, j, u^2 / (4 * t^2)⸩ := by
     fin_cases hf_i, hf_j
     <;> chev_simp [t₀, t₁, u₀, u₁, v₀, v₁, aux₁, aux₂, pow_two, one_mul]
 
@@ -416,8 +416,8 @@ theorem nonhomog_lift_of_comm_of_α_α2β2ψ : forall_ij_tu α β,
 omit F_sum_of_squares in
 theorem sufficient_conditions_for_comm_of_αβ_and_αβ2ψ :
     ∀ ⦃i j k : ℕ⦄ (hi : i ≤ 1) (hj : j ≤ 1) (hk : k ≤ 4)
-    (hyp : ∀ (t u : F), ⁅{α, i, t}, {α2β2ψ, j + k, u}⁆ = 1),
-    ∀ (t u : F), ⁅{αβ, i + j, t}, {αβ2ψ, k, u}⁆ = 1 := by
+    (hyp : ∀ (t u : F), ⁅⸨α, i, t⸩, ⸨α2β2ψ, j + k, u⸩⁆ = 1),
+    ∀ (t u : F), ⁅⸨αβ, i + j, t⸩, ⸨αβ2ψ, k, u⸩⁆ = 1 := by
   intro i j k hi hj hk hyp t u
   have hyp' := fun t u ↦ triv_comm_iff_commutes.1 (hyp t u)
   apply triv_comm_iff_commutes.2
@@ -432,7 +432,7 @@ theorem sufficient_conditions_for_comm_of_αβ_and_αβ2ψ :
 
 -- 8.203
 theorem partial_comm_of_αβ_α2β2ψ :
-    ∀ (t u : F), ⁅{αβ, 0, t}, {αβ2ψ, 1, u}⁆ = 1 := by
+    ∀ (t u : F), ⁅⸨αβ, 0, t⸩, ⸨αβ2ψ, 1, u⸩⁆ = 1 := by
   apply sufficient_conditions_for_comm_of_αβ_and_αβ2ψ (i := 0) (j := 0) (k := 1) Fchar (by trivial) (by trivial) (by trivial)
   intro t u
   rw [nonhomog_lift_of_comm_of_α_α2β2ψ (i := 0) (j := 0) (by trivial) (by trivial) (by trivial) (by trivial)]
@@ -441,8 +441,8 @@ theorem partial_comm_of_αβ_α2β2ψ :
 omit F_sum_of_squares in
 theorem sufficient_conditions_for_comm_of_α_and_α2β2ψ :
     ∀ ⦃i j k : ℕ⦄ (hi : i ≤ 1) (hj : j ≤ 2) (hk : k ≤ 3)
-    (hyp : ∀ (t u : F), ⁅{αβ, j, t}, {αβ2ψ, i + k, u}⁆ = 1),
-    ∀ (t u : F), ⁅{α, i, t}, {α2β2ψ, j + k, u}⁆ = 1 := by
+    (hyp : ∀ (t u : F), ⁅⸨αβ, j, t⸩, ⸨αβ2ψ, i + k, u⸩⁆ = 1),
+    ∀ (t u : F), ⁅⸨α, i, t⸩, ⸨α2β2ψ, j + k, u⸩⁆ = 1 := by
   intro i j k hi hj hk hyp t u
   have hyp' := fun t u ↦ triv_comm_iff_commutes.1 (hyp t u)
   apply triv_comm_iff_commutes.2
@@ -457,34 +457,34 @@ theorem sufficient_conditions_for_comm_of_α_and_α2β2ψ :
 
 -- 8.205
 theorem partial_comm_of_α_α2β2ψ :
-    ∀ (t u : F), ⁅{α, 1, t}, {α2β2ψ, 0, u}⁆ = 1 := by
+    ∀ (t u : F), ⁅⸨α, 1, t⸩, ⸨α2β2ψ, 0, u⸩⁆ = 1 := by
   apply sufficient_conditions_for_comm_of_α_and_α2β2ψ (i := 1) (j := 0) (k := 0) Fchar (by trivial) (by trivial) (by trivial)
   exact partial_comm_of_αβ_α2β2ψ Fchar F_sum_of_squares
 
 /- ### α and α + 2β + 2ψ commute -/
 
 private lemma comm_of_α_α2β2ψ_00 :
-    ∀ (t u : F), ⁅{α, 0, t}, {α2β2ψ, 0, u}⁆ = 1 :=
+    ∀ (t u : F), ⁅⸨α, 0, t⸩, ⸨α2β2ψ, 0, u⸩⁆ = 1 :=
   @hom_lift_of_comm_of_α_α2β2ψ F _ Fchar F_sum_of_squares 0 0 0 (by trivial) (by trivial) (by trivial)
 
 private lemma comm_of_α_α2β2ψ_01 :
-    ∀ (t u : F), ⁅{α, 0, t}, {α2β2ψ, 1, u}⁆ = 1 :=
+    ∀ (t u : F), ⁅⸨α, 0, t⸩, ⸨α2β2ψ, 1, u⸩⁆ = 1 :=
   @nonhomog_lift_of_comm_of_α_α2β2ψ F _ Fchar F_sum_of_squares 0 0 (by trivial) (by trivial)
 
 private lemma comm_of_α_α2β2ψ_02 :
-    ∀ (t u : F), ⁅{α, 0, t}, {α2β2ψ, 2, u}⁆ = 1 :=
+    ∀ (t u : F), ⁅⸨α, 0, t⸩, ⸨α2β2ψ, 2, u⸩⁆ = 1 :=
   @hom_lift_of_comm_of_α_α2β2ψ F _ Fchar F_sum_of_squares 0 1 0 (by trivial) (by trivial) (by trivial)
 
 private lemma comm_of_α_α2β2ψ_03 :
-    ∀ (t u : F), ⁅{α, 0, t}, {α2β2ψ, 3, u}⁆ = 1 :=
+    ∀ (t u : F), ⁅⸨α, 0, t⸩, ⸨α2β2ψ, 3, u⸩⁆ = 1 :=
   @nonhomog_lift_of_comm_of_α_α2β2ψ F _ Fchar F_sum_of_squares 0 1 (by trivial) (by trivial)
 
 private lemma comm_of_α_α2β2ψ_04 :
-    ∀ (t u : F), ⁅{α, 0, t}, {α2β2ψ, 4, u}⁆ = 1 :=
+    ∀ (t u : F), ⁅⸨α, 0, t⸩, ⸨α2β2ψ, 4, u⸩⁆ = 1 :=
   @hom_lift_of_comm_of_α_α2β2ψ F _ Fchar F_sum_of_squares 0 1 1 (by trivial) (by trivial) (by trivial)
 
 private lemma comm_of_α_α2β2ψ_10 :
-    ∀ (t u : F), ⁅{α, 1, t}, {α2β2ψ, 0, u}⁆ = 1 :=
+    ∀ (t u : F), ⁅⸨α, 1, t⸩, ⸨α2β2ψ, 0, u⸩⁆ = 1 :=
   partial_comm_of_α_α2β2ψ Fchar F_sum_of_squares
 
 -- reflected theorems
@@ -572,8 +572,8 @@ theorem lin_of_αβψ : lin_of_root((weakB3Large F).pres_mk, αβψ) := by
   ring_nf; field_simp; ring_nf
 
 theorem full_rels_satisfied_in_weak_group :
-  ∀ r ∈ (fullB3Large F).all_rels, (weakB3Large F).pres_mk r = 1 := by
-  simp only [fullB3Large, fullB3Large]
+  ∀ r ∈ (fullB3LargeGraded F).all_rels, (weakB3Large F).pres_mk r = 1 := by
+  simp only [fullB3LargeGraded, fullB3Large]
   apply GradedPartialChevalleyGroup.graded_injection
   all_goals (
     intro p h
@@ -688,6 +688,9 @@ theorem full_rels_satisfied_in_weak_group :
       · exact lin_of_αβ2ψ Fchar hi t u
       · exact lin_of_α2β2ψ Fchar hi t u
   · tauto
-  · tauto
+  · simp only [def_rels, Set.mem_iUnion, Set.mem_setOf_eq] at h
+    rcases h with ⟨ζ, i, hi, t, h⟩
+    subst p
+    simp only [fullB3LargeGraded, full_mk, inv_mul_cancel, map_one]
 
 end Steinberg.B3Large

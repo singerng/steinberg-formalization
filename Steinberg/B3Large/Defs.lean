@@ -484,12 +484,12 @@ macro "declare_B3Large_triv_comm_reflected_thm"
 
 set_option hygiene false in
 /-- Shorthand for building free group elements from a root, degree, and ring element. -/
-scoped notation (priority:=high) "{" ζ ", " i ", " t "}" =>
+scoped notation (priority:=high) "⸨" ζ ", " i ", " t "⸩" =>
   (weakB3Large F).pres_mk {ζ, i, t}
 
 set_option hygiene false in
 /-- Shorthand for building free group elements from a root, degree, and ring element. -/
-scoped notation (priority:=high) "{" ζ ", " i ", " t "}'" h:max =>
+scoped notation (priority:=high) "⸨" ζ ", " i ", " t "⸩'" h:max =>
   (weakB3Large F).pres_mk ({ζ, i, t}'h)
 
 section forallNotation

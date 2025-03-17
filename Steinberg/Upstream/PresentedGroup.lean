@@ -31,6 +31,8 @@ def toPresentedGroup {α β : Type u} {S : Set (FreeGroup α)} {T : Set (FreeGro
   (h : FreeGroup.lift f '' S ⊆ Subgroup.normalClosure T) : PresentedGroup S →* PresentedGroup T :=
   @PresentedGroup.toGroup α (PresentedGroup T) _ (PresentedGroup.mk T ∘ f) S (helper h)
 
+--TODO: replace hypothesis here and in next theorem with the more standard one:
+    -- ∀ r ∈ S, PresentedGroup.mk T (FreeGroup.lift f r) = 1
 theorem toPresentedGroup.of {α β : Type u} {S : Set (FreeGroup α)} {T : Set (FreeGroup β)} {f : α → FreeGroup β}
   (h : FreeGroup.lift f '' S ⊆ Subgroup.normalClosure T) (x : α) :
   (toPresentedGroup h) (PresentedGroup.of x) = PresentedGroup.mk T (f x) := by
