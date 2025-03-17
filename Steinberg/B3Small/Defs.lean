@@ -202,8 +202,8 @@ macro "declare_B3Small_mixed_expr_thm" F:term:arg r:term:arg : command =>
 macro "declare_B3Small_mixed_comm_thms" F:term:arg r:term:arg : command =>
   `(command| declare_mixed_comm_thms weakB3Small $F $r)
 
--- macro "declare_B3Small_reflected_thm" F:term:arg root:term:arg : command =>
---   `(command| declare_reflected_thm weakB3Small $F $root)
+macro "declare_B3Small_refl_def_thm" F:term:arg r:term:arg : command =>
+  `(command| declare_refl_def_thm weakB3Small $F B3SmallPosRoot $r)
 
 -- r₁ is the larger root, as opposed to the above macros
 macro "declare_B3Small_reflected_thm"

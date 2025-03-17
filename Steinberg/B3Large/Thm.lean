@@ -10,7 +10,7 @@ import Steinberg.B3Large.EstabAlpha2Beta2Psi
 
 namespace Steinberg.B3Large
 
-open Steinberg B3LargePosRoot GradedPartialChevalley GradedChevalleyGenerator GradedPartialChevalleyGroup ReflDeg
+open Steinberg B3LargePosRoot GradedPartialChevalley GradedChevalleyGenerator GradedPartialChevalleyGroup
 
 /-!
 
@@ -76,16 +76,16 @@ private lemma comm_of_ψ_α2β2ψ_11 :
   partial_comm_of_ψ_αβ2ψ_β (by trivial)]
 
 -- reflected theorems
-declare_B3Large_triv_comm_reflected_thm F (b3large_valid Fchar) ψ α2β2ψ heights 0 4 to 1 1
-declare_B3Large_triv_comm_reflected_thm F (b3large_valid Fchar) ψ α2β2ψ heights 0 5 to 1 0
-declare_B3Large_triv_comm_reflected_thm F (b3large_valid Fchar) ψ α2β2ψ heights 1 2 to 0 3
-declare_B3Large_triv_comm_reflected_thm F (b3large_valid Fchar) ψ α2β2ψ heights 1 3 to 0 2
-declare_B3Large_triv_comm_reflected_thm F (b3large_valid Fchar) ψ α2β2ψ heights 1 4 to 0 1
-declare_B3Large_triv_comm_reflected_thm F (b3large_valid Fchar) ψ α2β2ψ heights 1 5 to 0 0
+declare_B3Large_triv_comm_reflected_thm F b3large_valid ψ α2β2ψ heights 0 4 to 1 1
+declare_B3Large_triv_comm_reflected_thm F b3large_valid ψ α2β2ψ heights 0 5 to 1 0
+declare_B3Large_triv_comm_reflected_thm F b3large_valid ψ α2β2ψ heights 1 2 to 0 3
+declare_B3Large_triv_comm_reflected_thm F b3large_valid ψ α2β2ψ heights 1 3 to 0 2
+declare_B3Large_triv_comm_reflected_thm F b3large_valid ψ α2β2ψ heights 1 4 to 0 1
+declare_B3Large_triv_comm_reflected_thm F b3large_valid ψ α2β2ψ heights 1 5 to 0 0
 
 -- 8.186
 theorem comm_of_ψ_α2β2ψ :
-    trivial_commutator_of_root_pair (weakB3Large F).pres_mk ψ α2β2ψ := by
+    trivial_commutator_of_root_pair (weakB3Large F).pres_mk (ψ, α2β2ψ) := by
   intro i j hi hj
   match i, j with
   | 0, 0 => exact comm_of_ψ_α2β2ψ_00 Fchar
@@ -104,7 +104,7 @@ declare_B3Large_triv_expr_thm F ψ α2β2ψ
 
 -- 8.187
 theorem comm_of_β2ψ_α2β2ψ :
-    trivial_commutator_of_root_pair (weakB3Large F).pres_mk β2ψ α2β2ψ := by
+    trivial_commutator_of_root_pair (weakB3Large F).pres_mk (β2ψ, α2β2ψ) := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.2
   rcases decompose 1 2 i hi with ⟨i₁, i₂, rfl, hi₁, hi₂⟩
@@ -115,7 +115,7 @@ declare_B3Large_triv_expr_thm F β2ψ α2β2ψ
 
 -- 8.188
 theorem comm_of_αβψ_α2β2ψ :
-    trivial_commutator_of_root_pair (weakB3Large F).pres_mk αβψ α2β2ψ := by
+    trivial_commutator_of_root_pair (weakB3Large F).pres_mk (αβψ, α2β2ψ) := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.2
   rcases decompose 2 1 i hi with ⟨i₁, i₂, rfl, hi₁, hi₂⟩
@@ -126,7 +126,7 @@ declare_B3Large_triv_expr_thm F αβψ α2β2ψ
 
 -- 8.189
 theorem comm_of_αβ2ψ_α2β2ψ :
-    trivial_commutator_of_root_pair (weakB3Large F).pres_mk αβ2ψ α2β2ψ := by
+    trivial_commutator_of_root_pair (weakB3Large F).pres_mk (αβ2ψ, α2β2ψ) := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.2
   rcases decompose 3 1 i hi with ⟨i₁, i₂, rfl, hi₁, hi₂⟩
@@ -149,7 +149,7 @@ declare_B3Large_mixed_expr_thm F α2β2ψ
 
 -- 8.191
 theorem comm_of_αβψ_β2ψ :
-    trivial_commutator_of_root_pair (weakB3Large F).pres_mk αβψ β2ψ := by
+    trivial_commutator_of_root_pair (weakB3Large F).pres_mk (αβψ, β2ψ) := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.2
   -- expand αβψ into product of αβ and ψ elements (work on LHS)
@@ -167,7 +167,7 @@ declare_B3Large_triv_expr_thm F αβψ β2ψ
 
 -- 8.192
 theorem comm_of_βψ_αβ2ψ :
-    trivial_commutator_of_root_pair (weakB3Large F).pres_mk βψ αβ2ψ := by
+    trivial_commutator_of_root_pair (weakB3Large F).pres_mk (βψ, αβ2ψ) := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.2
   -- expand βψ as a product of ψ and β elements (work on LHS)
@@ -183,7 +183,7 @@ declare_B3Large_triv_expr_thm F βψ αβ2ψ
 
 -- 8.193
 theorem comm_of_β2ψ_αβ2ψ :
-    trivial_commutator_of_root_pair (weakB3Large F).pres_mk β2ψ αβ2ψ := by
+    trivial_commutator_of_root_pair (weakB3Large F).pres_mk (β2ψ, αβ2ψ) := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.2
   rcases decompose 1 2 i hi with ⟨i₁, i₂, rfl, hi₁, hi₂⟩
@@ -194,7 +194,7 @@ declare_B3Large_triv_expr_thm F β2ψ αβ2ψ
 
 -- 8.194
 theorem comm_of_αβψ_αβ2ψ :
-    trivial_commutator_of_root_pair (weakB3Large F).pres_mk αβψ αβ2ψ := by
+    trivial_commutator_of_root_pair (weakB3Large F).pres_mk (αβψ, αβ2ψ) := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.2
   rcases decompose 1 2 i hi with ⟨i₁, i₂, rfl, hi₁, hi₂⟩
@@ -488,16 +488,16 @@ private lemma comm_of_α_α2β2ψ_10 :
   partial_comm_of_α_α2β2ψ Fchar F_sum_of_squares
 
 -- reflected theorems
-declare_B3Large_triv_comm_reflected_thm F (b3large_valid Fchar) α α2β2ψ heights 0 5 to 1 0
-declare_B3Large_triv_comm_reflected_thm F (b3large_valid Fchar) α α2β2ψ heights 1 1 to 0 4
-declare_B3Large_triv_comm_reflected_thm F (b3large_valid Fchar) α α2β2ψ heights 1 2 to 0 3
-declare_B3Large_triv_comm_reflected_thm F (b3large_valid Fchar) α α2β2ψ heights 1 3 to 0 2
-declare_B3Large_triv_comm_reflected_thm F (b3large_valid Fchar) α α2β2ψ heights 1 4 to 0 1
-declare_B3Large_triv_comm_reflected_thm F (b3large_valid Fchar) α α2β2ψ heights 1 5 to 0 0
+declare_B3Large_triv_comm_reflected_thm F b3large_valid α α2β2ψ heights 0 5 to 1 0
+declare_B3Large_triv_comm_reflected_thm F b3large_valid α α2β2ψ heights 1 1 to 0 4
+declare_B3Large_triv_comm_reflected_thm F b3large_valid α α2β2ψ heights 1 2 to 0 3
+declare_B3Large_triv_comm_reflected_thm F b3large_valid α α2β2ψ heights 1 3 to 0 2
+declare_B3Large_triv_comm_reflected_thm F b3large_valid α α2β2ψ heights 1 4 to 0 1
+declare_B3Large_triv_comm_reflected_thm F b3large_valid α α2β2ψ heights 1 5 to 0 0
 
 -- 8.206
 theorem comm_of_α_α2β2ψ :
-    trivial_commutator_of_root_pair (weakB3Large F).pres_mk α α2β2ψ := by
+    trivial_commutator_of_root_pair (weakB3Large F).pres_mk (α, α2β2ψ) := by
   intro i j hi hj
   match i, j with
   | 0, 0 => exact comm_of_α_α2β2ψ_00 Fchar F_sum_of_squares
@@ -515,7 +515,7 @@ theorem comm_of_α_α2β2ψ :
 
 -- 8.207
 theorem comm_of_αβ_αβ2ψ :
-    trivial_commutator_of_root_pair (weakB3Large F).pres_mk αβ αβ2ψ := by
+    trivial_commutator_of_root_pair (weakB3Large F).pres_mk (αβ, αβ2ψ) := by
   intro i j hi hj
   rcases decompose 1 1 i hi with ⟨i₁, i₂, rfl, hi₁, hi₂⟩
   apply sufficient_conditions_for_comm_of_αβ_and_αβ2ψ Fchar (by trivial) (by trivial) (by trivial)

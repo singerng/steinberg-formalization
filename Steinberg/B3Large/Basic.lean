@@ -52,4 +52,13 @@ declare_B3Large_mixed_comm_thms F αβ
 declare_B3Large_mixed_comm_thms F βψ
 declare_B3Large_mixed_comm_thms F β2ψ
 
+/- ### Reflected theorems for present roots -/
+
+declare_B3Large_refl_def_thm F α
+declare_B3Large_refl_def_thm F β
+declare_B3Large_refl_def_thm F ψ
+declare_B3Large_refl_def_thm F αβ
+declare_B3Large_refl_def_thm F βψ
+declare_B3Large_refl_def_thm F β2ψ
+
 end Steinberg.B3Large

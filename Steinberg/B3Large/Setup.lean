@@ -13,7 +13,7 @@ import Steinberg.Upstream.FreeGroup
 
 namespace Steinberg.B3Large
 
-open Steinberg B3LargePosRoot GradedPartialChevalley GradedChevalleyGenerator GradedPartialChevalleyGroup ReflDeg
+open Steinberg B3LargePosRoot GradedPartialChevalley GradedChevalleyGenerator GradedPartialChevalleyGroup
 
 variable {F : Type TF} [Field F] (Fchar : (2 : F) ≠ 0)
 variable (F_sum_of_squares : ∀ (a : F), ∃ (x y : F), a = x^2 + y^2)
@@ -292,10 +292,9 @@ theorem b3large_valid :
       simp only [rels_of_nonhomog_lift_of_comm_of_αβ_βψ] at hr
       rcases hr with ⟨ t₁, t₀, u₁, u₀, v₁, v₀, rfl ⟩
       simp only [map_commutatorElement, map_mul, FreeGroup.lift.of]
-      repeat rw [refl_def_of_present _ _ (by tauto)]
+      repeat rw [refl_def_eq_refl_gen_of_present _ _ (by tauto)]
       simp only [refl_of_gen, PositiveRootSystem.height, height]
       simp_arith
-      repeat rw [← free_mk]
       rw [add_comm, add_comm (u₁ * v₀)]
       grw [expr_αβ_αβ_as_αβ_αβ (i := 1), expr_αβ_αβ_as_αβ_αβ, expr_αβ_αβ_as_αβ_αβ (i := 0)]
       grw [expr_βψ_βψ_as_βψ_βψ (i := 1), expr_βψ_βψ_as_βψ_βψ, expr_βψ_βψ_as_βψ_βψ (i := 0)]
@@ -305,10 +304,9 @@ theorem b3large_valid :
       simp only [rels_of_nonhomog_lift_of_comm_of_α_α2β2ψ] at hr
       rcases hr with ⟨ t₁, t₀, u₁, u₀, v₁, v₀, rfl ⟩
       simp only [map_commutatorElement, map_mul, FreeGroup.lift.of]
-      repeat rw [refl_def_of_present _ _ (by tauto)]
+      repeat rw [refl_def_eq_refl_gen_of_present _ _ (by tauto)]
       simp only [refl_of_gen, PositiveRootSystem.height, height]
       simp_arith
-      repeat rw [← free_mk]
       rw [add_comm]
       have := raw_nonhomog_lift_of_comm_of_α_α2β2ψ t₀ t₁ u₀ u₁ v₀ v₁
       norm_num at this
@@ -372,12 +370,9 @@ theorem b3large_valid :
         base_rel_of_hom_lift_of_comm_of_βψ_αβ2ψ,
         base_rel_of_hom_lift_of_comm_of_β2ψ_αβ2ψ]
       simp only [one_mul, neg_mul, map_mul, map_inv, map_commutatorElement, FreeGroup.map.of, FreeGroup.lift.of, hom_lift]
-      repeat rw [refl_def_of_present (weakB3Large F)]
+      repeat rw [refl_def_eq_refl_gen_of_present (weakB3Large F)]
       all_goals tauto
     )
-
-
-
 
 include Fchar
 

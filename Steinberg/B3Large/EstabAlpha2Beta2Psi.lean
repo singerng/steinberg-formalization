@@ -3,13 +3,56 @@ import Steinberg.B3Large.EstabAlphaBeta2Psi
 
 namespace Steinberg.B3Large
 
-open Steinberg B3LargePosRoot GradedPartialChevalley GradedChevalleyGenerator GradedPartialChevalleyGroup ReflDeg
+open Steinberg B3LargePosRoot GradedPartialChevalley GradedChevalleyGenerator GradedPartialChevalleyGroup
 
 variable {F : Type TF} [Field F] (Fchar : (2 : F) ≠ 0)
 
-include Fchar
+-- CC: (3/16) is there a better place/file for these theorems?
+omit Fchar in
+theorem refl_def_eq_refl_gen_of_αβ2ψ (g : GradedChevalleyGenerator B3LargePosRoot F) (h : g.ζ = αβ2ψ) :
+  (weakB3Large F).pres_mk (refl_def (weakB3Large F) g) = (weakB3Large F).pres_mk (FreeGroup.of (refl_of_gen g)) := by
+  rcases g with ⟨ ζ, i, hi, t ⟩
+  simp only at h
+  subst ζ
+  simp only [refl_def, MonoidHom.coe_comp, Function.comp_apply, FreeGroup.lift.of]
+  rw [weakB3Large]
+  simp only [weak_define, map_commutatorElement, FreeGroup.map.of, refl_of_gen]
+  rw [← weakB3Large, ← def_of_αβ2ψ]
+  congr
+  all_goals (
+    simp only [PositiveRootSystem.height, split_4_into_1_3]
+    split
+    all_goals ht
+  )
+  · simp
+    -- CC: This is false???
+    stop
+    done
+  stop
+  done
+
+omit Fchar in
+theorem refl_def_eq_refl_gen_of_α2β2ψ (g : GradedChevalleyGenerator B3LargePosRoot F) (h : g.ζ = α2β2ψ) :
+  (weakB3Large F).pres_mk (refl_def (weakB3Large F) g) = (weakB3Large F).pres_mk (FreeGroup.of (refl_of_gen g)) := by
+  rcases g with ⟨ ζ, i, hi, t ⟩
+  simp only at h
+  subst ζ
+  simp only [refl_def, MonoidHom.coe_comp, Function.comp_apply, FreeGroup.lift.of]
+  rw [weakB3Large]
+  simp only [weak_define, map_commutatorElement, FreeGroup.map.of, refl_of_gen]
+  rw [← weakB3Large]
+  conv => rhs; rw [← neg_neg t]
+  rw [← def_of_α2β2ψ]
+  congr
+  all_goals (
+    simp only [PositiveRootSystem.height, split_5_into_2_3]
+    split
+    all_goals trivial
+  )
 
 set_option maxHeartbeats 0
+
+include Fchar
 
 -- 8.147a
 theorem hom_lift_of_interchange_of_α2β2ψ_a : forall_ijk_tuv,
@@ -948,10 +991,10 @@ private lemma expr_α2β2ψ_as_comm_of_αβ_β2ψ_12 :
   rw [neg_mul, ←this, @interchange_of_α2β2ψ_trans_αβ_β2ψ _ _ Fchar 1 0 1 (by trivial) (by trivial) (by trivial)]
 
 -- `A` edge
-declare_B3Large_reflected_thm F (b3large_valid Fchar) α2β2ψ αβψ βψ const neg 2 heights 3 1 2 to 2 2 0
+declare_B3Large_reflected_thm F b3large_valid α2β2ψ αβψ βψ const neg 2 heights 3 1 2 to 2 2 0
 
 -- `C` edge
-declare_B3Large_reflected_thm F (b3large_valid Fchar) α2β2ψ αβ β2ψ const neg 1 heights 3 0 3 to 2 2 0
+declare_B3Large_reflected_thm F b3large_valid α2β2ψ αβ β2ψ const neg 1 heights 3 0 3 to 2 2 0
 
 private lemma expr_α2β2ψ_as_comm_of_αβψ_βψ_21 :
   ∀ t u : F, {α2β2ψ, 3, -2 * t * u} = ⁅{αβψ, 2, t}, {βψ, 1, u}⁆ := by
@@ -960,23 +1003,23 @@ private lemma expr_α2β2ψ_as_comm_of_αβψ_βψ_21 :
   rw [this, expr_α2β2ψ_as_comm_of_αβ_β2ψ_12 Fchar, @interchange_of_α2β2ψ_refl_v_αβ_β2ψ _ _ Fchar 1 0 1 (by trivial) (by trivial) (by trivial),
   interchange_of_α2β2ψ_trans_αβψ_βψ Fchar (by trivial) (by trivial) (by trivial)]
 
-declare_B3Large_reflected_thm F (b3large_valid Fchar) α2β2ψ αβ β2ψ const neg 1 heights 3 2 1 to 2 0 2
-declare_B3Large_reflected_thm F (b3large_valid Fchar) α2β2ψ αβψ βψ const neg 2 heights 3 3 0 to 2 0 2
-declare_B3Large_reflected_thm F (b3large_valid Fchar) α2β2ψ αβ2ψ β const neg 1 heights 3 3 0 to 2 1 1
-declare_B3Large_reflected_thm F (b3large_valid Fchar) α2β2ψ αβ2ψ β const neg 1 heights 3 2 1 to 2 2 0
+declare_B3Large_reflected_thm F b3large_valid α2β2ψ αβ β2ψ const neg 1 heights 3 2 1 to 2 0 2
+declare_B3Large_reflected_thm F b3large_valid α2β2ψ αβψ βψ const neg 2 heights 3 3 0 to 2 0 2
+declare_B3Large_reflected_thm F b3large_valid α2β2ψ αβ2ψ β const neg 1 heights 3 3 0 to 2 1 1
+declare_B3Large_reflected_thm F b3large_valid α2β2ψ αβ2ψ β const neg 1 heights 3 2 1 to 2 2 0
 
 -- height 4
-declare_B3Large_reflected_thm F (b3large_valid Fchar) α2β2ψ αβ β2ψ const neg 1 heights 4 2 2 to 1 0 1
-declare_B3Large_reflected_thm F (b3large_valid Fchar) α2β2ψ αβ β2ψ const neg 1 heights 4 1 3 to 1 1 0
-declare_B3Large_reflected_thm F (b3large_valid Fchar) α2β2ψ αβψ βψ const neg 2 heights 4 3 1 to 1 0 1
-declare_B3Large_reflected_thm F (b3large_valid Fchar) α2β2ψ αβψ βψ const neg 2 heights 4 2 2 to 1 1 0
-declare_B3Large_reflected_thm F (b3large_valid Fchar) α2β2ψ αβ2ψ β const neg 1 heights 4 4 0 to 1 0 1
-declare_B3Large_reflected_thm F (b3large_valid Fchar) α2β2ψ αβ2ψ β const neg 1 heights 4 3 1 to 1 1 0
+declare_B3Large_reflected_thm F b3large_valid α2β2ψ αβ β2ψ const neg 1 heights 4 2 2 to 1 0 1
+declare_B3Large_reflected_thm F b3large_valid α2β2ψ αβ β2ψ const neg 1 heights 4 1 3 to 1 1 0
+declare_B3Large_reflected_thm F b3large_valid α2β2ψ αβψ βψ const neg 2 heights 4 3 1 to 1 0 1
+declare_B3Large_reflected_thm F b3large_valid α2β2ψ αβψ βψ const neg 2 heights 4 2 2 to 1 1 0
+declare_B3Large_reflected_thm F b3large_valid α2β2ψ αβ2ψ β const neg 1 heights 4 4 0 to 1 0 1
+declare_B3Large_reflected_thm F b3large_valid α2β2ψ αβ2ψ β const neg 1 heights 4 3 1 to 1 1 0
 
 -- height 5
-declare_B3Large_reflected_thm F (b3large_valid Fchar) α2β2ψ αβ β2ψ const neg 1 heights 5 2 3 to 0 0 0
-declare_B3Large_reflected_thm F (b3large_valid Fchar) α2β2ψ αβψ βψ const neg 2 heights 5 3 2 to 0 0 0
-declare_B3Large_reflected_thm F (b3large_valid Fchar) α2β2ψ αβ2ψ β const neg 1 heights 5 4 1 to 0 0 0
+declare_B3Large_reflected_thm F b3large_valid α2β2ψ αβ β2ψ const neg 1 heights 5 2 3 to 0 0 0
+declare_B3Large_reflected_thm F b3large_valid α2β2ψ αβψ βψ const neg 2 heights 5 3 2 to 0 0 0
+declare_B3Large_reflected_thm F b3large_valid α2β2ψ αβ2ψ β const neg 1 heights 5 4 1 to 0 0 0
 
 -- 8.174a
 theorem expr_α2β2ψ_as_comm_of_αβ_β2ψ : forall_ij_tu αβ β2ψ,

@@ -4,7 +4,7 @@ import Steinberg.B3Large.Setup
 
 namespace Steinberg.B3Large
 
-open Steinberg B3LargePosRoot GradedPartialChevalley GradedChevalleyGenerator GradedPartialChevalleyGroup ReflDeg
+open Steinberg B3LargePosRoot GradedPartialChevalley GradedChevalleyGenerator GradedPartialChevalleyGroup
 
 variable {F : Type TF} [Field F] (Fchar : (2 : F) ≠ 0)
 
@@ -411,7 +411,7 @@ theorem sufficient_conditions_for_comm_of_αβψ_and_ψ :
         lift_hom_inv_doub_of_α_β2ψ_c hi hjk, mul_assoc]
 
 omit Fchar in
-theorem refl_def_of_αβψ (g : GradedChevalleyGenerator B3LargePosRoot F)
+theorem refl_def_eq_refl_gen_of_αβψ (g : GradedChevalleyGenerator B3LargePosRoot F)
   (h : g.ζ = αβψ) :
   (weakB3Large F).pres_mk (refl_def (weakB3Large F) g)
     = (weakB3Large F).pres_mk (FreeGroup.of (refl_of_gen g)) := by

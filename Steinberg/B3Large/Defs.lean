@@ -18,7 +18,7 @@ import Mathlib.Tactic.FieldSimp
 
 namespace Steinberg.B3Large
 
-open PartialChevalley GradedPartialChevalley GradedChevalleyGenerator PartialChevalleySystem ReflDeg
+open PartialChevalley GradedPartialChevalley GradedChevalleyGenerator PartialChevalleySystem
 
 /-! # The B3-large positive root system -/
 
@@ -456,6 +456,9 @@ macro "declare_B3Large_mixed_expr_thm" F:term:arg r:term:arg : command =>
 
 macro "declare_B3Large_mixed_comm_thms" F:term:arg r:term:arg : command =>
   `(command| declare_mixed_comm_thms weakB3Large $F $r)
+
+macro "declare_B3Large_refl_def_thm" F:term:arg r:term:arg : command =>
+  `(command| declare_refl_def_thm weakB3Large $F B3LargePosRoot $r)
 
 -- r₁ is the larger root, as opposed to the above macros
 macro "declare_B3Large_reflected_thm"

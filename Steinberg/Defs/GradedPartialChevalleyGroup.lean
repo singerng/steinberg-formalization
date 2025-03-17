@@ -527,15 +527,17 @@ section declareThms
 open Lean Parser.Tactic
 set_option hygiene false
 
+def makeCommands (m : MacroM Syntax) : MacroM (TSyntax `command) := do
+  let cmds ← Syntax.getArgs <$> m
+  return ⟨mkNullNode cmds⟩
+
 macro "declare_triv_expr_thm" w:ident R:term:arg r₁:term:arg r₂:term:arg : command => do
   let exprAs := TSyntax.mapIdent₂ r₁ r₂
     (fun s₁ s₂ => "expr_" ++ s₁ ++ "_" ++ s₂ ++ "_as_" ++ s₂ ++ "_" ++ s₁)
   let commName := TSyntax.mapIdent₂ r₁ r₂
     (fun s₁ s₂ => "comm_of_" ++ s₁ ++ "_" ++ s₂)
   let commOf ← `(rwRule| $commName:term)
-  let cmds ← Syntax.getArgs <$> `(
-    section
-
+  makeCommands `(section
     @[group_reassoc] theorem $exprAs
        : ∀ ⦃i j : ℕ⦄ (hi : i ≤ height $r₁) (hj : j ≤ height $r₂) (t u : $R),
         commutes(($w $R).pres_mk {$r₁:term, i, t},
@@ -545,24 +547,15 @@ macro "declare_triv_expr_thm" w:ident R:term:arg r₁:term:arg r₂:term:arg : c
       rw [$commOf]
       try assumption
       try assumption
-
-    end
-  )
-  return ⟨mkNullNode cmds⟩
+  end)
 
 macro "declare_triv_comm_of_root_pair_thms" w:ident R:term:arg r₁:term:arg r₂:term:arg : command => do
   let commOf := TSyntax.mapIdent₂ r₁ r₂ (fun s₁ s₂ => "comm_of_" ++ s₁ ++ "_" ++ s₂)
-  let cmds ← Syntax.getArgs <$> `(
-    section
-
+  makeCommands `(section
     theorem $commOf : trivial_commutator_of_root_pair ($w $R).pres_mk ($r₁, $r₂) :=
       ($w $R).trivial_commutator_helper (by unfold $w; simp)
-
     declare_triv_expr_thm $w $R $r₁ $r₂
-
-    end
-  )
-  return ⟨mkNullNode cmds⟩
+  end)
 
 macro "declare_single_expr_thms" w:ident R:term:arg r₁:term:arg r₂:term:arg r₃:term:arg n:num : command => do
   let innerTerm ←
@@ -573,9 +566,7 @@ macro "declare_single_expr_thms" w:ident R:term:arg r₁:term:arg r₂:term:arg 
     (fun s₁ s₂ s₃ => "expr_" ++ s₃ ++ "_as_" ++ s₁ ++ "_" ++ s₂ ++ "_" ++ s₁ ++ "_" ++ s₂)
   let exprAsRev := TSyntax.mapIdent₃ r₁ r₂ r₃
     (fun s₁ s₂ s₃ => "expr_" ++ s₁ ++ "_" ++ s₂ ++ "_as_" ++ s₃ ++ "_" ++ s₂ ++ "_" ++ s₁)
-  let cmds ← Syntax.getArgs <$> `(
-    section
-
+  makeCommands `(section
     theorem $exprAs
       : ∀ ⦃i j : ℕ⦄ (hi : i ≤ height $r₁) (hj : j ≤ height $r₂) (t u : $R),
         (($w $R).pres_mk
@@ -603,32 +594,21 @@ macro "declare_single_expr_thms" w:ident R:term:arg r₁:term:arg r₂:term:arg 
       have := $commOf hi hj t u
       chev_simp [commutatorElement_def, one_mul, mul_one] at this
       grw [← this]
-
-      end
-  )
-  return ⟨mkNullNode cmds⟩
+  end)
 
 macro "declare_single_comm_of_root_pair_thms" w:ident R:term:arg r₁:term:arg r₂:term:arg r₃:term:arg n:num : command => do
   let commOf := TSyntax.mapIdent₂ r₁ r₂ (fun s₁ s₂ => "comm_of_" ++ s₁ ++ "_" ++ s₂)
-  let cmds ← Syntax.getArgs <$> `(
-    section
-
+  makeCommands `(section
     theorem $commOf : single_commutator_of_root_pair ($w $R).pres_mk ⟨$r₁, $r₂, $r₃, $n, rfl⟩ :=
       ($w $R).single_commutator_helper ⟨$r₁, $r₂, $r₃, $n, rfl⟩ (by unfold $w; simp)
-
     declare_single_expr_thms $w $R $r₁ $r₂ $r₃ $n
-
-    end
-  )
-  return ⟨mkNullNode cmds⟩
+  end)
 
 macro "declare_lin_id_inv_thms" w:ident R:term:arg root:term:arg : command => do
   let linOf := root.mapIdent ("lin_of_" ++ ·)
   let idOf := root.mapIdent ("id_of_" ++ ·)
   let invOf := root.mapIdent ("inv_of_" ++ ·)
-  let cmds ← Syntax.getArgs <$> `(
-    section
-
+  makeCommands `(section
     @[group_reassoc (attr := simp, chev_simps)]
     theorem $linOf : lin_of_root(($w $R).pres_mk, $root) :=
       GradedPartialChevalleyGroup.lin_helper ($w $R)
@@ -641,18 +621,13 @@ macro "declare_lin_id_inv_thms" w:ident R:term:arg root:term:arg : command => do
     @[simp, chev_simps]
     theorem $invOf : inv_of_root(($w $R).pres_mk, $root) :=
       inv_of_lin_of_root $linOf
-
-    end
-  )
-  return ⟨mkNullNode cmds⟩
+  end)
 
 macro "declare_mixed_expr_thm" w:ident R:term:arg r:term:arg : command => do
   let mixedName := r.mapIdent ("comm_of_" ++ ·)
   let mixedRw ← `(rwRule| $mixedName:term)
   let exprName := r.mapIdent (fun s => "expr_" ++ s ++ "_" ++ s ++ "_as_" ++ s ++ "_" ++ s)
-  let cmds ← Syntax.getArgs <$> `(
-    section
-
+  makeCommands `(section
     @[group_reassoc]
     theorem $exprName :
         ∀ ⦃i j : ℕ⦄ (hi : i ≤ height $r) (hj : j ≤ height $r) (t u : $R),
@@ -663,25 +638,29 @@ macro "declare_mixed_expr_thm" w:ident R:term:arg r:term:arg : command => do
       rw [$mixedRw]
       try assumption
       try assumption
-
-    end
-  )
-  return ⟨mkNullNode cmds⟩
+  end)
 
 macro "declare_mixed_comm_thms" w:ident R:term:arg r:term:arg : command => do
   let mixedName := r.mapIdent ("comm_of_" ++ ·)
-  let cmds ← Syntax.getArgs <$> `(
-    section
-
+  makeCommands `(section
     theorem $mixedName : mixed_commutes_of_root ($w $R).pres_mk $r :=
       GradedPartialChevalleyGroup.mixed_commutes_helper ($w $R)
         (by unfold $w; simp [trivial_commutator_pairs])
-
     declare_mixed_expr_thm $w $R $r
+  end)
 
-    end
-  )
-  return ⟨mkNullNode cmds⟩
+macro "declare_refl_def_thm" w:ident R:term:arg RS:ident r:term:arg : command => do
+  let thmName := r.mapIdent ("refl_def_eq_refl_gen_of_" ++ ·)
+  makeCommands `(section
+    theorem $thmName
+        (g : GradedChevalleyGenerator $RS $R) (h : g.ζ = $r)
+        : ($w $R).pres_mk (refl_def ($w $R) g)
+            = ($w $R).pres_mk (FreeGroup.of (refl_of_gen g)) := by
+      congr
+      apply refl_def_eq_refl_gen_of_present
+      unfold $w
+      simp [h, present_roots]
+  end)
 
 -- r₁ is the larger root, as opposed to the above macros
 macro "declare_reflected_thm" w:ident R:term:arg v:term:arg
@@ -694,32 +673,55 @@ macro "declare_reflected_thm" w:ident R:term:arg v:term:arg
     | 0, _ => `($C * t * u)
     | 1, _ => `(-$C * t * u)
     | _, _ => `($C * t * u)
-  let exprName := TSyntax.mapIdent₃ r₁ r₂ r₃
+
+  let thmName := TSyntax.mapIdent₃ r₁ r₂ r₃
     (fun s₁ s₂ s₃ => "expr_" ++ s₁ ++ "_as_comm_of_" ++ s₂ ++ "_" ++ s₃ ++ s!"_{n₂.getNat}{n₃.getNat}")
+
+  let refl_def₁ := r₁.mapIdent ("refl_def_eq_refl_gen_of_" ++ ·)
+  let refl_def_thm₁ ← `(simpLemma| $refl_def₁:term)
+
+  let refl_def₂ := r₂.mapIdent ("refl_def_eq_refl_gen_of_" ++ ·)
+  let refl_def_thm₂ ← `(simpLemma| $refl_def₂:term)
+  let refl_def_thm₂' ← `(simpLemma| $refl_def₂:term (by assumption))
+
+  let refl_def₃ := r₃.mapIdent ("refl_def_eq_refl_gen_of_" ++ ·)
+  let refl_def_thm₃ ← `(simpLemma| $refl_def₃:term)
+  let refl_def_thm₃' ← `(simpLemma| $refl_def₃:term (by assumption))
+
   let exprLemma := TSyntax.mapIdent₃ r₁ r₂ r₃
     (fun s₁ s₂ s₃ => "expr_" ++ s₁ ++ "_as_comm_of_" ++ s₂ ++ "_" ++ s₃ ++ s!"_{n₅.getNat}{n₆.getNat}")
   let exprLemmaRw ← `(rwRule| $exprLemma:term)
-  let cmds ← Syntax.getArgs <$> `(
-    section
 
-    lemma $exprName :
+  makeCommands `(section
+    lemma $thmName :
         ∀ (t u : $R),
           (($w $R).pres_mk {$r₁:term, $n₁, $innerTerm})
             = ⁅($w $R).pres_mk {$r₂:term, $n₂, t}, ($w $R).pres_mk {$r₃:term, $n₃, u}⁆ := by
       intro t u
       have : ($w $R).pres_mk {$r₁:term, $n₁, $innerTerm}
-        = ReflDeg.refl_symm $v (($w $R).pres_mk {$r₁:term, $n₄, $innerTerm}) := rfl
+        = refl_symm $v (($w $R).pres_mk {$r₁:term, $n₄, $innerTerm}) := by
+          simp only [refl_symm_of_pres_mk, FreeGroup.lift.of,
+            $refl_def_thm₁, refl_of_gen, PositiveRootSystem.height, height]
       rw [this]; clear this
       have : ⁅($w $R).pres_mk {$r₂:term, $n₂, t}, ($w $R).pres_mk {$r₃:term, $n₃, u}⁆
-          = ReflDeg.refl_symm $v
+          = refl_symm $v
               ⁅($w $R).pres_mk {$r₂:term, $n₅, t}, ($w $R).pres_mk {$r₃:term, $n₆, u}⁆ := by
-        rw [map_commutatorElement]; trivial
+        -- Sometimes, the `refl_def_` lemmas require the `Fchar` assumption
+        first
+        | simp only [map_commutatorElement, refl_symm_of_pres_mk, FreeGroup.lift.of,
+            $refl_def_thm₂, $refl_def_thm₃, refl_of_gen, PositiveRootSystem.height, height]
+          done
+        | simp only [map_commutatorElement, refl_symm_of_pres_mk, FreeGroup.lift.of,
+            $refl_def_thm₂', $refl_def_thm₃, refl_of_gen, PositiveRootSystem.height, height]
+          done
+        | simp only [map_commutatorElement, refl_symm_of_pres_mk, FreeGroup.lift.of,
+            $refl_def_thm₂, $refl_def_thm₃', refl_of_gen, PositiveRootSystem.height, height]
+          done
+        | simp only [map_commutatorElement, refl_symm_of_pres_mk, FreeGroup.lift.of,
+            $refl_def_thm₂', $refl_def_thm₃', refl_of_gen, PositiveRootSystem.height, height]
       rw [this, $exprLemmaRw]
       <;> try assumption
-
-    end
-  )
-  return ⟨mkNullNode cmds⟩
+  end)
 
 macro "declare_triv_comm_reflected_thm" w:ident R:term:arg v:term:arg
         r₁:term:arg r₂:term:arg
@@ -729,23 +731,40 @@ macro "declare_triv_comm_reflected_thm" w:ident R:term:arg v:term:arg
   let commLemma := TSyntax.mapIdent₂ r₁ r₂
     (fun s₁ s₂ => "comm_of_" ++ s₁ ++ "_" ++ s₂ ++ s!"_{n₃.getNat}{n₄.getNat}")
   let commLemmaRw ← `(rwRule| $commLemma:term)
-  let cmds ← Syntax.getArgs <$> `(
-    section
 
+  let refl_def₁ := r₁.mapIdent ("refl_def_eq_refl_gen_of_" ++ ·)
+  let refl_def_thm₁ ← `(simpLemma| $refl_def₁:term)
+  let refl_def_thm₁' ← `(simpLemma| $refl_def₁:term (by assumption))
+
+  let refl_def₂ := r₂.mapIdent ("refl_def_eq_refl_gen_of_" ++ ·)
+  let refl_def_thm₂ ← `(simpLemma| $refl_def₂:term)
+  let refl_def_thm₂' ← `(simpLemma| $refl_def₂:term (by assumption))
+
+
+  makeCommands `(section
     lemma $commOf : ∀ (t u : $R),
         ⁅ ($w $R).pres_mk {$r₁:term, $n₁, t}, ($w $R).pres_mk {$r₂:term, $n₂, u} ⁆ = 1 := by
       intro t u
       have : ⁅ ($w $R).pres_mk {$r₁:term, $n₁, t}, ($w $R).pres_mk {$r₂:term, $n₂, u} ⁆
-        = ReflDeg.refl_symm $v
+        = refl_symm $v
             ⁅ ($w $R).pres_mk {$r₁:term, $n₃, t}, ($w $R).pres_mk {$r₂:term, $n₄, u} ⁆ := by
-        rw [map_commutatorElement]; trivial
+        -- Sometimes, the `refl_def_` lemmas require the `Fchar` assumption
+        first
+        | simp only [map_commutatorElement, refl_symm_of_pres_mk, FreeGroup.lift.of,
+            $refl_def_thm₁, $refl_def_thm₂, refl_of_gen, PositiveRootSystem.height, height]
+          done
+        | simp only [map_commutatorElement, refl_symm_of_pres_mk, FreeGroup.lift.of,
+            $refl_def_thm₁', $refl_def_thm₂, refl_of_gen, PositiveRootSystem.height, height]
+          done
+        | simp only [map_commutatorElement, refl_symm_of_pres_mk, FreeGroup.lift.of,
+            $refl_def_thm₁, $refl_def_thm₂', refl_of_gen, PositiveRootSystem.height, height]
+          done
+        | simp only [map_commutatorElement, refl_symm_of_pres_mk, FreeGroup.lift.of,
+            $refl_def_thm₁', $refl_def_thm₂', refl_of_gen, PositiveRootSystem.height, height]
       rw [this, $commLemmaRw]
       <;> try assumption
       rfl
-
-    end
-  )
-  return ⟨mkNullNode cmds⟩
+  end)
 
 end declareThms /- section -/
 

@@ -4,7 +4,7 @@ import Mathlib.Tactic.Linarith
 
 namespace Steinberg.B3Large
 
-open Steinberg B3LargePosRoot GradedPartialChevalley GradedChevalleyGenerator GradedPartialChevalleyGroup ReflDeg
+open Steinberg B3LargePosRoot GradedPartialChevalley GradedChevalleyGenerator GradedPartialChevalleyGroup
 
 variable {F : Type TF} [Field F] (Fchar : (2 : F) ≠ 0)
 

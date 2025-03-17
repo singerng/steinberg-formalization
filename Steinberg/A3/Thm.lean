@@ -24,7 +24,7 @@ import Steinberg.Upstream.FreeGroup
 
 namespace Steinberg.A3
 
-open Steinberg A3PosRoot GradedPartialChevalley GradedChevalleyGenerator GradedPartialChevalleyGroup ReflDeg
+open Steinberg A3PosRoot GradedPartialChevalley GradedChevalleyGenerator GradedPartialChevalleyGroup
 
 variable {R : Type TR} [Ring R]
 
@@ -59,7 +59,7 @@ theorem a3_valid :
   intro r h
   rcases h with ⟨ t₁, t₀, u₁, u₀, v₁, v₀, rfl ⟩
   simp only [map_mul, map_commutatorElement, FreeGroup.lift.of]
-  repeat rw [refl_def_of_present _ _ (by tauto)]
+  repeat rw [refl_def_eq_refl_gen_of_present _ _ (by tauto)]
   simp only [refl_of_gen, PositiveRootSystem.height, height]
   simp_arith
   rw [add_comm (t₁ * u₀), add_comm (u₁ * v₀)]
@@ -130,9 +130,8 @@ private lemma comm_of_αβ_βγ_20 : ∀ (t u : R), ⁅ {αβ, 2, t}, {βγ, 0, 
 -- symmetric to proof of `comm_of_αβ_βγ_20`
 private lemma comm_of_αβ_βγ_02 : ∀ (t u : R), ⁅ {αβ, 0, t}, {βγ, 2, u} ⁆ = 1 := by
   intro t u
-  have : ⁅ {αβ, 0, t}, {βγ, 2, u} ⁆ = ReflDeg.refl_symm a3_valid ⁅ {αβ, 2, t}, {βγ, 0, u} ⁆ := by
-    rw [map_commutatorElement]
-    trivial
+  have : ⁅ {αβ, 0, t}, {βγ, 2, u} ⁆ = refl_symm a3_valid ⁅ {αβ, 2, t}, {βγ, 0, u} ⁆ := by
+    rw [map_commutatorElement]; trivial
   rw [this, comm_of_αβ_βγ_20, map_one]
 
 theorem comm_of_αβ_βγ : trivial_commutator_of_root_pair (weakA3 R).pres_mk (αβ, βγ) := by
@@ -146,7 +145,6 @@ theorem comm_of_αβ_βγ : trivial_commutator_of_root_pair (weakA3 R).pres_mk (
     rcases this with ( ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ )
     · rw [← comm_of_αβ_βγ_02 t u]
     · rw [← comm_of_αβ_βγ_20 t u]
-
 declare_A3_triv_expr_thm R αβ βγ
 
 /-! ### Further useful identities (roughly GENERIC) -/
@@ -269,6 +267,7 @@ theorem comm_of_α_βγ : single_commutator_of_root_pair (weakA3 R).pres_mk ⟨�
   | 1, 0 => chev_simp [comm_of_α_βγ_10 t u]
   | 1, 1 => chev_simp [comm_of_α_βγ_11 t u]
   | 1, 2 => chev_simp [comm_of_α_βγ_12 t u]
+declare_A3_single_expr_thms R α βγ αβγ
 
 /- Commutator relation for αβ and γ. -/
 theorem comm_of_αβ_γ : single_commutator_of_root_pair (weakA3 R).pres_mk ⟨αβ, γ, αβγ, 1, (by ht)⟩ := by
@@ -280,8 +279,6 @@ theorem comm_of_αβ_γ : single_commutator_of_root_pair (weakA3 R).pres_mk ⟨�
   | 0, 1 => chev_simp [comm_of_αβ_γ_01 t u]
   | 1, 1 => chev_simp [comm_of_αβ_γ_11 t u]
   | 2, 1 => chev_simp [comm_of_αβ_γ_21 t u]
-
-declare_A3_single_expr_thms R α βγ αβγ
 declare_A3_single_expr_thms R αβ γ αβγ
 
 /-! ### More rewriting theorems -/
@@ -373,7 +370,6 @@ theorem comm_of_αβγ_αβγ : mixed_commutes_of_root (weakA3 R).pres_mk αβγ
   grw [expr_αβγ_as_α_βγ_α_βγ_one_mul hj₁ hj₂,
     ← expr_α_αβγ_as_αβγ_α hj₁ hi, ← expr_βγ_αβγ_as_αβγ_βγ hj₂ hi,
     ← expr_α_αβγ_as_αβγ_α hj₁ hi, ← expr_βγ_αβγ_as_αβγ_βγ hj₂ hi]
-
 declare_A3_triv_expr_thm R αβγ αβγ
 
 /- Linearity for αβγ. -/
