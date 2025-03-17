@@ -8,7 +8,8 @@ open Steinberg B3LargePosRoot GradedPartialChevalley GradedChevalleyGenerator Gr
 variable {F : Type TF} [Field F] (Fchar : (2 : F) ≠ 0)
 
 -- CC: (3/16) is there a better place/file for these theorems?
-omit Fchar in
+include Fchar
+
 theorem refl_def_eq_refl_gen_of_αβ2ψ (g : GradedChevalleyGenerator B3LargePosRoot F) (h : g.ζ = αβ2ψ) :
   (weakB3Large F).pres_mk (refl_def (weakB3Large F) g) = (weakB3Large F).pres_mk (FreeGroup.of (refl_of_gen g)) := by
   rcases g with ⟨ ζ, i, hi, t ⟩
@@ -18,18 +19,13 @@ theorem refl_def_eq_refl_gen_of_αβ2ψ (g : GradedChevalleyGenerator B3LargePos
   rw [weakB3Large]
   simp only [weak_define, map_commutatorElement, FreeGroup.map.of, refl_of_gen]
   rw [← weakB3Large, ← def_of_αβ2ψ]
-  congr
-  all_goals (
-    simp only [PositiveRootSystem.height, split_4_into_1_3]
-    split
-    all_goals ht
-  )
-  · simp
-    -- CC: This is false???
-    stop
-    done
-  stop
-  done
+  simp only [PositiveRootSystem.height, split_4_into_1_3]
+  split
+  -- this resolves every goal except height 2
+  all_goals (simp only [height])
+  simp_arith
+  repeat rw [←expr_αβ2ψ_as_comm_of_α_β2ψ]
+  all_goals assumption
 
 omit Fchar in
 theorem refl_def_eq_refl_gen_of_α2β2ψ (g : GradedChevalleyGenerator B3LargePosRoot F) (h : g.ζ = α2β2ψ) :
@@ -51,8 +47,6 @@ theorem refl_def_eq_refl_gen_of_α2β2ψ (g : GradedChevalleyGenerator B3LargePo
   )
 
 set_option maxHeartbeats 0
-
-include Fchar
 
 -- 8.147a
 theorem hom_lift_of_interchange_of_α2β2ψ_a : forall_ijk_tuv,
