@@ -7,20 +7,20 @@ variable {F : Type TF} [Field F]
 -- Instantiate macros for ungraded case
 
 macro "declare_B3Large_ungraded_triv_expr_thm" F:term:arg r₁:term:arg r₂:term:arg : command =>
-  `(command| declare_triv_expr_thm weakB3Large $F 0 $r₁ $r₂)
+  `(command| declare_ungraded_triv_expr_thm fullB3Large $F $r₁ $r₂)
 
 macro "declare_B3Large_ungraded_triv_comm_of_root_pair_thms" F:term:arg r₁:term:arg r₂:term:arg : command =>
-  `(command| declare_triv_comm_of_root_pair_thms weakB3Large $F 0 $r₁ $r₂)
+  `(command| declare_ungraded_triv_comm_of_root_pair_thms fullB3Large $F $r₁ $r₂)
 
 macro "declare_B3Large_ungraded_single_expr_thms" F:term:arg r₁:term:arg r₂:term:arg r₃:term:arg n:num : command =>
-  `(command| declare_single_expr_thms weakB3Large $F 0 $r₁ $r₂ $r₃ $n)
+  `(command| declare_ungraded_single_expr_thms fullB3Large $F $r₁ $r₂ $r₃ $n)
 
 macro "declare_B3Large_ungraded_single_comm_of_root_pair_thms" F:term:arg r₁:term:arg r₂:term:arg r₃:term:arg n:num : command =>
-  `(command| declare_single_comm_of_root_pair_thms weakB3Large $F 0 $r₁ $r₂ $r₃ $n)
+  `(command| declare_ungraded_single_comm_of_root_pair_thms fullB3Large $F $r₁ $r₂ $r₃ $n)
 
 -- Declare relations
 
-declare_B3Large_ungraded_triv_expr_thm F αβ2ψ α2β2ψ
+declare_B3Large_ungraded_triv_comm_of_root_pair_thms F αβ2ψ α2β2ψ
 
 theorem valid_of_hom_lifted (F : Type TF) [Field F] :
   ∀ S ∈ hom_lifted_sets F, ∃ r : FreeGroup (ChevalleyGenerator B3LargePosRoot F), S = hom_lift_set r ∧ (fullB3Large F).pres_mk r = 1 := by

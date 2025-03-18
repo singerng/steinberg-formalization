@@ -437,16 +437,16 @@ def fullB3LargeGraded (F : Type TR) [Field F] := GradedPartialChevalleyGroup.ful
 /- Instantiate the `declare_thms` macros from `PartialChevalley.lean`. -/
 
 macro "declare_B3Large_triv_expr_thm" F:term:arg r₁:term:arg r₂:term:arg : command =>
-  `(command| declare_triv_expr_thm weakB3Large $F 1 $r₁ $r₂)
+  `(command| declare_triv_expr_thm weakB3Large $F $r₁ $r₂)
 
 macro "declare_B3Large_triv_comm_of_root_pair_thms" F:term:arg r₁:term:arg r₂:term:arg : command =>
-  `(command| declare_triv_comm_of_root_pair_thms weakB3Large $F 1 $r₁ $r₂)
+  `(command| declare_triv_comm_of_root_pair_thms weakB3Large $F $r₁ $r₂)
 
 macro "declare_B3Large_single_expr_thms" F:term:arg r₁:term:arg r₂:term:arg r₃:term:arg n:num : command =>
-  `(command| declare_single_expr_thms weakB3Large $F 1 $r₁ $r₂ $r₃ $n)
+  `(command| declare_single_expr_thms weakB3Large $F $r₁ $r₂ $r₃ $n)
 
 macro "declare_B3Large_single_comm_of_root_pair_thms" F:term:arg r₁:term:arg r₂:term:arg r₃:term:arg n:num : command =>
-  `(command| declare_single_comm_of_root_pair_thms weakB3Large $F 1 $r₁ $r₂ $r₃ $n)
+  `(command| declare_single_comm_of_root_pair_thms weakB3Large $F $r₁ $r₂ $r₃ $n)
 
 macro "declare_B3Large_lin_id_inv_thms" F:term:arg root:term:arg : command =>
   `(command| declare_lin_id_inv_thms weakB3Large $F $root)

@@ -531,46 +531,32 @@ def makeCommands (m : MacroM Syntax) : MacroM (TSyntax `command) := do
   let cmds ← Syntax.getArgs <$> m
   return ⟨mkNullNode cmds⟩
 
-macro "declare_triv_expr_thm" w:ident R:term:arg graded?:num r₁:term:arg r₂:term:arg : command => do
+macro "declare_triv_expr_thm" w:ident R:term:arg r₁:term:arg r₂:term:arg : command => do
   let exprAs := TSyntax.mapIdent₂ r₁ r₂
     (fun s₁ s₂ => "expr_" ++ s₁ ++ "_" ++ s₂ ++ "_as_" ++ s₂ ++ "_" ++ s₁)
   let commName := TSyntax.mapIdent₂ r₁ r₂
     (fun s₁ s₂ => "comm_of_" ++ s₁ ++ "_" ++ s₂)
   let commOf ← `(rwRule| $commName:term)
-  if graded?.getNat > 0 then
-    makeCommands `(section
-      @[group_reassoc] theorem $exprAs
-        : ∀ ⦃i j : ℕ⦄ (hi : i ≤ height $r₁) (hj : j ≤ height $r₂) (t u : $R),
-          commutes(($w $R).pres_mk {$r₁:term, i, t},
-                  ($w $R).pres_mk {$r₂:term, j, u}) := by
-        intro i j hi hj t u
-        apply triv_comm_iff_commutes.mp
-        rw [$commOf]
-        try assumption
-        try assumption
-    end)
-  else
-    makeCommands `(section
-      @[group_reassoc] theorem $exprAs
-        : ∀ (t u : $R),
-          commutes(($w $R).pres_mk {$r₁:term, t},
-                  ($w $R).pres_mk {$r₂:term, u}) := by
-        intro t u
-        apply triv_comm_iff_commutes.mp
-        rw [$commOf]
-        try assumption
-        try assumption
-    end)
+  makeCommands `(section
+    @[group_reassoc] theorem $exprAs
+      : ∀ ⦃i j : ℕ⦄ (hi : i ≤ height $r₁) (hj : j ≤ height $r₂) (t u : $R),
+        commutes(($w $R).pres_mk {$r₁:term, i, t},
+                ($w $R).pres_mk {$r₂:term, j, u}) := by
+      intro i j hi hj t u
+      apply triv_comm_iff_commutes.mp
+      rw [$commOf]
+      <;> try assumption
+  end)
 
-macro "declare_triv_comm_of_root_pair_thms" w:ident R:term:arg graded?:num r₁:term:arg r₂:term:arg : command => do
+macro "declare_triv_comm_of_root_pair_thms" w:ident R:term:arg r₁:term:arg r₂:term:arg : command => do
   let commOf := TSyntax.mapIdent₂ r₁ r₂ (fun s₁ s₂ => "comm_of_" ++ s₁ ++ "_" ++ s₂)
   makeCommands `(section
     theorem $commOf : trivial_commutator_of_root_pair ($w $R).pres_mk ($r₁, $r₂) :=
       ($w $R).trivial_commutator_helper (by unfold $w; simp)
-    declare_triv_expr_thm $w $R $graded? $r₁ $r₂
+    declare_triv_expr_thm $w $R $r₁ $r₂
   end)
 
-macro "declare_single_expr_thms" w:ident R:term:arg graded?:num r₁:term:arg r₂:term:arg r₃:term:arg n:num : command => do
+macro "declare_single_expr_thms" w:ident R:term:arg r₁:term:arg r₂:term:arg r₃:term:arg n:num : command => do
   let innerTerm ←
     if n.getNat = 1 then `(t * u)
     else                 `($n * t * u)
@@ -579,70 +565,43 @@ macro "declare_single_expr_thms" w:ident R:term:arg graded?:num r₁:term:arg r�
     (fun s₁ s₂ s₃ => "expr_" ++ s₃ ++ "_as_" ++ s₁ ++ "_" ++ s₂ ++ "_" ++ s₁ ++ "_" ++ s₂)
   let exprAsRev := TSyntax.mapIdent₃ r₁ r₂ r₃
     (fun s₁ s₂ s₃ => "expr_" ++ s₁ ++ "_" ++ s₂ ++ "_as_" ++ s₃ ++ "_" ++ s₂ ++ "_" ++ s₁)
-  if graded?.getNat > 0 then
-    makeCommands `(section
-      theorem $exprAs
-        : ∀ ⦃i j : ℕ⦄ (hi : i ≤ height $r₁) (hj : j ≤ height $r₂) (t u : $R),
-          (($w $R).pres_mk
-            {$r₃:term, i + j, $innerTerm})
-            = ($w $R).pres_mk {$r₁:term, i, t}
-              * ($w $R).pres_mk {$r₂:term, j, u}
-              * ($w $R).pres_mk {$r₁:term, i, -t}
-              * ($w $R).pres_mk {$r₂:term, j, -u} := by
-        intro i j hi hj t u
-        have := $commOf hi hj t u
-        chev_simp [commutatorElement_def, one_mul, mul_one] at this
-        symm at this
-        exact this
+  makeCommands `(section
+    theorem $exprAs
+      : ∀ ⦃i j : ℕ⦄ (hi : i ≤ height $r₁) (hj : j ≤ height $r₂) (t u : $R),
+        (($w $R).pres_mk
+          {$r₃:term, i + j, $innerTerm})
+          = ($w $R).pres_mk {$r₁:term, i, t}
+            * ($w $R).pres_mk {$r₂:term, j, u}
+            * ($w $R).pres_mk {$r₁:term, i, -t}
+            * ($w $R).pres_mk {$r₂:term, j, -u} := by
+      intro i j hi hj t u
+      have := $commOf hi hj t u
+      chev_simp [commutatorElement_def, one_mul, mul_one] at this
+      symm at this
+      exact this
 
-      @[group_reassoc]
-      theorem $exprAsRev
-        : ∀ ⦃i j : ℕ⦄ (hi : i ≤ height $r₁) (hj : j ≤ height $r₂) (t u : $R),
-          reorder_left(
-            ($w $R).pres_mk {$r₁:term, i, t},
-            ($w $R).pres_mk {$r₂:term, j, u},
-            (($w $R).pres_mk {$r₃:term, i + j, $innerTerm})
-          ) := by
-        intro i j hi hj t u
-        have := $commOf hi hj t u
-        chev_simp [commutatorElement_def, one_mul, mul_one] at this
-        grw [← this]
-    end)
-  else
-    makeCommands `(section
-      theorem $exprAs : ∀ (t u : $R),
-          (($w $R).pres_mk {$r₃:term, $innerTerm})
-            = ($w $R).pres_mk {$r₁:term, t}
-              * ($w $R).pres_mk {$r₂:term, u}
-              * ($w $R).pres_mk {$r₁:term, -t}
-              * ($w $R).pres_mk {$r₂:term, -u} := by
-        intro t u
-        have := $commOf t u
-        chev_simp [commutatorElement_def, one_mul, mul_one] at this
-        symm at this
-        exact this
-
-      @[group_reassoc]
-      theorem $exprAsRev : ∀ (t u : $R),
-          reorder_left(
-            ($w $R).pres_mk {$r₁:term, t},
-            ($w $R).pres_mk {$r₂:term, u},
-            (($w $R).pres_mk {$r₃:term, $innerTerm})
-          ) := by
-        intro t u
-        have := $commOf t u
-        chev_simp [commutatorElement_def, one_mul, mul_one] at this
-        grw [← this]
-    end)
+    @[group_reassoc]
+    theorem $exprAsRev
+      : ∀ ⦃i j : ℕ⦄ (hi : i ≤ height $r₁) (hj : j ≤ height $r₂) (t u : $R),
+        reorder_left(
+          ($w $R).pres_mk {$r₁:term, i, t},
+          ($w $R).pres_mk {$r₂:term, j, u},
+          (($w $R).pres_mk {$r₃:term, i + j, $innerTerm})
+        ) := by
+      intro i j hi hj t u
+      have := $commOf hi hj t u
+      chev_simp [commutatorElement_def, one_mul, mul_one] at this
+      grw [← this]
+  end)
 
 macro "declare_single_comm_of_root_pair_thms"
-    w:ident R:term:arg graded?:num
+    w:ident R:term:arg
     r₁:term:arg r₂:term:arg r₃:term:arg n:num : command => do
   let commOf := TSyntax.mapIdent₂ r₁ r₂ (fun s₁ s₂ => "comm_of_" ++ s₁ ++ "_" ++ s₂)
   makeCommands `(section
     theorem $commOf : single_commutator_of_root_pair ($w $R).pres_mk ⟨$r₁, $r₂, $r₃, $n, rfl⟩ :=
       ($w $R).single_commutator_helper ⟨$r₁, $r₂, $r₃, $n, rfl⟩ (by unfold $w; simp)
-    declare_single_expr_thms $w $R $graded? $r₁ $r₂ $r₃ $n
+    declare_single_expr_thms $w $R $r₁ $r₂ $r₃ $n
   end)
 
 macro "declare_lin_id_inv_thms" w:ident R:term:arg root:term:arg : command => do
