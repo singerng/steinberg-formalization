@@ -60,13 +60,13 @@ theorem valid :
     rcases h_sing with ⟨ t, u, h_sing ⟩
     subst r
     simp only [map_commutatorElement, map_inv, map_mul, FreeGroup.lift.of]
-    apply mul_inv_eq_of_eq_mul
-    simp only [one_mul, toB3Mat, toB3Root, BRoot.M, BShortRoot.M, BLongRoot.M]
     simp only [Set.mem_insert_iff, Set.mem_singleton_iff, or_assoc] at h_p
     rcases h_p with h|h|h|h
     all_goals (
       subst p
-      simp only
+      apply mul_inv_eq_of_eq_mul
+      simp only [toB3Mat, toB3Root, BRoot.M, BShortRoot.M, BLongRoot.M,
+        Fin.isValue, Int.cast_one, Int.cast_two, Int.cast_neg, one_mul]
     )
     any_goals (
       rw [MShort_comm, MLong_swap]
@@ -74,49 +74,20 @@ theorem valid :
       ring_nf
       tauto
     )
-
     sorry
   · simp only [double_comm_rels, fullB3Small, fullB3SmallSystem, mk_full,
-      full_double_commutator_pairs, double_commutator_pairs, Set.mem_union, Set.mem_iUnion] at h_doub
+      full_single_commutator_pairs, single_commutator_pairs, Set.mem_union, Set.mem_iUnion] at h_doub
     rcases h_doub with ⟨ p, h_p, h_doub ⟩
     simp only [rels_of_double_commutator_of_root_pair, Set.mem_setOf_eq] at h_doub
     rcases h_doub with ⟨ t, u, h_doub ⟩
     subst r
     simp only [map_commutatorElement, map_inv, map_mul, FreeGroup.lift.of]
-    apply mul_inv_eq_of_eq_mul
-    simp only [one_mul]
     simp only [Set.mem_insert_iff, Set.mem_singleton_iff, or_assoc] at h_p
-    rcases h_p with h
-    let ζ := toB3Root p.fst
-
-    let Sum.inl ζ' := ζ
     subst p
-    have h_ζ : ζ = p.fst := by rfl
-    subst p
-    have h : x := p.fst
-
-    subst p
-
-
-
-
-
--- , BRoot.M, BShortRoot.M, BLongRoot.M
-
-    -- let ζ := p.1
-    -- let η := p.2.1
-    -- subst p
-    -- simp_all only
-
+    apply mul_inv_eq_of_eq_mul
+    simp only [toB3Mat, toB3Root, BRoot.M, BShortRoot.M, BLongRoot.M,
+      Fin.isValue, Int.cast_one, one_mul]
     sorry
-
-
-    -- rw [symm_MLong_MShort_comm_overlap false]
-    -- simp only [cond_false, Fin.isValue, Bool.bne_false, Bool.not_false, Bool.bne_true, neg_mul,
-    --   Int.cast_one, one_mul, false_toRing, true_toRing, neg_neg]
-    -- ring_nf
-
-    -- all_goals simp only [cond_false, Bool.not_false]
   · simp only [lin_rels, fullB3Small, fullB3SmallSystem, mk_full,
       full_present_roots, B3Small.present_roots, Set.mem_union, Set.mem_iUnion] at h_lin
     rcases h_lin with ⟨ p, h_p, h_lin ⟩
@@ -133,6 +104,6 @@ theorem valid :
       simp only [one_mul]
     )
     any_goals rw [MShort_mul_add]
-    any_goals rw [MLong_mul_add]
+    all_goals rw [MLong_mul_add]
 
 end Steinberg
