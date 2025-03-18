@@ -228,6 +228,7 @@ scoped notation "lin_of_root" "(" f ", " ζ ")" =>
 scoped notation "id_of_root" "(" f ", " ζ ")" =>
   ∀ ⦃i : ℕ⦄ (hi : i ≤ height ζ),
     f {ζ, i, 0} = 1
+
 /--
   Negating the coefficient inverts the generator.
 
