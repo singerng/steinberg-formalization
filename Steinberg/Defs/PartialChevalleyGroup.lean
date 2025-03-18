@@ -396,4 +396,108 @@ theorem lin_helper (w : PartialChevalleyGroup Φ R) {ζ : Φ} (h : ζ ∈ w.sys.
     rw [rels_of_lin_of_root]
     exists t, u
 
+/- Linearity implies identity (essentially a standard fact about group homomorphisms). -/
+-- TODO: Replace proof with map_one (use h_lin to show that t => f {ζ, i, t} is an instance of R →+ G)
+theorem id_of_lin_of_root {f : FreeGroup (ChevalleyGenerator Φ R) →* G} {ζ : Φ}
+    : lin_of_root(f, ζ) → id_of_root(f, ζ) := by
+  intro h_lin
+  apply @mul_left_cancel _ _ _ (f {ζ, 0})
+  rw [mul_one, h_lin, add_zero]
+
+-- TODO: Replace proof with map_inv
+/- Linearity implies inverse-ness (essentially a standard fact about group homomorphisms). -/
+theorem inv_of_lin_of_root {f : FreeGroup (ChevalleyGenerator Φ R) →* G} {ζ : Φ}
+    : lin_of_root(f, ζ) → inv_of_root(f, ζ) := by
+  intro h_lin t
+  apply @mul_left_cancel _ _ _ (f {ζ, t})
+  rw [mul_inv_cancel, h_lin, add_neg_cancel, id_of_lin_of_root h_lin]
+
+section declareThms
+
+open Lean Parser.Tactic
+set_option hygiene false
+
+def makeCommands (m : MacroM Syntax) : MacroM (TSyntax `command) := do
+  let cmds ← Syntax.getArgs <$> m
+  return ⟨mkNullNode cmds⟩
+
+macro "declare_ungraded_triv_expr_thm" w:ident R:term:arg r₁:term:arg r₂:term:arg : command => do
+  let exprAs := TSyntax.mapIdent₂ r₁ r₂
+    (fun s₁ s₂ => "expr_" ++ s₁ ++ "_" ++ s₂ ++ "_as_" ++ s₂ ++ "_" ++ s₁)
+  let commName := TSyntax.mapIdent₂ r₁ r₂
+    (fun s₁ s₂ => "comm_of_" ++ s₁ ++ "_" ++ s₂)
+  let commOf ← `(rwRule| $commName:term)
+  makeCommands `(section
+    @[group_reassoc] theorem $exprAs
+      : ∀ (t u : $R),
+        commutes(($w $R).pres_mk {$r₁:term, t},
+                ($w $R).pres_mk {$r₂:term, u}) := by
+      intro t u
+      apply triv_comm_iff_commutes.mp
+      rw [$commOf]
+      <;> try assumption
+  end)
+
+macro "declare_ungraded_triv_comm_of_root_pair_thms"
+    w:ident R:term:arg
+    r₁:term:arg r₂:term:arg : command => do
+  let commOf := TSyntax.mapIdent₂ r₁ r₂ (fun s₁ s₂ => "comm_of_" ++ s₁ ++ "_" ++ s₂)
+  makeCommands `(section
+    theorem $commOf : trivial_commutator_of_root_pair ($w $R).pres_mk ($r₁, $r₂) :=
+      ($w $R).trivial_commutator_helper (by
+        unfold $w
+        simp only [PartialChevalleySystem.mk_full, full_trivial_commutator_pairs]
+        tauto)
+    declare_ungraded_triv_expr_thm $w $R $r₁ $r₂
+  end)
+
+macro "declare_ungraded_single_expr_thms"
+    w:ident R:term:arg
+    r₁:term:arg r₂:term:arg r₃:term:arg n:num : command => do
+  let innerTerm ←
+    if n.getNat = 1 then `(t * u)
+    else                 `($n * t * u)
+  let commOf := TSyntax.mapIdent₂ r₁ r₂ (fun s₁ s₂ => "comm_of_" ++ s₁ ++ "_" ++ s₂)
+  let exprAs := TSyntax.mapIdent₃ r₁ r₂ r₃
+    (fun s₁ s₂ s₃ => "expr_" ++ s₃ ++ "_as_" ++ s₁ ++ "_" ++ s₂ ++ "_" ++ s₁ ++ "_" ++ s₂)
+  let exprAsRev := TSyntax.mapIdent₃ r₁ r₂ r₃
+    (fun s₁ s₂ s₃ => "expr_" ++ s₁ ++ "_" ++ s₂ ++ "_as_" ++ s₃ ++ "_" ++ s₂ ++ "_" ++ s₁)
+  makeCommands `(section
+    theorem $exprAs : ∀ (t u : $R),
+        (($w $R).pres_mk {$r₃:term, $innerTerm})
+          = ($w $R).pres_mk {$r₁:term, t}
+            * ($w $R).pres_mk {$r₂:term, u}
+            * ($w $R).pres_mk {$r₁:term, -t}
+            * ($w $R).pres_mk {$r₂:term, -u} := by
+      intro t u
+      have := $commOf t u
+      chev_simp [commutatorElement_def, one_mul, mul_one] at this
+      symm at this
+      exact this
+
+    @[group_reassoc]
+    theorem $exprAsRev : ∀ (t u : $R),
+        reorder_left(
+          ($w $R).pres_mk {$r₁:term, t},
+          ($w $R).pres_mk {$r₂:term, u},
+          (($w $R).pres_mk {$r₃:term, $innerTerm})
+        ) := by
+      intro t u
+      have := $commOf t u
+      chev_simp [commutatorElement_def, one_mul, mul_one] at this
+      grw [← this]
+  end)
+
+macro "declare_ungraded_single_comm_of_root_pair_thms"
+    w:ident R:term:arg
+    r₁:term:arg r₂:term:arg r₃:term:arg n:num : command => do
+  let commOf := TSyntax.mapIdent₂ r₁ r₂ (fun s₁ s₂ => "comm_of_" ++ s₁ ++ "_" ++ s₂)
+  makeCommands `(section
+    theorem $commOf : single_commutator_of_root_pair ($w $R).pres_mk ⟨$r₁, $r₂, $r₃, $n, rfl⟩ :=
+      ($w $R).single_commutator_helper ⟨$r₁, $r₂, $r₃, $n, rfl⟩ (by unfold $w; simp)
+    declare_ungraded_single_expr_thms $w $R $r₁ $r₂ $r₃ $n
+  end)
+
+end declareThms /- section -/
+
 end PartialChevalleyGroup

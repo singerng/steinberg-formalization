@@ -540,14 +540,13 @@ macro "declare_triv_expr_thm" w:ident R:term:arg r₁:term:arg r₂:term:arg : c
   let commOf ← `(rwRule| $commName:term)
   makeCommands `(section
     @[group_reassoc] theorem $exprAs
-       : ∀ ⦃i j : ℕ⦄ (hi : i ≤ height $r₁) (hj : j ≤ height $r₂) (t u : $R),
+      : ∀ ⦃i j : ℕ⦄ (hi : i ≤ height $r₁) (hj : j ≤ height $r₂) (t u : $R),
         commutes(($w $R).pres_mk {$r₁:term, i, t},
-                 ($w $R).pres_mk {$r₂:term, j, u}) := by
+                ($w $R).pres_mk {$r₂:term, j, u}) := by
       intro i j hi hj t u
       apply triv_comm_iff_commutes.mp
       rw [$commOf]
-      try assumption
-      try assumption
+      <;> try assumption
   end)
 
 macro "declare_triv_comm_of_root_pair_thms" w:ident R:term:arg r₁:term:arg r₂:term:arg : command => do
@@ -571,7 +570,7 @@ macro "declare_single_expr_thms" w:ident R:term:arg r₁:term:arg r₂:term:arg 
     theorem $exprAs
       : ∀ ⦃i j : ℕ⦄ (hi : i ≤ height $r₁) (hj : j ≤ height $r₂) (t u : $R),
         (($w $R).pres_mk
-          {$r₃, i + j, $innerTerm})
+          {$r₃:term, i + j, $innerTerm})
           = ($w $R).pres_mk {$r₁:term, i, t}
             * ($w $R).pres_mk {$r₂:term, j, u}
             * ($w $R).pres_mk {$r₁:term, i, -t}
@@ -588,8 +587,7 @@ macro "declare_single_expr_thms" w:ident R:term:arg r₁:term:arg r₂:term:arg 
         reorder_left(
           ($w $R).pres_mk {$r₁:term, i, t},
           ($w $R).pres_mk {$r₂:term, j, u},
-          (($w $R).pres_mk
-            {$r₃, i + j, $innerTerm})
+          (($w $R).pres_mk {$r₃:term, i + j, $innerTerm})
         ) := by
       intro i j hi hj t u
       have := $commOf hi hj t u
@@ -597,7 +595,9 @@ macro "declare_single_expr_thms" w:ident R:term:arg r₁:term:arg r₂:term:arg 
       grw [← this]
   end)
 
-macro "declare_single_comm_of_root_pair_thms" w:ident R:term:arg r₁:term:arg r₂:term:arg r₃:term:arg n:num : command => do
+macro "declare_single_comm_of_root_pair_thms"
+    w:ident R:term:arg
+    r₁:term:arg r₂:term:arg r₃:term:arg n:num : command => do
   let commOf := TSyntax.mapIdent₂ r₁ r₂ (fun s₁ s₂ => "comm_of_" ++ s₁ ++ "_" ++ s₂)
   makeCommands `(section
     theorem $commOf : single_commutator_of_root_pair ($w $R).pres_mk ⟨$r₁, $r₂, $r₃, $n, rfl⟩ :=
@@ -612,7 +612,7 @@ macro "declare_lin_id_inv_thms" w:ident R:term:arg root:term:arg : command => do
   makeCommands `(section
     @[group_reassoc (attr := simp, chev_simps)]
     theorem $linOf : lin_of_root(($w $R).pres_mk, $root) :=
-      GradedPartialChevalleyGroup.lin_helper ($w $R)
+      lin_helper ($w $R)
         (by unfold $w; simp [trivial_commutator_pairs])
 
     @[simp, chev_simps]
@@ -633,19 +633,18 @@ macro "declare_mixed_expr_thm" w:ident R:term:arg r:term:arg : command => do
     theorem $exprName :
         ∀ ⦃i j : ℕ⦄ (hi : i ≤ height $r) (hj : j ≤ height $r) (t u : $R),
           commutes(($w $R).pres_mk {$r:term, i, t},
-                   ($w $R).pres_mk {$r:term, j, u}) := by
+                  ($w $R).pres_mk {$r:term, j, u}) := by
       intro i j hi hj t u
       apply triv_comm_iff_commutes.mp
       rw [$mixedRw]
-      try assumption
-      try assumption
+      <;> try assumption
   end)
 
 macro "declare_mixed_comm_thms" w:ident R:term:arg r:term:arg : command => do
   let mixedName := r.mapIdent ("comm_of_" ++ ·)
   makeCommands `(section
     theorem $mixedName : mixed_commutes_of_root ($w $R).pres_mk $r :=
-      GradedPartialChevalleyGroup.mixed_commutes_helper ($w $R)
+      mixed_commutes_helper ($w $R)
         (by unfold $w; simp [trivial_commutator_pairs])
     declare_mixed_expr_thm $w $R $r
   end)
