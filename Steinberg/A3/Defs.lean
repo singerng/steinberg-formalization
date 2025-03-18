@@ -169,16 +169,16 @@ def fullA3Graded (R : Type TR) [Ring R] := GradedPartialChevalleyGroup.full_mk A
 --     Something like: `declare_thms A3 weakA3 R`
 
 macro "declare_A3_triv_expr_thm" R:term:arg r₁:term:arg r₂:term:arg : command =>
-  `(command| declare_triv_expr_thm weakA3 $R $r₁ $r₂)
+  `(command| declare_triv_expr_thm weakA3 $R 1 $r₁ $r₂)
 
 macro "declare_A3_triv_comm_of_root_pair_thms" R:term:arg r₁:term:arg r₂:term:arg : command =>
-  `(command| declare_triv_comm_of_root_pair_thms weakA3 $R $r₁ $r₂)
+  `(command| declare_triv_comm_of_root_pair_thms weakA3 $R 1 $r₁ $r₂)
 
 macro "declare_A3_single_expr_thms" R:term:arg r₁:term:arg r₂:term:arg r₃:term:arg : command =>
-  `(command| declare_single_expr_thms weakA3 $R $r₁ $r₂ $r₃ 1)
+  `(command| declare_single_expr_thms weakA3 $R 1 $r₁ $r₂ $r₃ 1)
 
 macro "declare_A3_single_comm_of_root_pair_thms" R:term:arg r₁:term:arg r₂:term:arg r₃:term:arg : command =>
-  `(command| declare_single_comm_of_root_pair_thms weakA3 $R $r₁ $r₂ $r₃ 1)
+  `(command| declare_single_comm_of_root_pair_thms weakA3 $R 1 $r₁ $r₂ $r₃ 1)
 
 macro "declare_A3_lin_id_inv_thms" R:term:arg root:term:arg : command =>
   `(command| declare_lin_id_inv_thms weakA3 $R $root)

@@ -396,4 +396,20 @@ theorem lin_helper (w : PartialChevalleyGroup Φ R) {ζ : Φ} (h : ζ ∈ w.sys.
     rw [rels_of_lin_of_root]
     exists t, u
 
+/- Linearity implies identity (essentially a standard fact about group homomorphisms). -/
+-- TODO: Replace proof with map_one (use h_lin to show that t => f {ζ, i, t} is an instance of R →+ G)
+theorem id_of_lin_of_root {f : FreeGroup (ChevalleyGenerator Φ R) →* G} {ζ : Φ}
+    : lin_of_root(f, ζ) → id_of_root(f, ζ) := by
+  intro h_lin
+  apply @mul_left_cancel _ _ _ (f {ζ, 0})
+  rw [mul_one, h_lin, add_zero]
+
+-- TODO: Replace proof with map_inv
+/- Linearity implies inverse-ness (essentially a standard fact about group homomorphisms). -/
+theorem inv_of_lin_of_root {f : FreeGroup (ChevalleyGenerator Φ R) →* G} {ζ : Φ}
+    : lin_of_root(f, ζ) → inv_of_root(f, ζ) := by
+  intro h_lin t
+  apply @mul_left_cancel _ _ _ (f {ζ, t})
+  rw [mul_inv_cancel, h_lin, add_neg_cancel, id_of_lin_of_root h_lin]
+
 end PartialChevalleyGroup

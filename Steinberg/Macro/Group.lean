@@ -212,8 +212,10 @@ initialize registerBuiltinAttribute {
       throwError "`reassoc` can only be used as a global attribute"
     addRelatedDecl src "_assoc_left" ref stx? fun type value levels => do
       pure (← reassocExpr_left (← mkExpectedTypeHint value type), levels)
-    addRelatedDecl src "_assoc_right" ref stx? fun type value levels => do
-      pure (← reassocExpr_right (← mkExpectedTypeHint value type), levels)
+    -- CC: (3/18) Removing this still allows `B3Large/Thm.lean` to compile.
+    -- CC: I've removed this to speed up compilation.
+    -- addRelatedDecl src "_assoc_right" ref stx? fun type value levels => do
+    --  pure (← reassocExpr_right (← mkExpectedTypeHint value type), levels)
   | _ => throwUnsupportedSyntax
 }
 
@@ -319,13 +321,14 @@ elab s:"grw " cfg:optConfig rws:rwRuleSeq l:(location)? : tactic => Elab.Tactic.
       let cont : TacticM Unit := (do
         match replaceWithAssocName e with
         | none => evalTactic <| ← `(tactic| skip)
-        | some ⟨assoc_l, assoc_r⟩ =>
+        | some ⟨assoc_l, _⟩ =>
           let rule_l := ← do if symm then `(rwRule| ← $assoc_l:term) else `(rwRule| $assoc_l:term)
-          let rule_r := ← do if symm then `(rwRule| ← $assoc_r:term) else `(rwRule| $assoc_r:term)
+          -- let rule_r := ← do if symm then `(rwRule| ← $assoc_r:term) else `(rwRule| $assoc_r:term)
           evalTactic <| ← `(tactic|
-            first
-            | (rw $cfg [$rule_l] $l ?)
-            | (rw $cfg [$rule_r] $l ?)
+            (rw $cfg [$rule_l] $l ?)
+            --first
+            -- | (rw $cfg [$rule_l] $l ?)
+            -- | (rw $cfg [$rule_r] $l ?)
           )
       )
 
