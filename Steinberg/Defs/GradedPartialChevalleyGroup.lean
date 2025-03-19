@@ -670,7 +670,6 @@ macro "declare_reflected_thm" w:ident R:term:arg v:term:arg
     match isNeg.getNat, C.getNat with
     | 0, 1 => `(t * u)
     | 1, 1 => `(-t * u)
-    | 0, _ => `($C * t * u)
     | 1, _ => `(-$C * t * u)
     | _, _ => `($C * t * u)
 
