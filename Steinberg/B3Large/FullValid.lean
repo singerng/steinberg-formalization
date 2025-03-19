@@ -42,22 +42,10 @@ theorem valid :
       subst p
       simp only [toB3Mat, toB3Root, BRoot.M, BShortRoot.M, BLongRoot.M]
     )
-    any_goals (
-      rw [MLong_MShort_comm_disjoint]
-      all_goals tauto
-    )
-    any_goals ( -- handle the goals where we have ⁅ MShort, MLong ⁆
-      rw [triv_comm_symm, MLong_MShort_comm_disjoint]
-      all_goals tauto
-    )
-    any_goals (
-      rw [MLong_comm_disjoint]
-      all_goals tauto
-    )
-    any_goals (
-      apply MLong_comm_disjoint'
-      all_goals tauto
-    )
+    any_goals (rw [MLong_MShort_comm_disjoint]; all_goals tauto)
+    any_goals (rw [triv_comm_symm, MLong_MShort_comm_disjoint]; all_goals tauto) -- handle the goals where we have ⁅ MShort, MLong ⁆
+    any_goals (rw [MLong_comm_disjoint]; all_goals tauto)
+    any_goals (apply MLong_comm_disjoint')
   · simp only [single_comm_rels, fullB3Large, fullB3LargeSystem, mk_full,
       full_single_commutator_pairs, single_commutator_pairs, Set.mem_union, Set.mem_iUnion] at h_sing
     rcases h_sing with ⟨ p, h_p, h_sing ⟩
@@ -85,7 +73,24 @@ theorem valid :
       ring_nf
       tauto
     )
-    all_goals sorry
+    any_goals (
+      rw [←Bool.not_false, MLong_comm_overlap]
+      simp only [true_toRing, false_toRing]
+      ring_nf
+      tauto
+    )
+    -- rearranging required, TODO: automate this
+    · nth_rewrite 2 [MLong_swap]
+      rw [←Bool.not_false, MLong_comm_overlap]
+      ring_nf
+      simp only [true_toRing, false_toRing, square_eq_one]
+      ring_nf
+      tauto
+    · nth_rewrite 2 [MLong_swap]
+      rw [←Bool.not_true, MLong_comm_overlap]
+      simp only [true_toRing, false_toRing, Bool.not_true]
+      ring_nf
+      tauto
   · simp only [double_comm_rels, fullB3Large, fullB3LargeSystem, mk_full,
       full_single_commutator_pairs, single_commutator_pairs, Set.mem_union, Set.mem_iUnion] at h_doub
     rcases h_doub with ⟨ p, h_p, h_doub ⟩
@@ -101,7 +106,11 @@ theorem valid :
       simp only [toB3Mat, toB3Root, BRoot.M, BShortRoot.M, BLongRoot.M,
         Fin.isValue, Int.cast_one, one_mul]
     )
-    all_goals sorry
+    all_goals (
+      rw [MLong_swap, ←Bool.not_false, MLong_MShort_comm_overlap, MLong_swap]
+      simp only [Bool.not_false, true_toRing, false_toRing]
+      ring_nf
+    )
   · simp only [lin_rels, fullB3Large, fullB3LargeSystem, mk_full,
       full_present_roots, B3Large.present_roots, Set.mem_union, Set.mem_iUnion] at h_lin
     rcases h_lin with ⟨ p, h_p, h_lin ⟩

@@ -35,7 +35,7 @@ theorem valid :
     subst r
     simp only [map_commutatorElement, map_inv, map_mul, FreeGroup.lift.of]
     simp only [Set.mem_insert_iff, Set.mem_singleton_iff, or_assoc] at h_p
-    rcases h_p with h|h|h|h|h|h|h|h|h|h|h|h|h|h|h
+    rcases h_p with h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h
     all_goals (
       subst p
       simp only [toB3Mat, toB3Root, BRoot.M, BShortRoot.M, BLongRoot.M]
@@ -74,7 +74,12 @@ theorem valid :
       ring_nf
       tauto
     )
-    sorry
+    · nth_rewrite 2 [MLong_swap]
+      rw [←Bool.not_false, MLong_comm_overlap]
+      nth_rewrite 2 [MLong_swap]
+      simp only [true_toRing, false_toRing]
+      ring_nf
+      tauto
   · simp only [double_comm_rels, fullB3Small, fullB3SmallSystem, mk_full,
       full_single_commutator_pairs, single_commutator_pairs, Set.mem_union, Set.mem_iUnion] at h_doub
     rcases h_doub with ⟨ p, h_p, h_doub ⟩
@@ -87,7 +92,9 @@ theorem valid :
     apply mul_inv_eq_of_eq_mul
     simp only [toB3Mat, toB3Root, BRoot.M, BShortRoot.M, BLongRoot.M,
       Fin.isValue, Int.cast_one, one_mul]
-    sorry
+    · rw [MLong_swap, ←Bool.not_false, MLong_MShort_comm_overlap, MLong_swap]
+      simp only [Bool.not_false, true_toRing, false_toRing]
+      ring_nf
   · simp only [lin_rels, fullB3Small, fullB3SmallSystem, mk_full,
       full_present_roots, B3Small.present_roots, Set.mem_union, Set.mem_iUnion] at h_lin
     rcases h_lin with ⟨ p, h_p, h_lin ⟩
