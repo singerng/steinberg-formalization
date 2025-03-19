@@ -151,25 +151,29 @@ abbrev full_present_roots : Set (B3SmallPosRoot) :=
   present_roots ∪ {βψω}
 
 abbrev full_trivial_commutator_pairs : Set (B3SmallPosRoot × B3SmallPosRoot) :=
-  trivial_commutator_pairs ∪ {(βψ, ψω), (βψω, β), (βψω, ψ), (βψω, ω), (βψω, βψ), (βψω, β2ψ), (βψω, ψω), (ω, β2ψ)}
+  trivial_commutator_pairs ∪ {(βψ, ψω), (βψω, β), (βψω, ψ), (βψω, ω), (βψω, βψ), (βψω, β2ψ), (βψω, ψω), (ω, β2ψ), (ψω, β2ψ)}
 
 abbrev full_single_commutator_pairs : Set (SingleSpanRootPair B3SmallPosRoot) :=
   single_commutator_pairs ∪ {⟨ β, ψω, βψω, 1, (by ht)⟩, ⟨βψ, ω, βψω, 2, (by ht)⟩}
 
 abbrev full_double_commutator_pairs : Set (DoubleSpanRootPair B3SmallPosRoot) := double_commutator_pairs
 
-theorem full_forall_roots_mem_present :
-  ∀ (ζ : B3SmallPosRoot), ζ ∈ full_present_roots := by
-    intro ζ
-    cases ζ
-    all_goals tauto
+-- TODO: this should really be via 'decide', but we had issues with declaring PartialChevalleySystem as a Finset
+theorem all_root_pairs_have_relation : all_pairs B3SmallPosRoot full_trivial_commutator_pairs full_single_commutator_pairs full_double_commutator_pairs := by
+    intro ζ η
+    cases ζ <;> cases η
+    all_goals simp only [ne_eq, reduceCtorEq, not_false_eq_true, Set.union_insert, Set.union_singleton,
+      Set.mem_insert_iff, Prod.mk.injEq, and_self, and_false, Set.mem_singleton_iff, or_self,
+      exists_eq_or_imp, or_false, exists_eq_left, or_true, Set.mem_empty_iff_false, false_and,
+      exists_false, imp_self, not_true_eq_false]
 
 abbrev fullB3SmallSystem := PartialChevalleySystem.mk_full B3SmallPosRoot
   full_present_roots
   full_trivial_commutator_pairs
   full_single_commutator_pairs
   full_double_commutator_pairs
-  full_forall_roots_mem_present
+  (by decide)
+  all_root_pairs_have_relation
 
 def fullB3Small (R : Type TR) [Ring R] := @PartialChevalleyGroup.mk B3SmallPosRoot _ R _ fullB3SmallSystem
 def fullB3SmallGraded (R : Type TR) [Ring R] := GradedPartialChevalleyGroup.full_mk B3SmallPosRoot R fullB3SmallSystem

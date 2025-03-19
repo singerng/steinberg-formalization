@@ -41,9 +41,18 @@ structure PartialChevalleySystem (Φ : Type TΦ) [PositiveRootSystem Φ] where
 
 namespace PartialChevalleySystem
 
+def all_pairs (Φ : Type TΦ) [PositiveRootSystem Φ] (trivial_comm_root_pairs : Set (Φ × Φ)) (single_comm_root_pairs : Set (SingleSpanRootPair Φ))
+  (double_comm_root_pairs : Set (DoubleSpanRootPair Φ)) :=
+  ∀ (ζ η : Φ), ζ ≠ η →
+   (ζ, η) ∈ trivial_comm_root_pairs ∨ (η, ζ) ∈ trivial_comm_root_pairs ∨
+    (∃ p ∈ single_comm_root_pairs, (p.1, p.2.1) = (ζ, η) ∨ (p.1, p.2.1) = (η, ζ)) ∨
+    (∃ p ∈ double_comm_root_pairs, (p.1, p.2.1) = (ζ, η) ∨ (p.1, p.2.1) = (η, ζ))
+
 def mk_full (Φ : Type TΦ) [PositiveRootSystem Φ]
   (present_roots : Set Φ) (trivial_comm_root_pairs : Set (Φ × Φ)) (single_comm_root_pairs : Set (SingleSpanRootPair Φ))
-  (double_comm_root_pairs : Set (DoubleSpanRootPair Φ)) (h_full : ∀ (ζ : Φ), ζ ∈ present_roots) : PartialChevalleySystem Φ :=
+  (double_comm_root_pairs : Set (DoubleSpanRootPair Φ)) (h_full : ∀ (ζ : Φ), ζ ∈ present_roots)
+  (h_full' : all_pairs Φ trivial_comm_root_pairs single_comm_root_pairs double_comm_root_pairs)
+  : PartialChevalleySystem Φ :=
   PartialChevalleySystem.mk present_roots trivial_comm_root_pairs single_comm_root_pairs double_comm_root_pairs (by tauto) (by tauto) (by tauto)
 
 end PartialChevalleySystem

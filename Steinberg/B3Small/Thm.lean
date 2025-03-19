@@ -538,7 +538,7 @@ theorem full_rels_satisfied_in_weak_group :
       intro r h_r
       simp only [rels_of_trivial_commutator_of_root_pair] at h_r
       rcases h_r with ⟨ i, j, hi, hj, t, u, goal ⟩
-      rcases h_new with h_βψ_ψω|h_β_βψω|h_ψ_βψω|h_ω_βψω|h_βψ_βψω|h_β2ψ_βψω|h_ψω_βψω|h_ω_β2ψ
+      rcases h_new with h_βψ_ψω|h_β_βψω|h_ψ_βψω|h_ω_βψω|h_βψ_βψω|h_β2ψ_βψω|h_ψω_βψω|h_ω_β2ψ|h_ψω_β2ψ
       all_goals (
         subst p r
         simp only
@@ -551,6 +551,8 @@ theorem full_rels_satisfied_in_weak_group :
       · exact comm_of_βψω_β2ψ Fchar hi hj t u
       · exact comm_of_βψω_ψω Fchar hi hj t u
       · have := comm_of_β2ψ_ω Fchar hj hi u t
+        rwa [triv_comm_symm] at this
+      · have := comm_of_β2ψ_ψω Fchar hj hi u t
         rwa [triv_comm_symm] at this
   · rcases h with h_old|h_new
     · tauto

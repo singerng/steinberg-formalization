@@ -145,18 +145,21 @@ abbrev full_trivial_commutator_pairs : Set (A3PosRoot × A3PosRoot) :=
 abbrev full_single_commutator_pairs : Set (SingleSpanRootPair A3PosRoot) :=
   (single_commutator_pairs) ∪ {⟨ α, βγ, αβγ, 1, (by ht)⟩, ⟨αβ, γ, αβγ, 1, (by ht)⟩}
 
-theorem full_forall_roots_mem_present :
-  ∀ (ζ : A3PosRoot), ζ ∈ full_present_roots := by
-    intro ζ
-    cases ζ
-    all_goals tauto
+theorem all_root_pairs_have_relation : all_pairs A3PosRoot full_trivial_commutator_pairs full_single_commutator_pairs ∅ := by
+    intro ζ η
+    cases ζ <;> cases η
+    all_goals simp only [ne_eq, reduceCtorEq, not_false_eq_true, Set.union_insert, Set.union_singleton,
+      Set.mem_insert_iff, Prod.mk.injEq, and_self, and_false, Set.mem_singleton_iff, or_self,
+      exists_eq_or_imp, or_false, exists_eq_left, or_true, Set.mem_empty_iff_false, false_and,
+      exists_false, imp_self, not_true_eq_false]
 
 abbrev fullA3System := PartialChevalleySystem.mk_full A3PosRoot
   full_present_roots
   full_trivial_commutator_pairs
   full_single_commutator_pairs
   ∅
-  full_forall_roots_mem_present
+  (by decide)
+  all_root_pairs_have_relation
 
 def fullA3 (R : Type TR) [Ring R] := @PartialChevalleyGroup.mk A3PosRoot _ R _ fullA3System
 def fullA3Graded (R : Type TR) [Ring R] := GradedPartialChevalleyGroup.full_mk A3PosRoot R fullA3System

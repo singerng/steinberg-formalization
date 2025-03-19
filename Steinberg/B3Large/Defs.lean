@@ -413,18 +413,22 @@ abbrev full_single_commutator_pairs : Set (SingleSpanRootPair B3LargePosRoot) :=
 abbrev full_double_commutator_pairs : Set (DoubleSpanRootPair B3LargePosRoot) :=
   double_commutator_pairs ∪ {⟨ α, βψ, αβψ, α2β2ψ, 1, 1, (by ht), (by ht)⟩, ⟨ αβ, ψ, αβψ, αβ2ψ, 1, 1, (by ht), (by ht)⟩}
 
-theorem full_forall_roots_mem_present :
-  ∀ (ζ : B3LargePosRoot), ζ ∈ full_present_roots := by
-    intro ζ
-    cases ζ
-    all_goals tauto
+set_option maxHeartbeats 0 in
+theorem all_root_pairs_have_relation : all_pairs B3LargePosRoot full_trivial_commutator_pairs full_single_commutator_pairs full_double_commutator_pairs := by
+    intro ζ η
+    cases ζ <;> cases η
+    all_goals simp only [ne_eq, reduceCtorEq, not_false_eq_true, Set.union_insert, Set.union_singleton,
+      Set.mem_insert_iff, Prod.mk.injEq, and_self, and_false, Set.mem_singleton_iff, or_self,
+      exists_eq_or_imp, or_false, exists_eq_left, or_true, Set.mem_empty_iff_false, false_and,
+      exists_false, imp_self, not_true_eq_false]
 
 def fullB3LargeSystem := PartialChevalleySystem.mk_full B3LargePosRoot
   full_present_roots
   full_trivial_commutator_pairs
   full_single_commutator_pairs
   full_double_commutator_pairs
-  full_forall_roots_mem_present
+  (by decide)
+  all_root_pairs_have_relation
 
 def fullB3Large (F : Type TR) [Field F] := @PartialChevalleyGroup.mk B3LargePosRoot _ F _ fullB3LargeSystem
 def fullB3LargeGraded (F : Type TR) [Field F] := GradedPartialChevalleyGroup.full_mk B3LargePosRoot F fullB3LargeSystem
