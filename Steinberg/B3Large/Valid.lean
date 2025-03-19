@@ -1,10 +1,15 @@
+/-
+Copyright (c) 2025 The Steinberg Group
+Released under the Apache License v2.0; see LICENSE for full text.
+-/
+
 import Steinberg.B3Large.Defs
+
+namespace Steinberg.B3Large
 
 open Steinberg B3Large PartialChevalley ChevalleyGenerator B3LargePosRoot
 
 variable {F : Type TF} [Field F]
-
-namespace Steinberg.B3Large
 
 set_option hygiene false in
 /-- Shorthand for building group elements from a root and ring element. -/

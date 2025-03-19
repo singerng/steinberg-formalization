@@ -1,7 +1,6 @@
 /-
-
-LICENSE goes here.
-
+Copyright (c) 2025 The Steinberg Group
+Released under the Apache License v2.0; see LICENSE for full text.
 -/
 
 import Steinberg.A3.Defs
@@ -15,7 +14,7 @@ import Steinberg.A3.Defs
   All the proofs for these theorems are extremely similar, so much so
   that we can declare and prove them from macros agnostic to the root system.
 
-  See `PartialChevalley.lean` for their definitions.
+  See `GradedPartialChevalleyGroup.lean` for their definitions.
 
 -/
 

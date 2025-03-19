@@ -1,4 +1,11 @@
 /-
+Copyright (c) 2025 The Steinberg Group
+Released under the Apache License v2.0; see LICENSE for full text.
+-/
+
+import Mathlib.Tactic.Attr.Register
+
+/-!
 
 Declares class and simp attributes for the Steinberg project.
 
@@ -7,7 +14,6 @@ custom tactics (see `Macro/Group`).
 
 -/
 
-import Mathlib.Tactic.Attr.Register
 
 namespace Steinberg
 

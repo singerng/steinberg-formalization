@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2025 The Steinberg Group
+Released under the Apache License v2.0; see LICENSE for full text.
+-/
+
 import Mathlib.Tactic
 import Mathlib.Algebra.Algebra.Defs
 
