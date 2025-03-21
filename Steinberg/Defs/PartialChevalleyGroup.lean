@@ -1,7 +1,6 @@
 /-
-
-LICENSE goes here.
-
+Copyright (c) 2025 The Steinberg Group
+Released under the Apache License v2.0; see LICENSE for full text.
 -/
 
 import Steinberg.Defs.PositiveRootSystem
@@ -421,6 +420,25 @@ def makeCommands (m : MacroM Syntax) : MacroM (TSyntax `command) := do
   let cmds ← Syntax.getArgs <$> m
   return ⟨mkNullNode cmds⟩
 
+macro "declare_ungraded_lin_id_inv_thms" w:ident R:term:arg root:term:arg : command => do
+  let linOf := root.mapIdent ("lin_of_" ++ ·)
+  let idOf := root.mapIdent ("id_of_" ++ ·)
+  let invOf := root.mapIdent ("inv_of_" ++ ·)
+  makeCommands `(section
+    @[group_reassoc (attr := simp, chev_simps)]
+    theorem $linOf : lin_of_root(($w $R).pres_mk, $root) :=
+      ($w $R).lin_helper
+        (by unfold $w; simp [trivial_commutator_pairs]; tauto)
+
+    @[simp, chev_simps]
+    theorem $idOf : id_of_root(($w $R).pres_mk, $root) :=
+      id_of_lin_of_root $linOf
+
+    @[simp, chev_simps]
+    theorem $invOf : inv_of_root(($w $R).pres_mk, $root) :=
+      inv_of_lin_of_root $linOf
+  end)
+
 macro "declare_ungraded_triv_expr_thm" w:ident R:term:arg r₁:term:arg r₂:term:arg : command => do
   let exprAs := TSyntax.mapIdent₂ r₁ r₂
     (fun s₁ s₂ => "expr_" ++ s₁ ++ "_" ++ s₂ ++ "_as_" ++ s₂ ++ "_" ++ s₁)
@@ -453,10 +471,14 @@ macro "declare_ungraded_triv_comm_of_root_pair_thms"
 
 macro "declare_ungraded_single_expr_thms"
     w:ident R:term:arg
-    r₁:term:arg r₂:term:arg r₃:term:arg n:num : command => do
+    r₁:term:arg r₂:term:arg r₃:term:arg isNeg:num n:num : command => do
   let innerTerm ←
-    if n.getNat = 1 then `(t * u)
-    else                 `($n * t * u)
+    match isNeg.getNat, n.getNat with
+    | 0, 1 => `(t * u)
+    | 1, 1 => `(-(t * u))
+    | 1, _ => `(-($n * t * u))
+    | _, _ => `($n * t * u)
+
   let commOf := TSyntax.mapIdent₂ r₁ r₂ (fun s₁ s₂ => "comm_of_" ++ s₁ ++ "_" ++ s₂)
   let exprAs := TSyntax.mapIdent₃ r₁ r₂ r₃
     (fun s₁ s₂ s₃ => "expr_" ++ s₃ ++ "_as_" ++ s₁ ++ "_" ++ s₂ ++ "_" ++ s₁ ++ "_" ++ s₂)
@@ -490,12 +512,17 @@ macro "declare_ungraded_single_expr_thms"
 
 macro "declare_ungraded_single_comm_of_root_pair_thms"
     w:ident R:term:arg
-    r₁:term:arg r₂:term:arg r₃:term:arg n:num : command => do
+    r₁:term:arg r₂:term:arg r₃:term:arg isNeg:num n:num : command => do
+  let innerTerm ←
+    match isNeg.getNat with
+    | 1 => `(-($n))
+    | _ => `($n)
+
   let commOf := TSyntax.mapIdent₂ r₁ r₂ (fun s₁ s₂ => "comm_of_" ++ s₁ ++ "_" ++ s₂)
   makeCommands `(section
-    theorem $commOf : single_commutator_of_root_pair ($w $R).pres_mk ⟨$r₁, $r₂, $r₃, $n, rfl⟩ :=
-      ($w $R).single_commutator_helper ⟨$r₁, $r₂, $r₃, $n, rfl⟩ (by unfold $w; simp)
-    declare_ungraded_single_expr_thms $w $R $r₁ $r₂ $r₃ $n
+    theorem $commOf : single_commutator_of_root_pair ($w $R).pres_mk ⟨$r₁, $r₂, $r₃, $innerTerm, rfl⟩ :=
+      ($w $R).single_commutator_helper ⟨$r₁, $r₂, $r₃, $innerTerm, rfl⟩ (by unfold $w; simp; tauto)
+    declare_ungraded_single_expr_thms $w $R $r₁ $r₂ $r₃ $isNeg $n
   end)
 
 end declareThms /- section -/

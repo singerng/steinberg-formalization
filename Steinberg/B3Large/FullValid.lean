@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2025 The Steinberg Group
+Released under the Apache License v2.0; see LICENSE for full text.
+-/
+
 import Steinberg.B3Large.Defs
 import Steinberg.Defs.PartialChevalleyGroup
 import Steinberg.Upstream.Chevalley.TypeB.TypeB

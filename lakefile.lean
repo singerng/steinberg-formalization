@@ -11,4 +11,4 @@ lean_lib «Steinberg» where
 
 @[default_target]
 lean_exe «steinberg» where
-  root := `Main
+  root := `Steinberg

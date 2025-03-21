@@ -1,7 +1,6 @@
 /-
-
-Macros and other convenience keywords when doing proofs on groups.
-
+Copyright (c) 2025 The Steinberg Group
+Released under the Apache License v2.0; see LICENSE for full text.
 -/
 
 /- Tactic and metaprogramming imports -/
@@ -21,7 +20,7 @@ import Mathlib.GroupTheory.Commutator.Basic
 
 import Steinberg.Macro.Attr
 
-/-!
+/-! Macros and other convenience keywords when doing proofs on groups.
 
 See:
   - Associating: `mul_assoc_l`, `mal`, `mul_assoc_r`, `mar`
