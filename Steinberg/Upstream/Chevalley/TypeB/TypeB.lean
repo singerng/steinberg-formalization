@@ -1,6 +1,8 @@
 
 import Steinberg.Upstream.Chevalley.TypeB.MatrixDefs
 
+import Steinberg.Macro.Group
+
 /-!
   An implementation of the group `Ω_{2n+1}(R)` of `(2n+1)×(2n+1)` matrices over a ring `R`.
   This is a certain "mysterious" subgroup of `SO_{2n+1}(R)`, the group of `(2n+1)×(2n+1)`
@@ -19,6 +21,9 @@ universe u v
 
 variable {I : Type TI} [DecidableEq I] [Fintype I] [LinearOrder I]
 variable {R : Type TR} [CommRing R]
+
+namespace Chevalley.TypeB
+open Chevalley.TypeB
 
 theorem MLong_swap (a b : Bool) (i j : I) (t : R) (hij : i ≠ j) :
   (MLong a b i j t hij) = (MLong b a j i (-t * a * b) (Ne.symm hij)) := by
@@ -59,7 +64,7 @@ theorem MShort_mul_add {a : Bool} {i : I} {t u : R}
   simp only [square_eq_one]
   module
 
-/-- Relation A.11, linearity for long matrices -/
+
 theorem MLong_mul_add {a b : Bool} {i j : I} {t u : R} (hij : i ≠ j)
   : (MLong a b i j t hij) * (MLong a b i j u hij) = MLong a b i j (t + u) hij := by
   ext1
@@ -72,28 +77,54 @@ theorem MLong_mul_add {a b : Bool} {i j : I} {t u : R} (hij : i ≠ j)
 
 /- ### Trivial commutators -/
 
+private theorem MLong_prod_disjoint {a b c d : Bool} {i j k l : I} {t u : R} (hij : i ≠ j) (hkl : k ≠ l)
+  (hik : a.inj i ≠ (!c).inj k) (hil : a.inj i ≠ (!d).inj l) (hjk : b.inj j ≠ (!c).inj k) (hjl : b.inj j ≠ (!d).inj l)
+  : (raw_MLong a b i j t hij) * (raw_MLong c d k l u hkl) =
+  1 + (a * t) • E (a.inj i) ((!b).inj j)
+    - (a * t) • E (b.inj j) ((!a).inj i)
+    + (c * u) • E (c.inj k) ((!d).inj l)
+    - (c * u) • E (d.inj l) ((!c).inj k)  := by
+  simp only [raw_MLong]
+  algebra
+  ring_nf
+  simp only [E_mul_disjoint (SignedWithZero.neg_of_ne hik),
+  E_mul_disjoint (SignedWithZero.neg_of_ne hjk),
+  E_mul_disjoint (SignedWithZero.neg_of_ne hjl),
+  E_mul_disjoint (SignedWithZero.neg_of_ne hil)
+  ]
+  algebra
+
 theorem MLong_comm_disjoint {a b c d : Bool} {i j k l : I} {t u : R} (hij : i ≠ j) (hkl : k ≠ l)
   (hik : a.inj i ≠ (!c).inj k) (hil : a.inj i ≠ (!d).inj l) (hjk : b.inj j ≠ (!c).inj k) (hjl : b.inj j ≠ (!d).inj l)
   : ⁅ (MLong a b i j t hij), (MLong c d k l u hkl) ⁆ = 1 := by
   rw [commutatorElement_def]
-  apply mul_inv_eq_of_eq_mul
-  apply mul_inv_eq_of_eq_mul
-  simp only [one_mul]
   ext1
-  simp only [MLong, raw_MLong, Units.val_mul]
+  simp only [MLong, Units.val_mul, Units.inv_mk]
+  grw [MLong_prod_disjoint]
+  grw [MLong_prod_disjoint]
+
+
   algebra
-  ring_nf
-  simp only [E_mul_overlap,
-    E_mul_disjoint (Ne.symm hik),
-    E_mul_disjoint (Ne.symm hil),
-    E_mul_disjoint (Ne.symm hjk),
-    E_mul_disjoint (Ne.symm hjl),
-    E_mul_disjoint (SignedWithZero.neg_of_ne hik),
-    E_mul_disjoint (SignedWithZero.neg_of_ne hil),
-    E_mul_disjoint (SignedWithZero.neg_of_ne hjk),
-    E_mul_disjoint (SignedWithZero.neg_of_ne hjl)]
-  algebra
-  module
+
+
+  -- apply mul_inv_eq_of_eq_mul
+  -- apply mul_inv_eq_of_eq_mul
+  -- simp only [one_mul]
+  -- ext1
+  -- simp only [MLong, raw_MLong, Units.val_mul]
+  -- algebra
+  -- ring_nf
+  -- simp only [E_mul_overlap,
+  --   E_mul_disjoint (Ne.symm hik),
+  --   E_mul_disjoint (Ne.symm hil),
+  --   E_mul_disjoint (Ne.symm hjk),
+  --   E_mul_disjoint (Ne.symm hjl),
+  --   E_mul_disjoint (SignedWithZero.neg_of_ne hik),
+  --   E_mul_disjoint (SignedWithZero.neg_of_ne hil),
+  --   E_mul_disjoint (SignedWithZero.neg_of_ne hjk),
+  --   E_mul_disjoint (SignedWithZero.neg_of_ne hjl)]
+  -- algebra
+  -- module
 
 theorem MLong_comm_disjoint' {a b : Bool} {i j : I} {t u : R} (hij : i ≠ j)
   : ⁅ (MLong a b i j t hij), (MLong a (!b) i j u hij) ⁆ = 1 := by

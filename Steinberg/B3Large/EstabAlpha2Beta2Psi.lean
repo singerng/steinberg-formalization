@@ -27,25 +27,6 @@ theorem refl_def_eq_refl_gen_of_αβ2ψ (g : GradedChevalleyGenerator B3LargePos
   repeat rw [←expr_αβ2ψ_as_comm_of_α_β2ψ]
   all_goals assumption
 
-omit Fchar in
-theorem refl_def_eq_refl_gen_of_α2β2ψ (g : GradedChevalleyGenerator B3LargePosRoot F) (h : g.ζ = α2β2ψ) :
-  (weakB3Large F).pres_mk (refl_def (weakB3Large F) g) = (weakB3Large F).pres_mk (FreeGroup.of (refl_of_gen g)) := by
-  rcases g with ⟨ ζ, i, hi, t ⟩
-  simp only at h
-  subst ζ
-  simp only [refl_def, MonoidHom.coe_comp, Function.comp_apply, FreeGroup.lift.of]
-  rw [weakB3Large]
-  simp only [weak_define, map_commutatorElement, FreeGroup.map.of, refl_of_gen]
-  rw [← weakB3Large]
-  conv => rhs; rw [← neg_neg t]
-  rw [← def_of_α2β2ψ]
-  congr
-  all_goals (
-    simp only [PositiveRootSystem.height, split_5_into_2_3]
-    split
-    all_goals trivial
-  )
-
 set_option maxHeartbeats 0
 
 -- 8.147a

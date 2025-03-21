@@ -11,6 +11,9 @@ universe TI TR
 variable {I : Type TI} [DecidableEq I] [Fintype I]
 variable {R : Type TR} [CommRing R]
 
+namespace Chevalley.TypeB
+open Chevalley.TypeB
+
 /-- The generator matrices -/
 abbrev raw_MShort (a : Bool) (i : I) (t : R) : Matrix (SignedWithZero I) (SignedWithZero I) R :=
   1 + (2 * a * t) • (E (a.inj i) SignedWithZero.zero)

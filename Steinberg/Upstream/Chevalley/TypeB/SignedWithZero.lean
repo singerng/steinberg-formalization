@@ -6,6 +6,9 @@ import Mathlib.Data.Fintype.Prod
 universe TI
 variable {I : Type TI} [DecidableEq I] [Fintype I]
 
+namespace Chevalley.TypeB
+open Chevalley.TypeB
+
 def SignedWithZero (I : Type TI) [DecidableEq I] [Fintype I] :=
   (Bool × I) ⊕ Unit
 instance : DecidableEq (SignedWithZero I) := instDecidableEqSum
