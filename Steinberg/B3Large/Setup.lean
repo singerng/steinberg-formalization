@@ -583,23 +583,32 @@ theorem refl_def_eq_refl_gen_of_αβψ (g : GradedChevalleyGenerator B3LargePosR
   (h : g.ζ = αβψ) :
   (weakB3Large F).pres_mk (refl_def (weakB3Large F) g)
     = (weakB3Large F).pres_mk (FreeGroup.of (refl_of_gen g)) := by
-    sorry
+  rcases g with ⟨ ζ, i, hi, t ⟩
+  simp only at h
+  subst ζ
+  simp only [refl_def, MonoidHom.coe_comp, Function.comp_apply,
+    FreeGroup.lift.of, refl_of_gen, ←def_of_αβψ]
+  rw [weakB3Large]
+  simp only
+  rw [weak_define]
+  simp only [map_mul, map_inv, FreeGroup.map.of, refl_of_gen, PositiveRootSystem.height, height]
+  congr
+  all_goals rw [refl_of_split_3_into_1_2]
 
 omit Fchar in
 theorem refl_def_eq_refl_gen_of_α2β2ψ (g : GradedChevalleyGenerator B3LargePosRoot F)
   (h : g.ζ = α2β2ψ) :
   (weakB3Large F).pres_mk (refl_def (weakB3Large F) g)
     = (weakB3Large F).pres_mk (FreeGroup.of (refl_of_gen g)) := by
-    sorry
--- refl_def_eq_refl_gen_of_α2β2ψ
-
-  -- rcases g with ⟨ ζ, i, hi, t ⟩
-  -- simp only at h
-  -- subst ζ
-  -- simp only [refl_def, MonoidHom.coe_comp, Function.comp_apply, FreeGroup.lift.of]
-  -- rw [weakB3Large]
-  -- simp only
-  -- rw [weak_define]
-  -- simp only [map_mul, map_inv, FreeGroup.map.of, refl_of_gen]
-  -- -- simp only [←map_mul, map_inv]
-  -- grw [← def_of_αβψ]
+  rcases g with ⟨ ζ, i, hi, t ⟩
+  simp only at h
+  subst ζ
+  nth_rewrite 2 [←neg_neg t]
+  simp only [refl_def, MonoidHom.coe_comp, Function.comp_apply,
+    FreeGroup.lift.of, refl_of_gen, ←def_of_α2β2ψ]
+  rw [weakB3Large]
+  simp only
+  rw [weak_define]
+  simp only [map_commutatorElement, FreeGroup.map.of, refl_of_gen, PositiveRootSystem.height, height]
+  congr
+  all_goals rw [refl_of_split_5_into_2_3]
