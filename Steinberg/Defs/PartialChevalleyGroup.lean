@@ -5,9 +5,13 @@ Released under the Apache License v2.0; see LICENSE for full text.
 
 import Steinberg.Defs.PositiveRootSystem
 import Steinberg.Defs.Commutator
+
 import Steinberg.Upstream.PresentedGroup
+import Steinberg.Upstream.Commutator
+
 import Steinberg.Macro.Group
 import Steinberg.Macro.Syntax
+
 
 /-!
 

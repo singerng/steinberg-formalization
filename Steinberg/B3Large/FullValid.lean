@@ -9,11 +9,14 @@ import Steinberg.Upstream.Chevalley.TypeB.TypeB
 
 import Steinberg.Defs.Commutator
 
+import Steinberg.Upstream.Commutator
+
 namespace Steinberg
 
 variable {F : Type TR} [Field F]
 
-open PartialChevalleySystem B3Large B3LargePosRoot PartialChevalley ChevalleyGenerator PartialChevalleyGroup
+open PartialChevalleySystem B3Large B3LargePosRoot PartialChevalley
+  ChevalleyGenerator PartialChevalleyGroup Chevalley.TypeB
 
 def toB3Root (ζ : B3LargePosRoot) : BRoot (Fin 3) :=
   match ζ with

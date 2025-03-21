@@ -5,8 +5,11 @@ Released under the Apache License v2.0; see LICENSE for full text.
 
 import Steinberg.Defs.GradedPartialChevalleyGroup
 import Steinberg.Defs.PartialChevalleyGroup
-import Steinberg.Macro.Attr
+import Steinberg.Defs.DecomposeFixed
+
 import Mathlib.Tactic.DeriveFintype
+
+import Steinberg.Macro.Attr
 
 /-!
 
@@ -16,7 +19,7 @@ import Mathlib.Tactic.DeriveFintype
 
 namespace Steinberg.A3
 
-open PartialChevalley GradedPartialChevalley GradedChevalleyGenerator PartialChevalleySystem
+open Steinberg PartialChevalley GradedPartialChevalley GradedChevalleyGenerator PartialChevalleySystem
 
 /-! # The A3 positive root system -/
 
@@ -87,24 +90,11 @@ def lifted_sets (R : Type TR) [Ring R] : Set (Set (FreeGroup (GradedChevalleyGen
 
 /-! ## Definition for missing root (αβγ) -/
 
-def split_3_into_1_2 (i : ℕ) (hi : i ≤ 3) :=
-  match i with
-  | 0 => (0, 0)
-  | 1 => (0, 1)
-  | 2 => (1, 1)
-  | 3 => (1, 2)
-
-theorem correct_of_split_3_into_1_2 (i : ℕ) (hi : i ≤ 3) :
-  (split_3_into_1_2 i hi).1 ≤ 1 ∧ (split_3_into_1_2 i hi).2 ≤ 2 := by
-  simp only [split_3_into_1_2]
-  split
-  all_goals trivial
-
 def weak_define (R : Type TR) [Ring R] (g : GradedChevalleyGenerator A3PosRoot R) : FreeGroup (GradedChevalleyGenerator A3PosRoot R) :=
   let ⟨ ζ, i, hi, t ⟩ := g;
   match ζ with
   | αβγ => ⁅ {α,(split_3_into_1_2 i (by ht)).1, g.t}'(correct_of_split_3_into_1_2 i (by ht)).1,
-    {βγ, (split_3_into_1_2 i (by ht)).2, 1}'(correct_of_split_3_into_1_2 i (by ht)).2 ⁆
+    {βγ, (split_3_into_1_2 i (by ht)).2, 1}'(correct_of_split_3_into_1_2 i (by ht)).2.1 ⁆
   | ζ => FreeGroup.of g
 
 theorem weak_define_of_present (R : Type TR) [Ring R] :

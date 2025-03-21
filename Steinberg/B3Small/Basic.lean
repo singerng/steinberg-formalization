@@ -13,7 +13,8 @@ import Steinberg.B3Small.Defs
 
 namespace Steinberg.B3Small
 
-open B3SmallPosRoot GradedPartialChevalley GradedChevalleyGenerator GradedPartialChevalleyGroup
+open B3SmallPosRoot GradedPartialChevalley
+  GradedChevalleyGenerator GradedPartialChevalleyGroup
 
 variable {F : Type TF} [Field F]
 

@@ -13,7 +13,9 @@ namespace Steinberg
 
 variable {F : Type TR} [CommRing F]
 
-open PartialChevalleySystem B3Small B3SmallPosRoot PartialChevalley ChevalleyGenerator PartialChevalleyGroup
+open PartialChevalleySystem B3Small
+  B3SmallPosRoot PartialChevalley ChevalleyGenerator
+  PartialChevalleyGroup Chevalley.TypeB
 
 def toB3Root (ζ : B3SmallPosRoot) : BRoot (Fin 3) :=
   match ζ with

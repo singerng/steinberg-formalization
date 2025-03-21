@@ -44,7 +44,7 @@ theorem nonhomog_lift_of_comm_of_αβ_βγ :
 theorem def_of_αβγ :
   forall_i_t αβγ,
     ⁅ ⸨α, (split_3_into_1_2 i hi).1, t⸩'(correct_of_split_3_into_1_2 i hi).1
-    , ⸨βγ, (split_3_into_1_2 i hi).2, 1⸩'(correct_of_split_3_into_1_2 i hi).2 ⁆
+    , ⸨βγ, (split_3_into_1_2 i hi).2, 1⸩'(correct_of_split_3_into_1_2 i hi).2.1 ⁆
     = ⸨αβγ, i, t⸩ := by
   intro i hi t
   symm

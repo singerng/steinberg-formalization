@@ -17,7 +17,8 @@ import Steinberg.Upstream.FreeGroup
 
 namespace Steinberg.B3Small
 
-open Steinberg B3SmallPosRoot GradedPartialChevalley GradedPartialChevalleyGroup GradedChevalleyGenerator
+open Steinberg B3SmallPosRoot GradedPartialChevalley
+  GradedPartialChevalleyGroup GradedChevalleyGenerator
 
 variable {F : Type TF} [Field F] (Fchar : (2 : F) ≠ 0)
 
@@ -42,7 +43,7 @@ theorem nonhomog_lift_of_comm_of_βψ_ψω :
 /-! ### Definition of missing root -/
 theorem def_of_βψω : forall_i_t βψω,
     ⁅ ⸨β, (split_3_into_1_2 i hi).1, t⸩'(correct_of_split_3_into_1_2 i hi).1
-    , ⸨ψω, (split_3_into_1_2 i hi).2, 1⸩'(correct_of_split_3_into_1_2 i hi).2 ⁆
+    , ⸨ψω, (split_3_into_1_2 i hi).2, 1⸩'(correct_of_split_3_into_1_2 i hi).2.1 ⁆
       = ⸨βψω, i, t⸩ := by
   intro t i hi
   symm

@@ -6,8 +6,11 @@ Released under the Apache License v2.0; see LICENSE for full text.
 import Steinberg.Defs.PartialChevalleyGroup
 import Steinberg.Defs.GradedPartialChevalleyGroup
 import Steinberg.Defs.ReflDeg
+import Steinberg.Defs.DecomposeFixed
+
 import Mathlib.Tactic.DeriveFintype
 import Mathlib.Tactic.FieldSimp
+
 
 /-!
 
@@ -17,7 +20,7 @@ import Mathlib.Tactic.FieldSimp
 
 namespace Steinberg.B3Large
 
-open PartialChevalley GradedPartialChevalley GradedChevalleyGenerator PartialChevalleySystem
+open Steinberg PartialChevalley GradedPartialChevalley GradedChevalleyGenerator PartialChevalleySystem
 
 /-! # The B3-large positive root system -/
 
@@ -310,49 +313,6 @@ def hom_lifted_sets (F : Type TF) [Field F] : Set (Set (FreeGroup (GradedChevall
 def lifted_sets (F : Type TF) [Field F] := (nonhom_lifted_sets F) ∪ (hom_lifted_sets F)
 
 /-! ## Definition for missing root (αβψ, αβ2ψ, α2β2ψ) -/
-
-def split_3_into_1_2 (i : ℕ) (hi : i ≤ 3) :=
-  match i with
-  | 0 => (0, 0)
-  | 1 => (0, 1)
-  | 2 => (1, 1)
-  | 3 => (1, 2)
-
-theorem correct_of_split_3_into_1_2 (i : ℕ) (hi : i ≤ 3) :
-  (split_3_into_1_2 i hi).1 ≤ 1 ∧ (split_3_into_1_2 i hi).2 ≤ 2 ∧ (split_3_into_1_2 i hi).1 + (split_3_into_1_2 i hi).2 = i := by
-  simp only [split_3_into_1_2]
-  split
-  all_goals trivial
-
-
-def split_4_into_1_3 (i : ℕ) (hi : i ≤ 4) :=
-  match i with
-  | 0 => (0, 0)
-  | 1 => (0, 1)
-  | 2 => (1, 1)
-  | 3 => (1, 2)
-  | 4 => (1, 3)
-
-theorem correct_of_split_4_into_1_3 (i : ℕ) (hi : i ≤ 4) :
-  (split_4_into_1_3 i hi).1 ≤ 1 ∧ (split_4_into_1_3 i hi).2 ≤ 3 ∧ (split_4_into_1_3 i hi).1 + (split_4_into_1_3 i hi).2 = i := by
-  simp only [split_4_into_1_3]
-  split
-  all_goals trivial
-
-def split_5_into_2_3 (i : ℕ) (hi : i ≤ 5) :=
-  match i with
-  | 0 => (0, 0)
-  | 1 => (0, 1)
-  | 2 => (1, 1)
-  | 3 => (1, 2)
-  | 4 => (2, 2)
-  | 5 => (2, 3)
-
-theorem correct_of_split_5_into_2_3 (i : ℕ) (hi : i ≤ 5) :
-  (split_5_into_2_3 i hi).1 ≤ 2 ∧ (split_5_into_2_3 i hi).2 ≤ 3 ∧ (split_5_into_2_3 i hi).1 + (split_5_into_2_3 i hi).2 = i := by
-  simp only [split_5_into_2_3]
-  split
-  all_goals trivial
 
 def weak_define (F : Type TR) [Field F] (g : GradedChevalleyGenerator B3LargePosRoot F) : FreeGroup (GradedChevalleyGenerator B3LargePosRoot F) :=
   let ⟨ ζ, i, hi, t ⟩ := g;

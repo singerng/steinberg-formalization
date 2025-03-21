@@ -17,6 +17,7 @@ import Mathlib.Tactic
 
 universe u v
 
+
 variable {R : Type u} [CommRing R]
 variable {I : Type v} [DecidableEq I] [Fintype I]
 
