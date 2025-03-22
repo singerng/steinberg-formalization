@@ -225,7 +225,7 @@ theorem generic_comm_of_αβ_ψ :
     rw [pow_two, lin_of_ψ, ←two_mul, mul_div_left_comm, div_self Fchar, mul_one]
   have yinv : y⁻¹ = ⸨ψ, j, -(u / 2)⸩ := by rw [inv_of_ψ]
   have x_star_y : (x ⋆ y) = ⸨αβψ, i + j, t * u⸩ := by
-    unfold star x y
+    unfold starCommutator_def x y
     grw [expr_αβψ_as_ψ_αβ_ψ_αβ_ψ hi hj, inv_of_ψ, pow_two, inv_of_αβ,
     lin_of_ψ, half_add_half Fchar u]
   have x_star_y_inv : (x ⋆ y)⁻¹ = ⸨αβψ, i + j, -t * u⸩ := by
@@ -244,7 +244,7 @@ theorem generic_comm_of_α_βψ :
   have ysquare : y^2 = ⸨βψ, j, u⸩ := by
     rw [pow_two, hy, lin_of_βψ, half_add_half Fchar u]
   have x_star_y : (x ⋆ y) = ⸨αβψ, i + j, t * u⸩ := by
-    unfold star x y
+    unfold starCommutator_def x y
     grw [expr_αβψ_as_βψ_α_βψ_α_βψ hi hj, inv_of_βψ, pow_two, lin_of_βψ, half_add_half Fchar u, inv_of_α]
   have x_star_y_inv : (x ⋆ y)⁻¹ = ⸨αβψ, i + j, -t * u⸩ := by
     rw [x_star_y, eq_inv_of_mul_eq_one_left (inv_doub_of_αβψ_a (add_le_add hi hj) (t * u)), inv_inv, neg_mul]

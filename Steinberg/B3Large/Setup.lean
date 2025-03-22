@@ -380,24 +380,34 @@ theorem b3large_valid :
     )
 
 include Fchar
+theorem Fchar4 : (4 : F) ≠ 0 := by
+  have : (4 : F) = 2 * 2 := by ring_nf
+  rw [this]
+  exact mul_ne_zero Fchar Fchar
 
 -- 8.108
+-- TODO: abstract?
 theorem expr_βψ_as_ψ_β_ψ_β_ψ :
   forall_ij_tu 1 1,
     ⸨βψ, i + j, t * u⸩ = ⸨ψ, i, -t/2⸩ * ⸨β, j, u⸩ * ⸨ψ, i, t⸩ * ⸨β, j, -u⸩ * ⸨ψ, i, -t/2⸩ := by
   intro i j hi hj t u
-  have hij : i + j ≤ βψ.height := by ht
-  rw [← mul_inv_eq_iff_eq_mul]
-  mar; rw [← inv_mul_eq_iff_eq_mul]; mal
-  apply mul_right_cancel (b := ⸨ψ, i, t⸩⁻¹)
-  rw [← inv_of_β, ← commutatorElement_def]
-  grw [comm_of_β_ψ, expr_βψ_β2ψ_as_β2ψ_βψ]
-  rw [eq_of_hR_eq β2ψ (i + (i + j)) (by omega) (2 * (t / 2) * (t * u)) (by field_simp; ring)]
-  grw [expr_β2ψ_as_ψ_βψ_ψ_βψ hi hij]
-  ring_nf
-  mul_inj
-  have neg_add_div_two_eq : -t + (t / 2) = -t / 2 := by field_simp; ring
-  chev_simp [← div_eq_mul_inv, neg_add_div_two_eq]
+  have : ⸨ψ, i, -t/2⸩ * ⸨β, j, u⸩ * ⸨ψ, i, t⸩ * ⸨β, j, -u⸩ * ⸨ψ, i, -t/2⸩ = ⸨β, j, u⸩ ⋆ ⸨ψ, i, t/2⸩ := by
+    unfold starCommutator_def
+    simp only [inv_of_ψ, inv_of_β, pow_two, lin_of_ψ, neg_div]
+    congr
+    field_simp
+    ring
+  rw [this]
+  apply starCommutator_helper ⸨β2ψ, 2 * i + j, t^2 * u⸩
+  · rw [pow_two, lin_of_ψ, comm_of_β_ψ]
+    simp_rw [←add_comm i j, ←add_comm (2*i) j]
+    have := Fchar4 Fchar
+    field_simp
+    ring_nf
+    field_simp
+  · rw [inv_of_βψ, CI2, comm_of_ψ_βψ, inv_of_β2ψ]
+    field_simp
+    ring_nf
 
 omit Fchar
 

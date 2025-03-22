@@ -7,9 +7,9 @@ import Steinberg.B3Large.Defs
 
 namespace Steinberg.B3Large
 
-open Steinberg B3Large PartialChevalley ChevalleyGenerator B3LargePosRoot
+open Steinberg B3Large PartialChevalley PartialChevalleySystem ChevalleyGenerator B3LargePosRoot
 
-variable {F : Type TF} [Field F]
+variable {F : Type TF} [Field F] (Fchar : (2 : F) ≠ 0)
 
 set_option hygiene false in
 /-- Shorthand for building group elements from a root and ring element. -/
@@ -59,11 +59,62 @@ declare_B3Large_ungraded_single_comm_of_root_pair_thms F αβ β2ψ α2β2ψ 1 1
 declare_B3Large_ungraded_single_comm_of_root_pair_thms F αβψ βψ α2β2ψ 1 2
 declare_B3Large_ungraded_single_comm_of_root_pair_thms F αβ2ψ β α2β2ψ 1 1
 
-theorem helper1 : ⸨ψ, -(1 / 2)⸩ * ⸨αβ, 1⸩ * ⸨ψ, 1⸩ * ⸨αβ, -1⸩ * ⸨ψ, -(1 / 2)⸩ = ⸨αβψ, 1⸩ := by sorry
+theorem comm_of_α_βψ : double_commutator_of_root_pair (fullB3Large F).pres_mk ⟨α, βψ, αβψ, α2β2ψ, 1, 1, by ht, by ht⟩ :=
+  (fullB3Large F).double_commutator_helper ⟨α, βψ, αβψ, α2β2ψ, 1, 1, by ht, by ht⟩
+  (by simp [fullB3Large, double_comm_root_pairs, fullB3LargeSystem, mk_full, full_double_commutator_pairs])
 
-theorem helper2 : ⸨βψ, -(1 / 2)⸩ * ⸨α, 1⸩ * ⸨βψ, 1⸩ * ⸨α, -1⸩ * ⸨βψ, -(1 / 2)⸩ = ⸨αβψ, 1⸩ := by sorry
+theorem comm_of_αβ_ψ : double_commutator_of_root_pair (fullB3Large F).pres_mk ⟨αβ, ψ, αβψ, αβ2ψ, 1, 1, by ht, by ht⟩ :=
+  (fullB3Large F).double_commutator_helper ⟨αβ, ψ, αβψ, αβ2ψ, 1, 1, by ht, by ht⟩
+  (by simp [fullB3Large, double_comm_root_pairs, fullB3LargeSystem, mk_full, full_double_commutator_pairs])
 
-theorem valid_of_hom_lifted (F : Type TF) [Field F] :
+include Fchar
+theorem Fchar4 : (4 : F) ≠ 0 := by
+  have : (4 : F) = 2 * 2 := by ring_nf
+  rw [this]
+  exact mul_ne_zero Fchar Fchar
+
+theorem helper1 (t u : F) : ⸨ψ, -(u / 2)⸩ * ⸨αβ, t⸩ * ⸨ψ, u⸩ * ⸨αβ, -t⸩ * ⸨ψ, -(u / 2)⸩ = ⸨αβψ, t * u⸩ := by
+  symm
+  have : ⸨ψ, -(u/2)⸩ * ⸨αβ, t⸩ * ⸨ψ, u⸩ * ⸨αβ, -t⸩ * ⸨ψ, -(u/2)⸩ = ⸨αβ, t⸩ ⋆ ⸨ψ, u/2⸩ := by
+    unfold starCommutator_def
+    simp only [inv_of_ψ, inv_of_αβ, lin_of_ψ, pow_two]
+    field_simp
+    ring_nf
+    field_simp
+  rw [this]
+  apply starCommutator_helper ⸨αβ2ψ, t * u^2⸩
+  · rw [pow_two, lin_of_ψ, comm_of_αβ_ψ]
+    have := Fchar4 Fchar
+    field_simp
+    ring_nf
+    field_simp
+  · rw [inv_of_αβψ, comm_of_αβψ_ψ]
+    field_simp
+    ring_nf
+    field_simp
+
+theorem helper2 (t u : F) : ⸨βψ, -(u / 2)⸩ * ⸨α, t⸩ * ⸨βψ, u⸩ * ⸨α, -t⸩ * ⸨βψ, -(u / 2)⸩ = ⸨αβψ, t * u⸩ := by
+  symm
+  have : ⸨βψ, -(u / 2)⸩ * ⸨α, t⸩ * ⸨βψ, u⸩ * ⸨α, -t⸩ * ⸨βψ, -(u / 2)⸩ = ⸨α, t⸩ ⋆ ⸨βψ, u/2⸩ := by
+    unfold starCommutator_def
+    simp only [inv_of_βψ, inv_of_α, lin_of_βψ, pow_two]
+    field_simp
+    ring_nf
+    field_simp
+  rw [this]
+  apply starCommutator_helper ⸨α2β2ψ, t * u^2⸩
+  · rw [pow_two, lin_of_βψ, comm_of_α_βψ]
+    have := Fchar4 Fchar
+    field_simp
+    ring_nf
+    field_simp
+  · rw [inv_of_αβψ, comm_of_αβψ_βψ]
+    field_simp
+    ring_nf
+    field_simp
+
+-- include Fchar in
+theorem valid_of_hom_lifted (F : Type TF) [Field F] (Fchar : (2 : F) ≠ 0) :
   ∀ S ∈ hom_lifted_sets F, ∃ r : FreeGroup (ChevalleyGenerator B3LargePosRoot F), S = hom_lift_set r ∧ (fullB3Large F).pres_mk r = 1 := by
   intro S h_S
   simp only [hom_lifted_sets] at h_S
@@ -80,16 +131,18 @@ theorem valid_of_hom_lifted (F : Type TF) [Field F] :
     simp only [map_mul, map_inv]
     apply mul_inv_eq_one.mpr
     chev_simp
-    grw [helper1, helper2]
+    grw [helper1 Fchar, helper2 Fchar]
   · simp only [base_rel_of_hom_lift_of_doub_of_αβψ]
     simp only [map_mul, map_inv, map_one, neg_div]
     apply mul_inv_eq_one.mpr
-    grw [helper1, helper1]
-    sorry
+    have : ⸨ψ, -1⸩ = ⸨ψ, -(2 / 2)⸩ := by field_simp
+    rw [this]
+    grw [helper1 Fchar, helper1 Fchar, helper1 Fchar]
+    ring_nf
   · simp only [base_rel_of_hom_lift_of_interchange_of_αβ2ψ]
     simp only [map_commutatorElement, map_mul, map_inv, neg_div]
     apply mul_inv_eq_one.mpr
-    grw [helper1]
+    grw [helper1 Fchar]
     grw [comm_of_αβψ_ψ, comm_of_α_β2ψ]
   · simp only [base_rel_of_hom_lift_of_comm_of_βψ_α_β2ψ]
     simp only [map_commutatorElement]
@@ -113,19 +166,20 @@ theorem valid_of_hom_lifted (F : Type TF) [Field F] :
     exact id_of_αβ2ψ
   · simp only [base_rel_of_hom_lift_of_comm_of_β2ψ_αβψ]
     simp only [map_commutatorElement, map_mul, neg_div]
-    grw [helper1, comm_of_β2ψ_αβψ]
+    grw [helper1 Fchar, comm_of_β2ψ_αβψ]
   · simp only [base_rel_of_hom_lift_of_interchange_of_α2β2ψ_a]
     simp only [map_commutatorElement, map_mul, neg_div]
     have : ⁅⸨βψ, 1⸩, ⸨αβψ, 1⸩⁆ = ⸨α2β2ψ, 2⸩ := by
       rw [← comm_swap, comm_of_αβψ_βψ]
       norm_num
-    grw [helper1, helper1, comm_of_αβ_β2ψ, this, this]
+    chev_simp
+    grw [helper1 Fchar, comm_of_αβ_β2ψ, this, this]
   · simp only [base_rel_of_hom_lift_of_interchange_of_α2β2ψ_b]
     simp only [map_commutatorElement, map_mul, map_inv, neg_div]
     have : ⁅⸨β, 1⸩, ⸨αβ2ψ, 2⸩⁆ = ⸨α2β2ψ, 2⸩ := by
       rw [← comm_swap, comm_of_αβ2ψ_β]
       norm_num
-    grw [helper1, comm_of_αβψ_βψ, comm_of_α_β2ψ, this, this]
+    grw [helper1 Fchar, comm_of_αβψ_βψ, comm_of_α_β2ψ, this, this]
   · grw [base_rel_of_hom_lift_of_comm_of_ψ_αβ_β2ψ]
     grw [comm_of_αβ_β2ψ, comm_of_ψ_α2β2ψ]
   · simp only [base_rel_of_hom_lift_of_comm_of_αβ_αβ_β2ψ_a]
