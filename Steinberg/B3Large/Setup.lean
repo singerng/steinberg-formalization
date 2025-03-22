@@ -337,7 +337,7 @@ theorem b3large_valid :
         right
         exact h_hom
       · exact this
-    simp only [hom_lifted_sets, Set.mem_image] at h_hom
+    simp only [hom_lifted_sets, hom_lift_base_set, Set.mem_image] at h_hom
     rcases h_hom with ⟨ b, h, h_hom ⟩
     subst S
     nth_rewrite 2 [←map_refl_gen_of_hom]

@@ -148,13 +148,18 @@ abbrev full_single_commutator_pairs : Set (SingleSpanRootPair B3SmallPosRoot) :=
 abbrev full_double_commutator_pairs : Set (DoubleSpanRootPair B3SmallPosRoot) := double_commutator_pairs
 
 -- TODO: this should really be via 'decide', but we had issues with declaring PartialChevalleySystem as a Finset
-theorem all_root_pairs_have_relation : all_pairs B3SmallPosRoot full_trivial_commutator_pairs full_single_commutator_pairs full_double_commutator_pairs := by
-    intro ζ η
-    cases ζ <;> cases η
-    all_goals simp only [ne_eq, reduceCtorEq, not_false_eq_true, Set.union_insert, Set.union_singleton,
-      Set.mem_insert_iff, Prod.mk.injEq, and_self, and_false, Set.mem_singleton_iff, or_self,
-      exists_eq_or_imp, or_false, exists_eq_left, or_true, Set.mem_empty_iff_false, false_and,
-      exists_false, imp_self, not_true_eq_false]
+theorem all_root_pairs_have_relation : every_pair_in_all_pairs B3SmallPosRoot full_trivial_commutator_pairs full_single_commutator_pairs full_double_commutator_pairs := by
+  intro ζ η h_ne
+  unfold to_pairs full_trivial_commutator_pairs trivial_commutator_pairs full_single_commutator_pairs
+    single_commutator_pairs full_double_commutator_pairs double_commutator_pairs
+  simp only [Set.image_insert_eq, Set.image_singleton, Set.union_insert, Set.union_singleton, Prod.swap,
+    Set.mem_insert_iff, Set.mem_singleton_iff]
+  cases ζ
+  all_goals (
+    simp only [Prod.mk.injEq, reduceCtorEq, false_and, true_and, or_self, or_false, false_or]
+    cases η
+    all_goals trivial
+  )
 
 abbrev fullB3SmallSystem := PartialChevalleySystem.mk_full B3SmallPosRoot
   full_present_roots
