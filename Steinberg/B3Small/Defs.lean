@@ -169,7 +169,7 @@ abbrev fullB3SmallSystem := PartialChevalleySystem.mk_full B3SmallPosRoot
   (by decide)
   all_root_pairs_have_relation
 
-def fullB3Small (R : Type TR) [Ring R] := @PartialChevalleyGroup.mk B3SmallPosRoot _ R _ fullB3SmallSystem
+def fullB3Small (R : Type TR) [Ring R] := PartialChevalleyGroup.full_mk B3SmallPosRoot R fullB3SmallSystem
 def fullB3SmallGraded (R : Type TR) [Ring R] := GradedPartialChevalleyGroup.full_mk B3SmallPosRoot R fullB3SmallSystem
 
 /-! # Notation and macros -/

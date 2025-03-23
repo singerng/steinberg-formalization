@@ -97,7 +97,6 @@ def weak_define (R : Type TR) [Ring R] (g : GradedChevalleyGenerator A3PosRoot R
     {βγ, (split_3_into_1_2 i (by ht)).2, 1}'(correct_of_split_3_into_1_2 i (by ht)).2.1 ⁆
   | ζ => FreeGroup.of g
 
-
 theorem weak_define_of_present (R : Type TR) [Ring R] :
   ∀ {g : GradedChevalleyGenerator A3PosRoot R}, g.ζ ∈ weakA3System.present_roots → weak_define R g = FreeGroup.of g := by
   intro g h_g_in_present
@@ -115,7 +114,6 @@ theorem weak_define_is_projection (R : Type TR) [Ring R] :
   rcases g with ⟨ ζ, i, hi, t ⟩
   cases ζ
   all_goals simp only [weak_define, FreeGroup.lift.of, map_commutatorElement]
-
 
 def weakA3 (R : Type TR) [Ring R] := GradedPartialChevalleyGroup.mk
   weakA3System
@@ -156,7 +154,7 @@ abbrev fullA3System := PartialChevalleySystem.mk_full A3PosRoot
   (by decide)
   all_root_pairs_have_relation
 
-def fullA3 (R : Type TR) [Ring R] := @PartialChevalleyGroup.mk A3PosRoot _ R _ fullA3System
+def fullA3 (R : Type TR) [Ring R] := PartialChevalleyGroup.full_mk A3PosRoot R fullA3System
 def fullA3Graded (R : Type TR) [Ring R] := GradedPartialChevalleyGroup.full_mk A3PosRoot R fullA3System
 
 /-! # Notation and macros -/

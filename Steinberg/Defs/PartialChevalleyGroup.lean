@@ -221,10 +221,17 @@ end ofRoot
 structure PartialChevalleyGroup (Φ : Type TΦ) [PositiveRootSystem Φ] (R : Type TR) [Ring R] where
   mk ::
   sys : PartialChevalleySystem Φ
+  define : ChevalleyGenerator Φ R → FreeGroup (ChevalleyGenerator Φ R)
+  h_define_of_present : ∀ {g : ChevalleyGenerator Φ R}, g.ζ ∈ sys.present_roots → define g = FreeGroup.of g
+  h_define_is_projection : ∀ {g : ChevalleyGenerator Φ R}, (FreeGroup.lift define) (define g) = define g
 
 namespace PartialChevalleyGroup
 
 open PartialChevalleyGroup
+
+def full_mk (Φ : Type TΦ) [PositiveRootSystem Φ] (R : Type TR) [Ring R] (sys : PartialChevalleySystem Φ)
+  : PartialChevalleyGroup Φ R :=
+  PartialChevalleyGroup.mk sys FreeGroup.of (by tauto) (by tauto)
 
 /-! ### Sets of relations -/
 def trivial_comm_rels (w : PartialChevalleyGroup Φ R) : Set (FreeGroup (ChevalleyGenerator Φ R)) :=
@@ -239,8 +246,13 @@ def double_comm_rels (w : PartialChevalleyGroup Φ R) : Set (FreeGroup (Chevalle
 def lin_rels (w : PartialChevalleyGroup Φ R) : Set (FreeGroup (ChevalleyGenerator Φ R)) :=
   ⋃ (ζ ∈ w.sys.present_roots), rels_of_lin_of_root R ζ
 
+def def_rels (w : PartialChevalleyGroup Φ R) : Set (FreeGroup (ChevalleyGenerator Φ R)) :=
+  ⋃ (ζ : Φ), {
+      {ζ, t}⁻¹ * w.define (ChevalleyGenerator.mk ζ t) | (t : R)
+  }
+
 def all_rels (w : PartialChevalleyGroup Φ R) :=
-  ⋃₀ {trivial_comm_rels w, single_comm_rels w, double_comm_rels w, lin_rels w}
+  ⋃₀ {trivial_comm_rels w, single_comm_rels w, double_comm_rels w, lin_rels w, def_rels w}
 
 /-! ### The group and the embedding -/
 
@@ -260,11 +272,12 @@ theorem injection (w₁ w₂ : PartialChevalleyGroup Φ R)
     (∀ r ∈ (rels_of_double_commutator_of_root_pair R p), w₂.pres_mk r = 1))
   (h_lin : ∀ p ∈ w₁.sys.present_roots, p ∈ w₂.sys.present_roots ∨
     (∀ r ∈ (rels_of_lin_of_root R p), w₂.pres_mk r = 1))
+  (h_def : ∀ p ∈ w₁.def_rels, w₂.pres_mk p = 1)
   : ∀ r ∈ w₁.all_rels, w₂.pres_mk r = 1 := by
   simp only [all_rels]
   intro r h
   simp only [Set.sUnion_insert, Set.sUnion_singleton, Set.mem_union, Set.mem_sUnion] at h
-  rcases h with h|h|h|h
+  rcases h with h|h|h|h|h
   · simp only [trivial_comm_rels, Set.sUnion_image, Set.mem_iUnion, exists_prop] at h
     rcases h with ⟨ p, h_p, h_r_p ⟩
     specialize h_triv p
@@ -321,6 +334,7 @@ theorem injection (w₁ w₂ : PartialChevalleyGroup Φ R)
       simp only [Set.sUnion_insert, Set.sUnion_singleton, Set.mem_union, Set.mem_sUnion]
       tauto
     · tauto
+  · tauto
 
 open Lean PrettyPrinter Delaborator SubExpr in
 /--
@@ -401,6 +415,22 @@ theorem lin_helper (w : PartialChevalleyGroup Φ R) {ζ : Φ} (h : ζ ∈ w.sys.
     rw [rels_of_lin_of_root]
     exists t, u
 
+theorem def_helper (w : PartialChevalleyGroup Φ R)
+    : ∀ (ζ : Φ) (t : R), w.pres_mk {ζ, t} = w.pres_mk (w.define (ChevalleyGenerator.mk ζ t))
+      := by
+  intro ζ t
+  apply eq_of_inv_mul_eq_one
+  apply eq_one_of_mem_rels
+  apply Set.mem_sUnion.mpr
+  use w.def_rels
+  constructor
+  · tauto
+  · simp only [def_rels]
+    simp only [Set.mem_iUnion]
+    use ζ
+    simp only [Set.mem_setOf_eq]
+    use t
+
 section declareThms
 
 open Lean Parser.Tactic
@@ -417,7 +447,7 @@ macro "declare_ungraded_lin_id_inv_thms" w:ident R:term:arg root:term:arg : comm
   makeCommands `(section
     @[group_reassoc (attr := simp, chev_simps)]
     theorem $linOf : lin_of_root(($w $R).pres_mk, $root) :=
-      ($w $R).lin_helper (by unfold $w; simp only; tauto)
+      ($w $R).lin_helper (by unfold $w; simp only [PartialChevalleyGroup.full_mk]; tauto)
 
     @[simp, chev_simps]
     theorem $idOf : id_of_root(($w $R).pres_mk, $root) :=
@@ -451,7 +481,7 @@ macro "declare_ungraded_triv_comm_of_root_pair_thms"
   let commOf := TSyntax.mapIdent₂ r₁ r₂ (fun s₁ s₂ => "comm_of_" ++ s₁ ++ "_" ++ s₂)
   makeCommands `(section
     theorem $commOf : trivial_commutator_of_root_pair ($w $R).pres_mk ($r₁, $r₂) :=
-      ($w $R).trivial_commutator_helper (by unfold $w; simp only; tauto)
+      ($w $R).trivial_commutator_helper (by unfold $w; simp only [PartialChevalleyGroup.full_mk]; tauto)
     declare_ungraded_triv_expr_thm $w $R $r₁ $r₂
   end)
 
@@ -508,7 +538,7 @@ macro "declare_ungraded_single_comm_of_root_pair_thms"
   makeCommands `(section
     theorem $commOf : single_commutator_of_root_pair ($w $R).pres_mk ⟨$r₁, $r₂, $r₃, $innerTerm, rfl⟩ :=
       ($w $R).single_commutator_helper ⟨$r₁, $r₂, $r₃, $innerTerm, rfl⟩ (
-        by unfold $w; simp only; tauto)
+        by unfold $w; simp only [PartialChevalleyGroup.full_mk]; tauto)
     declare_ungraded_single_expr_thms $w $R $r₁ $r₂ $r₃ $isNeg $n
   end)
 

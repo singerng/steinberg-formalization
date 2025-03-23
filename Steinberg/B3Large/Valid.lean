@@ -61,11 +61,11 @@ declare_B3Large_ungraded_single_comm_of_root_pair_thms F αβ2ψ β α2β2ψ 1 1
 
 theorem comm_of_α_βψ : double_commutator_of_root_pair (fullB3Large F).pres_mk ⟨α, βψ, αβψ, α2β2ψ, 1, 1, by ht, by ht⟩ :=
   (fullB3Large F).double_commutator_helper ⟨α, βψ, αβψ, α2β2ψ, 1, 1, by ht, by ht⟩
-  (by simp [fullB3Large, double_comm_root_pairs, fullB3LargeSystem, mk_full, full_double_commutator_pairs])
+  (by simp only [fullB3Large, PartialChevalleyGroup.full_mk, double_comm_root_pairs, fullB3LargeSystem, mk_full, full_double_commutator_pairs]; tauto)
 
 theorem comm_of_αβ_ψ : double_commutator_of_root_pair (fullB3Large F).pres_mk ⟨αβ, ψ, αβψ, αβ2ψ, 1, 1, by ht, by ht⟩ :=
   (fullB3Large F).double_commutator_helper ⟨αβ, ψ, αβψ, αβ2ψ, 1, 1, by ht, by ht⟩
-  (by simp [fullB3Large, double_comm_root_pairs, fullB3LargeSystem, mk_full, full_double_commutator_pairs])
+  (by simp only [fullB3Large, PartialChevalleyGroup.full_mk, double_comm_root_pairs, fullB3LargeSystem, mk_full, full_double_commutator_pairs]; tauto)
 
 include Fchar
 theorem Fchar4 : (4 : F) ≠ 0 := by

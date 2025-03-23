@@ -33,8 +33,8 @@ theorem valid :
   ∀ r ∈ (fullB3Small F).all_rels, (FreeGroup.lift toB3Mat r) = 1 := by
   intro r h
   simp only [all_rels, Set.sUnion_insert, Set.sUnion_singleton, Set.mem_union] at h
-  rcases h with h_triv|h_sing|h_doub|h_lin
-  · simp only [trivial_comm_rels, fullB3Small, fullB3SmallSystem, mk_full,
+  rcases h with h_triv|h_sing|h_doub|h_lin|h_def
+  · simp only [trivial_comm_rels, fullB3Small, full_mk, fullB3SmallSystem, mk_full,
       full_trivial_commutator_pairs, trivial_commutator_pairs, Set.mem_union, Set.mem_iUnion] at h_triv
     rcases h_triv with ⟨ p, h_p, h_triv ⟩
     simp only [rels_of_trivial_commutator_of_root_pair, Set.mem_setOf_eq] at h_triv
@@ -60,7 +60,7 @@ theorem valid :
       all_goals tauto
     )
     apply MLong_comm_disjoint'
-  · simp only [single_comm_rels, fullB3Small, fullB3SmallSystem, mk_full,
+  · simp only [single_comm_rels, fullB3Small, full_mk, fullB3SmallSystem, mk_full,
       full_single_commutator_pairs, single_commutator_pairs, Set.mem_union, Set.mem_iUnion] at h_sing
     rcases h_sing with ⟨ p, h_p, h_sing ⟩
     simp only [rels_of_single_commutator_of_root_pair, Set.mem_setOf_eq] at h_sing
@@ -87,7 +87,7 @@ theorem valid :
       simp only [true_toRing, false_toRing]
       ring_nf
       tauto
-  · simp only [double_comm_rels, fullB3Small, fullB3SmallSystem, mk_full,
+  · simp only [double_comm_rels, fullB3Small, full_mk, fullB3SmallSystem, mk_full,
       full_single_commutator_pairs, single_commutator_pairs, Set.mem_union, Set.mem_iUnion] at h_doub
     rcases h_doub with ⟨ p, h_p, h_doub ⟩
     simp only [rels_of_double_commutator_of_root_pair, Set.mem_setOf_eq] at h_doub
@@ -102,7 +102,7 @@ theorem valid :
     · rw [MLong_swap, ←Bool.not_false, MLong_MShort_comm_overlap, MLong_swap]
       simp only [Bool.not_false, true_toRing, false_toRing]
       ring_nf
-  · simp only [lin_rels, fullB3Small, fullB3SmallSystem, mk_full,
+  · simp only [lin_rels, fullB3Small, full_mk, fullB3SmallSystem, mk_full,
       full_present_roots, B3Small.present_roots, Set.mem_union, Set.mem_iUnion] at h_lin
     rcases h_lin with ⟨ p, h_p, h_lin ⟩
     simp only [rels_of_lin_of_root, Set.mem_setOf_eq] at h_lin
@@ -119,5 +119,10 @@ theorem valid :
     )
     any_goals rw [MShort_mul_add]
     all_goals rw [MLong_mul_add]
+  · simp only [def_rels, fullB3Small, full_mk, fullB3SmallSystem, mk_full,
+      Set.mem_iUnion] at h_def
+    rcases h_def with ⟨ p, h_p, h_def ⟩
+    subst r
+    simp only [inv_mul_cancel, map_one]
 
 end Steinberg

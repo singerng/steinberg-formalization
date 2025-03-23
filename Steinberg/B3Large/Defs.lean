@@ -341,7 +341,7 @@ def fullB3LargeSystem := PartialChevalleySystem.mk_full B3LargePosRoot
   (by decide)
   all_root_pairs_have_relation
 
-def fullB3Large (F : Type TR) [Field F] := @PartialChevalleyGroup.mk B3LargePosRoot _ F _ fullB3LargeSystem
+def fullB3Large (F : Type TR) [Field F] := PartialChevalleyGroup.full_mk B3LargePosRoot F fullB3LargeSystem
 def fullB3LargeGraded (F : Type TR) [Field F] := GradedPartialChevalleyGroup.full_mk B3LargePosRoot F fullB3LargeSystem
 
 /-! # Notation and macros -/
