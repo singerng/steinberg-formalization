@@ -106,9 +106,11 @@ theorem eq_of_R_eq (ζ : Φ) {t : R} (u : R) (h : t = u)
 
 end ChevalleyGenerator
 
+open ChevalleyGenerator
+
 /-! ### Statements about generators which we assume and/or prove -/
 
-open ChevalleyGenerator
+section Relations
 
 /-! #### Commutator for generators from two roots which span no additional roots -/
 
@@ -159,6 +161,8 @@ def rels_of_double_commutator_of_root_pair (R : Type TR) [Ring R] (p : DoubleSpa
 def rels_of_lin_of_root (R : Type TR) [Ring R] (ζ : Φ) : Set (FreeGroup (ChevalleyGenerator Φ R)) :=
   { {ζ, t} * {ζ, u} * {ζ, t + u}⁻¹
     | (t : R) (u : R) }
+
+end Relations
 
 /-! ### Additional properties implied by linearity and implications therein -/
 
@@ -214,8 +218,6 @@ theorem inv_of_lin_of_root {f : FreeGroup (ChevalleyGenerator Φ R) →* G} {ζ 
 
 end ofRoot
 
-/-! ### ASDFJKL; -/
-
 structure PartialChevalleyGroup (Φ : Type TΦ) [PositiveRootSystem Φ] (R : Type TR) [Ring R] where
   mk ::
   sys : PartialChevalleySystem Φ
@@ -248,7 +250,7 @@ abbrev group (w : PartialChevalleyGroup Φ R) :=
 def pres_mk (w : PartialChevalleyGroup Φ R) : FreeGroup (ChevalleyGenerator Φ R) →* group w :=
   PresentedGroup.mk (PartialChevalleyGroup.all_rels w)
 
-/-- Mapping between two PartialChevalleyGroup graded groups -/
+/-- Mapping between two PartialChevalleyGroups -/
 theorem injection (w₁ w₂ : PartialChevalleyGroup Φ R)
   (h_triv : ∀ p ∈ w₁.sys.trivial_comm_root_pairs, p ∈ w₂.sys.trivial_comm_root_pairs ∨
     (∀ r ∈ (rels_of_trivial_commutator_of_root_pair R p), w₂.pres_mk r = 1))
@@ -399,22 +401,6 @@ theorem lin_helper (w : PartialChevalleyGroup Φ R) {ζ : Φ} (h : ζ ∈ w.sys.
     rw [rels_of_lin_of_root]
     exists t, u
 
-/- Linearity implies identity (essentially a standard fact about group homomorphisms). -/
--- TODO: Replace proof with map_one (use h_lin to show that t => f {ζ, i, t} is an instance of R →+ G)
-theorem id_of_lin_of_root {f : FreeGroup (ChevalleyGenerator Φ R) →* G} {ζ : Φ}
-    : lin_of_root(f, ζ) → id_of_root(f, ζ) := by
-  intro h_lin
-  apply @mul_left_cancel _ _ _ (f {ζ, 0})
-  rw [mul_one, h_lin, add_zero]
-
--- TODO: Replace proof with map_inv
-/- Linearity implies inverse-ness (essentially a standard fact about group homomorphisms). -/
-theorem inv_of_lin_of_root {f : FreeGroup (ChevalleyGenerator Φ R) →* G} {ζ : Φ}
-    : lin_of_root(f, ζ) → inv_of_root(f, ζ) := by
-  intro h_lin t
-  apply @mul_left_cancel _ _ _ (f {ζ, t})
-  rw [mul_inv_cancel, h_lin, add_neg_cancel, id_of_lin_of_root h_lin]
-
 section declareThms
 
 open Lean Parser.Tactic
@@ -431,8 +417,7 @@ macro "declare_ungraded_lin_id_inv_thms" w:ident R:term:arg root:term:arg : comm
   makeCommands `(section
     @[group_reassoc (attr := simp, chev_simps)]
     theorem $linOf : lin_of_root(($w $R).pres_mk, $root) :=
-      ($w $R).lin_helper
-        (by unfold $w; simp [trivial_commutator_pairs]; tauto)
+      ($w $R).lin_helper (by unfold $w; simp only; tauto)
 
     @[simp, chev_simps]
     theorem $idOf : id_of_root(($w $R).pres_mk, $root) :=
@@ -466,10 +451,7 @@ macro "declare_ungraded_triv_comm_of_root_pair_thms"
   let commOf := TSyntax.mapIdent₂ r₁ r₂ (fun s₁ s₂ => "comm_of_" ++ s₁ ++ "_" ++ s₂)
   makeCommands `(section
     theorem $commOf : trivial_commutator_of_root_pair ($w $R).pres_mk ($r₁, $r₂) :=
-      ($w $R).trivial_commutator_helper (by
-        unfold $w
-        simp only [PartialChevalleySystem.mk_full, full_trivial_commutator_pairs]
-        tauto)
+      ($w $R).trivial_commutator_helper (by unfold $w; simp only; tauto)
     declare_ungraded_triv_expr_thm $w $R $r₁ $r₂
   end)
 
@@ -525,7 +507,8 @@ macro "declare_ungraded_single_comm_of_root_pair_thms"
   let commOf := TSyntax.mapIdent₂ r₁ r₂ (fun s₁ s₂ => "comm_of_" ++ s₁ ++ "_" ++ s₂)
   makeCommands `(section
     theorem $commOf : single_commutator_of_root_pair ($w $R).pres_mk ⟨$r₁, $r₂, $r₃, $innerTerm, rfl⟩ :=
-      ($w $R).single_commutator_helper ⟨$r₁, $r₂, $r₃, $innerTerm, rfl⟩ (by unfold $w; simp; tauto)
+      ($w $R).single_commutator_helper ⟨$r₁, $r₂, $r₃, $innerTerm, rfl⟩ (
+        by unfold $w; simp only; tauto)
     declare_ungraded_single_expr_thms $w $R $r₁ $r₂ $r₃ $isNeg $n
   end)
 

@@ -13,6 +13,7 @@ import Mathlib.GroupTheory.Commutator.Basic
   File dox go here.
 
 -/
+set_option profiler true
 
 namespace Steinberg
 
@@ -61,6 +62,7 @@ private theorem refl_deg_of_rels_of_trivial_commutator_of_root_pair (ζ η : Φ)
   exists (height ζ - i), (height η - j), (by omega), (by omega), t, u
 
 /-- Degree-reflection preserves the set of single commutator relations for any root pair. -/
+-- TODO: maybe we can replace with passing the generator directly, it'll be faster
 private theorem refl_deg_of_rels_of_single_commutator_of_root_pair
   (ζ η θ : Φ) (C : ℤ) (h_height : height θ = height ζ + height η)
   (h_ζ : ζ ∈ w.sys.present_roots) (h_η : η ∈ w.sys.present_roots) (h_θ : θ ∈ w.sys.present_roots)
@@ -206,29 +208,5 @@ def refl_symm {w : GradedPartialChevalleyGroup Φ R} (h : refl_valid w) : group 
 theorem refl_symm_of_pres_mk {w : GradedPartialChevalleyGroup Φ R} {h : refl_valid w} {g : FreeGroup (GradedChevalleyGenerator Φ R)} :
   refl_symm h (w.pres_mk g) = w.pres_mk (FreeGroup.lift (refl_def w) g) := by
   simp only [refl_symm, pres_mk, toPresentedGroup.mk]
-
-section declareThms
-
-open Lean Parser.Tactic
-set_option hygiene false
-
--- macro "declare_refl_def_thm" Φ:ident w:ident R:term:arg r:term:arg : command => do
---   let reflName := r.mapIdent (fun s => "refl_def_of" ++ s)
---   let wDefRw ← `(rwRule| $w:term)
---   let cmds ← Syntax.getArgs <$> `(
---     section
---     @[group_reassoc]
---     theorem $reflName (g : GradedChevalleyGenerator $Φ $R) (h : g.ζ = $r) :
---           ($w $R).pres_mk (refl_def $w g) = ($w $R).pres_mk (FreeGroup.of (refl_of_gen g)) := by
---       congr
---       apply refl_def_of_present
---       rw [h]
---       simp only [$wDefRw, present_roots]
---       tauto
---     end
---   )
---   return ⟨mkNullNode cmds⟩
-
-end declareThms
 
 end Steinberg

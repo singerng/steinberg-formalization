@@ -6,6 +6,8 @@ Released under the Apache License v2.0; see LICENSE for full text.
 import Steinberg.B3Large.Basic
 import Steinberg.B3Large.EstabAlpha2Beta2Psi
 
+set_option profiler true
+
 
 namespace Steinberg.B3Large
 

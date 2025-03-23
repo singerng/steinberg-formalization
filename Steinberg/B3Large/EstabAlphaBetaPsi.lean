@@ -8,6 +8,9 @@ open Steinberg B3LargePosRoot GradedPartialChevalley GradedChevalleyGenerator Gr
 
 variable {F : Type TF} [Field F] (Fchar : (2 : F) ≠ 0)
 
+set_option profiler true
+
+
 /- ### Establishing α + β + ψ -/
 
 private lemma interchange_αβψ_refl_v : forall_ijk_tu α β ψ,

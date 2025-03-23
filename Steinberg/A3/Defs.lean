@@ -97,6 +97,7 @@ def weak_define (R : Type TR) [Ring R] (g : GradedChevalleyGenerator A3PosRoot R
     {βγ, (split_3_into_1_2 i (by ht)).2, 1}'(correct_of_split_3_into_1_2 i (by ht)).2.1 ⁆
   | ζ => FreeGroup.of g
 
+
 theorem weak_define_of_present (R : Type TR) [Ring R] :
   ∀ {g : GradedChevalleyGenerator A3PosRoot R}, g.ζ ∈ weakA3System.present_roots → weak_define R g = FreeGroup.of g := by
   intro g h_g_in_present

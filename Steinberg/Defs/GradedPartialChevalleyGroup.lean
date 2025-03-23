@@ -139,6 +139,8 @@ end GradedChevalleyGenerator
 
 open GradedChevalleyGenerator
 
+section Relations
+
 /-! #### Commutator for generators from two roots which span no additional roots -/
 
 /- Theorem stating that commutator of generators for two roots vanishes. -/
@@ -200,6 +202,8 @@ def rels_of_mixed_commutes_of_root (R : Type TR) [Ring R] (ζ : Φ) : Set (FreeG
 def rels_of_lin_of_root (R : Type TR) [Ring R] (ζ : Φ) : Set (FreeGroup (GradedChevalleyGenerator Φ R)) :=
   { {ζ, i, t} * {ζ, i, u} * {ζ, i, t + u}⁻¹
     | (i : ℕ) (hi : i ≤ height ζ) (t : R) (u : R) }
+
+end Relations
 
 /-! ### Additional properties implied by linearity and implications therein -/
 
@@ -555,7 +559,7 @@ macro "declare_triv_comm_of_root_pair_thms" w:ident R:term:arg r₁:term:arg r�
   let commOf := TSyntax.mapIdent₂ r₁ r₂ (fun s₁ s₂ => "comm_of_" ++ s₁ ++ "_" ++ s₂)
   makeCommands `(section
     theorem $commOf : trivial_commutator_of_root_pair ($w $R).pres_mk ($r₁, $r₂) :=
-      ($w $R).trivial_commutator_helper (by unfold $w; simp)
+      ($w $R).trivial_commutator_helper (by unfold $w; simp only; tauto)
     declare_triv_expr_thm $w $R $r₁ $r₂
   end)
 
@@ -603,7 +607,7 @@ macro "declare_single_comm_of_root_pair_thms"
   let commOf := TSyntax.mapIdent₂ r₁ r₂ (fun s₁ s₂ => "comm_of_" ++ s₁ ++ "_" ++ s₂)
   makeCommands `(section
     theorem $commOf : single_commutator_of_root_pair ($w $R).pres_mk ⟨$r₁, $r₂, $r₃, $n, rfl⟩ :=
-      ($w $R).single_commutator_helper ⟨$r₁, $r₂, $r₃, $n, rfl⟩ (by unfold $w; simp)
+      ($w $R).single_commutator_helper ⟨$r₁, $r₂, $r₃, $n, rfl⟩ (by unfold $w; simp only; tauto)
     declare_single_expr_thms $w $R $r₁ $r₂ $r₃ $n
   end)
 
@@ -614,8 +618,7 @@ macro "declare_lin_id_inv_thms" w:ident R:term:arg root:term:arg : command => do
   makeCommands `(section
     @[group_reassoc (attr := simp, chev_simps)]
     theorem $linOf : lin_of_root(($w $R).pres_mk, $root) :=
-      lin_helper ($w $R)
-        (by unfold $w; simp [trivial_commutator_pairs])
+      lin_helper ($w $R) (by unfold $w; simp only; tauto)
 
     @[simp, chev_simps]
     theorem $idOf : id_of_root(($w $R).pres_mk, $root) :=
@@ -647,7 +650,7 @@ macro "declare_mixed_comm_thms" w:ident R:term:arg r:term:arg : command => do
   makeCommands `(section
     theorem $mixedName : mixed_commutes_of_root ($w $R).pres_mk $r :=
       mixed_commutes_helper ($w $R)
-        (by unfold $w; simp [trivial_commutator_pairs])
+        (by unfold $w; simp only; tauto)
     declare_mixed_expr_thm $w $R $r
   end)
 
@@ -661,7 +664,8 @@ macro "declare_refl_def_thm" w:ident R:term:arg RS:ident r:term:arg : command =>
       congr
       apply refl_def_eq_refl_gen_of_present
       unfold $w
-      simp [h, present_roots]
+      simp only [h]
+      tauto
   end)
 
 -- r₁ is the larger root, as opposed to the above macros
