@@ -11,6 +11,7 @@ import Mathlib.Tactic.Group
 import Mathlib.Tactic.FinCases
 
 import Steinberg.Defs.Lattice
+import Mathlib.Tactic.FieldSimp
 
 import Steinberg.Upstream.FreeGroup
 
@@ -24,7 +25,7 @@ namespace Steinberg.A3.Ungraded
 
 open Steinberg A3PosRoot PartialChevalley ChevalleyGenerator PartialChevalleyGroup
 
-variable {R : Type TR} [Ring R]
+variable {R : Type TR} [Field R] (Rchar : (2 : R) ≠ 0)
 
 /-! ### Definition of missing root -/
 theorem def_of_αβγ : ∀ (t : R),
@@ -35,9 +36,118 @@ theorem def_of_αβγ : ∀ (t : R),
 
 /-! ### Derive full commutator for αβ and βγ from nonhomogeneous lift -/
 
-theorem comm_of_αβ_βγ : trivial_commutator_of_root_pair (weakA3Ungraded R).pres_mk (αβ, βγ) := by
-  sorry
+theorem reorder_α_β_α (t u v : R) (h : t + v ≠ 0) : ⸨α, t⸩ * ⸨β, u⸩ * ⸨α, v⸩ = ⸨β, u * v/(t + v)⸩ * ⸨α, t + v⸩ * ⸨β, t * u/(t + v)⸩ := by
+  have : u * v / (t + v) + t * u / (t + v) = u := by
+    nth_rw 2 [mul_comm]
+    rw [mul_div_assoc, mul_div_assoc, ← left_distrib, div_add_div_same, add_comm]
+    have : ((t + v) / (t + v)) = 1 := by
+      rw [div_eq_one_iff_eq]
+      exact h
+    rw [this]
+    exact mul_one u
+  have : ⸨β, u * v / (t + v)⸩ * ⸨β, t * u / (t + v)⸩ = ⸨β, u⸩ := by
+    rw [lin_of_β, this]
+  rw [← this, ← mul_assoc]
+  have : ⸨α, t⸩ * ⸨β, u * v / (t + v)⸩ = ⸨β, u * v / (t + v)⸩ * ⸨α, t⸩ * ⁅⸨α, -t⸩, ⸨β, -(u * v / (t + v))⸩⁆ := by
+    grw [comm_right]
+  rw [this]
+  have : ⸨β, t * u / (t + v)⸩ * ⸨α, v⸩ = ⁅⸨α, v⸩, ⸨β, t * u / (t + v)⸩⁆⁻¹ * ⸨α, v⸩ * ⸨β, t * u / (t + v)⸩ := by
+    grw [comm_left_rev]
+  grw [this, comm_of_α_β]
+  rw [← comm_swap, comm_of_α_β]
+  chev_simp; group
+  grw [id_of_αβ]
 
+theorem reorder_β_γ_β (t u v : R) (h : t + v ≠ 0) : ⸨β, t⸩ * ⸨γ, u⸩ * ⸨β, v⸩ = ⸨γ, u * v/(t + v)⸩ * ⸨β, t + v⸩ * ⸨γ, t * u/(t + v)⸩ := by
+  have : u * v / (t + v) + t * u / (t + v) = u := by
+    nth_rw 2 [mul_comm]
+    rw [mul_div_assoc, mul_div_assoc, ← left_distrib, div_add_div_same, add_comm]
+    have : ((t + v) / (t + v)) = 1 := by
+      rw [div_eq_one_iff_eq]
+      exact h
+    rw [this]
+    exact mul_one u
+  have : ⸨γ, u * v / (t + v)⸩ * ⸨γ, t * u / (t + v)⸩ = ⸨γ, u⸩ := by
+    rw [lin_of_γ, this]
+  rw [← this, ← mul_assoc]
+  have : ⸨β, t⸩ * ⸨γ, u * v / (t + v)⸩ = ⸨γ, u * v / (t + v)⸩ * ⸨β, t⸩ * ⁅⸨β, -t⸩, ⸨γ, -(u * v / (t + v))⸩⁆ := by
+    grw [comm_right]
+  rw [this]
+  have : ⸨γ, t * u / (t + v)⸩ * ⸨β, v⸩ = ⁅⸨β, v⸩, ⸨γ, t * u / (t + v)⸩⁆⁻¹ * ⸨β, v⸩ * ⸨γ, t * u / (t + v)⸩ := by
+    grw [comm_left_rev]
+  grw [this, comm_of_β_γ]
+  rw [← comm_swap, comm_of_β_γ]
+  chev_simp; group
+  grw [id_of_βγ]
+
+include Rchar in
+theorem comm_of_αβ_βγ : trivial_commutator_of_root_pair (weakA3Ungraded R).pres_mk (αβ, βγ) := by
+  intro t u
+  rcases eq_or_ne t 0 with ht | ht
+  · rw [ht, id_of_αβ]
+    group
+  rcases eq_or_ne u 0 with hu | hu
+  · rw [hu, id_of_βγ]
+    group
+  have h59 : ⸨αβ, t⸩ = ⸨β, -1⸩ * ⸨α, t⸩ * ⸨β, 1⸩ * ⸨α, -t⸩ := by
+    have : ⸨β, 1⸩ = ⸨β, -1⸩⁻¹ := by rw [inv_of_β, neg_neg]
+    rw [this, ← inv_of_α, ← commutatorElement_def, ← comm_swap, comm_of_α_β, inv_of_αβ]
+    chev_simp
+  have h60 : ⸨βγ, u⸩ = ⸨γ, -(2*u)⸩ * ⸨β, 1/2⸩ * ⸨γ, 2*u⸩ * ⸨β, -(1/2)⸩ := by
+    have : ⸨γ, 2*u⸩ = ⸨γ, -(2*u)⸩⁻¹ := by rw [inv_of_γ, neg_neg]
+    rw [this, ← inv_of_β, ← commutatorElement_def, ← comm_swap, comm_of_β_γ, inv_of_βγ]
+    field_simp
+  have h61 : ⸨αβ, -t⸩ = ⸨β, 1/2⸩ * ⸨α, 2*t⸩ * ⸨β, -(1/2)⸩ * ⸨α, -(2*t)⸩ := by
+    rw [← inv_of_α, ← inv_of_β, ← commutatorElement_def, ← comm_swap, comm_of_α_β, inv_of_αβ]
+    field_simp
+  have h62 : ⸨βγ, -u⸩ = ⸨γ, -u⸩ * ⸨β, -1⸩ * ⸨γ, u⸩ * ⸨β, 1⸩ := by
+    have aux1 : ⸨γ, u⸩ = ⸨γ, -u⸩⁻¹ := by rw [inv_of_γ, neg_neg]
+    have aux2 : ⸨β, 1⸩ = ⸨β, -1⸩⁻¹ := by rw [inv_of_β, neg_neg]
+    rw [aux1, aux2, ← commutatorElement_def, ← comm_swap, comm_of_β_γ, inv_of_βγ]
+    chev_simp
+  have h63 : ⸨α, -t⸩ * ⸨β, 1/2⸩ * ⸨α, 2*t⸩ = ⸨β, 1⸩ * ⸨α, t⸩ * ⸨β, -(1/2)⸩ := by
+    rw [reorder_α_β_α]
+    ring_nf; field_simp
+    have aux1 : t * 2 / (2 * t) = 1 := by
+      rw [div_eq_one_iff_eq]
+      · exact mul_comm t 2
+      · rw [mul_ne_zero_iff]
+        exact ⟨Rchar, ht⟩
+    have aux2 : -t / (2 * t) = -1/2 := by
+      field_simp; exact mul_comm t 2
+    rw [aux1, aux2]
+    simp only [two_mul, neg_add_cancel_left]; exact ht
+  have h64 : ⸨γ, 2*u⸩ * ⸨β, -(1/2)⸩ * ⸨γ, -u⸩ = ⸨β, 1/2⸩ * ⸨γ, u⸩ * ⸨β, -1⸩ := by
+    rw [reorder_β_γ_β]
+    ring_nf; field_simp
+    have aux1 : -(u * 2) / (-2 + 1) = u * 2 := by
+      apply div_eq_of_eq_mul
+      group
+      simp only [neg_ne_zero, neg_neg, ne_eq, one_ne_zero, not_false_eq_true]
+      group
+    have aux2 : u / (-2 + 1) = -u := by group
+    rw [aux1, aux2]
+    group
+    field_simp
+    group
+    simp only [neg_eq_zero, one_ne_zero, not_false_eq_true]
+  have h65 : ⸨β, 1⸩ * ⸨γ, -(2*u)⸩ * ⸨β, 1⸩ = ⸨γ, -u⸩ * ⸨β, 2⸩ * ⸨γ, -u⸩ := by
+    rw [reorder_β_γ_β]
+    ring_nf; field_simp; rw [one_add_one_eq_two]; exact Rchar
+  have h66 : ⸨β, -1⸩ * ⸨α, -(2*t)⸩ * ⸨β, -1⸩ = ⸨α, -t⸩ * ⸨β, -2⸩ * ⸨α, -t⸩ := by
+    rw [reorder_α_β_α]
+    ring_nf; field_simp; group; field_simp
+  grw [commutatorElement_def, inv_of_αβ, inv_of_βγ, h60, h61]
+  grw [h59, h62]
+  have α_γ_commute := fun t u => triv_comm_iff_commutes.1 (comm_of_α_γ (R := R) t u)
+  have aux1 := α_γ_commute (-t) (-(2 * u))
+  have aux2 := α_γ_commute (2 * t) (2 * u)
+  have aux3 := α_γ_commute (-(2 * t)) (-u)
+  have aux4 := α_γ_commute t (-u)
+  have aux5 := α_γ_commute (-t) u
+  grw [aux1, ← aux2, aux3, h63, h64, h65, h66, ← aux4, ← aux5, aux4, aux5]
+
+include Rchar in
 declare_A3_ungraded_triv_expr_thm R αβ βγ
 
 /-! ### Further useful identities (roughly GENERIC) -/
