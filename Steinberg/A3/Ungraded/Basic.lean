@@ -32,11 +32,11 @@ declare_A3_ungraded_lin_id_inv_thms R γ
 declare_A3_ungraded_lin_id_inv_thms R αβ
 declare_A3_ungraded_lin_id_inv_thms R βγ
 
-declare_A3_ungraded_triv_comm_of_root_pair_thms R α γ
-declare_A3_ungraded_triv_comm_of_root_pair_thms R α αβ
-declare_A3_ungraded_triv_comm_of_root_pair_thms R β αβ
-declare_A3_ungraded_triv_comm_of_root_pair_thms R β βγ
-declare_A3_ungraded_triv_comm_of_root_pair_thms R γ βγ
+declare_A3_ungraded_trivial_span_of_root_pair_thms R α γ
+declare_A3_ungraded_trivial_span_of_root_pair_thms R α αβ
+declare_A3_ungraded_trivial_span_of_root_pair_thms R β αβ
+declare_A3_ungraded_trivial_span_of_root_pair_thms R β βγ
+declare_A3_ungraded_trivial_span_of_root_pair_thms R γ βγ
 
-declare_A3_ungraded_single_comm_of_root_pair_thms R α β αβ 0 1
-declare_A3_ungraded_single_comm_of_root_pair_thms R β γ βγ 0 1
+declare_A3_ungraded_single_span_of_root_pair_thms R α β αβ 0 1
+declare_A3_ungraded_single_span_of_root_pair_thms R β γ βγ 0 1

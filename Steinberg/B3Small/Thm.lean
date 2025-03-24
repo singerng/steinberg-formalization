@@ -11,7 +11,7 @@ import Mathlib.Tactic.FieldSimp
 
 import Steinberg.Defs.Lattice
 import Steinberg.Defs.Commutator
-import Steinberg.Defs.ReflDeg
+import Steinberg.Defs.DegreeReflection
 
 import Steinberg.Upstream.FreeGroup
 
@@ -24,20 +24,20 @@ variable {F : Type TF} [Field F] (Fchar : (2 : F) ≠ 0)
 
 /-! ### Double commutator theorem -/
 
-theorem comm_of_β_ψ : double_commutator_of_root_pair (weakB3Small F).pres_mk ⟨β, ψ, βψ, β2ψ, 1, 1, rfl, by rfl⟩ :=
-  (weakB3Small F).double_commutator_helper ⟨β, ψ, βψ, β2ψ, 1, 1, by rfl, by rfl⟩
-    (by simp only [weakB3Small, trivial_commutator_pairs]; tauto)
+theorem comm_of_β_ψ : doubleSpanPropOfRootPair (weakB3SmallGraded F).project ⟨β, ψ, βψ, β2ψ, 1, 1, rfl, by rfl⟩ :=
+  (weakB3SmallGraded F).doubleSpanProp_of_mem_doubleSpanRootPairs ⟨β, ψ, βψ, β2ψ, 1, 1, by rfl, by rfl⟩
+    (by simp only [weakB3SmallGraded, weakTrivialSpanPairs]; tauto)
 
 /-! ### Nonhomogeneous lift -/
-theorem nonhomog_lift_of_comm_of_βψ_ψω :
+theorem nonhom_lift_of_comm_of_βψ_ψω :
   ∀ (t₁ t₀ u₁ u₀ v₁ v₀ : F),
     ⁅ ⸨βψ, 2, t₁ * u₁⸩ * ⸨βψ, 1, t₁ * u₀ + t₀ * u₁⸩ * ⸨βψ, 0, t₀ * u₀⸩
     , ⸨ψω, 2, u₁ * v₁⸩ * ⸨ψω, 1, u₁ * v₀ + u₀ * v₁⸩ * ⸨ψω, 0, u₀ * v₀⸩ ⁆
     = 1 := by
   intro t₁ t₀ u₁ u₀ v₁ v₀
   apply eq_of_mul_inv_eq_one
-  apply (weakB3Small F).lifted_helper rels_of_nonhomog_lift_of_comm_of_βψ_ψω
-  · simp only [weakB3Small, lifted_sets, Set.mem_singleton_iff]
+  apply (weakB3SmallGraded F).liftedProp_of_mem_lifted rels_of_nonhom_lift_of_comm_of_βψ_ψω
+  · simp only [weakB3SmallGraded, lifted_sets, Set.mem_singleton_iff]
   · exists t₁, t₀, u₁, u₀, v₁, v₀
 
 /-! ### Definition of missing root -/
@@ -47,17 +47,17 @@ theorem def_of_βψω : forall_i_t βψω,
       = ⸨βψω, i, t⸩ := by
   intro t i hi
   symm
-  apply (weakB3Small F).def_helper
+  apply (weakB3SmallGraded F).definitionProp_of_define
 
-theorem refl_def_eq_refl_gen_of_βψω (g : GradedChevalleyGenerator B3SmallPosRoot F) (h : g.ζ = βψω) :
-  (weakB3Small F).pres_mk (refl_def (weakB3Small F) g) = (weakB3Small F).pres_mk (FreeGroup.of (refl_of_gen g)) := by
+theorem defineThenReflect_eq_reflect_of_βψω (g : GradedChevalleyGenerator B3SmallPosRoot F) (h : g.ζ = βψω) :
+  (weakB3SmallGraded F).project (defineThenReflect (weakB3SmallGraded F) g) = (weakB3SmallGraded F).project (FreeGroup.of (reflect g)) := by
   rcases g with ⟨ ζ, i, hi, t ⟩
   simp only at h
   subst ζ
-  simp only [refl_def, MonoidHom.coe_comp, Function.comp_apply, FreeGroup.lift.of]
-  rw [weakB3Small]
-  simp only [weak_define, map_commutatorElement, FreeGroup.map.of, refl_of_gen]
-  rw [← weakB3Small, ← def_of_βψω]
+  simp only [defineThenReflect, MonoidHom.coe_comp, Function.comp_apply, FreeGroup.lift.of]
+  rw [weakB3SmallGraded]
+  simp only [weak_define, map_commutatorElement, FreeGroup.map.of, reflect]
+  rw [← weakB3SmallGraded, ← def_of_βψω]
   congr
   all_goals (
     simp only [PositiveRootSystem.height, split_3_into_1_2]
@@ -66,20 +66,20 @@ theorem refl_def_eq_refl_gen_of_βψω (g : GradedChevalleyGenerator B3SmallPosR
   )
 
 theorem b3small_valid :
-  refl_valid (weakB3Small F) := by
-  simp only [refl_valid]
-  nth_rewrite 1 [weakB3Small]
-  simp only [lifted_sets, Set.mem_singleton_iff, forall_eq, rels_of_nonhomog_lift_of_comm_of_βψ_ψω, Set.mem_setOf_eq]
+  reflectValidProp (weakB3SmallGraded F) := by
+  simp only [reflectValidProp]
+  nth_rewrite 1 [weakB3SmallGraded]
+  simp only [lifted_sets, Set.mem_singleton_iff, forall_eq, rels_of_nonhom_lift_of_comm_of_βψ_ψω, Set.mem_setOf_eq]
   intro r h
   rcases h with ⟨ t₁, t₀, u₁, u₀, v₁, v₀, rfl ⟩
   simp only [map_mul, map_commutatorElement, FreeGroup.lift.of]
-  simp only [refl_def_eq_refl_gen_of_ψω, refl_def_eq_refl_gen_of_βψ]
-  simp only [refl_of_gen, PositiveRootSystem.height, height]
+  simp only [defineThenReflect_eq_reflect_of_ψω, defineThenReflect_eq_reflect_of_βψ]
+  simp only [reflect, PositiveRootSystem.height, height]
   simp_arith
   rw [add_comm (t₁ * u₀), add_comm (u₁ * v₀)]
   grw [expr_βψ_βψ_as_βψ_βψ, expr_βψ_βψ_as_βψ_βψ (i := 0), expr_βψ_βψ_as_βψ_βψ,
        expr_ψω_ψω_as_ψω_ψω, expr_ψω_ψω_as_ψω_ψω (i := 0), expr_ψω_ψω_as_ψω_ψω]
-  exact nonhomog_lift_of_comm_of_βψ_ψω t₀ t₁ u₀ u₁ v₀ v₁
+  exact nonhom_lift_of_comm_of_βψ_ψω t₀ t₁ u₀ u₁ v₀ v₁
 
 /-! ### 8.37 -/
 
@@ -103,7 +103,7 @@ theorem expr_βψ_as_ψ_β_ψ_β_ψ : forall_ij_tu β ψ,
 -- NS: this section should probably be abstracted for reuse
 
 /- Commutator relation in the case (i,j) is not (0,2) or (2,0) (via the previous theorem). -/
-private lemma homog_lift_of_comm_of_βψ_ψω (i j k : ℕ) (hi : i ≤ 1) (hj : j ≤ 1) (hk : k ≤ 1) :
+private lemma hom_lift_of_comm_of_βψ_ψω (i j k : ℕ) (hi : i ≤ 1) (hj : j ≤ 1) (hk : k ≤ 1) :
   ∀ (t u : F), ⁅ ⸨ βψ, i + j, t⸩, ⸨ψω, j + k, u⸩ ⁆ = 1 := by
     intro t u
     let t₁ : F := match i with
@@ -135,43 +135,43 @@ private lemma homog_lift_of_comm_of_βψ_ψω (i j k : ℕ) (hi : i ≤ 1) (hj :
       fin_cases hf_i, hf_j, hf_k
       <;> chev_simp [t₀, t₁, u₀, u₁, v₀, v₁]
     )
-    rw [id₁, id₂, nonhomog_lift_of_comm_of_βψ_ψω]
+    rw [id₁, id₂, nonhom_lift_of_comm_of_βψ_ψω]
 
-private lemma image_of_homog_lift_of_comm_of_βψ_ψω {i j : ℕ} (hi : i ≤ βψ.height) (hj : j ≤ ψω.height)
+private lemma image_of_hom_lift_of_comm_of_βψ_ψω {i j : ℕ} (hi : i ≤ βψ.height) (hj : j ≤ ψω.height)
     : ((i, j) ∈ ij_jk_image) → ∀ (t u : F), ⁅ ⸨βψ, i, t⸩, ⸨ψω, j, u⸩ ⁆ = 1 := by
   intro h_in_image t u
   have : ∃ ijk' : ℕ × ℕ × ℕ, ijk' ∈ boolean_cube ∧ f_ij_jk ijk' = (i, j) := by
     rw [← Finset.mem_image, correct_of_ij_jk_image]; exact h_in_image
   simp [f_ij_jk] at this
   rcases this with ⟨ i', j', k', ⟨ hi', hj', hk' ⟩, rfl, rfl ⟩
-  rw [← homog_lift_of_comm_of_βψ_ψω i' j' k' hi' hj' hk' t u]
+  rw [← hom_lift_of_comm_of_βψ_ψω i' j' k' hi' hj' hk' t u]
 
 private lemma comm_of_βψ_ψω_20 : ∀ (t u : F), ⁅ ⸨βψ, 2, t⸩, ⸨ψω, 0, u⸩ ⁆ = 1 := by
   intro t u
   apply @trivial_comm_from_embedded_comm_and_pairs _ _ ⸨ψω, 1, u⸩ _ (⸨βψ, 1, t + 1⸩ * ⸨βψ, 0, 1⸩)
   mul_assoc_l
-  rw [← nonhomog_lift_of_comm_of_βψ_ψω t 1 1 1 0 u]
+  rw [← nonhom_lift_of_comm_of_βψ_ψω t 1 1 1 0 u]
   simp only [one_mul, mul_one, mul_zero, add_zero]
   rw [id_of_ψω] -- NS: maybe should be a simp lemma? we can decide...
   rw [one_mul]
-  rw [← homog_lift_of_comm_of_βψ_ψω 1 1 0 (by trivial) (by trivial) (by trivial) t u]
+  rw [← hom_lift_of_comm_of_βψ_ψω 1 1 0 (by trivial) (by trivial) (by trivial) t u]
   apply triv_comm_mul_left
-  rw [← homog_lift_of_comm_of_βψ_ψω 0 1 0 (by trivial) (by trivial) (by trivial) (t+1) u]
-  rw [← homog_lift_of_comm_of_βψ_ψω 0 0 1 (by trivial) (by trivial) (by trivial) 1 u]
+  rw [← hom_lift_of_comm_of_βψ_ψω 0 1 0 (by trivial) (by trivial) (by trivial) (t+1) u]
+  rw [← hom_lift_of_comm_of_βψ_ψω 0 0 1 (by trivial) (by trivial) (by trivial) 1 u]
   apply triv_comm_mul_left
-  rw [← homog_lift_of_comm_of_βψ_ψω 1 0 0 (by trivial) (by trivial) (by trivial) (t+1) u]
-  rw [← homog_lift_of_comm_of_βψ_ψω 0 0 0 (by trivial) (by trivial) (by trivial) 1 u]
+  rw [← hom_lift_of_comm_of_βψ_ψω 1 0 0 (by trivial) (by trivial) (by trivial) (t+1) u]
+  rw [← hom_lift_of_comm_of_βψ_ψω 0 0 0 (by trivial) (by trivial) (by trivial) 1 u]
 
 -- symmetric to proof of `comm_of_βψ_ψω_20`
 private lemma comm_of_βψ_ψω_02 : ∀ (t u : F), ⁅ ⸨βψ, 0, t⸩, ⸨ψω, 2, u⸩ ⁆ = 1 := by
   intro t u
-  have : ⁅⸨βψ, 0, t⸩, ⸨ψω, 2, u⸩⁆ = refl_symm b3small_valid ⁅⸨βψ, 2, t⸩, ⸨ψω, 0, u⸩⁆ := by
+  have : ⁅⸨βψ, 0, t⸩, ⸨ψω, 2, u⸩⁆ = defineThenReflectOfPresentedGroup b3small_valid ⁅⸨βψ, 2, t⸩, ⸨ψω, 0, u⸩⁆ := by
     rw [map_commutatorElement]
     trivial
   rw [this, comm_of_βψ_ψω_20, map_one]
 
 -- 8.42
-theorem comm_of_βψ_ψω : trivial_commutator_of_root_pair (weakB3Small F).pres_mk ⟨βψ, ψω⟩ := by
+theorem comm_of_βψ_ψω : trivialSpanPropOfRootPair (weakB3SmallGraded F).project ⟨βψ, ψω⟩ := by
   intro i j hi hj t u
   have : (i = 0 ∧ j = 2) ∨ (i = 2 ∧ j = 0) ∨ ((i, j) ∈ ij_jk_image) := by
     rw [ij_jk_image]
@@ -182,9 +182,9 @@ theorem comm_of_βψ_ψω : trivial_commutator_of_root_pair (weakB3Small F).pres
   rcases this with ( ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | hij )
   · rw [← comm_of_βψ_ψω_02 t u]
   · rw [← comm_of_βψ_ψω_20 t u]
-  · apply image_of_homog_lift_of_comm_of_βψ_ψω hi hj hij
+  · apply image_of_hom_lift_of_comm_of_βψ_ψω hi hj hij
 
-declare_B3Small_triv_expr_thm F βψ ψω
+declare_B3Small_trivial_span_expr_thm F βψ ψω
 
 /-! ### Further useful identities (roughly GENERIC) -/
 
@@ -235,14 +235,14 @@ private lemma write_t_as_2tu (t : F) : ∃ (x y : F), t = 2 * x * y := ⟨1/2, t
 
 -- 8.43
 theorem comm_of_β2ψ_ψω :
-    trivial_commutator_of_root_pair (weakB3Small F).pres_mk ⟨β2ψ, ψω⟩ := by
+    trivialSpanPropOfRootPair (weakB3SmallGraded F).project ⟨β2ψ, ψω⟩ := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.2
   rcases write_t_as_2tu Fchar t with ⟨x, y, rfl⟩
   rcases decompose 1 2 i hi with ⟨i₁, i₂, rfl, hi₁, hi₂⟩
   grw [expr_β2ψ_as_ψ_βψ_ψ_βψ hi₁ hi₂, expr_βψ_ψω_as_ψω_βψ,
     expr_ψ_ψω_as_ψω_ψ, expr_βψ_ψω_as_ψω_βψ, expr_ψ_ψω_as_ψω_ψ]
-declare_B3Small_triv_expr_thm F β2ψ ψω
+declare_B3Small_trivial_span_expr_thm F β2ψ ψω
 
 -- 8.44
 theorem Interchange : forall_ijk_tuv β ψ ω,
@@ -393,28 +393,28 @@ theorem expr_βψω_as_β_ψω_β_ψω :
 
 -- 8.48
 theorem comm_of_βψω_ω :
-    trivial_commutator_of_root_pair (weakB3Small F).pres_mk ⟨βψω, ω⟩ := by
+    trivialSpanPropOfRootPair (weakB3SmallGraded F).project ⟨βψω, ω⟩ := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.2
   rcases decompose 1 2 i hi with ⟨i₁, i₂, rfl, hi₁, hi₂⟩
   rw [←one_mul t, expr_βψω_as_β_ψω_β_ψω Fchar hi₁ hi₂]
   grw [←expr_ω_ψω_as_ψω_ω, expr_β_ω_as_ω_β, ←expr_ω_ψω_as_ψω_ω, expr_β_ω_as_ω_β]
-declare_B3Small_triv_expr_thm F βψω ω
+declare_B3Small_trivial_span_expr_thm F βψω ω
 
 -- 8.49
 theorem comm_of_βψω_β :
-    trivial_commutator_of_root_pair (weakB3Small F).pres_mk ⟨βψω, β⟩ := by
+    trivialSpanPropOfRootPair (weakB3SmallGraded F).project ⟨βψω, β⟩ := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.2
   rcases decompose 2 1 i hi with ⟨i₁, i₂, rfl, hi₁, hi₂⟩
   rcases write_t_as_2tu Fchar t with ⟨x, y, rfl⟩
   rw [expr_βψω_as_βψ_ω_βψ_ω Fchar hi₁ hi₂]
   grw [←expr_β_ω_as_ω_β, expr_β_βψ_as_βψ_β, ←expr_β_βψ_as_βψ_β, expr_β_ω_as_ω_β]
-declare_B3Small_triv_expr_thm F βψω β
+declare_B3Small_trivial_span_expr_thm F βψω β
 
 -- 8.50
 theorem comm_of_βψω_ψ :
-    trivial_commutator_of_root_pair (weakB3Small F).pres_mk ⟨βψω, ψ⟩ := by
+    trivialSpanPropOfRootPair (weakB3SmallGraded F).project ⟨βψω, ψ⟩ := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.2
   rcases decompose 1 2 i hi with ⟨i₁, i₂, rfl, hi₁, hi₂⟩
@@ -424,22 +424,22 @@ theorem comm_of_βψω_ψ :
     ← expr_βψ_β2ψ_as_β2ψ_βψ, expr_β2ψ_ψω_as_ψω_β2ψ Fchar,
     expr_β_β2ψ_as_β2ψ_β,
     expr_βψ_ψω_as_ψω_βψ, expr_β_βψ_as_βψ_β]
-declare_B3Small_triv_expr_thm F βψω ψ
+declare_B3Small_trivial_span_expr_thm F βψω ψ
 
 -- 8.51
 theorem comm_of_βψω_ψω :
-    trivial_commutator_of_root_pair (weakB3Small F).pres_mk ⟨βψω, ψω⟩ := by
+    trivialSpanPropOfRootPair (weakB3SmallGraded F).project ⟨βψω, ψω⟩ := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.2
   rcases decompose 1 1 j hj with ⟨j₁, j₂, rfl, hj₁, hj₂⟩
   rcases write_t_as_2tu Fchar u with ⟨x, y, rfl⟩
   grw [expr_ψω_as_ψ_ω_ψ_ω hj₁ hj₂, expr_βψω_ψ_as_ψ_βψω Fchar hi hj₁, expr_βψω_ω_as_ω_βψω Fchar hi hj₂,
   expr_βψω_ψ_as_ψ_βψω Fchar hi hj₁, expr_βψω_ω_as_ω_βψω Fchar]
-declare_B3Small_triv_expr_thm F βψω ψω
+declare_B3Small_trivial_span_expr_thm F βψω ψω
 
 -- 8.52
 theorem comm_of_βψω_βψ :
-    trivial_commutator_of_root_pair (weakB3Small F).pres_mk ⟨βψω, βψ⟩ := by
+    trivialSpanPropOfRootPair (weakB3SmallGraded F).project ⟨βψω, βψ⟩ := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.2
   rcases decompose 1 1 j hj with ⟨j₁, j₂, rfl, hj₁, hj₂⟩
@@ -447,22 +447,22 @@ theorem comm_of_βψω_βψ :
   grw [expr_βψ_as_ψ_β_ψ_β_ψ hj₁ hj₂, expr_βψω_ψ_as_ψ_βψω Fchar,
     expr_βψω_β_as_β_βψω Fchar, expr_βψω_ψ_as_ψ_βψω Fchar,
     expr_βψω_β_as_β_βψω Fchar, expr_βψω_ψ_as_ψ_βψω Fchar]
-declare_B3Small_triv_expr_thm F βψω βψ
+declare_B3Small_trivial_span_expr_thm F βψω βψ
 
 -- 8.53
 theorem comm_of_βψω_β2ψ :
-    trivial_commutator_of_root_pair (weakB3Small F).pres_mk ⟨βψω, β2ψ⟩ := by
+    trivialSpanPropOfRootPair (weakB3SmallGraded F).project ⟨βψω, β2ψ⟩ := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.2
   rcases decompose 1 2 j hj with ⟨j₁, j₂, rfl, hj₁, hj₂⟩
   rcases write_t_as_2tu Fchar u with ⟨x, y, rfl⟩
   grw [expr_β2ψ_as_ψ_βψ_ψ_βψ hj₁ hj₂, expr_βψω_ψ_as_ψ_βψω Fchar, expr_βψω_βψ_as_βψ_βψω Fchar, expr_βψω_ψ_as_ψ_βψω Fchar,
   expr_βψω_βψ_as_βψ_βψω Fchar]
-declare_B3Small_triv_expr_thm F βψω β2ψ
+declare_B3Small_trivial_span_expr_thm F βψω β2ψ
 
 -- 8.54
 theorem comm_of_βψω :
-    mixed_commutes_of_root (weakB3Small F).pres_mk βψω := by
+    mixedDegreePropOfRoot (weakB3SmallGraded F).project βψω := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.2
   rcases decompose 1 2 i hi with ⟨i₁, i₂, rfl, hi₁, hi₂⟩
@@ -474,7 +474,7 @@ declare_B3Small_mixed_expr_thm F βψω
 
 -- 8.55
 @[simp, chev_simps]
-theorem lin_of_βψω : lin_of_root((weakB3Small F).pres_mk, βψω) := by
+theorem lin_of_βψω : lin_of_root((weakB3SmallGraded F).project, βψω) := by
   intro i hi t u
   rcases decompose 1 2 i hi with ⟨i₁, i₂, rfl, hi₁, hi₂⟩
   rw [←mul_one t, expr_βψω_as_β_ψω_β_ψω Fchar hi₁ hi₂]
@@ -490,7 +490,7 @@ theorem id_of_βψω : ∀ ⦃i : ℕ⦄ (hi : i ≤ βψω.height), ⸨βψω, 
 
 -- 8.56
 @[simp, chev_simps]
-theorem inv_of_βψω : inv_of_root((weakB3Small F).pres_mk, βψω) := by
+theorem inv_of_βψω : inv_of_root((weakB3SmallGraded F).project, βψω) := by
   intro i hi t
   apply inv_eq_iff_mul_eq_one.2
   grw [lin_of_βψω Fchar, id_of_βψω Fchar hi]
@@ -510,7 +510,7 @@ theorem expr_βψ_ω_as_ω_βψω_βψ : forall_ij_tu βψ ω,
 
 -- 8.58
 theorem comm_of_β2ψ_ω :
-    trivial_commutator_of_root_pair (weakB3Small F).pres_mk ⟨β2ψ, ω⟩ := by
+    trivialSpanPropOfRootPair (weakB3SmallGraded F).project ⟨β2ψ, ω⟩ := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.2
   rcases decompose 1 2 i hi with ⟨i₁, i₂, rfl, hi₁, hi₂⟩
@@ -521,11 +521,11 @@ theorem comm_of_β2ψ_ω :
         expr_βψω_ψω_as_ψω_βψω Fchar, expr_βψω_ψ_as_ψ_βψω Fchar,
         expr_βψω_βψ_as_βψ_βψω Fchar, lin_of_βψω Fchar,
         id_of_βψω Fchar (add_le_add hi₂ hj), expr_βψ_ψω_as_ψω_βψ]
-declare_B3Small_triv_expr_thm F β2ψ ω
+declare_B3Small_trivial_span_expr_thm F β2ψ ω
 
-theorem full_rels_satisfied_in_weak_group :
-  ∀ r ∈ (fullB3SmallGraded F).all_rels, (weakB3Small F).pres_mk r = 1 := by
-  simp only [fullB3SmallGraded, weakB3Small]
+theorem full_relations_implied_by_weak_relations :
+  ∀ r ∈ (fullB3SmallGraded F).allRelations, (weakB3SmallGraded F).project r = 1 := by
+  simp only [fullB3SmallGraded, weakB3SmallGraded]
   apply GradedPartialChevalleyGroup.graded_injection
   all_goals (
     intro p h
@@ -536,7 +536,7 @@ theorem full_rels_satisfied_in_weak_group :
     · right
       simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at h_new
       intro r h_r
-      simp only [rels_of_trivial_commutator_of_root_pair] at h_r
+      simp only [trivialSpanRelationsOfRootPair] at h_r
       rcases h_r with ⟨ i, j, hi, hj, t, u, goal ⟩
       rcases h_new with h_βψ_ψω|h_β_βψω|h_ψ_βψω|h_ω_βψω|h_βψ_βψω|h_β2ψ_βψω|h_ψω_βψω|h_ω_β2ψ|h_ψω_β2ψ
       all_goals (
@@ -559,7 +559,7 @@ theorem full_rels_satisfied_in_weak_group :
     · right
       simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at h_new
       intro r h_r
-      simp only [rels_of_single_commutator_of_root_pair] at h_r
+      simp only [singleSpanRelationsOfRootPair] at h_r
       rcases h_r with ⟨ i, j, hi, hj, t, u, goal ⟩
       rcases h_new with h_β_ψω|h_βψ_ω
       all_goals (
@@ -576,7 +576,7 @@ theorem full_rels_satisfied_in_weak_group :
     · right
       simp_all only [Set.mem_singleton_iff]
       intro r h_r
-      simp only [rels_of_mixed_commutes_of_root] at h_r
+      simp only [mixedDegreeRelationsOfRoot] at h_r
       rcases h_r with ⟨ i, j, hi, hj, t, u, goal ⟩
       subst r
       exact comm_of_βψω Fchar hi hj t u
@@ -585,15 +585,15 @@ theorem full_rels_satisfied_in_weak_group :
     · right
       simp_all only [Set.mem_singleton_iff]
       intro r h_r
-      simp only [rels_of_lin_of_root] at h_r
+      simp only [linearityRelationsOfRoot] at h_r
       rcases h_r with ⟨ i, hi, t, u, goal ⟩
       subst r
       simp only [map_mul, map_inv, mul_inv_eq_one]
       exact lin_of_βψω Fchar hi t u
   · tauto
-  · simp only [def_rels, Set.mem_iUnion, Set.mem_setOf_eq] at h
+  · simp only [definitionRelations, Set.mem_iUnion, Set.mem_setOf_eq] at h
     rcases h with ⟨ζ, i, hi, t, h⟩
     subst p
-    simp only [fullB3SmallGraded, full_mk, inv_mul_cancel, map_one]
+    simp only [fullB3SmallGraded, fullMk, inv_mul_cancel, map_one]
 
 end Steinberg.B3Small

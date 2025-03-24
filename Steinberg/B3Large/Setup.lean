@@ -11,7 +11,7 @@ import Mathlib.Tactic.FieldSimp
 
 import Steinberg.Defs.Lattice
 import Steinberg.Defs.Commutator
-import Steinberg.Defs.ReflDeg
+import Steinberg.Defs.DegreeReflection
 
 import Steinberg.Upstream.FreeGroup
 
@@ -32,7 +32,7 @@ theorem def_of_αβψ : forall_i_t αβψ,
     = ⸨αβψ, i, t⸩ := by
   intro i hi t
   symm
-  apply (weakB3Large F).def_helper
+  apply (weakB3LargeGraded F).definitionProp_of_define
 
 theorem def_of_αβ2ψ : forall_i_t αβ2ψ,
     ⁅ (⸨α, (split_4_into_1_3 i hi).1, t⸩'(correct_of_split_4_into_1_3 i hi).1),
@@ -40,7 +40,7 @@ theorem def_of_αβ2ψ : forall_i_t αβ2ψ,
     ⁆ = ⸨αβ2ψ, i, t⸩ := by
   intro i hi t
   symm
-  apply (weakB3Large F).def_helper
+  apply (weakB3LargeGraded F).definitionProp_of_define
 
 theorem def_of_α2β2ψ : forall_i_t α2β2ψ,
     ⁅ (⸨αβ, (split_5_into_2_3 i hi).1, t⸩'(correct_of_split_5_into_2_3 i hi).1),
@@ -49,24 +49,24 @@ theorem def_of_α2β2ψ : forall_i_t α2β2ψ,
   intro i hi t
   symm
   nth_rewrite 2 [←neg_neg t]
-  apply (weakB3Large F).def_helper
+  apply (weakB3LargeGraded F).definitionProp_of_define
 
 /-! ### Nonhomogeneous lift -/
 
 -- 8.81
-theorem raw_nonhomog_lift_of_comm_of_αβ_βψ : ∀ (t₁ t₀ u₁ u₀ v₁ v₀ : F),
+theorem raw_nonhom_lift_of_comm_of_αβ_βψ : ∀ (t₁ t₀ u₁ u₀ v₁ v₀ : F),
     ⁅ ⸨αβ, 2, t₁ * u₁⸩ * ⸨αβ, 1, t₁ * u₀ + t₀ * u₁⸩ * ⸨αβ, 0, t₀ * u₀⸩
     , ⸨βψ, 2, u₁ * v₁⸩ * ⸨βψ, 1, u₁ * v₀ + u₀ * v₁⸩ * ⸨βψ, 0, u₀ * v₀⸩ ⁆
     = 1 := by
-  nonhom_tac rels_of_nonhomog_lift_of_comm_of_αβ_βψ [t₁, t₀, u₁, u₀, v₁, v₀]
+  nonhom_tac rels_of_nonhom_lift_of_comm_of_αβ_βψ [t₁, t₀, u₁, u₀, v₁, v₀]
 
 -- 8.82
-theorem raw_nonhomog_lift_of_comm_of_α_α2β2ψ : ∀ (t₁ t₀ u₁ u₀ v₁ v₀ : F),
+theorem raw_nonhom_lift_of_comm_of_α_α2β2ψ : ∀ (t₁ t₀ u₁ u₀ v₁ v₀ : F),
     ⁅ ⸨α, 1, t₁⸩ * ⸨α, 0, t₀⸩,
       ⁅ ⸨αβ, 2, t₁ * u₁⸩ * ⸨αβ, 1, t₁ * u₀ + t₀ * u₁⸩ * ⸨αβ, 0, t₀ * u₀⸩,
         ⸨β2ψ, 3, u₁ * v₁^2⸩ * ⸨β2ψ, 2, u₀ * v₁^2 + 2 * u₁ * v₀ * v₁⸩
           * ⸨β2ψ, 1, u₁ * v₀^2 + 2 * u₀ * v₀ * v₁⸩ * ⸨β2ψ, 0, u₀ * v₀^2⸩ ⁆⁆ = 1 := by
-  nonhom_tac rels_of_nonhomog_lift_of_comm_of_α_α2β2ψ [t₁, t₀, u₁, u₀, v₁, v₀]
+  nonhom_tac rels_of_nonhom_lift_of_comm_of_α_α2β2ψ [t₁, t₀, u₁, u₀, v₁, v₀]
 
 /-! ### Homogeneous lift -/
 
@@ -209,26 +209,26 @@ theorem raw_hom_lift_of_comm_of_β2ψ_αβ2ψ : forall_ijk_tuv,
   hom_tac base_rel_of_hom_lift_of_comm_of_β2ψ_αβ2ψ [i, j, k, hi, hj, hk, t, u, v]
 
 /-- Reflecting the lift of a generator is the same as taking the opposite lift. -/
-theorem refl_gen_of_hom (g : PartialChevalley.ChevalleyGenerator B3LargePosRoot F)
+theorem reflect_of_hom (g : PartialChevalley.ChevalleyGenerator B3LargePosRoot F)
   (i j k : ℕ) (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height)
   (t u v : F) :
-    refl_of_gen (hom_lift i j k hi hj hk t u v g) = hom_lift (1-i) (1-j) (1-k) (by ht) (by ht) (by ht) t u v g := by
+    reflect (hom_lift i j k hi hj hk t u v g) = hom_lift (1-i) (1-j) (1-k) (by ht) (by ht) (by ht) t u v g := by
     rcases g with ⟨ ζ, t ⟩
-    simp only [refl_of_gen, hom_lift]
+    simp only [reflect, hom_lift]
     split
     all_goals simp only [PositiveRootSystem.height, B3LargePosRoot.height]
     all_goals congr; ht
 
 /-- Extends previous theorem to arbitrary relations. -/
 -- TODO: simplify?
-theorem refl_gen_of_hom' (r : FreeGroup (PartialChevalley.ChevalleyGenerator B3LargePosRoot F))
+theorem reflect_of_hom' (r : FreeGroup (PartialChevalley.ChevalleyGenerator B3LargePosRoot F))
   (i j k : ℕ) (hi : i ≤ α.height) (hj : j ≤ β.height) (hk : k ≤ ψ.height)
   (t u v : F) :
-    (FreeGroup.map refl_of_gen) (FreeGroup.map (hom_lift i j k hi hj hk t u v) r)
+    (FreeGroup.map reflect) (FreeGroup.map (hom_lift i j k hi hj hk t u v) r)
       = FreeGroup.map (hom_lift (1-i) (1-j) (1-k) (by ht) (by ht) (by ht) t u v) r := by
-    suffices (FreeGroup.map refl_of_gen).comp (FreeGroup.map (hom_lift i j k hi hj hk t u v))
+    suffices (FreeGroup.map reflect).comp (FreeGroup.map (hom_lift i j k hi hj hk t u v))
       = FreeGroup.map (hom_lift (1-i) (1-j) (1-k) (by ht) (by ht) (by ht) t u v) by
-      have : (FreeGroup.map refl_of_gen).comp (FreeGroup.map (hom_lift i j k hi hj hk t u v)) r
+      have : (FreeGroup.map reflect).comp (FreeGroup.map (hom_lift i j k hi hj hk t u v)) r
         = FreeGroup.map (hom_lift (1-i) (1-j) (1-k) (by ht) (by ht) (by ht) t u v) r := by
           congr
       rw [←this]
@@ -236,10 +236,10 @@ theorem refl_gen_of_hom' (r : FreeGroup (PartialChevalley.ChevalleyGenerator B3L
     ext g
     simp only [MonoidHom.coe_comp, Function.comp_apply, FreeGroup.map.of]
     congr
-    exact refl_gen_of_hom g i j k hi hj hk t u v
+    exact reflect_of_hom g i j k hi hj hk t u v
 
-theorem map_refl_gen_of_hom (r : FreeGroup (PartialChevalley.ChevalleyGenerator B3LargePosRoot F)) :
-  (FreeGroup.map refl_of_gen) '' (hom_lift_set r) = hom_lift_set r := by
+theorem map_reflect_of_hom (r : FreeGroup (PartialChevalley.ChevalleyGenerator B3LargePosRoot F)) :
+  (FreeGroup.map reflect) '' (hom_lift_set r) = hom_lift_set r := by
   simp only [hom_lift_set]
   ext r'
   simp only [Set.mem_image, Set.mem_setOf]
@@ -250,21 +250,21 @@ theorem map_refl_gen_of_hom (r : FreeGroup (PartialChevalley.ChevalleyGenerator 
     rcases h with ⟨ i, j, k, hi, hj, hk, t, u, v, h ⟩
     subst x
     use (1-i), (1-j), (1-k), (by ht), (by ht), (by ht), t, u, v
-    exact (refl_gen_of_hom' r i j k hi hj hk t u v).symm
+    exact (reflect_of_hom' r i j k hi hj hk t u v).symm
   · intro h
     rcases h with ⟨ i, j, k, hi, hj, hk, t, u, v, h ⟩
     use (FreeGroup.map (hom_lift (1-i) (1-j) (1-k) (by ht) (by ht) (by ht) t u v)) r
     constructor
     · use (1-i), (1-j), (1-k), (by ht), (by ht), (by ht), t, u, v
     · subst r'
-      rw [refl_gen_of_hom' r (1-i) (1-j) (1-k) (by ht) (by ht) (by ht) t u v]
+      rw [reflect_of_hom' r (1-i) (1-j) (1-k) (by ht) (by ht) (by ht) t u v]
       congr
       apply eq_of_hom_lift_eq
       all_goals ht
 
 private theorem help1 (r : FreeGroup (GradedChevalleyGenerator B3LargePosRoot F))
-  (h : ∀ r' ∈ hom_lift_set b, (FreeGroup.lift (refl_def (weakB3Large F))) r' = (FreeGroup.map refl_of_gen) r') :
-  (∃ x ∈ hom_lift_set b, (FreeGroup.lift (refl_def (weakB3Large F))) x = r) ↔ ∃ x ∈ hom_lift_set b, (FreeGroup.map refl_of_gen) x = r := by
+  (h : ∀ r' ∈ hom_lift_set b, (FreeGroup.lift (defineThenReflect (weakB3LargeGraded F))) r' = (FreeGroup.map reflect) r') :
+  (∃ x ∈ hom_lift_set b, (FreeGroup.lift (defineThenReflect (weakB3LargeGraded F))) x = r) ↔ ∃ x ∈ hom_lift_set b, (FreeGroup.map reflect) x = r := by
   constructor
   · intro h
     rcases h with ⟨ r', h_r', h ⟩
@@ -284,36 +284,36 @@ private theorem help1 (r : FreeGroup (GradedChevalleyGenerator B3LargePosRoot F)
 set_option maxHeartbeats 0
 
 theorem b3large_valid :
-  refl_valid (weakB3Large F) := by
-  simp only [refl_valid]
+  reflectValidProp (weakB3LargeGraded F) := by
+  simp only [reflectValidProp]
   intro S h_S
-  simp only [weakB3Large, lifted_sets, Set.mem_union] at h_S
+  simp only [weakB3LargeGraded, lifted_sets, Set.mem_union] at h_S
   rcases h_S with h_nonhom|h_hom
   · simp only [nonhom_lifted_sets, Set.mem_insert_iff,
     Set.mem_singleton_iff] at h_nonhom
     rcases h_nonhom with h | h
     · subst h
       intro r hr
-      simp only [rels_of_nonhomog_lift_of_comm_of_αβ_βψ] at hr
+      simp only [rels_of_nonhom_lift_of_comm_of_αβ_βψ] at hr
       rcases hr with ⟨ t₁, t₀, u₁, u₀, v₁, v₀, rfl ⟩
       simp only [map_commutatorElement, map_mul, FreeGroup.lift.of]
-      repeat rw [refl_def_eq_refl_gen_of_present _ _ (by tauto)]
-      simp only [refl_of_gen, PositiveRootSystem.height, height]
+      repeat rw [defineThenReflect_eq_reflect_of_mem_presentRoots _ _ (by tauto)]
+      simp only [reflect, PositiveRootSystem.height, height]
       simp_arith
       rw [add_comm, add_comm (u₁ * v₀)]
       grw [expr_αβ_αβ_as_αβ_αβ (i := 1), expr_αβ_αβ_as_αβ_αβ, expr_αβ_αβ_as_αβ_αβ (i := 0)]
       grw [expr_βψ_βψ_as_βψ_βψ (i := 1), expr_βψ_βψ_as_βψ_βψ, expr_βψ_βψ_as_βψ_βψ (i := 0)]
-      exact raw_nonhomog_lift_of_comm_of_αβ_βψ t₀ t₁ u₀ u₁ v₀ v₁
+      exact raw_nonhom_lift_of_comm_of_αβ_βψ t₀ t₁ u₀ u₁ v₀ v₁
     · subst h
       intro r hr
-      simp only [rels_of_nonhomog_lift_of_comm_of_α_α2β2ψ] at hr
+      simp only [rels_of_nonhom_lift_of_comm_of_α_α2β2ψ] at hr
       rcases hr with ⟨ t₁, t₀, u₁, u₀, v₁, v₀, rfl ⟩
       simp only [map_commutatorElement, map_mul, FreeGroup.lift.of]
-      repeat rw [refl_def_eq_refl_gen_of_present _ _ (by tauto)]
-      simp only [refl_of_gen, PositiveRootSystem.height, height]
+      repeat rw [defineThenReflect_eq_reflect_of_mem_presentRoots _ _ (by tauto)]
+      simp only [reflect, PositiveRootSystem.height, height]
       simp_arith
       rw [add_comm]
-      have := raw_nonhomog_lift_of_comm_of_α_α2β2ψ t₀ t₁ u₀ u₁ v₀ v₁
+      have := raw_nonhom_lift_of_comm_of_α_α2β2ψ t₀ t₁ u₀ u₁ v₀ v₁
       norm_num at this
       grw [expr_α_α_as_α_α, expr_αβ_αβ_as_αβ_αβ (i := 1), expr_αβ_αβ_as_αβ_αβ (i := 0),
           expr_αβ_αβ_as_αβ_αβ (i := 0), expr_β2ψ_β2ψ_as_β2ψ_β2ψ (i := 2),
@@ -321,26 +321,26 @@ theorem b3large_valid :
           expr_β2ψ_β2ψ_as_β2ψ_β2ψ (i := 0), expr_β2ψ_β2ψ_as_β2ψ_β2ψ (i := 0)]
       rw [← this]
       grw [pow_two, mul_comm v₁ v₀, mul_comm v₁ v₀]
-  · suffices (FreeGroup.lift (refl_def (weakB3Large F))) '' S = S by
+  · suffices (FreeGroup.lift (defineThenReflect (weakB3LargeGraded F))) '' S = S by
       intro r h_r
       apply eq_one_of_mem_rels
-      have : (FreeGroup.lift (refl_def (weakB3Large F))) r ∈ S := by
+      have : (FreeGroup.lift (defineThenReflect (weakB3LargeGraded F))) r ∈ S := by
         rw [←this]
         simp only [Set.mem_image]
         use r
-      simp only [all_rels, lifted_sets]
+      simp only [allRelations, lifted_sets]
       simp only [Set.sUnion_insert, Set.sUnion_singleton, Set.mem_union, Set.mem_sUnion]
       right; right; right; right; right; left
       use S
       constructor
-      · simp only [weakB3Large, lifted_rels_sets, lifted_sets, Set.mem_union]
+      · simp only [weakB3LargeGraded, lifted_rels_sets, lifted_sets, Set.mem_union]
         right
         exact h_hom
       · exact this
     simp only [hom_lifted_sets, hom_lift_base_set, Set.mem_image] at h_hom
     rcases h_hom with ⟨ b, h, h_hom ⟩
     subst S
-    nth_rewrite 2 [←map_refl_gen_of_hom]
+    nth_rewrite 2 [←map_reflect_of_hom]
     ext r
     simp only [Set.mem_image]
     apply help1
@@ -375,7 +375,7 @@ theorem b3large_valid :
         base_rel_of_hom_lift_of_comm_of_βψ_αβ2ψ,
         base_rel_of_hom_lift_of_comm_of_β2ψ_αβ2ψ]
       simp only [one_mul, neg_mul, map_mul, map_inv, map_commutatorElement, FreeGroup.map.of, FreeGroup.lift.of, hom_lift]
-      repeat rw [refl_def_eq_refl_gen_of_present (weakB3Large F)]
+      repeat rw [defineThenReflect_eq_reflect_of_mem_presentRoots (weakB3LargeGraded F)]
       all_goals tauto
     )
 
@@ -499,7 +499,7 @@ theorem expr_βψ_ψ_as_ψ_βψ_β2ψ : forall_ij_tu ψ βψ,
   rw [expr_βψ_ψ_as_ψ_β2ψ_βψ hi hj, greassoc_of% expr_βψ_β2ψ_as_β2ψ_βψ hj hij]
 
 /- Commutator relation in the case (i,j) is not (0,2) or (2,0) (via the previous theorem). -/
-private lemma homog_lift_of_comm_of_αβ_βψ (i j k : ℕ) (hi : i ≤ 1) (hj : j ≤ 1) (hk : k ≤ 1) :
+private lemma hom_lift_of_comm_of_αβ_βψ (i j k : ℕ) (hi : i ≤ 1) (hj : j ≤ 1) (hk : k ≤ 1) :
   ∀ (t u : F), ⁅ ⸨ αβ, i + j, t⸩, ⸨βψ, j + k, u⸩ ⁆ = 1 := by
     intro t u
     let t₁ : F := match i with
@@ -531,94 +531,94 @@ private lemma homog_lift_of_comm_of_αβ_βψ (i j k : ℕ) (hi : i ≤ 1) (hj :
       fin_cases hf_i, hf_j, hf_k
       <;> chev_simp [t₀, t₁, u₀, u₁, v₀, v₁]
     )
-    rw [id₁, id₂, raw_nonhomog_lift_of_comm_of_αβ_βψ]
+    rw [id₁, id₂, raw_nonhom_lift_of_comm_of_αβ_βψ]
 
-private lemma image_of_homog_lift_of_comm_of_αβ_βψ {i j : ℕ} (hi : i ≤ αβ.height) (hj : j ≤ βψ.height)
+private lemma image_of_hom_lift_of_comm_of_αβ_βψ {i j : ℕ} (hi : i ≤ αβ.height) (hj : j ≤ βψ.height)
     : ((i, j) ∈ ij_jk_image) → ∀ (t u : F), ⁅ ⸨αβ, i, t⸩, ⸨βψ, j, u⸩ ⁆ = 1 := by
   intro h_in_image t u
   have : ∃ ijk' : ℕ × ℕ × ℕ, ijk' ∈ boolean_cube ∧ f_ij_jk ijk' = (i, j) := by
     rw [← Finset.mem_image, correct_of_ij_jk_image]; exact h_in_image
   simp [f_ij_jk] at this
   rcases this with ⟨ i', j', k', ⟨ hi', hj', hk' ⟩, rfl, rfl ⟩
-  rw [← homog_lift_of_comm_of_αβ_βψ i' j' k' hi' hj' hk' t u]
+  rw [← hom_lift_of_comm_of_αβ_βψ i' j' k' hi' hj' hk' t u]
 
 private lemma comm_of_αβ_βψ_20 : ∀ (t u : F), ⁅ ⸨αβ, 2, t⸩, ⸨βψ, 0, u⸩ ⁆ = 1 := by
   intro t u
   apply @trivial_comm_from_embedded_comm_and_pairs _ _ ⸨βψ, 1, u⸩ _ (⸨αβ, 1, t + 1⸩ * ⸨αβ, 0, 1⸩)
   · mul_assoc_l
-    rw [←raw_nonhomog_lift_of_comm_of_αβ_βψ t 1 1 1 0 u]
+    rw [←raw_nonhom_lift_of_comm_of_αβ_βψ t 1 1 1 0 u]
     simp only [one_mul, mul_one, mul_zero, add_zero]
     rw [id_of_βψ]
     rw [one_mul]
-  · rw [←homog_lift_of_comm_of_αβ_βψ 1 1 0 (by trivial) (by trivial) (by trivial) t u]
+  · rw [←hom_lift_of_comm_of_αβ_βψ 1 1 0 (by trivial) (by trivial) (by trivial) t u]
   · apply triv_comm_mul_left
-    rw [←homog_lift_of_comm_of_αβ_βψ 0 1 0 (by trivial) (by trivial) (by trivial) (t+1) u]
-    rw [←homog_lift_of_comm_of_αβ_βψ 0 0 1 (by trivial) (by trivial) (by trivial) 1 u]
+    rw [←hom_lift_of_comm_of_αβ_βψ 0 1 0 (by trivial) (by trivial) (by trivial) (t+1) u]
+    rw [←hom_lift_of_comm_of_αβ_βψ 0 0 1 (by trivial) (by trivial) (by trivial) 1 u]
   apply triv_comm_mul_left
-  rw [←homog_lift_of_comm_of_αβ_βψ 1 0 0 (by trivial) (by trivial) (by trivial) (t+1) u]
-  rw [←homog_lift_of_comm_of_αβ_βψ 0 0 0 (by trivial) (by trivial) (by trivial) 1 u]
+  rw [←hom_lift_of_comm_of_αβ_βψ 1 0 0 (by trivial) (by trivial) (by trivial) (t+1) u]
+  rw [←hom_lift_of_comm_of_αβ_βψ 0 0 0 (by trivial) (by trivial) (by trivial) 1 u]
 
 private lemma comm_of_αβ_βψ_02 : ∀ (t u : F), ⁅ ⸨αβ, 0, t⸩, ⸨βψ, 2, u⸩⁆ = 1 := by
   intro t u
   apply triv_comm_symm.1
   apply @trivial_comm_from_embedded_comm_and_pairs _ _ ⸨αβ, 1, t⸩ _ (⸨βψ, 1, u + 1⸩ * ⸨βψ, 0, 1⸩)
   · mul_assoc_l
-    rw [←triv_comm_symm.1 (raw_nonhomog_lift_of_comm_of_αβ_βψ 0 t 1 1 u 1)]
+    rw [←triv_comm_symm.1 (raw_nonhom_lift_of_comm_of_αβ_βψ 0 t 1 1 u 1)]
     simp only [one_mul, mul_one, mul_zero, add_zero, zero_add]
     rw [add_comm u 1, id_of_αβ, one_mul]
-  · rw [←triv_comm_symm.1 (homog_lift_of_comm_of_αβ_βψ 0 1 1 (by trivial) (by trivial) (by trivial) t u)]
+  · rw [←triv_comm_symm.1 (hom_lift_of_comm_of_αβ_βψ 0 1 1 (by trivial) (by trivial) (by trivial) t u)]
   · apply triv_comm_mul_left
-    rw [←triv_comm_symm.1 (homog_lift_of_comm_of_αβ_βψ 0 1 0 (by trivial) (by trivial) (by trivial) t (u + 1))]
-    rw [←triv_comm_symm.1 (homog_lift_of_comm_of_αβ_βψ 1 0 0 (by trivial) (by trivial) (by trivial) t 1)]
+    rw [←triv_comm_symm.1 (hom_lift_of_comm_of_αβ_βψ 0 1 0 (by trivial) (by trivial) (by trivial) t (u + 1))]
+    rw [←triv_comm_symm.1 (hom_lift_of_comm_of_αβ_βψ 1 0 0 (by trivial) (by trivial) (by trivial) t 1)]
   apply triv_comm_mul_left
-  rw [←triv_comm_symm.1 (homog_lift_of_comm_of_αβ_βψ 0 0 1 (by trivial) (by trivial) (by trivial) t (u + 1))]
-  rw [←triv_comm_symm.1 (homog_lift_of_comm_of_αβ_βψ 0 0 0 (by trivial) (by trivial) (by trivial) t 1)]
+  rw [←triv_comm_symm.1 (hom_lift_of_comm_of_αβ_βψ 0 0 1 (by trivial) (by trivial) (by trivial) t (u + 1))]
+  rw [←triv_comm_symm.1 (hom_lift_of_comm_of_αβ_βψ 0 0 0 (by trivial) (by trivial) (by trivial) t 1)]
 
 -- 8.115
 theorem comm_of_αβ_βψ :
-    trivial_commutator_of_root_pair (weakB3Large F).pres_mk ⟨αβ, βψ⟩ := by
+    trivialSpanPropOfRootPair (weakB3LargeGraded F).project ⟨αβ, βψ⟩ := by
   intro i j hi hj t u
   by_cases hij : (i, j) ∈ ij_jk_image
-  · apply image_of_homog_lift_of_comm_of_αβ_βψ hi hj hij
+  · apply image_of_hom_lift_of_comm_of_αβ_βψ hi hj hij
   · have : (i = 0 ∧ j = 2) ∨ (i = 2 ∧ j = 0) := by
       simp [ij_jk_image] at hij
       ht
     rcases this with ( ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ )
     · rw [← comm_of_αβ_βψ_02 t u]
     · rw [← comm_of_αβ_βψ_20 t u]
-declare_B3Large_triv_expr_thm F αβ βψ
+declare_B3Large_trivial_span_expr_thm F αβ βψ
 
 omit Fchar in
-theorem refl_def_eq_refl_gen_of_αβψ (g : GradedChevalleyGenerator B3LargePosRoot F)
+theorem defineThenReflect_eq_reflect_of_αβψ (g : GradedChevalleyGenerator B3LargePosRoot F)
   (h : g.ζ = αβψ) :
-  (weakB3Large F).pres_mk (refl_def (weakB3Large F) g)
-    = (weakB3Large F).pres_mk (FreeGroup.of (refl_of_gen g)) := by
+  (weakB3LargeGraded F).project (defineThenReflect (weakB3LargeGraded F) g)
+    = (weakB3LargeGraded F).project (FreeGroup.of (reflect g)) := by
   rcases g with ⟨ ζ, i, hi, t ⟩
   simp only at h
   subst ζ
-  simp only [refl_def, MonoidHom.coe_comp, Function.comp_apply,
-    FreeGroup.lift.of, refl_of_gen, ←def_of_αβψ]
-  rw [weakB3Large]
+  simp only [defineThenReflect, MonoidHom.coe_comp, Function.comp_apply,
+    FreeGroup.lift.of, reflect, ←def_of_αβψ]
+  rw [weakB3LargeGraded]
   simp only
   rw [weak_define]
-  simp only [map_mul, map_inv, FreeGroup.map.of, refl_of_gen, PositiveRootSystem.height, height]
+  simp only [map_mul, map_inv, FreeGroup.map.of, reflect, PositiveRootSystem.height, height]
   congr
   all_goals rw [refl_of_split_3_into_1_2]
 
 omit Fchar in
-theorem refl_def_eq_refl_gen_of_α2β2ψ (g : GradedChevalleyGenerator B3LargePosRoot F)
+theorem defineThenReflect_eq_reflect_of_α2β2ψ (g : GradedChevalleyGenerator B3LargePosRoot F)
   (h : g.ζ = α2β2ψ) :
-  (weakB3Large F).pres_mk (refl_def (weakB3Large F) g)
-    = (weakB3Large F).pres_mk (FreeGroup.of (refl_of_gen g)) := by
+  (weakB3LargeGraded F).project (defineThenReflect (weakB3LargeGraded F) g)
+    = (weakB3LargeGraded F).project (FreeGroup.of (reflect g)) := by
   rcases g with ⟨ ζ, i, hi, t ⟩
   simp only at h
   subst ζ
   nth_rewrite 2 [←neg_neg t]
-  simp only [refl_def, MonoidHom.coe_comp, Function.comp_apply,
-    FreeGroup.lift.of, refl_of_gen, ←def_of_α2β2ψ]
-  rw [weakB3Large]
+  simp only [defineThenReflect, MonoidHom.coe_comp, Function.comp_apply,
+    FreeGroup.lift.of, reflect, ←def_of_α2β2ψ]
+  rw [weakB3LargeGraded]
   simp only
   rw [weak_define]
-  simp only [map_commutatorElement, FreeGroup.map.of, refl_of_gen, PositiveRootSystem.height, height]
+  simp only [map_commutatorElement, FreeGroup.map.of, reflect, PositiveRootSystem.height, height]
   congr
   all_goals rw [refl_of_split_5_into_2_3]

@@ -115,7 +115,7 @@ section Relations
 /-! #### Commutator for generators from two roots which span no additional roots -/
 
 /- Theorem stating that commutator of generators for two roots vanishes. -/
-def trivial_commutator_of_root_pair (f : FreeGroup (ChevalleyGenerator Φ R) →* G) (p : Φ × Φ) : Prop :=
+def trivialSpanPropOfRootPair (f : FreeGroup (ChevalleyGenerator Φ R) →* G) (p : Φ × Φ) : Prop :=
   let (ζ, η) := p;
   ∀ (t u : R),
     ⁅ f {ζ, t}, f {η, u} ⁆ = 1
@@ -124,7 +124,7 @@ def trivial_commutator_of_root_pair (f : FreeGroup (ChevalleyGenerator Φ R) →
 The set of elements which must vanish according to the theorem that the commutator of generators
 for two roots vanishes. (Used to construct a `PresentedGroup`.)
 -/
-def rels_of_trivial_commutator_of_root_pair (R : Type TR) [Ring R] (p : Φ × Φ)
+def trivialSpanRelationsOfRootPair (R : Type TR) [Ring R] (p : Φ × Φ)
     : Set (FreeGroup (ChevalleyGenerator Φ R)) :=
   let (ζ, η) := p;
   { ⁅ {ζ, t}, {η, u} ⁆
@@ -132,24 +132,24 @@ def rels_of_trivial_commutator_of_root_pair (R : Type TR) [Ring R] (p : Φ × Φ
 
 /-! #### Commutator for two generators from two roots which span one additional root -/
 
-def single_commutator_of_root_pair (f : FreeGroup (ChevalleyGenerator Φ R) →* G) (p : SingleSpanRootPair Φ) : Prop :=
+def singleCommutatorPropOfRootPair (f : FreeGroup (ChevalleyGenerator Φ R) →* G) (p : SingleSpanRootPair Φ) : Prop :=
   let ⟨ ζ, η, θ, C, _ ⟩ := p;
   ∀ (t u : R),
     ⁅ f {ζ, t}, f {η, u} ⁆ = f {θ, ↑C * t * u}
 
-def rels_of_single_commutator_of_root_pair (R : Type TR) [Ring R] (p : SingleSpanRootPair Φ) : Set (FreeGroup (ChevalleyGenerator Φ R)) :=
+def singleSpanRelationsOfRootPair (R : Type TR) [Ring R] (p : SingleSpanRootPair Φ) : Set (FreeGroup (ChevalleyGenerator Φ R)) :=
   let ⟨ ζ, η, θ, C, _ ⟩ := p;
   { ⁅ {ζ, t}, {η, u} ⁆ * {θ, C * t * u}⁻¹
     | (t : R) (u : R) }
 
 /-! #### Commutator for two generators from two roots which span one additional root -/
 
-def double_commutator_of_root_pair (f : FreeGroup (ChevalleyGenerator Φ R) →* G) (p : DoubleSpanRootPair Φ) : Prop :=
+def doubleSpanPropOfRootPair (f : FreeGroup (ChevalleyGenerator Φ R) →* G) (p : DoubleSpanRootPair Φ) : Prop :=
   let ⟨ ζ, η, θ₁, θ₂, C₁, C₂, _, _ ⟩ := p;
   ∀ (t u : R),
     ⁅ f {ζ, t}, f {η, u} ⁆ = f {θ₁, ↑C₁ * t * u} * f {θ₂, ↑C₂ * t * u * u}
 
-def rels_of_double_commutator_of_root_pair (R : Type TR) [Ring R] (p : DoubleSpanRootPair Φ) : Set (FreeGroup (ChevalleyGenerator Φ R)) :=
+def doubleSpanRelationsOfRootPair (R : Type TR) [Ring R] (p : DoubleSpanRootPair Φ) : Set (FreeGroup (ChevalleyGenerator Φ R)) :=
   let ⟨ ζ, η, θ₁, θ₂, C₁, C₂, _, _ ⟩ := p;
   { ⁅ {ζ, t}, {η, u} ⁆ *
     ({θ₁, C₁ * t * u} * {θ₂, C₂ * t * u * u})⁻¹
@@ -158,7 +158,7 @@ def rels_of_double_commutator_of_root_pair (R : Type TR) [Ring R] (p : DoubleSpa
 /-! #### Linearity relation for products of generators from a single root -/
 
 /- Linearity of coefficients for products of generators of a single root (with the same degree). -/
-def rels_of_lin_of_root (R : Type TR) [Ring R] (ζ : Φ) : Set (FreeGroup (ChevalleyGenerator Φ R)) :=
+def linearityRelationsOfRoot (R : Type TR) [Ring R] (ζ : Φ) : Set (FreeGroup (ChevalleyGenerator Φ R)) :=
   { {ζ, t} * {ζ, u} * {ζ, t + u}⁻¹
     | (t : R) (u : R) }
 
@@ -222,113 +222,113 @@ structure PartialChevalleyGroup (Φ : Type TΦ) [PositiveRootSystem Φ] (R : Typ
   mk ::
   sys : PartialChevalleySystem Φ
   define : ChevalleyGenerator Φ R → FreeGroup (ChevalleyGenerator Φ R)
-  h_define_of_present : ∀ {g : ChevalleyGenerator Φ R}, g.ζ ∈ sys.present_roots → define g = FreeGroup.of g
+  h_define_of_present : ∀ {g : ChevalleyGenerator Φ R}, g.ζ ∈ sys.presentRoots → define g = FreeGroup.of g
   h_define_is_projection : ∀ {g : ChevalleyGenerator Φ R}, (FreeGroup.lift define) (define g) = define g
 
 namespace PartialChevalleyGroup
 
 open PartialChevalleyGroup
 
-def full_mk (Φ : Type TΦ) [PositiveRootSystem Φ] (R : Type TR) [Ring R] (sys : PartialChevalleySystem Φ)
+def fullMk (Φ : Type TΦ) [PositiveRootSystem Φ] (R : Type TR) [Ring R] (sys : PartialChevalleySystem Φ)
   : PartialChevalleyGroup Φ R :=
   PartialChevalleyGroup.mk sys FreeGroup.of (by tauto) (by tauto)
 
 /-! ### Sets of relations -/
-def trivial_comm_rels (w : PartialChevalleyGroup Φ R) : Set (FreeGroup (ChevalleyGenerator Φ R)) :=
-  ⋃ (p ∈ w.sys.trivial_comm_root_pairs), rels_of_trivial_commutator_of_root_pair R p
+def trivialSpanRelations (w : PartialChevalleyGroup Φ R) : Set (FreeGroup (ChevalleyGenerator Φ R)) :=
+  ⋃ (p ∈ w.sys.trivialSpanRootPairs), trivialSpanRelationsOfRootPair R p
 
-def single_comm_rels (w : PartialChevalleyGroup Φ R) : Set (FreeGroup (ChevalleyGenerator Φ R)) :=
-  ⋃ (p ∈ w.sys.single_comm_root_pairs), rels_of_single_commutator_of_root_pair R p
+def singleSpanRelations (w : PartialChevalleyGroup Φ R) : Set (FreeGroup (ChevalleyGenerator Φ R)) :=
+  ⋃ (p ∈ w.sys.singleSpanRootPairs), singleSpanRelationsOfRootPair R p
 
-def double_comm_rels (w : PartialChevalleyGroup Φ R) : Set (FreeGroup (ChevalleyGenerator Φ R)) :=
-  ⋃ (p ∈ w.sys.double_comm_root_pairs), rels_of_double_commutator_of_root_pair R p
+def doubleSpanRelations (w : PartialChevalleyGroup Φ R) : Set (FreeGroup (ChevalleyGenerator Φ R)) :=
+  ⋃ (p ∈ w.sys.doubleCommutatorRootPairs), doubleSpanRelationsOfRootPair R p
 
-def lin_rels (w : PartialChevalleyGroup Φ R) : Set (FreeGroup (ChevalleyGenerator Φ R)) :=
-  ⋃ (ζ ∈ w.sys.present_roots), rels_of_lin_of_root R ζ
+def linearityRelations (w : PartialChevalleyGroup Φ R) : Set (FreeGroup (ChevalleyGenerator Φ R)) :=
+  ⋃ (ζ ∈ w.sys.presentRoots), linearityRelationsOfRoot R ζ
 
-def def_rels (w : PartialChevalleyGroup Φ R) : Set (FreeGroup (ChevalleyGenerator Φ R)) :=
+def definitionRelations (w : PartialChevalleyGroup Φ R) : Set (FreeGroup (ChevalleyGenerator Φ R)) :=
   ⋃ (ζ : Φ), {
       {ζ, t}⁻¹ * w.define (ChevalleyGenerator.mk ζ t) | (t : R)
   }
 
-def all_rels (w : PartialChevalleyGroup Φ R) :=
-  ⋃₀ {trivial_comm_rels w, single_comm_rels w, double_comm_rels w, lin_rels w, def_rels w}
+def allRelations (w : PartialChevalleyGroup Φ R) :=
+  ⋃₀ {trivialSpanRelations w, singleSpanRelations w, doubleSpanRelations w, linearityRelations w, definitionRelations w}
 
 /-! ### The group and the embedding -/
 
 abbrev group (w : PartialChevalleyGroup Φ R) :=
-  PresentedGroup (PartialChevalleyGroup.all_rels w)
+  PresentedGroup (PartialChevalleyGroup.allRelations w)
 
-def pres_mk (w : PartialChevalleyGroup Φ R) : FreeGroup (ChevalleyGenerator Φ R) →* group w :=
-  PresentedGroup.mk (PartialChevalleyGroup.all_rels w)
+def project (w : PartialChevalleyGroup Φ R) : FreeGroup (ChevalleyGenerator Φ R) →* group w :=
+  PresentedGroup.mk (PartialChevalleyGroup.allRelations w)
 
 /-- Mapping between two PartialChevalleyGroups -/
 theorem injection (w₁ w₂ : PartialChevalleyGroup Φ R)
-  (h_triv : ∀ p ∈ w₁.sys.trivial_comm_root_pairs, p ∈ w₂.sys.trivial_comm_root_pairs ∨
-    (∀ r ∈ (rels_of_trivial_commutator_of_root_pair R p), w₂.pres_mk r = 1))
-  (h_single : ∀ p ∈ w₁.sys.single_comm_root_pairs, p ∈ w₂.sys.single_comm_root_pairs ∨
-    (∀ r ∈ (rels_of_single_commutator_of_root_pair R p), w₂.pres_mk r = 1))
-  (h_doub : ∀ p ∈ w₁.sys.double_comm_root_pairs, p ∈ w₂.sys.double_comm_root_pairs ∨
-    (∀ r ∈ (rels_of_double_commutator_of_root_pair R p), w₂.pres_mk r = 1))
-  (h_lin : ∀ p ∈ w₁.sys.present_roots, p ∈ w₂.sys.present_roots ∨
-    (∀ r ∈ (rels_of_lin_of_root R p), w₂.pres_mk r = 1))
-  (h_def : ∀ p ∈ w₁.def_rels, w₂.pres_mk p = 1)
-  : ∀ r ∈ w₁.all_rels, w₂.pres_mk r = 1 := by
-  simp only [all_rels]
+  (h_triv : ∀ p ∈ w₁.sys.trivialSpanRootPairs, p ∈ w₂.sys.trivialSpanRootPairs ∨
+    (∀ r ∈ (trivialSpanRelationsOfRootPair R p), w₂.project r = 1))
+  (h_single : ∀ p ∈ w₁.sys.singleSpanRootPairs, p ∈ w₂.sys.singleSpanRootPairs ∨
+    (∀ r ∈ (singleSpanRelationsOfRootPair R p), w₂.project r = 1))
+  (h_doub : ∀ p ∈ w₁.sys.doubleCommutatorRootPairs, p ∈ w₂.sys.doubleCommutatorRootPairs ∨
+    (∀ r ∈ (doubleSpanRelationsOfRootPair R p), w₂.project r = 1))
+  (h_lin : ∀ p ∈ w₁.sys.presentRoots, p ∈ w₂.sys.presentRoots ∨
+    (∀ r ∈ (linearityRelationsOfRoot R p), w₂.project r = 1))
+  (h_def : ∀ p ∈ w₁.definitionRelations, w₂.project p = 1)
+  : ∀ r ∈ w₁.allRelations, w₂.project r = 1 := by
+  simp only [allRelations]
   intro r h
   simp only [Set.sUnion_insert, Set.sUnion_singleton, Set.mem_union, Set.mem_sUnion] at h
   rcases h with h|h|h|h|h
-  · simp only [trivial_comm_rels, Set.sUnion_image, Set.mem_iUnion, exists_prop] at h
+  · simp only [trivialSpanRelations, Set.sUnion_image, Set.mem_iUnion, exists_prop] at h
     rcases h with ⟨ p, h_p, h_r_p ⟩
     specialize h_triv p
     simp_all only [forall_const]
     rcases h_triv with h|h
     · apply eq_one_of_mem_rels
-      simp only [all_rels]
-      have : r ∈ w₂.trivial_comm_rels := by
-        simp only [trivial_comm_rels]
+      simp only [allRelations]
+      have : r ∈ w₂.trivialSpanRelations := by
+        simp only [trivialSpanRelations]
         simp only [Set.sUnion_image, Set.mem_iUnion, exists_prop]
         use p
       simp only [Set.sUnion_insert, Set.sUnion_singleton, Set.mem_union, Set.mem_sUnion]
       tauto
     · tauto
-  · simp only [single_comm_rels, Set.sUnion_image, Set.mem_iUnion, exists_prop] at h
+  · simp only [singleSpanRelations, Set.sUnion_image, Set.mem_iUnion, exists_prop] at h
     rcases h with ⟨ p, h_p, h_r_p ⟩
     specialize h_single p
     simp_all only [forall_const]
     rcases h_single with h|h
     · apply eq_one_of_mem_rels
-      simp only [all_rels]
-      have : r ∈ w₂.single_comm_rels := by
-        simp only [single_comm_rels]
+      simp only [allRelations]
+      have : r ∈ w₂.singleSpanRelations := by
+        simp only [singleSpanRelations]
         simp only [Set.sUnion_image, Set.mem_iUnion, exists_prop]
         use p
       simp only [Set.sUnion_insert, Set.sUnion_singleton, Set.mem_union, Set.mem_sUnion]
       tauto
     · tauto
-  · simp only [double_comm_rels, Set.sUnion_image, Set.mem_iUnion, exists_prop] at h
+  · simp only [doubleSpanRelations, Set.sUnion_image, Set.mem_iUnion, exists_prop] at h
     rcases h with ⟨ p, h_p, h_r_p ⟩
     specialize h_doub p
     simp_all only [forall_const]
     rcases h_doub with h|h
     · apply eq_one_of_mem_rels
-      simp only [all_rels]
-      have : r ∈ w₂.double_comm_rels := by
-        simp only [double_comm_rels]
+      simp only [allRelations]
+      have : r ∈ w₂.doubleSpanRelations := by
+        simp only [doubleSpanRelations]
         simp only [Set.sUnion_image, Set.mem_iUnion, exists_prop]
         use p
       simp only [Set.sUnion_insert, Set.sUnion_singleton, Set.mem_union, Set.mem_sUnion]
       tauto
     · tauto
-  · simp only [lin_rels, Set.sUnion_image, Set.mem_iUnion, exists_prop] at h
+  · simp only [linearityRelations, Set.sUnion_image, Set.mem_iUnion, exists_prop] at h
     rcases h with ⟨ p, h_p, h_r_p ⟩
     specialize h_lin p
     simp_all only [forall_const]
     rcases h_lin with h|h
     · apply eq_one_of_mem_rels
-      simp only [all_rels]
-      have : r ∈ w₂.lin_rels := by
-        simp only [lin_rels]
+      simp only [allRelations]
+      have : r ∈ w₂.linearityRelations := by
+        simp only [linearityRelations]
         simp only [Set.sUnion_image, Set.mem_iUnion, exists_prop]
         use p
       simp only [Set.sUnion_insert, Set.sUnion_singleton, Set.mem_union, Set.mem_sUnion]
@@ -338,94 +338,94 @@ theorem injection (w₁ w₂ : PartialChevalleyGroup Φ R)
 
 open Lean PrettyPrinter Delaborator SubExpr in
 /--
-  Delaborator for `pres_mk` when it's an application.
+  Delaborator for `project` when it's an application.
 
   Note that this will obscure the widgets on the infoview, such that
-  hovering over the group elements won't bring you back to `pres_mk`.
+  hovering over the group elements won't bring you back to `project`.
 -/
 @[delab app.DFunLike.coe]
-def delab_pres_mk' : Delab := do
+def delab_project' : Delab := do
   withOverApp 6 do
     let e ← getExpr
-    let mkApp5 (.const ``pres_mk _) _ _ _ _ _ := e.appFn!.appArg!' | failure
+    let mkApp5 (.const ``project _) _ _ _ _ _ := e.appFn!.appArg!' | failure
     let f_mk_mk ← withNaryArg 5 delab
     `($f_mk_mk)
 
 /-! ### Helpers -/
 
-theorem trivial_commutator_helper {w : PartialChevalleyGroup Φ R} {p : Φ × Φ}
-    (h : p ∈ w.sys.trivial_comm_root_pairs)
-      : trivial_commutator_of_root_pair w.pres_mk p := by
+theorem trivialSpanProp_of_mem_trivialSpanRoot_pairs {w : PartialChevalleyGroup Φ R} {p : Φ × Φ}
+    (h : p ∈ w.sys.trivialSpanRootPairs)
+      : trivialSpanPropOfRootPair w.project p := by
   intro t u
   apply eq_one_of_mem_rels
   apply Set.mem_sUnion.mpr
-  use w.trivial_comm_rels
+  use w.trivialSpanRelations
   constructor
   · tauto
-  · simp only [trivial_comm_rels]
+  · simp only [trivialSpanRelations]
     simp only [Set.mem_iUnion]
     use p, h
-    rw [rels_of_trivial_commutator_of_root_pair]
+    rw [trivialSpanRelationsOfRootPair]
     exists t, u
 
-theorem single_commutator_helper (w : PartialChevalleyGroup Φ R) (p : SingleSpanRootPair Φ)
-  (h : p ∈ w.sys.single_comm_root_pairs)
-    : single_commutator_of_root_pair w.pres_mk p := by
+theorem singleSpanProp_of_mem_singleSpanRoot_pairs (w : PartialChevalleyGroup Φ R) (p : SingleSpanRootPair Φ)
+  (h : p ∈ w.sys.singleSpanRootPairs)
+    : singleCommutatorPropOfRootPair w.project p := by
   intro t u
   apply eq_of_mul_inv_eq_one
   apply eq_one_of_mem_rels
   apply Set.mem_sUnion.mpr
-  use w.single_comm_rels
+  use w.singleSpanRelations
   constructor
   · tauto
-  · simp only [single_comm_rels]
+  · simp only [singleSpanRelations]
     simp only [Set.mem_iUnion]
     use p, h
-    rw [rels_of_single_commutator_of_root_pair]
+    rw [singleSpanRelationsOfRootPair]
     exists t, u
 
-theorem double_commutator_helper (w : PartialChevalleyGroup Φ R) (p : DoubleSpanRootPair Φ)
-  (h : p ∈ w.sys.double_comm_root_pairs)
-    : double_commutator_of_root_pair w.pres_mk p := by
+theorem doubleSpanProp_of_mem_doubleSpanRootPairs (w : PartialChevalleyGroup Φ R) (p : DoubleSpanRootPair Φ)
+  (h : p ∈ w.sys.doubleCommutatorRootPairs)
+    : doubleSpanPropOfRootPair w.project p := by
   intro t u
   apply eq_of_mul_inv_eq_one
   apply eq_one_of_mem_rels
   apply Set.mem_sUnion.mpr
-  use w.double_comm_rels
+  use w.doubleSpanRelations
   constructor
   · tauto
-  · simp only [double_comm_rels]
+  · simp only [doubleSpanRelations]
     simp only [Set.mem_iUnion]
     use p, h
-    rw [rels_of_double_commutator_of_root_pair]
+    rw [doubleSpanRelationsOfRootPair]
     exists t, u
 
-theorem lin_helper (w : PartialChevalleyGroup Φ R) {ζ : Φ} (h : ζ ∈ w.sys.present_roots)
-    : lin_of_root(w.pres_mk, ζ) := by
+theorem lin_of_root_of_mem_presentRoots (w : PartialChevalleyGroup Φ R) {ζ : Φ} (h : ζ ∈ w.sys.presentRoots)
+    : lin_of_root(w.project, ζ) := by
   intro t u
   apply eq_of_mul_inv_eq_one
   apply eq_one_of_mem_rels
   apply Set.mem_sUnion.mpr
-  use w.lin_rels
+  use w.linearityRelations
   constructor
   · tauto
-  · simp only [lin_rels]
+  · simp only [linearityRelations]
     simp only [Set.mem_iUnion]
     use ζ, h
-    rw [rels_of_lin_of_root]
+    rw [linearityRelationsOfRoot]
     exists t, u
 
-theorem def_helper (w : PartialChevalleyGroup Φ R)
-    : ∀ (ζ : Φ) (t : R), w.pres_mk {ζ, t} = w.pres_mk (w.define (ChevalleyGenerator.mk ζ t))
+theorem definitionProp_of_define (w : PartialChevalleyGroup Φ R)
+    : ∀ (ζ : Φ) (t : R), w.project {ζ, t} = w.project (w.define (ChevalleyGenerator.mk ζ t))
       := by
   intro ζ t
   apply eq_of_inv_mul_eq_one
   apply eq_one_of_mem_rels
   apply Set.mem_sUnion.mpr
-  use w.def_rels
+  use w.definitionRelations
   constructor
   · tauto
-  · simp only [def_rels]
+  · simp only [definitionRelations]
     simp only [Set.mem_iUnion]
     use ζ
     simp only [Set.mem_setOf_eq]
@@ -446,19 +446,19 @@ macro "declare_ungraded_lin_id_inv_thms" w:ident R:term:arg root:term:arg : comm
   let invOf := root.mapIdent ("inv_of_" ++ ·)
   makeCommands `(section
     @[group_reassoc (attr := simp, chev_simps)]
-    theorem $linOf : lin_of_root(($w $R).pres_mk, $root) :=
-      ($w $R).lin_helper (by unfold $w; simp only [PartialChevalleyGroup.full_mk]; tauto)
+    theorem $linOf : lin_of_root(($w $R).project, $root) :=
+      ($w $R).lin_of_root_of_mem_presentRoots (by unfold $w; simp only [PartialChevalleyGroup.fullMk]; tauto)
 
     @[simp, chev_simps]
-    theorem $idOf : id_of_root(($w $R).pres_mk, $root) :=
+    theorem $idOf : id_of_root(($w $R).project, $root) :=
       id_of_lin_of_root $linOf
 
     @[simp, chev_simps]
-    theorem $invOf : inv_of_root(($w $R).pres_mk, $root) :=
+    theorem $invOf : inv_of_root(($w $R).project, $root) :=
       inv_of_lin_of_root $linOf
   end)
 
-macro "declare_ungraded_triv_expr_thm" w:ident R:term:arg r₁:term:arg r₂:term:arg : command => do
+macro "declare_ungraded_trivial_span_expr_thm" w:ident R:term:arg r₁:term:arg r₂:term:arg : command => do
   let exprAs := TSyntax.mapIdent₂ r₁ r₂
     (fun s₁ s₂ => "expr_" ++ s₁ ++ "_" ++ s₂ ++ "_as_" ++ s₂ ++ "_" ++ s₁)
   let commName := TSyntax.mapIdent₂ r₁ r₂
@@ -467,25 +467,25 @@ macro "declare_ungraded_triv_expr_thm" w:ident R:term:arg r₁:term:arg r₂:ter
   makeCommands `(section
     @[group_reassoc] theorem $exprAs
       : ∀ (t u : $R),
-        commutes(($w $R).pres_mk {$r₁:term, t},
-                ($w $R).pres_mk {$r₂:term, u}) := by
+        commutes(($w $R).project {$r₁:term, t},
+                ($w $R).project {$r₂:term, u}) := by
       intro t u
       apply triv_comm_iff_commutes.mp
       rw [$commOf]
       <;> try assumption
   end)
 
-macro "declare_ungraded_triv_comm_of_root_pair_thms"
+macro "declare_ungraded_trivial_span_of_root_pair_thms"
     w:ident R:term:arg
     r₁:term:arg r₂:term:arg : command => do
   let commOf := TSyntax.mapIdent₂ r₁ r₂ (fun s₁ s₂ => "comm_of_" ++ s₁ ++ "_" ++ s₂)
   makeCommands `(section
-    theorem $commOf : trivial_commutator_of_root_pair ($w $R).pres_mk ($r₁, $r₂) :=
-      ($w $R).trivial_commutator_helper (by unfold $w; simp only [PartialChevalleyGroup.full_mk]; tauto)
-    declare_ungraded_triv_expr_thm $w $R $r₁ $r₂
+    theorem $commOf : trivialSpanPropOfRootPair ($w $R).project ($r₁, $r₂) :=
+      ($w $R).trivialSpanProp_of_mem_trivialSpanRoot_pairs (by unfold $w; simp only [PartialChevalleyGroup.fullMk]; tauto)
+    declare_ungraded_trivial_span_expr_thm $w $R $r₁ $r₂
   end)
 
-macro "declare_ungraded_single_expr_thms"
+macro "declare_ungraded_single_span_expr_thms"
     w:ident R:term:arg
     r₁:term:arg r₂:term:arg r₃:term:arg isNeg:num n:num : command => do
   let innerTerm ←
@@ -502,11 +502,11 @@ macro "declare_ungraded_single_expr_thms"
     (fun s₁ s₂ s₃ => "expr_" ++ s₁ ++ "_" ++ s₂ ++ "_as_" ++ s₃ ++ "_" ++ s₂ ++ "_" ++ s₁)
   makeCommands `(section
     theorem $exprAs : ∀ (t u : $R),
-        (($w $R).pres_mk {$r₃:term, $innerTerm})
-          = ($w $R).pres_mk {$r₁:term, t}
-            * ($w $R).pres_mk {$r₂:term, u}
-            * ($w $R).pres_mk {$r₁:term, -t}
-            * ($w $R).pres_mk {$r₂:term, -u} := by
+        (($w $R).project {$r₃:term, $innerTerm})
+          = ($w $R).project {$r₁:term, t}
+            * ($w $R).project {$r₂:term, u}
+            * ($w $R).project {$r₁:term, -t}
+            * ($w $R).project {$r₂:term, -u} := by
       intro t u
       have := $commOf t u
       chev_simp [commutatorElement_def, one_mul, mul_one] at this
@@ -516,9 +516,9 @@ macro "declare_ungraded_single_expr_thms"
     @[group_reassoc]
     theorem $exprAsRev : ∀ (t u : $R),
         reorder_left(
-          ($w $R).pres_mk {$r₁:term, t},
-          ($w $R).pres_mk {$r₂:term, u},
-          (($w $R).pres_mk {$r₃:term, $innerTerm})
+          ($w $R).project {$r₁:term, t},
+          ($w $R).project {$r₂:term, u},
+          (($w $R).project {$r₃:term, $innerTerm})
         ) := by
       intro t u
       have := $commOf t u
@@ -526,7 +526,7 @@ macro "declare_ungraded_single_expr_thms"
       grw [← this]
   end)
 
-macro "declare_ungraded_single_comm_of_root_pair_thms"
+macro "declare_ungraded_single_span_of_root_pair_thms"
     w:ident R:term:arg
     r₁:term:arg r₂:term:arg r₃:term:arg isNeg:num n:num : command => do
   let innerTerm ←
@@ -536,10 +536,10 @@ macro "declare_ungraded_single_comm_of_root_pair_thms"
 
   let commOf := TSyntax.mapIdent₂ r₁ r₂ (fun s₁ s₂ => "comm_of_" ++ s₁ ++ "_" ++ s₂)
   makeCommands `(section
-    theorem $commOf : single_commutator_of_root_pair ($w $R).pres_mk ⟨$r₁, $r₂, $r₃, $innerTerm, rfl⟩ :=
-      ($w $R).single_commutator_helper ⟨$r₁, $r₂, $r₃, $innerTerm, rfl⟩ (
-        by unfold $w; simp only [PartialChevalleyGroup.full_mk]; tauto)
-    declare_ungraded_single_expr_thms $w $R $r₁ $r₂ $r₃ $isNeg $n
+    theorem $commOf : singleCommutatorPropOfRootPair ($w $R).project ⟨$r₁, $r₂, $r₃, $innerTerm, rfl⟩ :=
+      ($w $R).singleSpanProp_of_mem_singleSpanRoot_pairs ⟨$r₁, $r₂, $r₃, $innerTerm, rfl⟩ (
+        by unfold $w; simp only [PartialChevalleyGroup.fullMk]; tauto)
+    declare_ungraded_single_span_expr_thms $w $R $r₁ $r₂ $r₃ $isNeg $n
   end)
 
 end declareThms /- section -/

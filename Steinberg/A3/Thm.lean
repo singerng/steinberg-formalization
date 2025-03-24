@@ -11,7 +11,7 @@ import Mathlib.Tactic.Group
 import Mathlib.Tactic.FinCases
 
 import Steinberg.Defs.Lattice
-import Steinberg.Defs.ReflDeg
+import Steinberg.Defs.DegreeReflection
 
 import Steinberg.Upstream.FreeGroup
 
@@ -29,15 +29,15 @@ variable {R : Type TR} [Ring R]
 
 /-! ### Nonhomogeneous lift -/
 
-theorem nonhomog_lift_of_comm_of_αβ_βγ :
+theorem nonhom_lift_of_comm_of_αβ_βγ :
   ∀ (t₁ t₀ u₁ u₀ v₁ v₀ : R),
     ⁅ ⸨αβ, 2, t₁ * u₁⸩ * ⸨αβ, 1, t₁ * u₀ + t₀ * u₁⸩ * ⸨αβ, 0, t₀ * u₀⸩
     , ⸨βγ, 2, u₁ * v₁⸩ * ⸨βγ, 1, u₁ * v₀ + u₀ * v₁⸩ * ⸨βγ, 0, u₀ * v₀⸩ ⁆
     = 1 := by
   intro t₁ t₀ u₁ u₀ v₁ v₀
   apply eq_of_mul_inv_eq_one
-  apply (weakA3 R).lifted_helper rels_of_nonhomog_lift_of_comm_of_αβ_βγ
-  · simp only [weakA3, lifted_sets, Set.mem_singleton_iff]
+  apply (weakA3Graded R).liftedProp_of_mem_lifted rels_of_nonhom_lift_of_comm_of_αβ_βγ
+  · simp only [weakA3Graded, lifted_sets, Set.mem_singleton_iff]
   · exists t₁, t₀, u₁, u₀, v₁, v₀
 
 /-! ### Definition of missing root -/
@@ -48,30 +48,30 @@ theorem def_of_αβγ :
     = ⸨αβγ, i, t⸩ := by
   intro i hi t
   symm
-  apply (weakA3 R).def_helper
+  apply (weakA3Graded R).definitionProp_of_define
 
 theorem a3_valid :
-  refl_valid (weakA3 R) := by
-  simp only [refl_valid]
-  nth_rewrite 1 [weakA3]
-  simp only [lifted_sets, Set.mem_singleton_iff, forall_eq, rels_of_nonhomog_lift_of_comm_of_αβ_βγ, Set.mem_setOf_eq]
+  reflectValidProp (weakA3Graded R) := by
+  simp only [reflectValidProp]
+  nth_rewrite 1 [weakA3Graded]
+  simp only [lifted_sets, Set.mem_singleton_iff, forall_eq, rels_of_nonhom_lift_of_comm_of_αβ_βγ, Set.mem_setOf_eq]
   intro r h
   rcases h with ⟨ t₁, t₀, u₁, u₀, v₁, v₀, rfl ⟩
   simp only [map_mul, map_commutatorElement, FreeGroup.lift.of]
-  repeat rw [refl_def_eq_refl_gen_of_present _ _ (by tauto)]
-  simp only [refl_of_gen, PositiveRootSystem.height, height]
+  repeat rw [defineThenReflect_eq_reflect_of_mem_presentRoots _ _ (by tauto)]
+  simp only [reflect, PositiveRootSystem.height, height]
   simp_arith
   rw [add_comm (t₁ * u₀), add_comm (u₁ * v₀)]
   grw [expr_αβ_αβ_as_αβ_αβ, expr_αβ_αβ_as_αβ_αβ (i := 0), expr_αβ_αβ_as_αβ_αβ,
        expr_βγ_βγ_as_βγ_βγ, expr_βγ_βγ_as_βγ_βγ (i := 0), expr_βγ_βγ_as_βγ_βγ]
-  exact nonhomog_lift_of_comm_of_αβ_βγ t₀ t₁ u₀ u₁ v₀ v₁
+  exact nonhom_lift_of_comm_of_αβ_βγ t₀ t₁ u₀ u₁ v₀ v₁
 
 /-! ### Derive full commutator for αβ and βγ from nonhomogeneous lift -/
 
 -- NS: this section should probably be abstracted for reuse
 
 /- Commutator relation in the case (i,j) is not (0,2) or (2,0) (via the previous theorem). -/
-private lemma homog_lift_of_comm_of_αβ_βγ (i j k : ℕ) (hi : i ≤ 1) (hj : j ≤ 1) (hk : k ≤ 1) :
+private lemma hom_lift_of_comm_of_αβ_βγ (i j k : ℕ) (hi : i ≤ 1) (hj : j ≤ 1) (hk : k ≤ 1) :
   ∀ (t u : R), ⁅ ⸨ αβ, i + j, t⸩, ⸨βγ, j + k, u⸩ ⁆ = 1 := by
     intro t u
     let t₁ : R := match i with
@@ -103,40 +103,40 @@ private lemma homog_lift_of_comm_of_αβ_βγ (i j k : ℕ) (hi : i ≤ 1) (hj :
       fin_cases hf_i, hf_j, hf_k
       <;> chev_simp [t₀, t₁, u₀, u₁, v₀, v₁]
     )
-    rw [id₁, id₂, nonhomog_lift_of_comm_of_αβ_βγ]
+    rw [id₁, id₂, nonhom_lift_of_comm_of_αβ_βγ]
 
-private lemma image_of_homog_lift_of_comm_of_αβ_βγ {i j : ℕ} (hi : i ≤ αβ.height) (hj : j ≤ βγ.height)
+private lemma image_of_hom_lift_of_comm_of_αβ_βγ {i j : ℕ} (hi : i ≤ αβ.height) (hj : j ≤ βγ.height)
     : ((i, j) ∈ ij_jk_image) → ∀ (t u : R), ⁅ ⸨αβ, i, t⸩, ⸨βγ, j, u⸩ ⁆ = 1 := by
   intro h_in_image t u
   have : ∃ ijk' : ℕ × ℕ × ℕ, ijk' ∈ boolean_cube ∧ f_ij_jk ijk' = (i, j) := by
     rw [← Finset.mem_image, correct_of_ij_jk_image]; exact h_in_image
   simp [f_ij_jk] at this
   rcases this with ⟨ i', j', k', ⟨ hi', hj', hk' ⟩, rfl, rfl ⟩
-  rw [← homog_lift_of_comm_of_αβ_βγ i' j' k' hi' hj' hk' t u]
+  rw [← hom_lift_of_comm_of_αβ_βγ i' j' k' hi' hj' hk' t u]
 
 private lemma comm_of_αβ_βγ_20 : ∀ (t u : R), ⁅ ⸨αβ, 2, t⸩, ⸨βγ, 0, u⸩ ⁆ = 1 := by
   intro t u
   apply @trivial_comm_from_embedded_comm_and_pairs _ _ ⸨βγ, 1, u⸩ _ (⸨αβ, 1, t + 1⸩ * ⸨αβ, 0, 1⸩)
-  grw [← nonhomog_lift_of_comm_of_αβ_βγ t 1 1 1 0 u]
-  rw [← homog_lift_of_comm_of_αβ_βγ 1 1 0 (by trivial) (by trivial) (by trivial) t u]
+  grw [← nonhom_lift_of_comm_of_αβ_βγ t 1 1 1 0 u]
+  rw [← hom_lift_of_comm_of_αβ_βγ 1 1 0 (by trivial) (by trivial) (by trivial) t u]
   apply triv_comm_mul_left
-  rw [← homog_lift_of_comm_of_αβ_βγ 0 1 0 (by trivial) (by trivial) (by trivial) (t+1) u]
-  rw [← homog_lift_of_comm_of_αβ_βγ 0 0 1 (by trivial) (by trivial) (by trivial) 1 u]
+  rw [← hom_lift_of_comm_of_αβ_βγ 0 1 0 (by trivial) (by trivial) (by trivial) (t+1) u]
+  rw [← hom_lift_of_comm_of_αβ_βγ 0 0 1 (by trivial) (by trivial) (by trivial) 1 u]
   apply triv_comm_mul_left
-  rw [← homog_lift_of_comm_of_αβ_βγ 1 0 0 (by trivial) (by trivial) (by trivial) (t+1) u]
-  rw [← homog_lift_of_comm_of_αβ_βγ 0 0 0 (by trivial) (by trivial) (by trivial) 1 u]
+  rw [← hom_lift_of_comm_of_αβ_βγ 1 0 0 (by trivial) (by trivial) (by trivial) (t+1) u]
+  rw [← hom_lift_of_comm_of_αβ_βγ 0 0 0 (by trivial) (by trivial) (by trivial) 1 u]
 
 -- symmetric to proof of `comm_of_αβ_βγ_20`
 private lemma comm_of_αβ_βγ_02 : ∀ (t u : R), ⁅ ⸨αβ, 0, t⸩, ⸨βγ, 2, u⸩ ⁆ = 1 := by
   intro t u
-  have : ⁅ ⸨αβ, 0, t⸩, ⸨βγ, 2, u⸩ ⁆ = refl_symm a3_valid ⁅ ⸨αβ, 2, t⸩, ⸨βγ, 0, u⸩ ⁆ := by
+  have : ⁅ ⸨αβ, 0, t⸩, ⸨βγ, 2, u⸩ ⁆ = defineThenReflectOfPresentedGroup a3_valid ⁅ ⸨αβ, 2, t⸩, ⸨βγ, 0, u⸩ ⁆ := by
     rw [map_commutatorElement]; trivial
   rw [this, comm_of_αβ_βγ_20, map_one]
 
-theorem comm_of_αβ_βγ : trivial_commutator_of_root_pair (weakA3 R).pres_mk (αβ, βγ) := by
+theorem comm_of_αβ_βγ : trivialSpanPropOfRootPair (weakA3Graded R).project (αβ, βγ) := by
   intro i j hi hj t u
   by_cases hij : (i, j) ∈ ij_jk_image
-  · apply image_of_homog_lift_of_comm_of_αβ_βγ hi hj hij
+  · apply image_of_hom_lift_of_comm_of_αβ_βγ hi hj hij
   · have : (i = 0 ∧ j = 2) ∨ (i = 2 ∧ j = 0) := by
       simp [ij_jk_image] at hij
       height_simp at hi hj
@@ -144,7 +144,7 @@ theorem comm_of_αβ_βγ : trivial_commutator_of_root_pair (weakA3 R).pres_mk (
     rcases this with ( ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ )
     · rw [← comm_of_αβ_βγ_02 t u]
     · rw [← comm_of_αβ_βγ_20 t u]
-declare_A3_triv_expr_thm R αβ βγ
+declare_A3_trivial_span_expr_thm R αβ βγ
 
 /-! ### Further useful identities (roughly GENERIC) -/
 
@@ -257,7 +257,7 @@ private lemma comm_of_αβ_γ_21 (t u : R) : ⁅ ⸨αβ, 2, t⸩, ⸨γ, 1, u�
         comm_of_α_βγ_12]
 
 /- Commutator relation for α and βγ. -/
-theorem comm_of_α_βγ : single_commutator_of_root_pair (weakA3 R).pres_mk ⟨α, βγ, αβγ, 1, (by ht)⟩ := by
+theorem comm_of_α_βγ : singleCommutatorPropOfRootPair (weakA3Graded R).project ⟨α, βγ, αβγ, 1, (by ht)⟩ := by
   intro i j hi hj t u
   match i, j with
   | 0, 0 => chev_simp [comm_of_α_βγ_00 t u]
@@ -266,10 +266,10 @@ theorem comm_of_α_βγ : single_commutator_of_root_pair (weakA3 R).pres_mk ⟨�
   | 1, 0 => chev_simp [comm_of_α_βγ_10 t u]
   | 1, 1 => chev_simp [comm_of_α_βγ_11 t u]
   | 1, 2 => chev_simp [comm_of_α_βγ_12 t u]
-declare_A3_single_expr_thms R α βγ αβγ
+declare_A3_single_span_expr_thms R α βγ αβγ
 
 /- Commutator relation for αβ and γ. -/
-theorem comm_of_αβ_γ : single_commutator_of_root_pair (weakA3 R).pres_mk ⟨αβ, γ, αβγ, 1, (by ht)⟩ := by
+theorem comm_of_αβ_γ : singleCommutatorPropOfRootPair (weakA3Graded R).project ⟨αβ, γ, αβγ, 1, (by ht)⟩ := by
   intro i j hi hj t u
   match i, j with
   | 0, 0 => chev_simp [comm_of_αβ_γ_00 t u]
@@ -278,7 +278,7 @@ theorem comm_of_αβ_γ : single_commutator_of_root_pair (weakA3 R).pres_mk ⟨�
   | 0, 1 => chev_simp [comm_of_αβ_γ_01 t u]
   | 1, 1 => chev_simp [comm_of_αβ_γ_11 t u]
   | 2, 1 => chev_simp [comm_of_αβ_γ_21 t u]
-declare_A3_single_expr_thms R αβ γ αβγ
+declare_A3_single_span_expr_thms R αβ γ αβγ
 
 /-! ### More rewriting theorems -/
 
@@ -309,7 +309,7 @@ theorem expand_αβγ_as_αβ_γ_αβ_γ_mul_one : forall_ij_t αβ γ,
 /-! ### Commutators of αβγ with other roots -/
 
 /- α and αβγ commute. -/
-theorem comm_of_α_αβγ : trivial_commutator_of_root_pair (weakA3 R).pres_mk (α, αβγ) := by
+theorem comm_of_α_αβγ : trivialSpanPropOfRootPair (weakA3Graded R).project (α, αβγ) := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.mpr
   rcases decompose αβ.height γ.height j hj with ⟨ j₁, j₂, ⟨ rfl, hj₁, hj₂ ⟩ ⟩
@@ -319,7 +319,7 @@ theorem comm_of_α_αβγ : trivial_commutator_of_root_pair (weakA3 R).pres_mk (
 
 /- β and αβγ commute. -/
 -- the only commutator proof where we have to do something 'interesting'
-theorem comm_of_β_αβγ : trivial_commutator_of_root_pair (weakA3 R).pres_mk (β, αβγ) := by
+theorem comm_of_β_αβγ : trivialSpanPropOfRootPair (weakA3Graded R).project (β, αβγ) := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.mpr
   rcases decompose αβ.height γ.height j hj with ⟨ j₁, j₂, ⟨ rfl, hj₁, hj₂ ⟩ ⟩
@@ -329,7 +329,7 @@ theorem comm_of_β_αβγ : trivial_commutator_of_root_pair (weakA3 R).pres_mk (
       ← expr_αβ_βγ_as_βγ_αβ hj₁]
 
 /- γ and αβγ commute. -/
-theorem comm_of_γ_αβγ : trivial_commutator_of_root_pair (weakA3 R).pres_mk (γ, αβγ) := by
+theorem comm_of_γ_αβγ : trivialSpanPropOfRootPair (weakA3Graded R).project (γ, αβγ) := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.mpr
   rcases decompose α.height βγ.height j hj with ⟨ j₁, j₂, ⟨ rfl, hj₁, hj₂ ⟩ ⟩
@@ -338,7 +338,7 @@ theorem comm_of_γ_αβγ : trivial_commutator_of_root_pair (weakA3 R).pres_mk (
     ← expr_α_γ_as_γ_α hj₁ hi, expr_γ_βγ_as_βγ_γ hi hj₂]
 
 /- αβ and αβγ commute. -/
-theorem comm_of_αβ_αβγ : trivial_commutator_of_root_pair (weakA3 R).pres_mk (αβ, αβγ) := by
+theorem comm_of_αβ_αβγ : trivialSpanPropOfRootPair (weakA3Graded R).project (αβ, αβγ) := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.mpr
   rcases decompose α.height βγ.height j hj with ⟨ j₁, j₂, ⟨ rfl, hj₁, hj₂ ⟩ ⟩
@@ -347,7 +347,7 @@ theorem comm_of_αβ_αβγ : trivial_commutator_of_root_pair (weakA3 R).pres_mk
     ← expr_α_αβ_as_αβ_α hj₁ hi, expr_αβ_βγ_as_βγ_αβ hi hj₂]
 
 /- βγ and αβγ commute. -/
-theorem comm_of_βγ_αβγ : trivial_commutator_of_root_pair (weakA3 R).pres_mk (βγ, αβγ) := by
+theorem comm_of_βγ_αβγ : trivialSpanPropOfRootPair (weakA3Graded R).project (βγ, αβγ) := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.mpr
   rcases decompose αβ.height γ.height j hj with ⟨ j₁, j₂, ⟨ rfl, hj₁, hj₂ ⟩ ⟩
@@ -355,25 +355,25 @@ theorem comm_of_βγ_αβγ : trivial_commutator_of_root_pair (weakA3 R).pres_mk
     ← expr_αβ_βγ_as_βγ_αβ hj₁ hi, ← expr_γ_βγ_as_βγ_γ hj₂ hi,
     ← expr_αβ_βγ_as_βγ_αβ hj₁ hi, ← expr_γ_βγ_as_βγ_γ hj₂ hi]
 
-declare_A3_triv_expr_thm R α αβγ
-declare_A3_triv_expr_thm R β αβγ
-declare_A3_triv_expr_thm R γ αβγ
-declare_A3_triv_expr_thm R αβ αβγ
-declare_A3_triv_expr_thm R βγ αβγ
+declare_A3_trivial_span_expr_thm R α αβγ
+declare_A3_trivial_span_expr_thm R β αβγ
+declare_A3_trivial_span_expr_thm R γ αβγ
+declare_A3_trivial_span_expr_thm R αβ αβγ
+declare_A3_trivial_span_expr_thm R βγ αβγ
 
 /- αβγ commutes with itself. -/
-theorem comm_of_αβγ_αβγ : mixed_commutes_of_root (weakA3 R).pres_mk αβγ := by
+theorem comm_of_αβγ_αβγ : mixedDegreePropOfRoot (weakA3Graded R).project αβγ := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.mpr
   rcases decompose α.height βγ.height j (by trivial) with ⟨ j₁, j₂, ⟨ rfl, hj₁, hj₂ ⟩ ⟩
   grw [expr_αβγ_as_α_βγ_α_βγ_one_mul hj₁ hj₂,
     ← expr_α_αβγ_as_αβγ_α hj₁ hi, ← expr_βγ_αβγ_as_αβγ_βγ hj₂ hi,
     ← expr_α_αβγ_as_αβγ_α hj₁ hi, ← expr_βγ_αβγ_as_αβγ_βγ hj₂ hi]
-declare_A3_triv_expr_thm R αβγ αβγ
+declare_A3_trivial_span_expr_thm R αβγ αβγ
 
 /- Linearity for αβγ. -/
 @[group_reassoc (attr := simp, chev_simps)]
-theorem lin_of_αβγ : lin_of_root((weakA3 R).pres_mk, αβγ) := by
+theorem lin_of_αβγ : lin_of_root((weakA3Graded R).project, αβγ) := by
   intro i hi t u
   rcases decompose α.height βγ.height i (by trivial) with ⟨ i₁, i₂, ⟨ rfl, hi₁, hi₂ ⟩ ⟩
   have h_eq' : i₁ + i₂ ≤ PositiveRootSystem.height αβγ := by omega
@@ -385,9 +385,9 @@ theorem lin_of_αβγ : lin_of_root((weakA3 R).pres_mk, αβγ) := by
     ← neg_add, add_comm u t,
     ← expr_αβγ_as_α_βγ_α_βγ hi₁ hi₂]
 
-theorem full_rels_satisfied_in_weak_group :
-  ∀ r ∈ (fullA3Graded R).all_rels, (weakA3 R).pres_mk r = 1 := by
-  simp only [fullA3, weakA3]
+theorem full_relations_implied_by_weak_relations :
+  ∀ r ∈ (fullA3Graded R).allRelations, (weakA3Graded R).project r = 1 := by
+  simp only [weakA3Graded]
   apply GradedPartialChevalleyGroup.graded_injection
   all_goals (
     intro p h
@@ -398,7 +398,7 @@ theorem full_rels_satisfied_in_weak_group :
     · right
       simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at h_new
       intro r h_r
-      simp only [rels_of_trivial_commutator_of_root_pair] at h_r
+      simp only [trivialSpanRelationsOfRootPair] at h_r
       rcases h_r with ⟨ i, j, hi, hj, t, u, goal ⟩
       rcases h_new with h_αβ_βγ|h_α_αβγ|h_β_αβγ|h_γ_αβγ|h_αβ_αβγ|h_βγ_αβγ
       all_goals subst p r
@@ -413,7 +413,7 @@ theorem full_rels_satisfied_in_weak_group :
     · right
       simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at h_new
       intro r h_r
-      simp only [rels_of_single_commutator_of_root_pair] at h_r
+      simp only [singleSpanRelationsOfRootPair] at h_r
       rcases h_r with ⟨ i, j, hi, hj, t, u, goal ⟩
       rcases h_new with h_α_βγ|h_αβ_γ
       all_goals (
@@ -428,7 +428,7 @@ theorem full_rels_satisfied_in_weak_group :
     · right
       simp_all only [Set.mem_singleton_iff]
       intro r h_r
-      simp only [rels_of_mixed_commutes_of_root] at h_r
+      simp only [mixedDegreeRelationsOfRoot] at h_r
       rcases h_r with ⟨ i, j, hi, hj, t, u, goal ⟩
       subst r
       exact comm_of_αβγ_αβγ hi hj t u
@@ -437,17 +437,15 @@ theorem full_rels_satisfied_in_weak_group :
     · right
       simp_all only [Set.mem_singleton_iff]
       intro r h_r
-      simp only [rels_of_lin_of_root] at h_r
+      simp only [linearityRelationsOfRoot] at h_r
       rcases h_r with ⟨ i, hi, t, u, goal ⟩
       subst r
       simp only [map_mul, map_inv, mul_inv_eq_one]
       exact lin_of_αβγ hi t u
   · tauto
-  · simp only [def_rels, Set.mem_iUnion, Set.mem_setOf_eq] at h
+  · simp only [definitionRelations, Set.mem_iUnion, Set.mem_setOf_eq] at h
     rcases h with ⟨ζ, i, hi, t, h⟩
     subst p
-    simp only [fullA3Graded, full_mk, inv_mul_cancel, map_one]
-
-
+    simp only [fullA3Graded, fullMk, inv_mul_cancel, map_one]
 
 end Steinberg.A3

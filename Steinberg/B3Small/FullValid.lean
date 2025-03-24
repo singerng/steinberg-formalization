@@ -30,14 +30,14 @@ def toB3Root (ζ : B3SmallPosRoot) : BRoot (Fin 3) :=
 abbrev toB3Mat (g : ChevalleyGenerator B3SmallPosRoot F) := (toB3Root g.ζ).M g.t
 
 theorem valid :
-  ∀ r ∈ (fullB3Small F).all_rels, (FreeGroup.lift toB3Mat r) = 1 := by
+  ∀ r ∈ (fullB3Small F).allRelations, (FreeGroup.lift toB3Mat r) = 1 := by
   intro r h
-  simp only [all_rels, Set.sUnion_insert, Set.sUnion_singleton, Set.mem_union] at h
+  simp only [allRelations, Set.sUnion_insert, Set.sUnion_singleton, Set.mem_union] at h
   rcases h with h_triv|h_sing|h_doub|h_lin|h_def
-  · simp only [trivial_comm_rels, fullB3Small, full_mk, fullB3SmallSystem, mk_full,
-      full_trivial_commutator_pairs, trivial_commutator_pairs, Set.mem_union, Set.mem_iUnion] at h_triv
+  · simp only [trivialSpanRelations, fullB3Small, fullMk, fullB3SmallSystem, mkFull,
+      fullTrivialSpanPairs, weakTrivialSpanPairs, Set.mem_union, Set.mem_iUnion] at h_triv
     rcases h_triv with ⟨ p, h_p, h_triv ⟩
-    simp only [rels_of_trivial_commutator_of_root_pair, Set.mem_setOf_eq] at h_triv
+    simp only [trivialSpanRelationsOfRootPair, Set.mem_setOf_eq] at h_triv
     rcases h_triv with ⟨ t, u, h_triv ⟩
     subst r
     simp only [map_commutatorElement, map_inv, map_mul, FreeGroup.lift.of]
@@ -60,10 +60,10 @@ theorem valid :
       all_goals tauto
     )
     apply MLong_comm_disjoint'
-  · simp only [single_comm_rels, fullB3Small, full_mk, fullB3SmallSystem, mk_full,
-      full_single_commutator_pairs, single_commutator_pairs, Set.mem_union, Set.mem_iUnion] at h_sing
+  · simp only [singleSpanRelations, fullB3Small, fullMk, fullB3SmallSystem, mkFull,
+      fullSingleSpanRootPairs, weakSingleSpanRootPairs, Set.mem_union, Set.mem_iUnion] at h_sing
     rcases h_sing with ⟨ p, h_p, h_sing ⟩
-    simp only [rels_of_single_commutator_of_root_pair, Set.mem_setOf_eq] at h_sing
+    simp only [singleSpanRelationsOfRootPair, Set.mem_setOf_eq] at h_sing
     rcases h_sing with ⟨ t, u, h_sing ⟩
     subst r
     simp only [map_commutatorElement, map_inv, map_mul, FreeGroup.lift.of]
@@ -87,10 +87,10 @@ theorem valid :
       simp only [true_toRing, false_toRing]
       ring_nf
       tauto
-  · simp only [double_comm_rels, fullB3Small, full_mk, fullB3SmallSystem, mk_full,
-      full_single_commutator_pairs, single_commutator_pairs, Set.mem_union, Set.mem_iUnion] at h_doub
+  · simp only [doubleSpanRelations, fullB3Small, fullMk, fullB3SmallSystem, mkFull,
+      fullSingleSpanRootPairs, singleSpanRootPairs, Set.mem_union, Set.mem_iUnion] at h_doub
     rcases h_doub with ⟨ p, h_p, h_doub ⟩
-    simp only [rels_of_double_commutator_of_root_pair, Set.mem_setOf_eq] at h_doub
+    simp only [doubleSpanRelationsOfRootPair, Set.mem_setOf_eq] at h_doub
     rcases h_doub with ⟨ t, u, h_doub ⟩
     subst r
     simp only [map_commutatorElement, map_inv, map_mul, FreeGroup.lift.of]
@@ -102,10 +102,10 @@ theorem valid :
     · rw [MLong_swap, ←Bool.not_false, MLong_MShort_comm_overlap, MLong_swap]
       simp only [Bool.not_false, true_toRing, false_toRing]
       ring_nf
-  · simp only [lin_rels, fullB3Small, full_mk, fullB3SmallSystem, mk_full,
-      full_present_roots, B3Small.present_roots, Set.mem_union, Set.mem_iUnion] at h_lin
+  · simp only [linearityRelations, fullB3Small, fullMk, fullB3SmallSystem, mkFull,
+      fullPresentRoots, B3Small.weakPresentRoots, Set.mem_union, Set.mem_iUnion] at h_lin
     rcases h_lin with ⟨ p, h_p, h_lin ⟩
-    simp only [rels_of_lin_of_root, Set.mem_setOf_eq] at h_lin
+    simp only [linearityRelationsOfRoot, Set.mem_setOf_eq] at h_lin
     rcases h_lin with ⟨ t, u, h_lin ⟩
     subst r
     simp only [map_commutatorElement, map_inv, map_mul, FreeGroup.lift.of, toB3Mat, toB3Root, BRoot.M, BShortRoot.M, BLongRoot.M]
@@ -119,7 +119,7 @@ theorem valid :
     )
     any_goals rw [MShort_mul_add]
     all_goals rw [MLong_mul_add]
-  · simp only [def_rels, fullB3Small, full_mk, fullB3SmallSystem, mk_full,
+  · simp only [definitionRelations, fullB3Small, fullMk, fullB3SmallSystem, mkFull,
       Set.mem_iUnion] at h_def
     rcases h_def with ⟨ p, h_p, h_def ⟩
     subst r

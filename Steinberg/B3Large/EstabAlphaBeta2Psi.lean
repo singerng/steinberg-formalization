@@ -321,18 +321,18 @@ theorem expr_αβ2ψ_as_comm_of_αβψ_ψ :
 
 -- 8.136
 theorem comm_of_α_αβ2ψ :
-  trivial_commutator_of_root_pair (weakB3Large F).pres_mk ⟨α, αβ2ψ⟩ := by
+  trivialSpanPropOfRootPair (weakB3LargeGraded F).project ⟨α, αβ2ψ⟩ := by
   intro i j hi hj t u
   rcases decompose 3 1 j hj with ⟨ j₁, j₂, ⟨ rfl, hj₁, hj₂ ⟩ ⟩
   have expr_αβ2ψ := @expr_αβ2ψ_as_comm_of_αβψ_ψ _ _ Fchar j₁ j₂ hj₁ hj₂ (-1/2) u
   field_simp at expr_αβ2ψ
   have := @comm_of_α_αβψ_ψ _ _ i j₁ j₂ hi hj₁ hj₂ t u (-1/2)
   rwa [←expr_αβ2ψ] at this
-declare_B3Large_triv_expr_thm F α αβ2ψ
+declare_B3Large_trivial_span_expr_thm F α αβ2ψ
 
 -- 8.137
 theorem comm_of_ψ_αβ2ψ :
-  trivial_commutator_of_root_pair (weakB3Large F).pres_mk ⟨ψ, αβ2ψ⟩ := by
+  trivialSpanPropOfRootPair (weakB3LargeGraded F).project ⟨ψ, αβ2ψ⟩ := by
   intro i j hi hj t u
   rcases decompose 3 1 j hj with ⟨ j₂, j₁, ⟨ rfl, hj₂, hj₁ ⟩ ⟩
   have expr_αβ2ψ := @expr_αβ2ψ_as_comm_of_α_β2ψ _ _ Fchar j₁ j₂ hj₁ hj₂ 1 u
@@ -340,7 +340,7 @@ theorem comm_of_ψ_αβ2ψ :
   rw [←expr_αβ2ψ] at this
   rw [←this]
   group
-declare_B3Large_triv_expr_thm F ψ αβ2ψ
+declare_B3Large_trivial_span_expr_thm F ψ αβ2ψ
 
 -- 8.138a
 @[simp, chev_simps]
@@ -585,32 +585,32 @@ theorem expr_ψ_αβ_as_αβ_αβ2ψ_αβψ_ψ :
   group
 
 @[simp, chev_simps]
-theorem id_of_αβψ : id_of_root((weakB3Large F).pres_mk, αβψ) := by
+theorem id_of_αβψ : id_of_root((weakB3LargeGraded F).project, αβψ) := by
   intro i hi
   have := doub_of_αβψ Fchar hi 0
   rw [mul_zero] at this
   exact mul_right_eq_self.1 this
 
 @[simp, chev_simps]
-theorem id_of_αβ2ψ : id_of_root((weakB3Large F).pres_mk, αβ2ψ) := by
+theorem id_of_αβ2ψ : id_of_root((weakB3LargeGraded F).project, αβ2ψ) := by
   intro i hi
   have := doub_of_αβ2ψ Fchar hi 0
   rw [mul_zero] at this
   exact mul_right_eq_self.1 this
 
-theorem refl_def_of_αβ2ψ (g : GradedChevalleyGenerator B3LargePosRoot F)
+theorem defineThenReflect_of_αβ2ψ (g : GradedChevalleyGenerator B3LargePosRoot F)
   (h : g.ζ = αβ2ψ) :
-  (weakB3Large F).pres_mk (refl_def (weakB3Large F) g)
-    = (weakB3Large F).pres_mk (FreeGroup.of (refl_of_gen g)) := by
+  (weakB3LargeGraded F).project (defineThenReflect (weakB3LargeGraded F) g)
+    = (weakB3LargeGraded F).project (FreeGroup.of (reflect g)) := by
   rcases g with ⟨ ζ, i, hi, t ⟩
   simp only at h
   subst ζ
-  simp only [refl_def, MonoidHom.coe_comp, Function.comp_apply, FreeGroup.lift.of]
-  rw [weakB3Large]
+  simp only [defineThenReflect, MonoidHom.coe_comp, Function.comp_apply, FreeGroup.lift.of]
+  rw [weakB3LargeGraded]
   simp only
   rw [weak_define]
-  simp only [map_commutatorElement, map_mul, map_inv, FreeGroup.map.of, refl_of_gen, PositiveRootSystem.height]
-  rw [←weakB3Large, ←expr_αβ2ψ_as_comm_of_α_β2ψ Fchar (by ht) (by ht), mul_one,
+  simp only [map_commutatorElement, map_mul, map_inv, FreeGroup.map.of, reflect, PositiveRootSystem.height]
+  rw [←weakB3LargeGraded, ←expr_αβ2ψ_as_comm_of_α_β2ψ Fchar (by ht) (by ht), mul_one,
     eq_of_h_eq αβ2ψ (αβ2ψ.height - i)]
   simp only [height]
   nth_rewrite 3 [←(correct_of_split_4_into_1_3 i hi).2.2]

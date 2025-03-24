@@ -60,33 +60,33 @@ variable {R : Type TR} [Ring R]
 
 /-! ## Defining the 'weak' positive root system -/
 
-abbrev present_roots : Set (A3PosRoot) :=
+abbrev weakPresentRoots : Set (A3PosRoot) :=
   {α, β, γ, αβ, βγ}
 
-abbrev trivial_commutator_pairs : Set (A3PosRoot × A3PosRoot) :=
+abbrev weakTrivialSpanPairs : Set (A3PosRoot × A3PosRoot) :=
   {(α, γ), (α, αβ), (β, αβ), (β, βγ), (γ, βγ)}
 
-abbrev single_commutator_pairs : Set (SingleSpanRootPair A3PosRoot) :=
+abbrev weakSingleSpanPairs : Set (SingleSpanRootPair A3PosRoot) :=
   {⟨ α, β, αβ, 1, (by ht)⟩, ⟨β, γ, βγ, 1, (by ht)⟩}
 
 abbrev weakA3System := PartialChevalleySystem.mk
-  present_roots
-  trivial_commutator_pairs
-  single_commutator_pairs
+  weakPresentRoots
+  weakTrivialSpanPairs
+  weakSingleSpanPairs
   ∅
-  (by simp only [trivial_commutator_pairs, Set.mem_insert_iff, Set.mem_singleton_iff, forall_eq_or_imp, forall_eq]; tauto)
-  (by simp only [single_comm_root_pairs, Set.mem_insert_iff, Set.mem_singleton_iff, forall_eq_or_imp, forall_eq]; tauto)
-  (by simp only [double_comm_root_pairs, Set.mem_insert_iff, Set.mem_singleton_iff, forall_eq_or_imp, forall_eq]; tauto)
+  (by simp only [weakTrivialSpanPairs, Set.mem_insert_iff, Set.mem_singleton_iff, forall_eq_or_imp, forall_eq]; tauto)
+  (by simp only [singleSpanRootPairs, Set.mem_insert_iff, Set.mem_singleton_iff, forall_eq_or_imp, forall_eq]; tauto)
+  (by simp only [doubleCommutatorRootPairs, Set.mem_insert_iff, Set.mem_singleton_iff, forall_eq_or_imp, forall_eq]; tauto)
 
 /-! ## Lifted relations -/
 
-def rels_of_nonhomog_lift_of_comm_of_αβ_βγ :=
+def rels_of_nonhom_lift_of_comm_of_αβ_βγ :=
   { ⁅ {αβ, 2, t₁ * u₁} * {αβ, 1, t₁ * u₀ + t₀ * u₁} * {αβ, 0, t₀ * u₀},
       {βγ, 2, u₁ * v₁} * {βγ, 1, u₁ * v₀ + u₀ * v₁} * {βγ, 0, u₀ * v₀} ⁆
     | (t₁ : R) (t₀ : R) (u₁ : R) (u₀ : R) (v₁ : R) (v₀ : R) }
 
 def lifted_sets (R : Type TR) [Ring R] : Set (Set (FreeGroup (GradedChevalleyGenerator A3PosRoot R))) :=
-  { rels_of_nonhomog_lift_of_comm_of_αβ_βγ }
+  { rels_of_nonhom_lift_of_comm_of_αβ_βγ }
 
 /-! ## Definition for missing root (αβγ) -/
 
@@ -98,13 +98,13 @@ def weak_define (R : Type TR) [Ring R] (g : GradedChevalleyGenerator A3PosRoot R
   | ζ => FreeGroup.of g
 
 theorem weak_define_of_present (R : Type TR) [Ring R] :
-  ∀ {g : GradedChevalleyGenerator A3PosRoot R}, g.ζ ∈ weakA3System.present_roots → weak_define R g = FreeGroup.of g := by
+  ∀ {g : GradedChevalleyGenerator A3PosRoot R}, g.ζ ∈ weakA3System.presentRoots → weak_define R g = FreeGroup.of g := by
   intro g h_g_in_present
   rcases g with ⟨ ζ, i, hi, t ⟩
   cases ζ
   all_goals simp only [weak_define] -- this will close all present roots
   all_goals ( -- this will close the remaining (nonpresent) roots
-    simp only [present_roots] at h_g_in_present
+    simp only [weakPresentRoots] at h_g_in_present
     contradiction
   )
 
@@ -115,7 +115,7 @@ theorem weak_define_is_projection (R : Type TR) [Ring R] :
   cases ζ
   all_goals simp only [weak_define, FreeGroup.lift.of, map_commutatorElement]
 
-def weakA3 (R : Type TR) [Ring R] := GradedPartialChevalleyGroup.mk
+def weakA3Graded (R : Type TR) [Ring R] := GradedPartialChevalleyGroup.mk
   weakA3System
   (lifted_sets R)
   (weak_define R)
@@ -124,19 +124,19 @@ def weakA3 (R : Type TR) [Ring R] := GradedPartialChevalleyGroup.mk
 
 /-! # Definition of the 'full' A3 ungraded and graded groups -/
 
-abbrev full_present_roots : Set (A3PosRoot) :=
-  present_roots ∪ {αβγ}
+abbrev fullPresentRoots : Set (A3PosRoot) :=
+  weakPresentRoots ∪ {αβγ}
 
-abbrev full_trivial_commutator_pairs : Set (A3PosRoot × A3PosRoot) :=
-  trivial_commutator_pairs ∪ {(αβ, βγ), (α, αβγ), (β, αβγ), (γ, αβγ), (αβ, αβγ), (βγ, αβγ)}
+abbrev fullTrivialSpanPairs : Set (A3PosRoot × A3PosRoot) :=
+  weakTrivialSpanPairs ∪ {(αβ, βγ), (α, αβγ), (β, αβγ), (γ, αβγ), (αβ, αβγ), (βγ, αβγ)}
 
-abbrev full_single_commutator_pairs : Set (SingleSpanRootPair A3PosRoot) :=
-  (single_commutator_pairs) ∪ {⟨ α, βγ, αβγ, 1, (by ht)⟩, ⟨αβ, γ, αβγ, 1, (by ht)⟩}
+abbrev fullSingleSpanPairs : Set (SingleSpanRootPair A3PosRoot) :=
+  (weakSingleSpanPairs) ∪ {⟨ α, βγ, αβγ, 1, (by ht)⟩, ⟨αβ, γ, αβγ, 1, (by ht)⟩}
 
-theorem all_root_pairs_have_relation : every_pair_in_all_pairs A3PosRoot full_trivial_commutator_pairs full_single_commutator_pairs ∅ := by
+theorem all_root_pairs_have_relation : every_pair_in_all_pairs A3PosRoot fullTrivialSpanPairs fullSingleSpanPairs ∅ := by
   intro ζ η h_ne
-  unfold to_pairs full_trivial_commutator_pairs trivial_commutator_pairs full_single_commutator_pairs
-    single_commutator_pairs
+  unfold to_pairs fullTrivialSpanPairs weakTrivialSpanPairs fullSingleSpanPairs
+    weakSingleSpanPairs
   simp only [Set.image_insert_eq, Set.image_singleton, Set.union_insert, Set.union_singleton, Prod.swap,
     Set.mem_insert_iff, Set.mem_singleton_iff, Set.image_empty, Set.union_empty]
   cases ζ
@@ -146,54 +146,54 @@ theorem all_root_pairs_have_relation : every_pair_in_all_pairs A3PosRoot full_tr
     all_goals trivial
   )
 
-abbrev fullA3System := PartialChevalleySystem.mk_full A3PosRoot
-  full_present_roots
-  full_trivial_commutator_pairs
-  full_single_commutator_pairs
+abbrev fullA3System := PartialChevalleySystem.mkFull A3PosRoot
+  fullPresentRoots
+  fullTrivialSpanPairs
+  fullSingleSpanPairs
   ∅
   (by decide)
   all_root_pairs_have_relation
 
-def fullA3 (R : Type TR) [Ring R] := PartialChevalleyGroup.full_mk A3PosRoot R fullA3System
-def fullA3Graded (R : Type TR) [Ring R] := GradedPartialChevalleyGroup.full_mk A3PosRoot R fullA3System
+def fullA3 (R : Type TR) [Ring R] := PartialChevalleyGroup.fullMk A3PosRoot R fullA3System
+def fullA3Graded (R : Type TR) [Ring R] := GradedPartialChevalleyGroup.fullMk A3PosRoot R fullA3System
 
 /-! # Notation and macros -/
 
 /- Instantiate the `declare_thms` macros from `PartialChevalley.lean`. -/
 
 -- CC: TODO: Make this a macro to declare all at once for A3.
---     Something like: `declare_thms A3 weakA3 R`
+--     Something like: `declare_thms A3 weakA3Graded R`
 
-macro "declare_A3_triv_expr_thm" R:term:arg r₁:term:arg r₂:term:arg : command =>
-  `(command| declare_triv_expr_thm weakA3 $R $r₁ $r₂)
+macro "declare_A3_trivial_span_expr_thm" R:term:arg r₁:term:arg r₂:term:arg : command =>
+  `(command| declare_trivial_span_expr_thm weakA3Graded $R $r₁ $r₂)
 
-macro "declare_A3_triv_comm_of_root_pair_thms" R:term:arg r₁:term:arg r₂:term:arg : command =>
-  `(command| declare_triv_comm_of_root_pair_thms weakA3 $R $r₁ $r₂)
+macro "declare_A3_trivial_span_of_root_pair_thms" R:term:arg r₁:term:arg r₂:term:arg : command =>
+  `(command| declare_trivial_span_of_root_pair_thms weakA3Graded $R $r₁ $r₂)
 
-macro "declare_A3_single_expr_thms" R:term:arg r₁:term:arg r₂:term:arg r₃:term:arg : command =>
-  `(command| declare_single_expr_thms weakA3 $R $r₁ $r₂ $r₃ 1)
+macro "declare_A3_single_span_expr_thms" R:term:arg r₁:term:arg r₂:term:arg r₃:term:arg : command =>
+  `(command| declare_single_span_expr_thms weakA3Graded $R $r₁ $r₂ $r₃ 1)
 
-macro "declare_A3_single_comm_of_root_pair_thms" R:term:arg r₁:term:arg r₂:term:arg r₃:term:arg : command =>
-  `(command| declare_single_comm_of_root_pair_thms weakA3 $R $r₁ $r₂ $r₃ 1)
+macro "declare_A3_single_span_of_root_pair_thms" R:term:arg r₁:term:arg r₂:term:arg r₃:term:arg : command =>
+  `(command| declare_single_span_of_root_pair_thms weakA3Graded $R $r₁ $r₂ $r₃ 1)
 
 macro "declare_A3_lin_id_inv_thms" R:term:arg root:term:arg : command =>
-  `(command| declare_lin_id_inv_thms weakA3 $R $root)
+  `(command| declare_lin_id_inv_thms weakA3Graded $R $root)
 
 macro "declare_A3_mixed_expr_thm" R:term:arg r:term:arg : command =>
-  `(command| declare_mixed_expr_thm weakA3 $R $r)
+  `(command| declare_mixed_degree_expr_thm weakA3Graded $R $r)
 
-macro "declare_A3_mixed_comm_thms" R:term:arg r:term:arg : command =>
-  `(command| declare_mixed_comm_thms weakA3 $R $r)
+macro "declare_A3_mixed_degree_thms" R:term:arg r:term:arg : command =>
+  `(command| declare_mixed_degree_thms weakA3Graded $R $r)
 
 set_option hygiene false in
 /-- Shorthand for building free group elements from a root, degree, and ring element. -/
 scoped notation (priority:=high) "⸨" ζ ", " i ", " t "⸩" =>
-  (weakA3 R).pres_mk {ζ, i, t}
+  (weakA3Graded R).project {ζ, i, t}
 
 set_option hygiene false in
 /-- Shorthand for building free group elements from a root, degree, and ring element. -/
 scoped notation (priority:=high) "⸨" ζ ", " i ", " t "⸩'" h =>
-  (weakA3 R).pres_mk ({ζ, i, t}'h)
+  (weakA3Graded R).project ({ζ, i, t}'h)
 
 section forallNotation
 

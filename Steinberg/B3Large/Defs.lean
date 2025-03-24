@@ -5,7 +5,7 @@ Released under the Apache License v2.0; see LICENSE for full text.
 
 import Steinberg.Defs.PartialChevalleyGroup
 import Steinberg.Defs.GradedPartialChevalleyGroup
-import Steinberg.Defs.ReflDeg
+import Steinberg.Defs.DegreeReflection
 import Steinberg.Defs.DecomposeFixed
 
 import Mathlib.Tactic.DeriveFintype
@@ -94,26 +94,26 @@ theorem eq_of_hom_lift_eq
 /-! ## Defining the 'weak' positive root system -/
 
 -- relations 8.69, 8.70, 8.71, 8.72, 8.73, 8.74
-abbrev present_roots : Set B3LargePosRoot :=
+abbrev weakPresentRoots : Set B3LargePosRoot :=
   {α, β, ψ, αβ, βψ, β2ψ}
 
 -- relations 8.60, 8.61, 8.62, 8.64, 8.65, 8.67, 8.68
-abbrev trivial_commutator_pairs : Set (B3LargePosRoot × B3LargePosRoot) :=
+abbrev weakTrivialSpanPairs : Set (B3LargePosRoot × B3LargePosRoot) :=
   {(α, αβ), (β, αβ), (α, ψ), (β, βψ), (β, β2ψ), (ψ, β2ψ), (βψ, β2ψ)}
 
 -- relations 8.59, 8.66
-abbrev single_commutator_pairs : Set (SingleSpanRootPair B3LargePosRoot)
+abbrev weakSingleSpanRootPairs : Set (SingleSpanRootPair B3LargePosRoot)
   := {⟨α, β, αβ, 1, (by ht)⟩, ⟨ψ, βψ, β2ψ, 2, (by ht)⟩}
 
 -- relation 8.63
-abbrev double_commutator_pairs : Set (DoubleSpanRootPair B3LargePosRoot) :=
+abbrev weakDoubleSpanRootPairs : Set (DoubleSpanRootPair B3LargePosRoot) :=
   {⟨β, ψ, βψ, β2ψ, 1, 1, rfl, rfl⟩}
 
 abbrev weakB3LargeSystem := PartialChevalleySystem.mk
-  present_roots
-  trivial_commutator_pairs
-  single_commutator_pairs
-  double_commutator_pairs
+  weakPresentRoots
+  weakTrivialSpanPairs
+  weakSingleSpanRootPairs
+  weakDoubleSpanRootPairs
   (by simp only [Set.mem_insert_iff, Set.mem_singleton_iff, forall_eq_or_imp, reduceCtorEq, or_self,
     or_false, or_true, and_self, forall_eq])
   (by simp only [Set.mem_insert_iff, Set.mem_singleton_iff, forall_eq_or_imp, reduceCtorEq, or_self,
@@ -122,20 +122,20 @@ abbrev weakB3LargeSystem := PartialChevalleySystem.mk
     or_false, or_true, and_self, forall_eq])
 
 -- Relation 8.81
-def rels_of_nonhomog_lift_of_comm_of_αβ_βψ :=
+def rels_of_nonhom_lift_of_comm_of_αβ_βψ :=
   { ⁅ {αβ, 2, t₁ * u₁} * {αβ, 1, t₁ * u₀ + t₀ * u₁} * {αβ, 0, t₀ * u₀},
       {βψ, 2, u₁ * v₁} * {βψ, 1, u₁ * v₀ + u₀ * v₁} * {βψ, 0, u₀ * v₀} ⁆
     | (t₁ : F) (t₀ : F) (u₁ : F) (u₀ : F) (v₁ : F) (v₀ : F) }
 
 -- Relation 8.82
-def rels_of_nonhomog_lift_of_comm_of_α_α2β2ψ :=
+def rels_of_nonhom_lift_of_comm_of_α_α2β2ψ :=
   { ⁅ {α, 1, t₁} * {α, 0, t₀},
       ⁅ {αβ, 2, t₁ * u₁} * {αβ, 1, t₁ * u₀ + t₀ * u₁} * {αβ, 0, t₀ * u₀},
         {β2ψ, 3, u₁ * v₁^2} * {β2ψ, 2, u₀ * v₁^2 + 2 * u₁ * v₀ * v₁}
           * {β2ψ, 1, u₁ * v₀^2 + 2 * u₀ * v₀ * v₁} * {β2ψ, 0, u₀ * v₀^2} ⁆ ⁆
     | (t₁ : F) (t₀ : F) (u₁ : F) (u₀ : F) (v₁ : F) (v₀ : F) }
 
-section homog_rels
+section hom_rels
 open ChevalleyGenerator
 
 -- Relation 8.83
@@ -239,10 +239,10 @@ def base_rel_of_hom_lift_of_comm_of_βψ_αβ2ψ :=
 def base_rel_of_hom_lift_of_comm_of_β2ψ_αβ2ψ :=
   ⁅ {β2ψ, (1:F)}, ⁅ {α, (1:F)}, {β2ψ, (1:F)} ⁆ ⁆
 
-end homog_rels
+end hom_rels
 
 def nonhom_lifted_sets (F : Type TF) [Field F] : Set (Set (FreeGroup (GradedChevalleyGenerator B3LargePosRoot F))) := {
-  rels_of_nonhomog_lift_of_comm_of_αβ_βψ, rels_of_nonhomog_lift_of_comm_of_α_α2β2ψ}
+  rels_of_nonhom_lift_of_comm_of_αβ_βψ, rels_of_nonhom_lift_of_comm_of_α_α2β2ψ}
 
 def hom_lift_base_set (F : Type TF) [Field F] : Set (FreeGroup (ChevalleyGenerator B3LargePosRoot F)) := {
   base_rel_of_hom_lift_of_interchange_of_αβψ, base_rel_of_hom_lift_of_doub_of_αβψ,
@@ -278,13 +278,13 @@ def weak_define (F : Type TR) [Field F] (g : GradedChevalleyGenerator B3LargePos
   | _ => FreeGroup.of g
 
 theorem weak_define_of_present (F : Type TR) [Field F] :
-  ∀ {g : GradedChevalleyGenerator B3LargePosRoot F}, g.ζ ∈ weakB3LargeSystem.present_roots → weak_define F g = FreeGroup.of g := by
+  ∀ {g : GradedChevalleyGenerator B3LargePosRoot F}, g.ζ ∈ weakB3LargeSystem.presentRoots → weak_define F g = FreeGroup.of g := by
   intro g h_g_in_present
   rcases g with ⟨ ζ, i, hi, t ⟩
   cases ζ
   all_goals simp only [weak_define] -- this will close all present roots
   all_goals ( -- this will close the remaining (nonpresent) roots
-    simp only [present_roots] at h_g_in_present
+    simp only [weakPresentRoots] at h_g_in_present
     contradiction
   )
 
@@ -295,7 +295,7 @@ theorem weak_define_is_projection (F : Type TR) [Field F] :
   cases ζ
   all_goals simp only [weak_define, FreeGroup.lift.of, map_commutatorElement, map_inv, map_mul]
 
-def weakB3Large (F : Type TF) [Field F] := GradedPartialChevalleyGroup.mk
+def weakB3LargeGraded (F : Type TF) [Field F] := GradedPartialChevalleyGroup.mk
   weakB3LargeSystem
   (lifted_sets F)
   (weak_define F)
@@ -304,26 +304,26 @@ def weakB3Large (F : Type TF) [Field F] := GradedPartialChevalleyGroup.mk
 
 /-! # Definition of the 'full' A3 ungraded and graded groups -/
 
-abbrev full_present_roots : Set (B3LargePosRoot) :=
-  present_roots ∪ {αβψ, αβ2ψ, α2β2ψ}
+abbrev fullPresentRoots : Set (B3LargePosRoot) :=
+  weakPresentRoots ∪ {αβψ, αβ2ψ, α2β2ψ}
 
-abbrev full_trivial_commutator_pairs : Set (B3LargePosRoot × B3LargePosRoot) :=
-  trivial_commutator_pairs ∪ {(αβ, βψ),
+abbrev fullTrivialSpanPairs : Set (B3LargePosRoot × B3LargePosRoot) :=
+  weakTrivialSpanPairs ∪ {(αβ, βψ),
                               (α, αβψ), (β, αβψ), (αβ, αβψ), (β2ψ, αβψ),
                               (α, αβ2ψ), (ψ, αβ2ψ), (αβ, αβ2ψ), (βψ, αβ2ψ), (β2ψ, αβ2ψ), (αβψ, αβ2ψ),
                               (α, α2β2ψ), (β, α2β2ψ), (ψ, α2β2ψ), (αβ, α2β2ψ), (βψ, α2β2ψ), (β2ψ, α2β2ψ), (αβψ, α2β2ψ), (αβ2ψ, α2β2ψ)}
 
-abbrev full_single_commutator_pairs : Set (SingleSpanRootPair B3LargePosRoot) :=
-  single_commutator_pairs ∪ {⟨ α, β2ψ, αβ2ψ, 1, (by ht)⟩, ⟨αβψ, ψ, αβ2ψ, -2, (by ht)⟩,
+abbrev fullSingleSpanRootPairs : Set (SingleSpanRootPair B3LargePosRoot) :=
+  weakSingleSpanRootPairs ∪ {⟨ α, β2ψ, αβ2ψ, 1, (by ht)⟩, ⟨αβψ, ψ, αβ2ψ, -2, (by ht)⟩,
                             ⟨αβ, β2ψ, α2β2ψ, -1, (by ht)⟩, ⟨αβψ, βψ, α2β2ψ, -2, (by ht)⟩, ⟨αβ2ψ, β, α2β2ψ, -1, (by ht)⟩}
 
-abbrev full_double_commutator_pairs : Set (DoubleSpanRootPair B3LargePosRoot) :=
-  double_commutator_pairs ∪ {⟨ α, βψ, αβψ, α2β2ψ, 1, 1, (by ht), (by ht)⟩, ⟨ αβ, ψ, αβψ, αβ2ψ, 1, 1, (by ht), (by ht)⟩}
+abbrev fullDoubleSpanRootPairs : Set (DoubleSpanRootPair B3LargePosRoot) :=
+  weakDoubleSpanRootPairs ∪ {⟨ α, βψ, αβψ, α2β2ψ, 1, 1, (by ht), (by ht)⟩, ⟨ αβ, ψ, αβψ, αβ2ψ, 1, 1, (by ht), (by ht)⟩}
 
-theorem all_root_pairs_have_relation : every_pair_in_all_pairs B3LargePosRoot full_trivial_commutator_pairs full_single_commutator_pairs full_double_commutator_pairs := by
+theorem all_root_pairs_have_relation : every_pair_in_all_pairs B3LargePosRoot fullTrivialSpanPairs fullSingleSpanRootPairs fullDoubleSpanRootPairs := by
   intro ζ η h_ne
-  unfold to_pairs full_trivial_commutator_pairs trivial_commutator_pairs full_single_commutator_pairs
-    single_commutator_pairs full_double_commutator_pairs double_commutator_pairs
+  unfold to_pairs fullTrivialSpanPairs weakTrivialSpanPairs fullSingleSpanRootPairs
+    weakSingleSpanRootPairs fullDoubleSpanRootPairs weakDoubleSpanRootPairs
   simp only [Set.image_insert_eq, Set.image_singleton, Set.union_insert, Set.union_singleton, Prod.swap,
     Set.mem_insert_iff, Set.mem_singleton_iff]
   cases ζ
@@ -333,44 +333,44 @@ theorem all_root_pairs_have_relation : every_pair_in_all_pairs B3LargePosRoot fu
     all_goals trivial
   )
 
-def fullB3LargeSystem := PartialChevalleySystem.mk_full B3LargePosRoot
-  full_present_roots
-  full_trivial_commutator_pairs
-  full_single_commutator_pairs
-  full_double_commutator_pairs
+def fullB3LargeSystem := PartialChevalleySystem.mkFull B3LargePosRoot
+  fullPresentRoots
+  fullTrivialSpanPairs
+  fullSingleSpanRootPairs
+  fullDoubleSpanRootPairs
   (by decide)
   all_root_pairs_have_relation
 
-def fullB3Large (F : Type TR) [Field F] := PartialChevalleyGroup.full_mk B3LargePosRoot F fullB3LargeSystem
-def fullB3LargeGraded (F : Type TR) [Field F] := GradedPartialChevalleyGroup.full_mk B3LargePosRoot F fullB3LargeSystem
+def fullB3Large (F : Type TR) [Field F] := PartialChevalleyGroup.fullMk B3LargePosRoot F fullB3LargeSystem
+def fullB3LargeGraded (F : Type TR) [Field F] := GradedPartialChevalleyGroup.fullMk B3LargePosRoot F fullB3LargeSystem
 
 /-! # Notation and macros -/
 
 /- Instantiate the `declare_thms` macros from `PartialChevalley.lean`. -/
 
-macro "declare_B3Large_triv_expr_thm" F:term:arg r₁:term:arg r₂:term:arg : command =>
-  `(command| declare_triv_expr_thm weakB3Large $F $r₁ $r₂)
+macro "declare_B3Large_trivial_span_expr_thm" F:term:arg r₁:term:arg r₂:term:arg : command =>
+  `(command| declare_trivial_span_expr_thm weakB3LargeGraded $F $r₁ $r₂)
 
-macro "declare_B3Large_triv_comm_of_root_pair_thms" F:term:arg r₁:term:arg r₂:term:arg : command =>
-  `(command| declare_triv_comm_of_root_pair_thms weakB3Large $F $r₁ $r₂)
+macro "declare_B3Large_trivial_span_of_root_pair_thms" F:term:arg r₁:term:arg r₂:term:arg : command =>
+  `(command| declare_trivial_span_of_root_pair_thms weakB3LargeGraded $F $r₁ $r₂)
 
-macro "declare_B3Large_single_expr_thms" F:term:arg r₁:term:arg r₂:term:arg r₃:term:arg n:num : command =>
-  `(command| declare_single_expr_thms weakB3Large $F $r₁ $r₂ $r₃ $n)
+macro "declare_B3Large_single_span_expr_thms" F:term:arg r₁:term:arg r₂:term:arg r₃:term:arg n:num : command =>
+  `(command| declare_single_span_expr_thms weakB3LargeGraded $F $r₁ $r₂ $r₃ $n)
 
-macro "declare_B3Large_single_comm_of_root_pair_thms" F:term:arg r₁:term:arg r₂:term:arg r₃:term:arg n:num : command =>
-  `(command| declare_single_comm_of_root_pair_thms weakB3Large $F $r₁ $r₂ $r₃ $n)
+macro "declare_B3Large_single_span_of_root_pair_thms" F:term:arg r₁:term:arg r₂:term:arg r₃:term:arg n:num : command =>
+  `(command| declare_single_span_of_root_pair_thms weakB3LargeGraded $F $r₁ $r₂ $r₃ $n)
 
 macro "declare_B3Large_lin_id_inv_thms" F:term:arg root:term:arg : command =>
-  `(command| declare_lin_id_inv_thms weakB3Large $F $root)
+  `(command| declare_lin_id_inv_thms weakB3LargeGraded $F $root)
 
 macro "declare_B3Large_mixed_expr_thm" F:term:arg r:term:arg : command =>
-  `(command| declare_mixed_expr_thm weakB3Large $F $r)
+  `(command| declare_mixed_degree_expr_thm weakB3LargeGraded $F $r)
 
-macro "declare_B3Large_mixed_comm_thms" F:term:arg r:term:arg : command =>
-  `(command| declare_mixed_comm_thms weakB3Large $F $r)
+macro "declare_B3Large_mixed_degree_thms" F:term:arg r:term:arg : command =>
+  `(command| declare_mixed_degree_thms weakB3LargeGraded $F $r)
 
-macro "declare_B3Large_refl_def_thm" F:term:arg r:term:arg : command =>
-  `(command| declare_refl_def_thm weakB3Large $F B3LargePosRoot $r)
+macro "declare_B3Large_defineThenReflect_thm" F:term:arg r:term:arg : command =>
+  `(command| declare_defineThenReflect_thm weakB3LargeGraded $F B3LargePosRoot $r)
 
 -- r₁ is the larger root, as opposed to the above macros
 macro "declare_B3Large_reflected_thm"
@@ -378,7 +378,7 @@ macro "declare_B3Large_reflected_thm"
     "const" C:num
     "heights" n₁:num n₂:num n₃:num
     "to" n₄:num n₅:num n₆:num : command =>
-  `(command| declare_reflected_thm weakB3Large $F $v $r₁ $r₂ $r₃ 0 $C $n₁ $n₂ $n₃ $n₄ $n₅ $n₆)
+  `(command| declare_reflected_thm weakB3LargeGraded $F $v $r₁ $r₂ $r₃ 0 $C $n₁ $n₂ $n₃ $n₄ $n₅ $n₆)
 
 -- r₁ is the larger root, as opposed to the above macros
 macro "declare_B3Large_reflected_thm"
@@ -386,23 +386,23 @@ macro "declare_B3Large_reflected_thm"
     "const" "neg" C:num
     "heights" n₁:num n₂:num n₃:num
     "to" n₄:num n₅:num n₆:num : command =>
-  `(command| declare_reflected_thm weakB3Large $F $v $r₁ $r₂ $r₃ 1 $C $n₁ $n₂ $n₃ $n₄ $n₅ $n₆)
+  `(command| declare_reflected_thm weakB3LargeGraded $F $v $r₁ $r₂ $r₃ 1 $C $n₁ $n₂ $n₃ $n₄ $n₅ $n₆)
 
 macro "declare_B3Large_triv_comm_reflected_thm"
     F:term:arg v:term:arg r₁:term:arg r₂:term:arg
     "heights" n₁:num n₂:num
     "to" n₃:num n₄:num : command =>
-  `(command| declare_triv_comm_reflected_thm weakB3Large $F $v $r₁ $r₂ $n₁ $n₂ $n₃ $n₄)
+  `(command| declare_triv_comm_reflected_thm weakB3LargeGraded $F $v $r₁ $r₂ $n₁ $n₂ $n₃ $n₄)
 
 set_option hygiene false in
 /-- Shorthand for building free group elements from a root, degree, and ring element. -/
 scoped notation (priority:=high) "⸨" ζ ", " i ", " t "⸩" =>
-  (weakB3Large F).pres_mk {ζ, i, t}
+  (weakB3LargeGraded F).project {ζ, i, t}
 
 set_option hygiene false in
 /-- Shorthand for building free group elements from a root, degree, and ring element. -/
 scoped notation (priority:=high) "⸨" ζ ", " i ", " t "⸩'" h:max =>
-  (weakB3Large F).pres_mk ({ζ, i, t}'h)
+  (weakB3LargeGraded F).project ({ζ, i, t}'h)
 
 section forallNotation
 
@@ -432,8 +432,8 @@ end forallNotation
 macro "nonhom_tac " rel:ident " [" intros:ident,* "]" : tactic => `(tactic|
   ( intros $intros*;
     apply eq_of_mul_inv_eq_one;
-    apply (weakB3Large _).lifted_helper $rel;
-    simp only [weakB3Large, lifted_sets];
+    apply (weakB3LargeGraded _).liftedProp_of_mem_lifted $rel;
+    simp only [weakB3LargeGraded, lifted_sets];
     left;
     simp only [nonhom_lifted_sets, Set.mem_singleton_iff,
       Set.mem_insert_iff, Set.mem_singleton_iff, true_or, or_true];
@@ -443,8 +443,8 @@ macro "nonhom_tac " rel:ident " [" intros:ident,* "]" : tactic => `(tactic|
 macro "hom_tac " rel:ident " [" intros:ident,* "]" : tactic => `(tactic|
   ( intros $intros*;
     apply eq_of_mul_inv_eq_one;
-    apply (weakB3Large _).lifted_helper (hom_lift_set $rel);
-    simp only [weakB3Large, lifted_sets];
+    apply (weakB3LargeGraded _).liftedProp_of_mem_lifted (hom_lift_set $rel);
+    simp only [weakB3LargeGraded, lifted_sets];
     right;
     simp only [hom_lifted_sets, hom_lift_base_set, Set.mem_image, Set.mem_insert_iff, Set.mem_singleton_iff, exists_eq_or_imp,
     exists_eq_left, true_or, or_true];

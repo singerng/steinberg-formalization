@@ -146,7 +146,7 @@ theorem expr_αβψ_as_βψ_α_βψ_α_βψ : forall_ij_tu α βψ,
 
 -- 8.117
 theorem comm_of_α_αβψ :
-    trivial_commutator_of_root_pair (weakB3Large F).pres_mk ⟨α, αβψ⟩ := by
+    trivialSpanPropOfRootPair (weakB3LargeGraded F).project ⟨α, αβψ⟩ := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.mpr
   rcases decompose αβ.height ψ.height j hj with ⟨ j₁, j₂, ⟨ rfl, hj₁, hj₂ ⟩ ⟩
@@ -154,11 +154,11 @@ theorem comm_of_α_αβψ :
   grw [expr_αβψ_as_ψ_αβ_ψ_αβ_ψ hj₁ hj₂, expr_α_ψ_as_ψ_α hi hj₂,
     expr_α_αβ_as_αβ_α hi hj₁, expr_α_ψ_as_ψ_α hi hj₂,
     expr_α_αβ_as_αβ_α hi hj₁, expr_α_ψ_as_ψ_α hi hj₂]
-declare_B3Large_triv_expr_thm F α αβψ
+declare_B3Large_trivial_span_expr_thm F α αβψ
 
 -- 8.118
 theorem comm_of_αβ_αβψ :
-    trivial_commutator_of_root_pair (weakB3Large F).pres_mk ⟨αβ, αβψ⟩ := by
+    trivialSpanPropOfRootPair (weakB3LargeGraded F).project ⟨αβ, αβψ⟩ := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.mpr
   rcases decompose αβ.height ψ.height j hj with ⟨ j₁, j₂, ⟨ rfl, hj₁, hj₂ ⟩ ⟩
@@ -166,11 +166,11 @@ theorem comm_of_αβ_αβψ :
   grw [expr_αβψ_as_βψ_α_βψ_α_βψ hj₂ hj₁, expr_αβ_βψ_as_βψ_αβ hi hj₁,
     ← expr_α_αβ_as_αβ_α hj₂ hi, expr_αβ_βψ_as_βψ_αβ hi hj₁,
     ← expr_α_αβ_as_αβ_α hj₂ hi, expr_αβ_βψ_as_βψ_αβ hi hj₁]
-declare_B3Large_triv_expr_thm F αβ αβψ
+declare_B3Large_trivial_span_expr_thm F αβ αβψ
 
 -- 8.119
 theorem comm_of_β_αβψ :
-    trivial_commutator_of_root_pair (weakB3Large F).pres_mk ⟨β, αβψ⟩ := by
+    trivialSpanPropOfRootPair (weakB3LargeGraded F).project ⟨β, αβψ⟩ := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.mpr
   rcases decompose αβ.height ψ.height j hj with ⟨ j₁, j₂, ⟨ rfl, hj₁, hj₂ ⟩ ⟩
@@ -180,7 +180,7 @@ theorem comm_of_β_αβψ :
     expr_β_α_as_αβ_α_β hj₂ hi, expr_β_βψ_as_βψ_β hi hj₁,
     expr_β_α_as_αβ_α_β hj₂ hi, expr_β_βψ_as_βψ_β hi hj₁,
     ← expr_α_αβ_as_αβ_α hj₂ hj₂i, expr_αβ_βψ_as_βψ_αβ hj₂i hj₁]
-declare_B3Large_triv_expr_thm F β αβψ
+declare_B3Large_trivial_span_expr_thm F β αβψ
 
 -- 8.120a
 @[simp, chev_simps]

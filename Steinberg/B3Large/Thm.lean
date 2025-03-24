@@ -87,7 +87,7 @@ declare_B3Large_triv_comm_reflected_thm F b3large_valid ψ α2β2ψ heights 1 5 
 
 -- 8.186
 theorem comm_of_ψ_α2β2ψ :
-    trivial_commutator_of_root_pair (weakB3Large F).pres_mk (ψ, α2β2ψ) := by
+    trivialSpanPropOfRootPair (weakB3LargeGraded F).project (ψ, α2β2ψ) := by
   intro i j hi hj
   match i, j with
   | 0, 0 => exact comm_of_ψ_α2β2ψ_00 Fchar
@@ -102,44 +102,44 @@ theorem comm_of_ψ_α2β2ψ :
   | 1, 3 => exact comm_of_ψ_α2β2ψ_13 Fchar
   | 1, 4 => exact comm_of_ψ_α2β2ψ_14 Fchar
   | 1, 5 => exact comm_of_ψ_α2β2ψ_15 Fchar
-declare_B3Large_triv_expr_thm F ψ α2β2ψ
+declare_B3Large_trivial_span_expr_thm F ψ α2β2ψ
 
 -- 8.187
 theorem comm_of_β2ψ_α2β2ψ :
-    trivial_commutator_of_root_pair (weakB3Large F).pres_mk (β2ψ, α2β2ψ) := by
+    trivialSpanPropOfRootPair (weakB3LargeGraded F).project (β2ψ, α2β2ψ) := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.2
   rcases decompose 1 2 i hi with ⟨i₁, i₂, rfl, hi₁, hi₂⟩
   rw [eq_of_R_eq β2ψ (2 * t * (1 / 2)) (by field_simp), expr_β2ψ_as_ψ_βψ_ψ_βψ]
   grw [expr_βψ_α2β2ψ_as_α2β2ψ_βψ Fchar hi₂, expr_ψ_α2β2ψ_as_α2β2ψ_ψ Fchar hi₁,
   expr_βψ_α2β2ψ_as_α2β2ψ_βψ Fchar hi₂, expr_ψ_α2β2ψ_as_α2β2ψ_ψ Fchar hi₁]
-declare_B3Large_triv_expr_thm F β2ψ α2β2ψ
+declare_B3Large_trivial_span_expr_thm F β2ψ α2β2ψ
 
 -- 8.188
 theorem comm_of_αβψ_α2β2ψ :
-    trivial_commutator_of_root_pair (weakB3Large F).pres_mk (αβψ, α2β2ψ) := by
+    trivialSpanPropOfRootPair (weakB3LargeGraded F).project (αβψ, α2β2ψ) := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.2
   rcases decompose 2 1 i hi with ⟨i₁, i₂, rfl, hi₁, hi₂⟩
   rw [←mul_one t, expr_αβψ_as_ψ_αβ_ψ_αβ_ψ hi₁ hi₂]
   grw [expr_ψ_α2β2ψ_as_α2β2ψ_ψ Fchar, expr_αβ_α2β2ψ_as_α2β2ψ_αβ Fchar,
   expr_ψ_α2β2ψ_as_α2β2ψ_ψ Fchar, expr_αβ_α2β2ψ_as_α2β2ψ_αβ Fchar, expr_ψ_α2β2ψ_as_α2β2ψ_ψ Fchar]
-declare_B3Large_triv_expr_thm F αβψ α2β2ψ
+declare_B3Large_trivial_span_expr_thm F αβψ α2β2ψ
 
 -- 8.189
 theorem comm_of_αβ2ψ_α2β2ψ :
-    trivial_commutator_of_root_pair (weakB3Large F).pres_mk (αβ2ψ, α2β2ψ) := by
+    trivialSpanPropOfRootPair (weakB3LargeGraded F).project (αβ2ψ, α2β2ψ) := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.2
   rcases decompose 3 1 i hi with ⟨i₁, i₂, rfl, hi₁, hi₂⟩
   rw [eq_of_R_eq αβ2ψ (-2 * t * (-1 / 2)) (by field_simp), expr_αβ2ψ_as_αβψ_ψ_αβψ_ψ Fchar hi₁ hi₂]
   grw [expr_ψ_α2β2ψ_as_α2β2ψ_ψ Fchar, expr_αβψ_α2β2ψ_as_α2β2ψ_αβψ Fchar,
   expr_ψ_α2β2ψ_as_α2β2ψ_ψ Fchar, expr_αβψ_α2β2ψ_as_α2β2ψ_αβψ Fchar]
-declare_B3Large_triv_expr_thm F αβ2ψ α2β2ψ
+declare_B3Large_trivial_span_expr_thm F αβ2ψ α2β2ψ
 
 -- 8.190
 theorem comm_of_α2β2ψ :
-    mixed_commutes_of_root (weakB3Large F).pres_mk α2β2ψ := by
+    mixedDegreePropOfRoot (weakB3LargeGraded F).project α2β2ψ := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.2
   rcases decompose 4 1 i hi with ⟨i₁, i₂, rfl, hi₁, hi₂⟩
@@ -151,7 +151,7 @@ declare_B3Large_mixed_expr_thm F α2β2ψ
 
 -- 8.191
 theorem comm_of_αβψ_β2ψ :
-    trivial_commutator_of_root_pair (weakB3Large F).pres_mk (αβψ, β2ψ) := by
+    trivialSpanPropOfRootPair (weakB3LargeGraded F).project (αβψ, β2ψ) := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.2
   -- expand αβψ into product of αβ and ψ elements (work on LHS)
@@ -165,11 +165,11 @@ theorem comm_of_αβψ_β2ψ :
   rw [eq_of_R_eq α2β2ψ (-(t * u)) (by ring_nf; field_simp)]
   nth_rewrite 2 [eq_of_R_eq α2β2ψ (t * u) (by ring_nf; field_simp)]
   rw [←inv_of_α2β2ψ Fchar (add_le_add hi₁ hj), inv_mul_cancel, one_mul]
-declare_B3Large_triv_expr_thm F αβψ β2ψ
+declare_B3Large_trivial_span_expr_thm F αβψ β2ψ
 
 -- 8.192
 theorem comm_of_βψ_αβ2ψ :
-    trivial_commutator_of_root_pair (weakB3Large F).pres_mk (βψ, αβ2ψ) := by
+    trivialSpanPropOfRootPair (weakB3LargeGraded F).project (βψ, αβ2ψ) := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.2
   -- expand βψ as a product of ψ and β elements (work on LHS)
@@ -181,33 +181,33 @@ theorem comm_of_βψ_αβ2ψ :
   -- commute α2β2ψ across ψ and cancel
   grw [expr_ψ_α2β2ψ_as_α2β2ψ_ψ Fchar]
   rw [← inv_of_α2β2ψ Fchar (add_le_add hi₂ hj), mul_inv_cancel, one_mul]
-declare_B3Large_triv_expr_thm F βψ αβ2ψ
+declare_B3Large_trivial_span_expr_thm F βψ αβ2ψ
 
 -- 8.193
 theorem comm_of_β2ψ_αβ2ψ :
-    trivial_commutator_of_root_pair (weakB3Large F).pres_mk (β2ψ, αβ2ψ) := by
+    trivialSpanPropOfRootPair (weakB3LargeGraded F).project (β2ψ, αβ2ψ) := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.2
   rcases decompose 1 2 i hi with ⟨i₁, i₂, rfl, hi₁, hi₂⟩
   rw [eq_of_R_eq β2ψ (2 * t * (1 / 2)) (by field_simp), expr_β2ψ_as_ψ_βψ_ψ_βψ hi₁ hi₂]
   grw [expr_βψ_αβ2ψ_as_αβ2ψ_βψ Fchar, expr_ψ_αβ2ψ_as_αβ2ψ_ψ Fchar,
   expr_βψ_αβ2ψ_as_αβ2ψ_βψ Fchar, expr_ψ_αβ2ψ_as_αβ2ψ_ψ Fchar]
-declare_B3Large_triv_expr_thm F β2ψ αβ2ψ
+declare_B3Large_trivial_span_expr_thm F β2ψ αβ2ψ
 
 -- 8.194
 theorem comm_of_αβψ_αβ2ψ :
-    trivial_commutator_of_root_pair (weakB3Large F).pres_mk (αβψ, αβ2ψ) := by
+    trivialSpanPropOfRootPair (weakB3LargeGraded F).project (αβψ, αβ2ψ) := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.2
   rcases decompose 1 2 i hi with ⟨i₁, i₂, rfl, hi₁, hi₂⟩
   rw [←mul_one t, expr_αβψ_as_βψ_α_βψ_α_βψ hi₁ hi₂]
   grw [expr_βψ_αβ2ψ_as_αβ2ψ_βψ Fchar, expr_α_αβ2ψ_as_αβ2ψ_α Fchar, expr_βψ_αβ2ψ_as_αβ2ψ_βψ Fchar,
   expr_α_αβ2ψ_as_αβ2ψ_α Fchar, expr_βψ_αβ2ψ_as_αβ2ψ_βψ Fchar]
-declare_B3Large_triv_expr_thm F αβψ αβ2ψ
+declare_B3Large_trivial_span_expr_thm F αβψ αβ2ψ
 
 -- 8.195
 theorem comm_of_αβ2ψ :
-    mixed_commutes_of_root (weakB3Large F).pres_mk αβ2ψ := by
+    mixedDegreePropOfRoot (weakB3LargeGraded F).project αβ2ψ := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.2
   rcases decompose 3 1 i hi with ⟨i₁, i₂, rfl, hi₁, hi₂⟩
@@ -218,7 +218,7 @@ declare_B3Large_mixed_expr_thm F αβ2ψ
 
 -- 8.196
 @[simp, chev_simps]
-theorem lin_of_αβ2ψ : lin_of_root((weakB3Large F).pres_mk, αβ2ψ) := by
+theorem lin_of_αβ2ψ : lin_of_root((weakB3LargeGraded F).project, αβ2ψ) := by
   intro i hi t u
   rcases decompose 1 3 i hi with ⟨i₁, i₂, rfl, hi₁, hi₂⟩
   -- expand one αβ2ψ as product of α and β2ψ elements (work on LHS)
@@ -234,7 +234,7 @@ theorem lin_of_αβ2ψ : lin_of_root((weakB3Large F).pres_mk, αβ2ψ) := by
 
 -- 8.197
 @[simp, chev_simps]
-theorem lin_of_α2β2ψ : lin_of_root((weakB3Large F).pres_mk, α2β2ψ) := by
+theorem lin_of_α2β2ψ : lin_of_root((weakB3LargeGraded F).project, α2β2ψ) := by
   intro i hi t u
   rcases decompose 2 3 i hi with ⟨i₁, i₂, rfl, hi₁, hi₂⟩
   -- expand one α2β2ψ as product of αβ and β2ψ elements (work on LHS)
@@ -289,7 +289,7 @@ theorem hom_lift_of_comm_of_α_α2β2ψ_square : forall_ijk_tu α β ψ,
     <;> chev_simp [pow_two, t₀, t₁, u₀, u₁, v₀, v₁]
   rw [eq_of_h_eq α2β2ψ ((i + j) + (j + 2 * k)) (by omega),
       expr_α2β2ψ_as_comm_of_αβ_β2ψ Fchar (add_le_add hi hj) hjk,
-      aux₁, aux₂, aux₃, raw_nonhomog_lift_of_comm_of_α_α2β2ψ]
+      aux₁, aux₂, aux₃, raw_nonhom_lift_of_comm_of_α_α2β2ψ]
 
 -- 8.199
 include F_sum_of_squares
@@ -323,7 +323,7 @@ theorem expr_α_α2β2ψ_as_α2β2ψ_α_parity : forall_ijk_tu α β ψ,
   exact hom_lift_of_comm_of_α_α2β2ψ Fchar F_sum_of_squares hi hj hk t u
 
 -- 8.201
-theorem nonhomog_lift_of_comm_of_α_α2β2ψ : forall_ij_tu α β,
+theorem nonhom_lift_of_comm_of_α_α2β2ψ : forall_ij_tu α β,
     ⁅⸨α, i, t⸩, ⸨α2β2ψ, i + 2 * j + 1, u⸩⁆ = 1 := by
   intro i j hi hj t u
   rcases eq_or_ne t 0 with ht | ht
@@ -367,7 +367,7 @@ theorem nonhomog_lift_of_comm_of_α_α2β2ψ : forall_ij_tu α β,
     <;> chev_simp [t₀, t₁, u₀, u₁, v₀, v₁, aux₁, aux₂, pow_two, one_mul]
 
   -- apply 8.82 and simplify stuff
-  rw [←raw_nonhomog_lift_of_comm_of_α_α2β2ψ t₁ t₀ u₁ u₀ v₁ v₀, hα, hαβ, hβ2ψ, commutatorElement_def,
+  rw [←raw_nonhom_lift_of_comm_of_α_α2β2ψ t₁ t₀ u₁ u₀ v₁ v₀, hα, hαβ, hβ2ψ, commutatorElement_def,
   commutatorElement_def, commutatorElement_def, inv_of_α, inv_of_αβ, mul_inv_rev, mul_inv_rev, mul_inv_rev,
   mul_inv_rev, mul_inv_rev, mul_inv_rev, mul_inv_rev, mul_inv_rev, mul_inv_rev, inv_inv, inv_inv,
   inv_inv, inv_of_β2ψ, inv_of_β2ψ, inv_of_β2ψ, inv_of_αβ, inv_of_αβ, neg_neg]
@@ -436,7 +436,7 @@ theorem partial_comm_of_αβ_α2β2ψ :
     ∀ (t u : F), ⁅⸨αβ, 0, t⸩, ⸨αβ2ψ, 1, u⸩⁆ = 1 := by
   apply sufficient_conditions_for_comm_of_αβ_and_αβ2ψ (i := 0) (j := 0) (k := 1) Fchar (by trivial) (by trivial) (by trivial)
   intro t u
-  rw [nonhomog_lift_of_comm_of_α_α2β2ψ (i := 0) (j := 0) (by trivial) (by trivial) (by trivial) (by trivial)]
+  rw [nonhom_lift_of_comm_of_α_α2β2ψ (i := 0) (j := 0) (by trivial) (by trivial) (by trivial) (by trivial)]
 
 -- 8.204
 omit F_sum_of_squares in
@@ -470,7 +470,7 @@ private lemma comm_of_α_α2β2ψ_00 :
 
 private lemma comm_of_α_α2β2ψ_01 :
     ∀ (t u : F), ⁅⸨α, 0, t⸩, ⸨α2β2ψ, 1, u⸩⁆ = 1 :=
-  @nonhomog_lift_of_comm_of_α_α2β2ψ F _ Fchar F_sum_of_squares 0 0 (by trivial) (by trivial)
+  @nonhom_lift_of_comm_of_α_α2β2ψ F _ Fchar F_sum_of_squares 0 0 (by trivial) (by trivial)
 
 private lemma comm_of_α_α2β2ψ_02 :
     ∀ (t u : F), ⁅⸨α, 0, t⸩, ⸨α2β2ψ, 2, u⸩⁆ = 1 :=
@@ -478,7 +478,7 @@ private lemma comm_of_α_α2β2ψ_02 :
 
 private lemma comm_of_α_α2β2ψ_03 :
     ∀ (t u : F), ⁅⸨α, 0, t⸩, ⸨α2β2ψ, 3, u⸩⁆ = 1 :=
-  @nonhomog_lift_of_comm_of_α_α2β2ψ F _ Fchar F_sum_of_squares 0 1 (by trivial) (by trivial)
+  @nonhom_lift_of_comm_of_α_α2β2ψ F _ Fchar F_sum_of_squares 0 1 (by trivial) (by trivial)
 
 private lemma comm_of_α_α2β2ψ_04 :
     ∀ (t u : F), ⁅⸨α, 0, t⸩, ⸨α2β2ψ, 4, u⸩⁆ = 1 :=
@@ -498,7 +498,7 @@ declare_B3Large_triv_comm_reflected_thm F b3large_valid α α2β2ψ heights 1 5 
 
 -- 8.206
 theorem comm_of_α_α2β2ψ :
-    trivial_commutator_of_root_pair (weakB3Large F).pres_mk (α, α2β2ψ) := by
+    trivialSpanPropOfRootPair (weakB3LargeGraded F).project (α, α2β2ψ) := by
   intro i j hi hj
   match i, j with
   | 0, 0 => exact comm_of_α_α2β2ψ_00 Fchar F_sum_of_squares
@@ -516,17 +516,17 @@ theorem comm_of_α_α2β2ψ :
 
 -- 8.207
 theorem comm_of_αβ_αβ2ψ :
-    trivial_commutator_of_root_pair (weakB3Large F).pres_mk (αβ, αβ2ψ) := by
+    trivialSpanPropOfRootPair (weakB3LargeGraded F).project (αβ, αβ2ψ) := by
   intro i j hi hj
   rcases decompose 1 1 i hi with ⟨i₁, i₂, rfl, hi₁, hi₂⟩
   apply sufficient_conditions_for_comm_of_αβ_and_αβ2ψ Fchar (by trivial) (by trivial) (by trivial)
   intro t u
   apply comm_of_α_α2β2ψ Fchar F_sum_of_squares hi₁
-declare_B3Large_triv_expr_thm F αβ αβ2ψ
+declare_B3Large_trivial_span_expr_thm F αβ αβ2ψ
 
 -- 8.208
 theorem comm_of_αβψ :
-    mixed_commutes_of_root (weakB3Large F).pres_mk αβψ := by
+    mixedDegreePropOfRoot (weakB3LargeGraded F).project αβψ := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.2
   -- expand the left αβψ as a product of αβ and ψ elements (work on the LHS)
@@ -545,7 +545,7 @@ declare_B3Large_mixed_expr_thm F αβψ
 
 -- 8.209
 @[simp, chev_simps]
-theorem lin_of_αβψ : lin_of_root((weakB3Large F).pres_mk, αβψ) := by
+theorem lin_of_αβψ : lin_of_root((weakB3LargeGraded F).project, αβψ) := by
   intro i hi t u
   rcases decompose 2 1 i hi with ⟨i₁, i₂, rfl, hi₁, hi₂⟩
   -- expand one αβψ element into a product of ψ and αβ elements (work on LHS)
@@ -572,8 +572,8 @@ theorem lin_of_αβψ : lin_of_root((weakB3Large F).pres_mk, αβψ) := by
   rw [←mul_one (t + u), expr_αβψ_as_ψ_αβ_ψ_αβ_ψ hi₁ hi₂]
   ring_nf; field_simp; ring_nf
 
-theorem full_rels_satisfied_in_weak_group :
-  ∀ r ∈ (fullB3LargeGraded F).all_rels, (weakB3Large F).pres_mk r = 1 := by
+theorem full_relations_implied_by_weak_relations :
+  ∀ r ∈ (fullB3LargeGraded F).allRelations, (weakB3LargeGraded F).project r = 1 := by
   simp only [fullB3LargeGraded, fullB3Large]
   apply GradedPartialChevalleyGroup.graded_injection
   all_goals (
@@ -585,7 +585,7 @@ theorem full_rels_satisfied_in_weak_group :
     · right
       simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at h_new
       intro r h_r
-      simp only [rels_of_trivial_commutator_of_root_pair] at h_r
+      simp only [trivialSpanRelationsOfRootPair] at h_r
       rcases h_r with ⟨ i, j, hi, hj, t, u, rfl ⟩
       rcases h_new with h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h
       all_goals (
@@ -617,7 +617,7 @@ theorem full_rels_satisfied_in_weak_group :
     · right
       simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at h_new
       intro r h_r
-      simp only [rels_of_single_commutator_of_root_pair] at h_r
+      simp only [singleSpanRelationsOfRootPair] at h_r
       rcases h_r with ⟨ i, j, hi, hj, t, u, rfl ⟩
       rcases h_new with h|h|h|h|h
       all_goals (
@@ -644,7 +644,7 @@ theorem full_rels_satisfied_in_weak_group :
     · right
       simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at h_new
       intro r h_r
-      simp only [rels_of_double_commutator_of_root_pair] at h_r
+      simp only [doubleSpanRelationsOfRootPair] at h_r
       rcases h_r with ⟨ i, j, hi, hj, t, u, rfl ⟩
       rcases h_new with h|h
       all_goals (
@@ -666,7 +666,7 @@ theorem full_rels_satisfied_in_weak_group :
     · right
       simp_all only [ne_eq, Set.mem_insert_iff, Set.mem_singleton_iff]
       intro r h_r
-      simp only [rels_of_mixed_commutes_of_root] at h_r
+      simp only [mixedDegreeRelationsOfRoot] at h_r
       rcases h_r with ⟨ i, j, hi, hj, t, u, goal ⟩
       rcases h_new with h|h|h
       all_goals subst p r
@@ -678,7 +678,7 @@ theorem full_rels_satisfied_in_weak_group :
     · right
       simp_all only [ne_eq, Set.mem_insert_iff, Set.mem_singleton_iff]
       intro r h_r
-      simp only [rels_of_lin_of_root] at h_r
+      simp only [linearityRelationsOfRoot] at h_r
       rcases h_r with ⟨ i, hi, t, u, goal ⟩
       rcases h_new with h|h|h
       all_goals (
@@ -689,9 +689,9 @@ theorem full_rels_satisfied_in_weak_group :
       · exact lin_of_αβ2ψ Fchar hi t u
       · exact lin_of_α2β2ψ Fchar hi t u
   · tauto
-  · simp only [def_rels, Set.mem_iUnion, Set.mem_setOf_eq] at h
+  · simp only [definitionRelations, Set.mem_iUnion, Set.mem_setOf_eq] at h
     rcases h with ⟨ζ, i, hi, t, h⟩
     subst p
-    simp only [fullB3LargeGraded, full_mk, inv_mul_cancel, map_one]
+    simp only [fullB3LargeGraded, fullMk, inv_mul_cancel, map_one]
 
 end Steinberg.B3Large

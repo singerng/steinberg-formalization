@@ -14,24 +14,24 @@ variable {F : Type TF} [Field F] (Fchar : (2 : F) ≠ 0)
 set_option hygiene false in
 /-- Shorthand for building group elements from a root and ring element. -/
 scoped notation (priority:=high) "⸨" ζ ", " t "⸩" =>
-  (fullB3Large F).pres_mk {ζ, t}
+  (fullB3Large F).project {ζ, t}
 
 -- Instantiate macros for ungraded case
 
 macro "declare_B3Large_ungraded_lin_id_inv_thms" F:term:arg root:term:arg : command =>
   `(command| declare_ungraded_lin_id_inv_thms fullB3Large $F $root)
 
-macro "declare_B3Large_ungraded_triv_expr_thm" F:term:arg r₁:term:arg r₂:term:arg : command =>
-  `(command| declare_ungraded_triv_expr_thm fullB3Large $F $r₁ $r₂)
+macro "declare_B3Large_ungraded_trivial_span_expr_thm" F:term:arg r₁:term:arg r₂:term:arg : command =>
+  `(command| declare_ungraded_trivial_span_expr_thm fullB3Large $F $r₁ $r₂)
 
-macro "declare_B3Large_ungraded_triv_comm_of_root_pair_thms" F:term:arg r₁:term:arg r₂:term:arg : command =>
-  `(command| declare_ungraded_triv_comm_of_root_pair_thms fullB3Large $F $r₁ $r₂)
+macro "declare_B3Large_ungraded_trivial_span_of_root_pair_thms" F:term:arg r₁:term:arg r₂:term:arg : command =>
+  `(command| declare_ungraded_trivial_span_of_root_pair_thms fullB3Large $F $r₁ $r₂)
 
-macro "declare_B3Large_ungraded_single_expr_thms" F:term:arg r₁:term:arg r₂:term:arg r₃:term:arg isNeg:num n:num : command =>
-  `(command| declare_ungraded_single_expr_thms fullB3Large $F $r₁ $r₂ $r₃ $isNeg $n)
+macro "declare_B3Large_ungraded_single_span_expr_thms" F:term:arg r₁:term:arg r₂:term:arg r₃:term:arg isNeg:num n:num : command =>
+  `(command| declare_ungraded_single_span_expr_thms fullB3Large $F $r₁ $r₂ $r₃ $isNeg $n)
 
-macro "declare_B3Large_ungraded_single_comm_of_root_pair_thms" F:term:arg r₁:term:arg r₂:term:arg r₃:term:arg isNeg:num n:num : command =>
-  `(command| declare_ungraded_single_comm_of_root_pair_thms fullB3Large $F $r₁ $r₂ $r₃ $isNeg $n)
+macro "declare_B3Large_ungraded_single_span_of_root_pair_thms" F:term:arg r₁:term:arg r₂:term:arg r₃:term:arg isNeg:num n:num : command =>
+  `(command| declare_ungraded_single_span_of_root_pair_thms fullB3Large $F $r₁ $r₂ $r₃ $isNeg $n)
 
 
 -- Declare relations
@@ -46,26 +46,26 @@ declare_B3Large_ungraded_lin_id_inv_thms F αβψ
 declare_B3Large_ungraded_lin_id_inv_thms F αβ2ψ
 declare_B3Large_ungraded_lin_id_inv_thms F α2β2ψ
 
-declare_B3Large_ungraded_triv_comm_of_root_pair_thms F αβ2ψ α2β2ψ
-declare_B3Large_ungraded_triv_comm_of_root_pair_thms F βψ αβ2ψ
-declare_B3Large_ungraded_triv_comm_of_root_pair_thms F β2ψ αβψ
-declare_B3Large_ungraded_triv_comm_of_root_pair_thms F β2ψ αβ2ψ
-declare_B3Large_ungraded_triv_comm_of_root_pair_thms F ψ α2β2ψ
-declare_B3Large_ungraded_triv_comm_of_root_pair_thms F αβ α2β2ψ
+declare_B3Large_ungraded_trivial_span_of_root_pair_thms F αβ2ψ α2β2ψ
+declare_B3Large_ungraded_trivial_span_of_root_pair_thms F βψ αβ2ψ
+declare_B3Large_ungraded_trivial_span_of_root_pair_thms F β2ψ αβψ
+declare_B3Large_ungraded_trivial_span_of_root_pair_thms F β2ψ αβ2ψ
+declare_B3Large_ungraded_trivial_span_of_root_pair_thms F ψ α2β2ψ
+declare_B3Large_ungraded_trivial_span_of_root_pair_thms F αβ α2β2ψ
 
-declare_B3Large_ungraded_single_comm_of_root_pair_thms F αβψ ψ αβ2ψ 1 2
-declare_B3Large_ungraded_single_comm_of_root_pair_thms F α β2ψ αβ2ψ 0 1
-declare_B3Large_ungraded_single_comm_of_root_pair_thms F αβ β2ψ α2β2ψ 1 1
-declare_B3Large_ungraded_single_comm_of_root_pair_thms F αβψ βψ α2β2ψ 1 2
-declare_B3Large_ungraded_single_comm_of_root_pair_thms F αβ2ψ β α2β2ψ 1 1
+declare_B3Large_ungraded_single_span_of_root_pair_thms F αβψ ψ αβ2ψ 1 2
+declare_B3Large_ungraded_single_span_of_root_pair_thms F α β2ψ αβ2ψ 0 1
+declare_B3Large_ungraded_single_span_of_root_pair_thms F αβ β2ψ α2β2ψ 1 1
+declare_B3Large_ungraded_single_span_of_root_pair_thms F αβψ βψ α2β2ψ 1 2
+declare_B3Large_ungraded_single_span_of_root_pair_thms F αβ2ψ β α2β2ψ 1 1
 
-theorem comm_of_α_βψ : double_commutator_of_root_pair (fullB3Large F).pres_mk ⟨α, βψ, αβψ, α2β2ψ, 1, 1, by ht, by ht⟩ :=
-  (fullB3Large F).double_commutator_helper ⟨α, βψ, αβψ, α2β2ψ, 1, 1, by ht, by ht⟩
-  (by simp only [fullB3Large, PartialChevalleyGroup.full_mk, double_comm_root_pairs, fullB3LargeSystem, mk_full, full_double_commutator_pairs]; tauto)
+theorem comm_of_α_βψ : doubleSpanPropOfRootPair (fullB3Large F).project ⟨α, βψ, αβψ, α2β2ψ, 1, 1, by ht, by ht⟩ :=
+  (fullB3Large F).doubleSpanProp_of_mem_doubleSpanRootPairs ⟨α, βψ, αβψ, α2β2ψ, 1, 1, by ht, by ht⟩
+  (by simp only [fullB3Large, PartialChevalleyGroup.fullMk, doubleCommutatorRootPairs, fullB3LargeSystem, mkFull, fullDoubleSpanRootPairs]; tauto)
 
-theorem comm_of_αβ_ψ : double_commutator_of_root_pair (fullB3Large F).pres_mk ⟨αβ, ψ, αβψ, αβ2ψ, 1, 1, by ht, by ht⟩ :=
-  (fullB3Large F).double_commutator_helper ⟨αβ, ψ, αβψ, αβ2ψ, 1, 1, by ht, by ht⟩
-  (by simp only [fullB3Large, PartialChevalleyGroup.full_mk, double_comm_root_pairs, fullB3LargeSystem, mk_full, full_double_commutator_pairs]; tauto)
+theorem comm_of_αβ_ψ : doubleSpanPropOfRootPair (fullB3Large F).project ⟨αβ, ψ, αβψ, αβ2ψ, 1, 1, by ht, by ht⟩ :=
+  (fullB3Large F).doubleSpanProp_of_mem_doubleSpanRootPairs ⟨αβ, ψ, αβψ, αβ2ψ, 1, 1, by ht, by ht⟩
+  (by simp only [fullB3Large, PartialChevalleyGroup.fullMk, doubleCommutatorRootPairs, fullB3LargeSystem, mkFull, fullDoubleSpanRootPairs]; tauto)
 
 include Fchar
 theorem Fchar4 : (4 : F) ≠ 0 := by
@@ -115,7 +115,7 @@ theorem helper2 (t u : F) : ⸨βψ, -(u / 2)⸩ * ⸨α, t⸩ * ⸨βψ, u⸩ *
 
 -- include Fchar in
 theorem valid_of_hom_lifted (F : Type TF) [Field F] (Fchar : (2 : F) ≠ 0) :
-  ∀ S ∈ hom_lifted_sets F, ∃ r : FreeGroup (ChevalleyGenerator B3LargePosRoot F), S = hom_lift_set r ∧ (fullB3Large F).pres_mk r = 1 := by
+  ∀ S ∈ hom_lifted_sets F, ∃ r : FreeGroup (ChevalleyGenerator B3LargePosRoot F), S = hom_lift_set r ∧ (fullB3Large F).project r = 1 := by
   intro S h_S
   simp only [hom_lifted_sets, hom_lift_base_set] at h_S
   simp only [Set.mem_image] at h_S

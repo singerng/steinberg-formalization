@@ -15,15 +15,15 @@ variable {F : Type TF} [Field F] (Fchar : (2 : F) ≠ 0)
 -- CC: (3/16) is there a better place/file for these theorems?
 include Fchar
 
-theorem refl_def_eq_refl_gen_of_αβ2ψ (g : GradedChevalleyGenerator B3LargePosRoot F) (h : g.ζ = αβ2ψ) :
-  (weakB3Large F).pres_mk (refl_def (weakB3Large F) g) = (weakB3Large F).pres_mk (FreeGroup.of (refl_of_gen g)) := by
+theorem defineThenReflect_eq_reflect_of_αβ2ψ (g : GradedChevalleyGenerator B3LargePosRoot F) (h : g.ζ = αβ2ψ) :
+  (weakB3LargeGraded F).project (defineThenReflect (weakB3LargeGraded F) g) = (weakB3LargeGraded F).project (FreeGroup.of (reflect g)) := by
   rcases g with ⟨ ζ, i, hi, t ⟩
   simp only at h
   subst ζ
-  simp only [refl_def, MonoidHom.coe_comp, Function.comp_apply, FreeGroup.lift.of]
-  rw [weakB3Large]
-  simp only [weak_define, map_commutatorElement, FreeGroup.map.of, refl_of_gen]
-  rw [← weakB3Large, ← def_of_αβ2ψ]
+  simp only [defineThenReflect, MonoidHom.coe_comp, Function.comp_apply, FreeGroup.lift.of]
+  rw [weakB3LargeGraded]
+  simp only [weak_define, map_commutatorElement, FreeGroup.map.of, reflect]
+  rw [← weakB3LargeGraded, ← def_of_αβ2ψ]
   simp only [PositiveRootSystem.height, split_4_into_1_3]
   split
   -- this resolves every goal except height 2
@@ -1055,13 +1055,13 @@ theorem expr_α2β2ψ_as_comm_of_αβ2ψ_β : forall_ij_tu αβ2ψ β,
 
 -- 8.175
 theorem comm_of_β_α2β2ψ :
-  trivial_commutator_of_root_pair (weakB3Large F).pres_mk ⟨β, α2β2ψ⟩ := by
+  trivialSpanPropOfRootPair (weakB3LargeGraded F).project ⟨β, α2β2ψ⟩ := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.2
   rcases decompose 2 3 j hj with ⟨ j₁, j₂, rfl, hj₁, hj₂ ⟩
   rw [←one_mul u, ←neg_neg 1, expr_α2β2ψ_as_comm_of_αβ_β2ψ Fchar hj₁ hj₂,
         expr_β_comm_αβ_β2ψ_as_comm_αβ_β2ψ_β hi hj₁ hj₂]
-declare_B3Large_triv_expr_thm F β α2β2ψ
+declare_B3Large_trivial_span_expr_thm F β α2β2ψ
 
 omit Fchar in
 theorem expr_αβ_comm_αβψ_βψ_as_comm_αβψ_βψ_αβ : forall_ijk_tuv αβ αβψ βψ,
@@ -1073,24 +1073,24 @@ theorem expr_αβ_comm_αβψ_βψ_as_comm_αβψ_βψ_αβ : forall_ijk_tuv α�
 
 -- 8.176
 theorem comm_of_αβ_α2β2ψ :
-    trivial_commutator_of_root_pair (weakB3Large F).pres_mk ⟨αβ, α2β2ψ⟩ := by
+    trivialSpanPropOfRootPair (weakB3LargeGraded F).project ⟨αβ, α2β2ψ⟩ := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.2
   rcases decompose 3 2 j hj with ⟨ j₁, j₂, rfl, hj₁, hj₂ ⟩
   have : u = -2 * (-1/2) * u := by field_simp
   rw [this, expr_α2β2ψ_as_comm_of_αβψ_βψ Fchar hj₁ hj₂,
         expr_αβ_comm_αβψ_βψ_as_comm_αβψ_βψ_αβ hi hj₁ hj₂]
-declare_B3Large_triv_expr_thm F αβ α2β2ψ
+declare_B3Large_trivial_span_expr_thm F αβ α2β2ψ
 
 -- 8.177
 theorem comm_of_βψ_α2β2ψ :
-    trivial_commutator_of_root_pair (weakB3Large F).pres_mk ⟨βψ, α2β2ψ⟩ := by
+    trivialSpanPropOfRootPair (weakB3LargeGraded F).project ⟨βψ, α2β2ψ⟩ := by
   intro i j hi hj t u
   apply triv_comm_iff_commutes.2
   rcases decompose 2 3 j hj with ⟨ j₁, j₂, rfl, hj₁, hj₂ ⟩
   rw [←one_mul u, ←neg_neg 1, expr_α2β2ψ_as_comm_of_αβ_β2ψ Fchar hj₁ hj₂,
         expr_βψ_comm_αβ_β2ψ_as_comm_αβ_β2ψ_βψ hi hj₁ hj₂]
-declare_B3Large_triv_expr_thm F βψ α2β2ψ
+declare_B3Large_trivial_span_expr_thm F βψ α2β2ψ
 
 -- 8.178a
 @[simp, chev_simps]

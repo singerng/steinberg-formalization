@@ -32,7 +32,7 @@ theorem def_of_αβγ : ∀ (t : R),
     ⁅ ⸨α, t⸩, ⸨βγ, 1⸩ ⁆ = ⸨αβγ, t⸩ := by
   intro t
   symm
-  apply (weakA3Ungraded R).def_helper
+  apply (weakA3GradedUngraded R).definitionProp_of_define
 
 /-! ### Derive full commutator for αβ and βγ from nonhomogeneous lift -/
 
@@ -81,7 +81,7 @@ theorem reorder_β_γ_β (t u v : R) (h : t + v ≠ 0) : ⸨β, t⸩ * ⸨γ, u�
   grw [id_of_βγ]
 
 include Rchar in
-theorem comm_of_αβ_βγ : trivial_commutator_of_root_pair (weakA3Ungraded R).pres_mk (αβ, βγ) := by
+theorem comm_of_αβ_βγ : trivialSpanPropOfRootPair (weakA3GradedUngraded R).project (αβ, βγ) := by
   intro t u
   rcases eq_or_ne t 0 with ht | ht
   · rw [ht, id_of_αβ]
@@ -148,7 +148,7 @@ theorem comm_of_αβ_βγ : trivial_commutator_of_root_pair (weakA3Ungraded R).p
   grw [aux1, ← aux2, aux3, h63, h64, h65, h66, ← aux4, ← aux5, aux4, aux5]
 
 include Rchar in
-declare_A3_ungraded_triv_expr_thm R αβ βγ
+declare_A3_ungraded_trivial_span_expr_thm R αβ βγ
 
 /-! ### Further useful identities (roughly GENERIC) -/
 
@@ -203,24 +203,24 @@ theorem InterchangeRefl : ∀ (t u : R),
 
 /- Commutator relation for α and βγ. -/
 include Rchar in
-theorem comm_of_α_βγ : single_commutator_of_root_pair (weakA3Ungraded R).pres_mk ⟨α, βγ, αβγ, 1, (by ht)⟩ := by
+theorem comm_of_α_βγ : singleCommutatorPropOfRootPair (weakA3GradedUngraded R).project ⟨α, βγ, αβγ, 1, (by ht)⟩ := by
   intro t u
   simp only [Int.cast_one, one_mul]
   rw [← InterchangeRefl, ← def_of_αβγ (t * u)]
   assumption
 
 include Rchar in
-declare_A3_ungraded_single_expr_thms R α βγ αβγ 0 1
+declare_A3_ungraded_single_span_expr_thms R α βγ αβγ 0 1
 
 /- Commutator relation for αβ and γ. -/
 include Rchar in
-theorem comm_of_αβ_γ : single_commutator_of_root_pair (weakA3Ungraded R).pres_mk ⟨αβ, γ, αβγ, 1, (by ht)⟩ := by
+theorem comm_of_αβ_γ : singleCommutatorPropOfRootPair (weakA3GradedUngraded R).project ⟨αβ, γ, αβγ, 1, (by ht)⟩ := by
   intro t u
   rw [← InterchangeTrans, comm_of_α_βγ]
   repeat assumption
 
 include Rchar in
-declare_A3_ungraded_single_expr_thms R αβ γ αβγ 0 1
+declare_A3_ungraded_single_span_expr_thms R αβ γ αβγ 0 1
 
 /-! ### More rewriting theorems -/
 
@@ -256,7 +256,7 @@ theorem expand_αβγ_as_αβ_γ_αβ_γ_mul_one : ∀ (t : R),
 
 /- α and αβγ commute. -/
 include Rchar in
-theorem comm_of_α_αβγ : trivial_commutator_of_root_pair (weakA3Ungraded R).pres_mk (α, αβγ) := by
+theorem comm_of_α_αβγ : trivialSpanPropOfRootPair (weakA3GradedUngraded R).project (α, αβγ) := by
   intro t u
   apply triv_comm_iff_commutes.mpr
   grw [expr_αβγ_as_αβ_γ_αβ_γ_one_mul,
@@ -267,7 +267,7 @@ theorem comm_of_α_αβγ : trivial_commutator_of_root_pair (weakA3Ungraded R).p
 /- β and αβγ commute. -/
 -- the only commutator proof where we have to do something 'interesting'
 include Rchar in
-theorem comm_of_β_αβγ : trivial_commutator_of_root_pair (weakA3Ungraded R).pres_mk (β, αβγ) := by
+theorem comm_of_β_αβγ : trivialSpanPropOfRootPair (weakA3GradedUngraded R).project (β, αβγ) := by
   intro t u
   apply triv_comm_iff_commutes.mpr
   grw [expr_αβγ_as_αβ_γ_αβ_γ_one_mul,
@@ -278,7 +278,7 @@ theorem comm_of_β_αβγ : trivial_commutator_of_root_pair (weakA3Ungraded R).p
 
 /- γ and αβγ commute. -/
 include Rchar in
-theorem comm_of_γ_αβγ : trivial_commutator_of_root_pair (weakA3Ungraded R).pres_mk (γ, αβγ) := by
+theorem comm_of_γ_αβγ : trivialSpanPropOfRootPair (weakA3GradedUngraded R).project (γ, αβγ) := by
   intro t u
   apply triv_comm_iff_commutes.mpr
   grw [expr_αβγ_as_α_βγ_α_βγ_one_mul,
@@ -288,7 +288,7 @@ theorem comm_of_γ_αβγ : trivial_commutator_of_root_pair (weakA3Ungraded R).p
 
 /- αβ and αβγ commute. -/
 include Rchar in
-theorem comm_of_αβ_αβγ : trivial_commutator_of_root_pair (weakA3Ungraded R).pres_mk (αβ, αβγ) := by
+theorem comm_of_αβ_αβγ : trivialSpanPropOfRootPair (weakA3GradedUngraded R).project (αβ, αβγ) := by
   intro t u
   apply triv_comm_iff_commutes.mpr
   grw [expr_αβγ_as_α_βγ_α_βγ_one_mul,
@@ -298,7 +298,7 @@ theorem comm_of_αβ_αβγ : trivial_commutator_of_root_pair (weakA3Ungraded R)
 
 /- βγ and αβγ commute. -/
 include Rchar in
-theorem comm_of_βγ_αβγ : trivial_commutator_of_root_pair (weakA3Ungraded R).pres_mk (βγ, αβγ) := by
+theorem comm_of_βγ_αβγ : trivialSpanPropOfRootPair (weakA3GradedUngraded R).project (βγ, αβγ) := by
   intro t u
   apply triv_comm_iff_commutes.mpr
   grw [expr_αβγ_as_αβ_γ_αβ_γ_one_mul,
@@ -307,17 +307,17 @@ theorem comm_of_βγ_αβγ : trivial_commutator_of_root_pair (weakA3Ungraded R)
   repeat assumption
 
 include Rchar
-declare_A3_ungraded_triv_expr_thm R α αβγ
-declare_A3_ungraded_triv_expr_thm R β αβγ
-declare_A3_ungraded_triv_expr_thm R γ αβγ
-declare_A3_ungraded_triv_expr_thm R αβ αβγ
-declare_A3_ungraded_triv_expr_thm R βγ αβγ
+declare_A3_ungraded_trivial_span_expr_thm R α αβγ
+declare_A3_ungraded_trivial_span_expr_thm R β αβγ
+declare_A3_ungraded_trivial_span_expr_thm R γ αβγ
+declare_A3_ungraded_trivial_span_expr_thm R αβ αβγ
+declare_A3_ungraded_trivial_span_expr_thm R βγ αβγ
 omit Rchar
 
 /- Linearity for αβγ. -/
 include Rchar in
 @[group_reassoc (attr := simp, chev_simps)]
-theorem lin_of_αβγ : lin_of_root((weakA3Ungraded R).pres_mk, αβγ) := by
+theorem lin_of_αβγ : lin_of_root((weakA3GradedUngraded R).project, αβγ) := by
   intro t u
   grw [expr_αβγ_as_α_βγ_α_βγ_mul_one,
     expr_βγ_αβγ_as_αβγ_βγ,
@@ -330,8 +330,8 @@ theorem lin_of_αβγ : lin_of_root((weakA3Ungraded R).pres_mk, αβγ) := by
 
 include Rchar in
 theorem full_rels_satisfied_in_weak_group :
-  ∀ r ∈ (fullA3 R).all_rels, (weakA3Ungraded R).pres_mk r = 1 := by
-  simp only [fullA3, weakA3Ungraded]
+  ∀ r ∈ (fullA3 R).allRelations, (weakA3GradedUngraded R).project r = 1 := by
+  simp only [fullA3, weakA3GradedUngraded]
   apply PartialChevalleyGroup.injection
   all_goals (
     intro p h
@@ -342,7 +342,7 @@ theorem full_rels_satisfied_in_weak_group :
     · right
       simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at h_new
       intro r h_r
-      simp only [rels_of_trivial_commutator_of_root_pair] at h_r
+      simp only [trivialSpanRelationsOfRootPair] at h_r
       rcases h_r with ⟨ t, u, goal ⟩
       rcases h_new with h_αβ_βγ|h_α_αβγ|h_β_αβγ|h_γ_αβγ|h_αβ_αβγ|h_βγ_αβγ
       all_goals subst p r
@@ -357,7 +357,7 @@ theorem full_rels_satisfied_in_weak_group :
     · right
       simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at h_new
       intro r h_r
-      simp only [rels_of_single_commutator_of_root_pair] at h_r
+      simp only [singleSpanRelationsOfRootPair] at h_r
       rcases h_r with ⟨ t, u, goal ⟩
       rcases h_new with h_α_βγ|h_αβ_γ
       all_goals (
@@ -372,14 +372,14 @@ theorem full_rels_satisfied_in_weak_group :
     · right
       simp_all only [Set.mem_singleton_iff]
       intro r h_r
-      simp only [rels_of_lin_of_root] at h_r
+      simp only [linearityRelationsOfRoot] at h_r
       rcases h_r with ⟨ t, u, goal ⟩
       subst r
       simp only [map_mul, map_inv, mul_inv_eq_one]
       exact lin_of_αβγ Rchar t u
-  · simp only [def_rels, Set.mem_iUnion, Set.mem_setOf_eq] at h
+  · simp only [definitionRelations, Set.mem_iUnion, Set.mem_setOf_eq] at h
     rcases h with ⟨ζ, ht, h⟩
     subst p
-    simp only [fullA3, full_mk, inv_mul_cancel, map_one]
+    simp only [fullA3, fullMk, inv_mul_cancel, map_one]
 
 end Steinberg.A3.Ungraded
