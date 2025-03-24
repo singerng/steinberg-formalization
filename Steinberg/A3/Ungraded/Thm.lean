@@ -165,6 +165,7 @@ theorem expr_β_γ_as_γ_βγ_β : ∀ (t u : R),
 /-! ### Interchange theorems between ⁅α,βγ⁆ and ⁅αβ,γ⁆ forms -/
 
 /- Interchange between ⁅α, βγ⁆ and ⁅αβ, γ⁆, "trading" a single degree : Deg 1 and scalar u : R. -/
+include Rchar in
 theorem Interchange : ∀ (t u v : R),
      ⁅ ⸨α, t⸩, ⸨βγ, u * v⸩ ⁆ = ⁅ ⸨αβ, t * u⸩, ⸨γ, v⸩ ⁆ := by
   intro t u v
@@ -179,76 +180,93 @@ theorem Interchange : ∀ (t u v : R),
     commutatorElement_def,
     expr_β_γ_as_βγ_γ_β,
     ← expr_γ_βγ_as_βγ_γ]
+  exact Rchar
 
 /- Pass between ⁅α,βγ⁆ and ⁅αβ,γ⁆ forms (specializes `Interchange` to the case `u=1`). -/
+include Rchar in
 theorem InterchangeTrans : ∀ (t u : R),
     ⁅ ⸨α, t⸩, ⸨βγ, u⸩ ⁆ = ⁅ ⸨αβ, t⸩, ⸨γ, u⸩ ⁆ := by
   intro t u
-  have := Interchange t 1 u
+  have := Interchange Rchar t 1 u
   rwa [one_mul, mul_one] at this
 
 /- ⁅α,βγ⁆ forms depend only on product of coefficients. Applies `Interchange` twice. -/
+include Rchar in
 theorem InterchangeRefl : ∀ (t u : R),
     ⁅ ⸨α, t * u⸩, ⸨βγ, 1⸩ ⁆ = ⁅ ⸨α, t⸩, ⸨βγ, u⸩ ⁆ := by
   intro t u
   nth_rewrite 2 [← mul_one u]
   rw [Interchange, InterchangeTrans]
+  repeat assumption
 
 /-! ### Commutator relations for (α,βγ) and (αβ,γ) via interchange relations -/
 
 /- Commutator relation for α and βγ. -/
+include Rchar in
 theorem comm_of_α_βγ : single_commutator_of_root_pair (weakA3Ungraded R).pres_mk ⟨α, βγ, αβγ, 1, (by ht)⟩ := by
   intro t u
   simp only [Int.cast_one, one_mul]
   rw [← InterchangeRefl, ← def_of_αβγ (t * u)]
+  assumption
 
+include Rchar in
 declare_A3_ungraded_single_expr_thms R α βγ αβγ 0 1
 
 /- Commutator relation for αβ and γ. -/
+include Rchar in
 theorem comm_of_αβ_γ : single_commutator_of_root_pair (weakA3Ungraded R).pres_mk ⟨αβ, γ, αβγ, 1, (by ht)⟩ := by
   intro t u
   rw [← InterchangeTrans, comm_of_α_βγ]
+  repeat assumption
 
+include Rchar in
 declare_A3_ungraded_single_expr_thms R αβ γ αβγ 0 1
 
 /-! ### More rewriting theorems -/
 
+include Rchar in
 theorem expr_αβγ_as_α_βγ_α_βγ_one_mul : ∀ (t : R),
     ⸨αβγ, t⸩ = ⸨α, 1⸩ * ⸨βγ, t⸩ * ⸨α, -1⸩ * ⸨βγ, -t⸩ := by
   intro u
-  have := expr_αβγ_as_α_βγ_α_βγ 1 u
+  have := expr_αβγ_as_α_βγ_α_βγ Rchar 1 u
   rwa [one_mul] at this
 
+include Rchar in
 theorem expr_αβγ_as_α_βγ_α_βγ_mul_one : ∀ (t : R),
     ⸨αβγ, t⸩ = ⸨α, t⸩ * ⸨βγ, 1⸩ * ⸨α, -t⸩ * ⸨βγ, -1⸩ := by
   intro t
-  have := expr_αβγ_as_α_βγ_α_βγ t 1
+  have := expr_αβγ_as_α_βγ_α_βγ Rchar t 1
   rwa [mul_one] at this
 
+include Rchar in
 theorem expr_αβγ_as_αβ_γ_αβ_γ_one_mul : ∀ (t : R),
     ⸨αβγ, t⸩ = ⸨αβ, 1⸩ * ⸨γ, t⸩ * ⸨αβ, -1⸩ * ⸨γ, -t⸩ := by
   intro u
-  have := expr_αβγ_as_αβ_γ_αβ_γ 1 u
+  have := expr_αβγ_as_αβ_γ_αβ_γ Rchar 1 u
   rwa [one_mul] at this
 
+include Rchar in
 theorem expand_αβγ_as_αβ_γ_αβ_γ_mul_one : ∀ (t : R),
     ⸨αβγ, t⸩ = ⸨αβ, t⸩ * ⸨γ, 1⸩ * ⸨αβ, -t⸩ * ⸨γ, -1⸩ := by
   intro t
-  have := expr_αβγ_as_αβ_γ_αβ_γ t 1
+  have := expr_αβγ_as_αβ_γ_αβ_γ Rchar t 1
   rwa [mul_one] at this
 
 /-! ### Commutators of αβγ with other roots -/
 
 /- α and αβγ commute. -/
+include Rchar in
 theorem comm_of_α_αβγ : trivial_commutator_of_root_pair (weakA3Ungraded R).pres_mk (α, αβγ) := by
   intro t u
   apply triv_comm_iff_commutes.mpr
   grw [expr_αβγ_as_αβ_γ_αβ_γ_one_mul,
       expr_α_αβ_as_αβ_α, expr_α_γ_as_γ_α,
       expr_α_αβ_as_αβ_α, expr_α_γ_as_γ_α]
+  assumption
 
 /- β and αβγ commute. -/
 -- the only commutator proof where we have to do something 'interesting'
+include Rchar in
 theorem comm_of_β_αβγ : trivial_commutator_of_root_pair (weakA3Ungraded R).pres_mk (β, αβγ) := by
   intro t u
   apply triv_comm_iff_commutes.mpr
@@ -256,38 +274,48 @@ theorem comm_of_β_αβγ : trivial_commutator_of_root_pair (weakA3Ungraded R).p
       expr_β_αβ_as_αβ_β, expr_β_γ_as_γ_βγ_β,
       expr_β_αβ_as_αβ_β, expr_β_γ_as_βγ_γ_β,
       ← expr_αβ_βγ_as_βγ_αβ]
+  repeat assumption
 
 /- γ and αβγ commute. -/
+include Rchar in
 theorem comm_of_γ_αβγ : trivial_commutator_of_root_pair (weakA3Ungraded R).pres_mk (γ, αβγ) := by
   intro t u
   apply triv_comm_iff_commutes.mpr
   grw [expr_αβγ_as_α_βγ_α_βγ_one_mul,
     ← expr_α_γ_as_γ_α, expr_γ_βγ_as_βγ_γ,
     ← expr_α_γ_as_γ_α, expr_γ_βγ_as_βγ_γ]
+  repeat assumption
 
 /- αβ and αβγ commute. -/
+include Rchar in
 theorem comm_of_αβ_αβγ : trivial_commutator_of_root_pair (weakA3Ungraded R).pres_mk (αβ, αβγ) := by
   intro t u
   apply triv_comm_iff_commutes.mpr
   grw [expr_αβγ_as_α_βγ_α_βγ_one_mul,
     ← expr_α_αβ_as_αβ_α, expr_αβ_βγ_as_βγ_αβ,
     ← expr_α_αβ_as_αβ_α, expr_αβ_βγ_as_βγ_αβ]
+  repeat assumption
 
 /- βγ and αβγ commute. -/
+include Rchar in
 theorem comm_of_βγ_αβγ : trivial_commutator_of_root_pair (weakA3Ungraded R).pres_mk (βγ, αβγ) := by
   intro t u
   apply triv_comm_iff_commutes.mpr
   grw [expr_αβγ_as_αβ_γ_αβ_γ_one_mul,
     ← expr_αβ_βγ_as_βγ_αβ, h, ← expr_γ_βγ_as_βγ_γ,
     ← expr_αβ_βγ_as_βγ_αβ, h, ← expr_γ_βγ_as_βγ_γ]
+  repeat assumption
 
+include Rchar
 declare_A3_ungraded_triv_expr_thm R α αβγ
 declare_A3_ungraded_triv_expr_thm R β αβγ
 declare_A3_ungraded_triv_expr_thm R γ αβγ
 declare_A3_ungraded_triv_expr_thm R αβ αβγ
 declare_A3_ungraded_triv_expr_thm R βγ αβγ
+omit Rchar
 
 /- Linearity for αβγ. -/
+include Rchar in
 @[group_reassoc (attr := simp, chev_simps)]
 theorem lin_of_αβγ : lin_of_root((weakA3Ungraded R).pres_mk, αβγ) := by
   intro t u
@@ -298,7 +326,9 @@ theorem lin_of_αβγ : lin_of_root((weakA3Ungraded R).pres_mk, αβγ) := by
     expr_αβγ_as_α_βγ_α_βγ_mul_one,
     ← neg_add, add_comm u t,
     ← expr_αβγ_as_α_βγ_α_βγ]
+  repeat assumption
 
+include Rchar in
 theorem full_rels_satisfied_in_weak_group :
   ∀ r ∈ (fullA3 R).all_rels, (weakA3Ungraded R).pres_mk r = 1 := by
   simp only [fullA3, weakA3Ungraded]
@@ -316,12 +346,12 @@ theorem full_rels_satisfied_in_weak_group :
       rcases h_r with ⟨ t, u, goal ⟩
       rcases h_new with h_αβ_βγ|h_α_αβγ|h_β_αβγ|h_γ_αβγ|h_αβ_αβγ|h_βγ_αβγ
       all_goals subst p r
-      · exact comm_of_αβ_βγ t u
-      · exact comm_of_α_αβγ t u
-      · exact comm_of_β_αβγ t u
-      · exact comm_of_γ_αβγ t u
-      · exact comm_of_αβ_αβγ t u
-      · exact comm_of_βγ_αβγ t u
+      · exact comm_of_αβ_βγ Rchar t u
+      · exact comm_of_α_αβγ Rchar t u
+      · exact comm_of_β_αβγ Rchar t u
+      · exact comm_of_γ_αβγ Rchar t u
+      · exact comm_of_αβ_αβγ Rchar t u
+      · exact comm_of_βγ_αβγ Rchar t u
   · rcases h with h_old|h_new
     · tauto
     · right
@@ -334,8 +364,8 @@ theorem full_rels_satisfied_in_weak_group :
         subst p r
         simp only [map_mul, map_inv, mul_inv_eq_one]
       )
-      · exact comm_of_α_βγ t u
-      · exact comm_of_αβ_γ t u
+      · exact comm_of_α_βγ Rchar t u
+      · exact comm_of_αβ_γ Rchar t u
   · tauto
   · rcases h with h_old|h_new
     · tauto
@@ -346,7 +376,7 @@ theorem full_rels_satisfied_in_weak_group :
       rcases h_r with ⟨ t, u, goal ⟩
       subst r
       simp only [map_mul, map_inv, mul_inv_eq_one]
-      exact lin_of_αβγ t u
+      exact lin_of_αβγ Rchar t u
   · simp only [def_rels, Set.mem_iUnion, Set.mem_setOf_eq] at h
     rcases h with ⟨ζ, ht, h⟩
     subst p
