@@ -139,13 +139,12 @@ private theorem lift_of_refl_eq_comp (w : GradedPartialChevalleyGroup Φ R) : Fr
 
 private theorem eq_one_of_defineThenReflect_lift_allRelations_of_reflectValidProp
   {w : GradedPartialChevalleyGroup Φ R} (h' : reflectValidProp w) :
-    (FreeGroup.lift (defineThenReflect w)) '' w.allRelations ⊆ Subgroup.normalClosure w.allRelations := by
+    ∀ r ∈ w.allRelations, w.project (FreeGroup.lift (defineThenReflect w) r) = 1 := by
   nth_rewrite 1 [allRelations]
   intro r h_r
   simp only [sUnion_insert, sUnion_singleton, mem_image, mem_union, mem_sUnion] at h_r
-  rcases h_r with ⟨ r, ⟨ h_r, rfl ⟩ ⟩
   rcases h_r with (h_triv | h_sing | h_doub | h_mix | h_lin | h_lift | h_def)
-  · apply Subgroup.subset_normalClosure
+  · apply eq_one_of_mem_rels
     simp only [trivialSpanRelations, mem_iUnion, exists_prop, Prod.exists] at h_triv
     rcases h_triv with ⟨ ζ, η, h_in_pairs, h_t_in_rels ⟩
     suffices (FreeGroup.lift (defineThenReflect w)) r ∈ w.trivialSpanRelations by
@@ -156,7 +155,7 @@ private theorem eq_one_of_defineThenReflect_lift_allRelations_of_reflectValidPro
     use ζ, η, h_in_pairs
     exact defineThenReflect_eq_reflect_of_trivialSpanRelationsOfRootPair_of_mem_presentRoots
       ζ η (w.sys.h_trivial_valid (ζ, η) h_in_pairs).1 (w.sys.h_trivial_valid (ζ, η) h_in_pairs).2 r h_t_in_rels
-  · apply Subgroup.subset_normalClosure
+  · apply eq_one_of_mem_rels
     simp only [singleSpanRelations, mem_iUnion, exists_prop, Sigma.exists, PProd.exists] at h_sing
     rcases h_sing with ⟨ ζ, η, θ, C, h_height, h_in_pairs, h_t_in_rels ⟩
     suffices (FreeGroup.lift (defineThenReflect w)) r ∈ w.singleSpanRelations by
@@ -169,7 +168,7 @@ private theorem eq_one_of_defineThenReflect_lift_allRelations_of_reflectValidPro
       (w.sys.h_single_valid ⟨ ζ, η, θ, C, h_height ⟩ h_in_pairs).1 (w.sys.h_single_valid ⟨ ζ, η, θ, C, h_height ⟩ h_in_pairs).2.1
       (w.sys.h_single_valid ⟨ ζ, η, θ, C, h_height ⟩ h_in_pairs).2.2
       r h_t_in_rels
-  · apply Subgroup.subset_normalClosure
+  · apply eq_one_of_mem_rels
     simp only [doubleSpanRelations, mem_iUnion, exists_prop, Sigma.exists, PProd.exists] at h_doub
     rcases h_doub with ⟨ ζ, η, θ₁, θ₂, ⟨ C₁, C₂, h_height₁, h_height₂ ⟩ , h_in_pairs, h_t_in_rels ⟩
     suffices (FreeGroup.lift (defineThenReflect w)) r ∈ w.doubleSpanRelations by
@@ -183,7 +182,7 @@ private theorem eq_one_of_defineThenReflect_lift_allRelations_of_reflectValidPro
       (w.sys.h_double_valid ⟨ ζ, η, θ₁, θ₂, C₁, C₂, h_height₁, h_height₂ ⟩ h_in_pairs).2.2.1
       (w.sys.h_double_valid ⟨ ζ, η, θ₁, θ₂, C₁, C₂, h_height₁, h_height₂ ⟩ h_in_pairs).2.2.2
       r h_t_in_rels
-  · apply Subgroup.subset_normalClosure
+  · apply eq_one_of_mem_rels
     simp only [mixedDegreeCommutatorRelations, mem_iUnion, exists_prop, Prod.exists] at h_mix
     rcases h_mix with ⟨ ζ, h_in_present, h_t_in_rels ⟩
     suffices (FreeGroup.lift (defineThenReflect w)) r ∈ w.mixedDegreeCommutatorRelations by
@@ -192,7 +191,7 @@ private theorem eq_one_of_defineThenReflect_lift_allRelations_of_reflectValidPro
     simp only [mixedDegreeCommutatorRelations, mem_iUnion, exists_prop, Prod.exists]
     use ζ, h_in_present
     exact defineThenReflect_eq_reflect_of_mixedDegRelationsOfRoot_of_mem_presentRoots ζ h_in_present r h_t_in_rels
-  · apply Subgroup.subset_normalClosure
+  · apply eq_one_of_mem_rels
     simp only [linearityRelations, mem_iUnion, exists_prop, Prod.exists] at h_lin
     rcases h_lin with ⟨ ζ, h_in_present, h_t_in_rels ⟩
     suffices (FreeGroup.lift (defineThenReflect w)) r ∈ w.linearityRelations by
@@ -201,8 +200,7 @@ private theorem eq_one_of_defineThenReflect_lift_allRelations_of_reflectValidPro
     simp only [linearityRelations, mem_iUnion, exists_prop, Prod.exists]
     use ζ, h_in_present
     exact defineThenReflect_eq_reflect_of_linearityRelationsOfRoot_of_mem_presentRoots ζ h_in_present r h_t_in_rels
-  · apply eq_one_iff_mem_closure.mp
-    rcases h_lift with ⟨ T, ⟨ h_T, h_t_T ⟩ ⟩
+  · rcases h_lift with ⟨ T, ⟨ h_T, h_t_T ⟩ ⟩
     exact h' T h_T r h_t_T
   · simp only [definitionRelations, mem_setOf_eq] at h_def
     rcases h_def with ⟨ S, h_S, h_r ⟩
@@ -213,7 +211,8 @@ private theorem eq_one_of_defineThenReflect_lift_allRelations_of_reflectValidPro
     rcases h_r with ⟨ i, hi, t, h ⟩
     subst r
     simp only [lift_of_refl_eq_comp, map_mul, map_inv, MonoidHom.coe_comp, Function.comp_apply,
-      FreeGroup.lift.of, w.h_define_is_projection, inv_mul_cancel, SetLike.mem_coe, one_mem]
+      FreeGroup.lift.of, w.h_define_is_projection, inv_mul_cancel]
+    rfl
 
 def defineThenReflectOfPresentedGroup {w : GradedPartialChevalleyGroup Φ R} (h : reflectValidProp w) : group w →* group w :=
   toPresentedGroup (eq_one_of_defineThenReflect_lift_allRelations_of_reflectValidProp h)

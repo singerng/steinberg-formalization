@@ -21,31 +21,28 @@ theorem eq_one_of_mem_rels {α : Type u} {rels : Set (FreeGroup α)} {x : FreeGr
   exact Subgroup.subset_normalClosure h
 
 private theorem helper {α β : Type u} {S : Set (FreeGroup α)} {T : Set (FreeGroup β)} {f : α → FreeGroup β}
-  (h : FreeGroup.lift f '' S ⊆ Subgroup.normalClosure T)
-  : ∀ r ∈ S, (FreeGroup.lift ((PresentedGroup.mk T) ∘ f)) r = 1 := by
+  (h : ∀ r ∈ S, (PresentedGroup.mk T) (FreeGroup.lift f r) = 1) :
+    ∀ r ∈ S, (FreeGroup.lift ((PresentedGroup.mk T) ∘ f) r) = 1 := by
   intro r h_r
-  rw [lift.hom]
-  simp only [MonoidHom.coe_comp, Function.comp_apply]
-  apply eq_one_iff_mem_closure.mpr
-  rw [Set.subset_def] at h
-  simp only [Set.mem_image, SetLike.mem_coe, forall_exists_index, and_imp,
-    forall_apply_eq_imp_iff₂] at h
+  rw [lift.hom, MonoidHom.coe_comp, Function.comp_apply]
   exact h r h_r
 
+/-- Build a homomorphism between `PresentedGroup`s by specifying the image of
+every generator in the source as a product of generators in the target. Requires
+a well-definedness hypothesis, namely, that the image (suitably defined)
+of every assumed relation in the source vanishes in the target. -/
 def toPresentedGroup {α β : Type u} {S : Set (FreeGroup α)} {T : Set (FreeGroup β)} {f : α → FreeGroup β}
-  (h : FreeGroup.lift f '' S ⊆ Subgroup.normalClosure T) : PresentedGroup S →* PresentedGroup T :=
-  @PresentedGroup.toGroup α (PresentedGroup T) _ (PresentedGroup.mk T ∘ f) S (helper h)
+  (h : ∀ r ∈ S, (PresentedGroup.mk T) (FreeGroup.lift f r) = 1) : PresentedGroup S →* PresentedGroup T :=
+  PresentedGroup.toGroup (helper h)
 
---TODO: replace hypothesis here and in next theorem with the more standard one:
-    -- ∀ r ∈ S, PresentedGroup.mk T (FreeGroup.lift f r) = 1
 theorem toPresentedGroup.of {α β : Type u} {S : Set (FreeGroup α)} {T : Set (FreeGroup β)} {f : α → FreeGroup β}
-  (h : FreeGroup.lift f '' S ⊆ Subgroup.normalClosure T) (x : α) :
+  (h : ∀ r ∈ S, (PresentedGroup.mk T) (FreeGroup.lift f r) = 1) (x : α) :
   (toPresentedGroup h) (PresentedGroup.of x) = PresentedGroup.mk T (f x) := by
   rw [toPresentedGroup, PresentedGroup.toGroup.of]
   simp only [Function.comp_apply]
 
 private theorem toPresentedGroup.mk' {α β : Type u} {S : Set (FreeGroup α)} {T : Set (FreeGroup β)} {f : α → FreeGroup β}
-  (h : FreeGroup.lift f '' S ⊆ Subgroup.normalClosure T) :
+  (h : ∀ r ∈ S, (PresentedGroup.mk T) (FreeGroup.lift f r) = 1) :
   (toPresentedGroup h).comp (PresentedGroup.mk S) = (PresentedGroup.mk T).comp (FreeGroup.lift f) := by
   ext a
   simp only [MonoidHom.coe_comp, Function.comp_apply, FreeGroup.lift.of]
@@ -53,7 +50,7 @@ private theorem toPresentedGroup.mk' {α β : Type u} {S : Set (FreeGroup α)} {
   exact toPresentedGroup.of h a
 
 theorem toPresentedGroup.mk {α β : Type u} {S : Set (FreeGroup α)} {T : Set (FreeGroup β)} {f : α → FreeGroup β}
-  (h : FreeGroup.lift f '' S ⊆ Subgroup.normalClosure T) (a : FreeGroup α) :
+  (h : ∀ r ∈ S, (PresentedGroup.mk T) (FreeGroup.lift f r) = 1) (a : FreeGroup α) :
   (toPresentedGroup h) (PresentedGroup.mk S a) = PresentedGroup.mk T (FreeGroup.lift f a) := by
   have aux₁ : (toPresentedGroup h).comp (PresentedGroup.mk S) a = (toPresentedGroup h) (PresentedGroup.mk S a) := by
     simp only [MonoidHom.coe_comp, Function.comp_apply]
