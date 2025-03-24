@@ -133,9 +133,9 @@ abbrev fullTrivialSpanPairs : Set (A3PosRoot × A3PosRoot) :=
 abbrev fullSingleSpanPairs : Set (SingleSpanRootPair A3PosRoot) :=
   (weakSingleSpanPairs) ∪ {⟨ α, βγ, αβγ, 1, (by ht)⟩, ⟨αβ, γ, αβγ, 1, (by ht)⟩}
 
-theorem all_root_pairs_have_relation : every_pair_in_all_pairs A3PosRoot fullTrivialSpanPairs fullSingleSpanPairs ∅ := by
+theorem all_root_pairs_have_relation : everyRootPairInRootPairs A3PosRoot fullTrivialSpanPairs fullSingleSpanPairs ∅ := by
   intro ζ η h_ne
-  unfold to_pairs fullTrivialSpanPairs weakTrivialSpanPairs fullSingleSpanPairs
+  unfold toRootPairs fullTrivialSpanPairs weakTrivialSpanPairs fullSingleSpanPairs
     weakSingleSpanPairs
   simp only [Set.image_insert_eq, Set.image_singleton, Set.union_insert, Set.union_singleton, Prod.swap,
     Set.mem_insert_iff, Set.mem_singleton_iff, Set.image_empty, Set.union_empty]

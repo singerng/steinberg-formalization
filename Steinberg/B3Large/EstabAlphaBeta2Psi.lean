@@ -611,7 +611,7 @@ theorem defineThenReflect_of_αβ2ψ (g : GradedChevalleyGenerator B3LargePosRoo
   rw [weak_define]
   simp only [map_commutatorElement, map_mul, map_inv, FreeGroup.map.of, reflect, PositiveRootSystem.height]
   rw [←weakB3LargeGraded, ←expr_αβ2ψ_as_comm_of_α_β2ψ Fchar (by ht) (by ht), mul_one,
-    eq_of_h_eq αβ2ψ (αβ2ψ.height - i)]
+    eq_of_deg_eq αβ2ψ (αβ2ψ.height - i)]
   simp only [height]
   nth_rewrite 3 [←(correct_of_split_4_into_1_3 i hi).2.2]
   have := (correct_of_split_4_into_1_3 i hi).1

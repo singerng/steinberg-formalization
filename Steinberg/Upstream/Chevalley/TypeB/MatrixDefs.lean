@@ -41,13 +41,11 @@ private theorem inv_val_of_MShort {a : Bool} {i : I} {t : R} :
   nth_rewrite 2 [←neg_neg t]
   exact val_inv_of_MShort
 
-def MShort (a : Bool) (i : I) (t : R) : Matrix.GeneralLinearGroup (SignedWithZero I) R :=
-  {
-    val := raw_MShort a i t,
-    inv := raw_MShort a i (-t),
-    val_inv := val_inv_of_MShort,
-    inv_val := inv_val_of_MShort
-  }
+def MShort (a : Bool) (i : I) (t : R) : Matrix.GeneralLinearGroup (SignedWithZero I) R where
+  val := raw_MShort a i t
+  inv := raw_MShort a i (-t)
+  val_inv := val_inv_of_MShort
+  inv_val := inv_val_of_MShort
 
 abbrev raw_MLong (a b : Bool) (i j : I) (t : R) (hij : i ≠ j) : Matrix (SignedWithZero I) (SignedWithZero I) R :=
   1 + (a * t) • (E (a.inj i) ((!b).inj j))
@@ -71,13 +69,11 @@ private theorem inv_val_of_MLong {a b : Bool} {i j : I} {t : R} {hij : i ≠ j} 
   nth_rewrite 2 [←neg_neg t]
   exact val_inv_of_MLong
 
-def MLong (a b : Bool) (i j : I) (t : R) (hij : i ≠ j) : Matrix.GeneralLinearGroup (SignedWithZero I) R :=
-  {
-    val := raw_MLong a b i j t hij,
-    inv := raw_MLong a b i j (-t) hij,
-    val_inv := val_inv_of_MLong,
-    inv_val := inv_val_of_MLong
-  }
+def MLong (a b : Bool) (i j : I) (t : R) (hij : i ≠ j) : Matrix.GeneralLinearGroup (SignedWithZero I) R where
+  val := raw_MLong a b i j t hij
+  inv := raw_MLong a b i j (-t) hij
+  val_inv := val_inv_of_MLong
+  inv_val := inv_val_of_MLong
 
 theorem inv_of_MLong (a b : Bool) (i j : I) (t : R) (hij : i ≠ j) :
   (MLong a b i j t hij)⁻¹ = MLong a b i j (-t) hij := by

@@ -14,32 +14,31 @@ import Steinberg.Macro.Syntax
 
 /-!
 
-  File dox go here.
+  Implementation of graded unipotent Chevalley groups.
 
 -/
 
 namespace Steinberg
 
-variable {G : Type TG} [Group G]
-         {Φ : Type TΦ} [PositiveRootSystem Φ]
+variable {Φ : Type TΦ} [PositiveRootSystem Φ]
          {R : Type TR} [Ring R]
 
 open PositiveRootSystem PartialChevalleySystem
 
 namespace GradedPartialChevalley
 
-/-! ## Generators of graded Chevalley group -/
+/-! ## Generators of graded unipotent Chevalley group -/
 
 /--
-  Generators of the Chevalley subgroup corresponding to a positive root system
+  Generators of the graded unipotent Chevalley group corresponding to a positive root system
   over a ring with monomial entries.
 -/
 structure GradedChevalleyGenerator (Φ : Type TΦ) [PositiveRootSystem Φ] (R : Type TR) [Ring R] where
   mk ::
-  ζ : Φ
-  i : ℕ
+  ζ : Φ -- root
+  i : ℕ -- degree
   hi : i ≤ height ζ
-  t : R
+  t : R -- coefficient
 
 namespace GradedChevalleyGenerator
 
@@ -47,9 +46,9 @@ instance instCoeProd : Coe ((ζ : Φ) × (i : ℕ) × (i ≤ height ζ) ×' R) (
   ⟨fun ⟨ζ, i, hi, t⟩ => mk ζ i hi t⟩
 
 /--
-  Shorthand for building free group elements from a root, degree, and ring element.
+  Shorthand `{ζ, i, t}` for building free group elements from a root `ζ`, degree `i`, and coefficient `t`.
 
-  Note: To re-use this notation for specific `Chevalley`-like groups,
+  Note: To re-use this notation for specific groups,
   re-define it for that group and set the priority higher.
   Then implement delaboration to use the delab defined below.
 -/
@@ -110,104 +109,73 @@ def delab_of : Delab := do
 
 end DelabBraces /- section -/
 
-/-- Injected group elements can commute on their root heights `i` and `j`.  -/
-theorem h_add_comm (ζ : Φ) (i j : ℕ) (h : i + j ≤ height ζ) (t : R)
+/-! ### Equality theorems for generators -/
+
+/-- Addition of degrees is commutative inside generators.  -/
+theorem deg_add_comm (ζ : Φ) (i j : ℕ) (h : i + j ≤ height ζ) (t : R)
     : {ζ, i + j, t} = {ζ, j + i, t} := by
   congr 2
   exact add_comm i j
 
-theorem h_add_assoc (ζ : Φ) (i j k : ℕ) (h : i + j + k ≤ height ζ) (t : R)
+/- Addition of degrees is associative inside generators. -/
+theorem deg_add_assoc (ζ : Φ) (i j k : ℕ) (h : i + j + k ≤ height ζ) (t : R)
     : {ζ, i + j + k, t} = {ζ, i + (j + k), t} := by
   congr 2
   exact add_assoc i j k
 
-theorem eq_of_h_eq (ζ : Φ) {i : ℕ} (j : ℕ) (hij : i = j)
+/- For a fixed root, generators are equal if they have the same degree and coefficient. -/
+theorem eq_of_deg_coef_eq (ζ : Φ) {i : ℕ} (j : ℕ) (hij : i = j) {t : R} (u : R) (htu : t = u)
+    : ∀ {_ : i ≤ height ζ}, {ζ, i, t} = {ζ, j, u} := by
+  intros; congr 2
+
+/- For a fixed root and coefficient, generators equal if they have the same degree. -/
+theorem eq_of_deg_eq (ζ : Φ) {i : ℕ} (j : ℕ) (hij : i = j)
     : ∀ {_ : i ≤ height ζ} {t : R}, {ζ, i, t} = {ζ, j, t} := by
   intros; congr 2
 
-theorem eq_of_R_eq (ζ : Φ) {t : R} (u : R) (h : t = u)
+/- For a fixed root and degree, generators equal if they have the same coefficient. -/
+theorem eq_of_coef_eq (ζ : Φ) {t : R} (u : R) (h : t = u)
     : ∀ {i : ℕ} {_ : i ≤ height ζ}, {ζ, i, t} = {ζ, i, u} := by
-  intros; congr 2
-
-theorem eq_of_hR_eq (ζ : Φ) {i : ℕ} (j : ℕ) (hij : i = j) {t : R} (u : R) (htu : t = u)
-    : ∀ {_ : i ≤ height ζ}, {ζ, i, t} = {ζ, j, u} := by
   intros; congr 2
 
 end GradedChevalleyGenerator
 
-/-! ### Statements about generators which we assume and/or prove -/
-
 open GradedChevalleyGenerator
 
-section Relations
+/-! ## Propositions expressing Steinberg relations
 
-/-! #### Commutator for generators from two roots which span no additional roots -/
+These functions each take a homomorphism `(f : FreeGroup (GradedChevalleyGenerator Φ R) →* G)`,
+which embeds graded generators in a group `G`, as well as various data specifying one or more roots and coefficients,
+and produce propositions asserting certain that certain equalities, namely, the Steinberg relations,
+hold inside the group `G`. In our application, `f` will be `w.project` for `w` a `GradedPartialChevalleyGroup`,
+defined below.
+-/
 
-/- Theorem stating that commutator of generators for two roots vanishes. -/
+section Props
+
+variable {G : Type TG} [Group G]
+
+/- The Steinberg commutator relation for a pair of roots spanning no additional roots. -/
 def trivialSpanPropOfRootPair (f : FreeGroup (GradedChevalleyGenerator Φ R) →* G) (p : Φ × Φ) : Prop :=
   let (ζ, η) := p;
   ∀ ⦃i j : ℕ⦄ (hi : i ≤ height ζ) (hj : j ≤ height η) (t u : R),
     ⁅ f {ζ, i, t}, f {η, j, u} ⁆ = 1
 
-/-
-The set of elements which must vanish according to the theorem that the commutator of generators
-for two roots vanishes. (Used to construct a `PresentedGroup`.)
--/
-def trivialSpanRelationsOfRootPair (R : Type TR) [Ring R] (p : Φ × Φ)
-    : Set (FreeGroup (GradedChevalleyGenerator Φ R)) :=
-  let (ζ, η) := p;
-  { ⁅ {ζ, i, t}, {η, j, u} ⁆
-    | (i : ℕ) (j : ℕ) (hi : i ≤ height ζ) (hj : j ≤ height η) (t : R) (u : R) }
-
-/-! #### Commutator for two generators from two roots which span one additional root -/
-
+/- The Steinberg commutator relation for a pair of roots spanning one additional root. -/
 def singleCommutatorPropOfRootPair (f : FreeGroup (GradedChevalleyGenerator Φ R) →* G) (p : SingleSpanRootPair Φ) : Prop :=
   let ⟨ ζ, η, θ, C, h_height ⟩ := p;
   ∀ ⦃i j : ℕ⦄ (hi : i ≤ height ζ) (hj : j ≤ height η) (t u : R),
     ⁅ f {ζ, i, t}, f {η, j, u} ⁆ = f {θ, i + j, ↑C * t * u}
 
-def singleSpanRelationsOfRootPair (R : Type TR) [Ring R] (p : SingleSpanRootPair Φ) : Set (FreeGroup (GradedChevalleyGenerator Φ R)) :=
-  let ⟨ ζ, η, θ, C, h_height ⟩ := p;
-  { ⁅ {ζ, i, t}, {η, j, u} ⁆ * {θ, i + j, C * t * u}⁻¹
-    | (i : ℕ) (j : ℕ) (hi : i ≤ height ζ) (hj : j ≤ height η) (t : R) (u : R) }
-
-/-! #### Commutator for two generators from two roots which span one additional root -/
-
+/- The Steinberg commutator relation for a pair of roots spanning two additional roots. -/
 def doubleSpanPropOfRootPair (f : FreeGroup (GradedChevalleyGenerator Φ R) →* G) (p : DoubleSpanRootPair Φ) : Prop :=
   let ⟨ ζ, η, θ₁, θ₂, C₁, C₂, h_height₁, h_height₂ ⟩ := p;
   ∀ ⦃i j : ℕ⦄ (hi : i ≤ height ζ) (hj : j ≤ height η) (t u : R),
     ⁅ f {ζ, i, t}, f {η, j, u} ⁆ = f {θ₁, i + j, ↑C₁ * t * u} * f {θ₂, i + 2 * j, ↑C₂ * t * u * u}
 
-def doubleSpanRelationsOfRootPair (R : Type TR) [Ring R] (p : DoubleSpanRootPair Φ) : Set (FreeGroup (GradedChevalleyGenerator Φ R)) :=
-  let ⟨ ζ, η, θ₁, θ₂, C₁, C₂, h_height₁, h_height₂ ⟩ := p;
-  { ⁅ {ζ, i, t}, {η, j, u} ⁆ *
-    ({θ₁, i + j, C₁ * t * u} * {θ₂, i + 2 * j, C₂ * t * u * u})⁻¹
-    | (i : ℕ) (j : ℕ) (hi : i ≤ height ζ) (hj : j ≤ height η) (t : R) (u : R) }
-
-/-! #### Commutator relation for two generators from the same root -/
-
-/-
-Commutator for generators corresponding to the same root, of two degrees `i` and `j`. This is implied in the case `i=j`
-by `lin_of_root` and the commutativity of addition.
--/
+/- Generators for the same root commute. -/
 def mixedDegreePropOfRoot (f : FreeGroup (GradedChevalleyGenerator Φ R) →* G) (ζ : Φ) : Prop :=
   @trivialSpanPropOfRootPair _ _ _ _ _ _ f (ζ, ζ)
-
-def mixedDegreeRelationsOfRoot (R : Type TR) [Ring R] (ζ : Φ) : Set (FreeGroup (GradedChevalleyGenerator Φ R)) :=
-  trivialSpanRelationsOfRootPair R (ζ, ζ)
-
-/-! #### Linearity relation for products of generators from a single root -/
-
-/- Linearity of coefficients for products of generators of a single root (with the same degree). -/
-def linearityRelationsOfRoot (R : Type TR) [Ring R] (ζ : Φ) : Set (FreeGroup (GradedChevalleyGenerator Φ R)) :=
-  { {ζ, i, t} * {ζ, i, u} * {ζ, i, t + u}⁻¹
-    | (i : ℕ) (hi : i ≤ height ζ) (t : R) (u : R) }
-
-end Relations
-
-/-! ### Additional properties implied by linearity and implications therein -/
-
-section ofRoot
 
 set_option quotPrecheck false
 
@@ -263,27 +231,67 @@ theorem inv_of_lin_of_root {f : FreeGroup (GradedChevalleyGenerator Φ R) →* G
   apply @mul_left_cancel _ _ _ (f {ζ, i, t})
   rw [mul_inv_cancel, h_lin, add_neg_cancel, id_of_lin_of_root h_lin]
 
-end ofRoot
+end Props
+
+/-! ### Sets of Steinberg relations -/
+
+/-
+The set of elements which must vanish according to the theorem that the commutator of generators
+for two roots vanishes. (Used to construct a `PresentedGroup`.)
+
+Linked to `trivialSpanPropOfRootPair`.
+-/
+def trivialSpanRelationsOfRootPair (R : Type TR) [Ring R] (p : Φ × Φ)
+    : Set (FreeGroup (GradedChevalleyGenerator Φ R)) :=
+  let (ζ, η) := p;
+  { ⁅ {ζ, i, t}, {η, j, u} ⁆
+    | (i : ℕ) (j : ℕ) (hi : i ≤ height ζ) (hj : j ≤ height η) (t : R) (u : R) }
+
+def singleSpanRelationsOfRootPair (R : Type TR) [Ring R] (p : SingleSpanRootPair Φ) : Set (FreeGroup (GradedChevalleyGenerator Φ R)) :=
+  let ⟨ ζ, η, θ, C, h_height ⟩ := p;
+  { ⁅ {ζ, i, t}, {η, j, u} ⁆ * {θ, i + j, C * t * u}⁻¹
+    | (i : ℕ) (j : ℕ) (hi : i ≤ height ζ) (hj : j ≤ height η) (t : R) (u : R) }
+
+def doubleSpanRelationsOfRootPair (R : Type TR) [Ring R] (p : DoubleSpanRootPair Φ) : Set (FreeGroup (GradedChevalleyGenerator Φ R)) :=
+  let ⟨ ζ, η, θ₁, θ₂, C₁, C₂, h_height₁, h_height₂ ⟩ := p;
+  { ⁅ {ζ, i, t}, {η, j, u} ⁆ *
+    ({θ₁, i + j, C₁ * t * u} * {θ₂, i + 2 * j, C₂ * t * u * u})⁻¹
+    | (i : ℕ) (j : ℕ) (hi : i ≤ height ζ) (hj : j ≤ height η) (t : R) (u : R) }
+
+def mixedDegreeRelationsOfRoot (R : Type TR) [Ring R] (ζ : Φ) : Set (FreeGroup (GradedChevalleyGenerator Φ R)) :=
+  trivialSpanRelationsOfRootPair R (ζ, ζ)
+
+def linearityRelationsOfRoot (R : Type TR) [Ring R] (ζ : Φ) : Set (FreeGroup (GradedChevalleyGenerator Φ R)) :=
+  { {ζ, i, t} * {ζ, i, u} * {ζ, i, t + u}⁻¹
+    | (i : ℕ) (hi : i ≤ height ζ) (t : R) (u : R) }
 
 /-! ### Graded partial Chevalley groups -/
 
 structure GradedPartialChevalleyGroup (Φ : Type TΦ) [PositiveRootSystem Φ] (R : Type TR) [Ring R] where
   mk ::
   sys : PartialChevalleySystem Φ
-  lifted_rels_sets : Set (Set (FreeGroup (GradedChevalleyGenerator Φ R)))
+  liftedRelationsSets : Set (Set (FreeGroup (GradedChevalleyGenerator Φ R)))
   define : GradedChevalleyGenerator Φ R → FreeGroup (GradedChevalleyGenerator Φ R)
+
   h_define_of_present : ∀ {g : GradedChevalleyGenerator Φ R}, g.ζ ∈ sys.presentRoots → define g = FreeGroup.of g
   h_define_is_projection : ∀ {g : GradedChevalleyGenerator Φ R}, (FreeGroup.lift define) (define g) = define g
+
+  -- TODO: Ensure that everything in the image of `define` is actually present
 
 namespace GradedPartialChevalleyGroup
 
 open GradedPartialChevalleyGroup
 
+/-- Construct a `GradedPartialChevalleyGroup` in the "full" case, where `liftedRelationsSets` is empty and
+`define` does nothing. -/
 def fullMk (Φ : Type TΦ) [PositiveRootSystem Φ] (R : Type TR) [Ring R] (sys : PartialChevalleySystem Φ)
   : GradedPartialChevalleyGroup Φ R :=
   GradedPartialChevalleyGroup.mk sys ∅ FreeGroup.of (by tauto) (by tauto)
 
 /-! ### Sets of relations -/
+
+-- TODO: Should we make a `GradedRelationType` inductive type to make unpacking easier?
+
 def trivialSpanRelations (w : GradedPartialChevalleyGroup Φ R) : Set (FreeGroup (GradedChevalleyGenerator Φ R)) :=
   ⋃ (p ∈ w.sys.trivialSpanRootPairs), trivialSpanRelationsOfRootPair R p
 
@@ -299,24 +307,29 @@ def mixedDegreeCommutatorRelations (w : GradedPartialChevalleyGroup Φ R) : Set 
 def linearityRelations (w : GradedPartialChevalleyGroup Φ R) : Set (FreeGroup (GradedChevalleyGenerator Φ R)) :=
   ⋃ (ζ ∈ w.sys.presentRoots), linearityRelationsOfRoot R ζ
 
+-- TODO : should there be a `definitionRelationOfRoot`?
 def definitionRelations (w : GradedPartialChevalleyGroup Φ R) : Set (FreeGroup (GradedChevalleyGenerator Φ R)) :=
   ⋃ (ζ : Φ), {
       {ζ, i, t}⁻¹ * w.define (GradedChevalleyGenerator.mk ζ i hi t) | (i : ℕ) (hi : i ≤ height ζ) (t : R)
   }
 
+/-- The set of relations used to define the `PresentedGroup`. -/
 def allRelations (w : GradedPartialChevalleyGroup Φ R) :=
   ⋃₀ {trivialSpanRelations w, singleSpanRelations w, doubleSpanRelations w, mixedDegreeCommutatorRelations w,
-      linearityRelations w, ⋃₀ lifted_rels_sets w, definitionRelations w}
+      linearityRelations w, ⋃₀ liftedRelationsSets w, definitionRelations w}
 
-/-! ### The group and the embedding -/
+/-! ### The group and the projection -/
 
+/-- The presented group on `GradedChevalleyGenerator`s given by modding out all the relations in `allRelations`. -/
 abbrev group (w : GradedPartialChevalleyGroup Φ R) :=
   PresentedGroup (GradedPartialChevalleyGroup.allRelations w)
 
+/-- The projection from the `FreeGroup` on `GradedChevalleyGenerator`s to the `PresentedGroup`
+given by our subset of relations.-/
 def project (w : GradedPartialChevalleyGroup Φ R) : FreeGroup (GradedChevalleyGenerator Φ R) →* group w :=
   PresentedGroup.mk (GradedPartialChevalleyGroup.allRelations w)
 
-/-- Mapping between two GradedPartialChevalleyGroup graded groups -/
+/-- Mapping between two `GradedPartialChevalleyGroup` graded groups -/
 theorem graded_injection (w₁ w₂ : GradedPartialChevalleyGroup Φ R)
   (h_triv : ∀ p ∈ w₁.sys.trivialSpanRootPairs, p ∈ w₂.sys.trivialSpanRootPairs ∨
     (∀ r ∈ (trivialSpanRelationsOfRootPair R p), w₂.project r = 1))
@@ -328,7 +341,7 @@ theorem graded_injection (w₁ w₂ : GradedPartialChevalleyGroup Φ R)
     (∀ r ∈ (mixedDegreeRelationsOfRoot R p), w₂.project r = 1))
   (h_lin : ∀ p ∈ w₁.sys.presentRoots, p ∈ w₂.sys.presentRoots ∨
     (∀ r ∈ (linearityRelationsOfRoot R p), w₂.project r = 1))
-  (h_lift : ∀ S ∈ w₁.lifted_rels_sets, ∀ p ∈ S, w₂.project p = 1)
+  (h_lift : ∀ S ∈ w₁.liftedRelationsSets, ∀ p ∈ S, w₂.project p = 1)
   (h_def : ∀ p ∈ w₁.definitionRelations, w₂.project p = 1)
   : ∀ r ∈ w₁.allRelations, w₂.project r = 1 := by
   simp only [allRelations]
@@ -423,7 +436,7 @@ def delab_project' : Delab := do
     let f_mk_mk ← withNaryArg 5 delab
     `($f_mk_mk)
 
-/-! ### Helpers -/
+/-! ### Helper  -/
 
 theorem trivialSpanProp_of_mem_trivialSpanRoot_pairs {w : GradedPartialChevalleyGroup Φ R} {p : Φ × Φ}
     (h : p ∈ w.sys.trivialSpanRootPairs)
@@ -487,7 +500,8 @@ theorem mixedDegreeProp_of_mem_presentRoots (w : GradedPartialChevalleyGroup Φ 
     rw [mixedDegreeRelationsOfRoot]
     exists i, j, hi, hj, t, u
 
-theorem lin_of_root_of_mem_presentRoots (w : GradedPartialChevalleyGroup Φ R) {ζ : Φ} (h : ζ ∈ w.sys.presentRoots)
+theorem lin_of_root_of_mem_presentRoots (w : GradedPartialChevalleyGroup Φ R)
+  {ζ : Φ} (h : ζ ∈ w.sys.presentRoots)
     : lin_of_root(w.project, ζ) := by
   intro i hi t u
   apply eq_of_mul_inv_eq_one
@@ -503,19 +517,19 @@ theorem lin_of_root_of_mem_presentRoots (w : GradedPartialChevalleyGroup Φ R) {
     exists i, hi, t, u
 
 theorem liftedProp_of_mem_lifted (w : GradedPartialChevalleyGroup Φ R)
-    : ∀ S ∈ w.lifted_rels_sets, ∀ r ∈ S, w.project r = 1 := by
+    : ∀ S ∈ w.liftedRelationsSets, ∀ r ∈ S, w.project r = 1 := by
   intro S _ _ _
   apply eq_one_of_mem_rels
   apply Set.mem_sUnion.mpr
-  use ⋃₀ lifted_rels_sets w
+  use ⋃₀ liftedRelationsSets w
   constructor
   · tauto
   · apply Set.mem_sUnion.mpr
     use S
 
 theorem definitionProp_of_define (w : GradedPartialChevalleyGroup Φ R)
-    : ∀ (ζ : Φ) (i : ℕ) (hi : i ≤ height ζ) (t : R), w.project {ζ, i, t} = w.project (w.define (GradedChevalleyGenerator.mk ζ i hi t))
-      := by
+    : ∀ (ζ : Φ) (i : ℕ) (hi : i ≤ height ζ) (t : R),
+        w.project {ζ, i, t} = w.project (w.define (GradedChevalleyGenerator.mk ζ i hi t)) := by
   intro ζ i hi t
   apply eq_of_inv_mul_eq_one
   apply eq_one_of_mem_rels
@@ -618,7 +632,7 @@ macro "declare_lin_id_inv_thms" w:ident R:term:arg root:term:arg : command => do
   makeCommands `(section
     @[group_reassoc (attr := simp, chev_simps)]
     theorem $linOf : lin_of_root(($w $R).project, $root) :=
-      lin_of_root_of_mem_presentRoots ($w $R) (by unfold $w; simp only; tauto)
+      ($w $R).lin_of_root_of_mem_presentRoots (by unfold $w; simp only; tauto)
 
     @[simp, chev_simps]
     theorem $idOf : id_of_root(($w $R).project, $root) :=

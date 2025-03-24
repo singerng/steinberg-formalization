@@ -162,7 +162,7 @@ theorem comm_of_αβ_αβψ :
   intro i j hi hj t u
   apply triv_comm_iff_commutes.mpr
   rcases decompose αβ.height ψ.height j hj with ⟨ j₁, j₂, ⟨ rfl, hj₁, hj₂ ⟩ ⟩
-  rw [h_add_comm αβψ j₁ j₂, ← one_mul u]
+  rw [deg_add_comm αβψ j₁ j₂, ← one_mul u]
   grw [expr_αβψ_as_βψ_α_βψ_α_βψ hj₂ hj₁, expr_αβ_βψ_as_βψ_αβ hi hj₁,
     ← expr_α_αβ_as_αβ_α hj₂ hi, expr_αβ_βψ_as_βψ_αβ hi hj₁,
     ← expr_α_αβ_as_αβ_α hj₂ hi, expr_αβ_βψ_as_βψ_αβ hi hj₁]
@@ -175,7 +175,7 @@ theorem comm_of_β_αβψ :
   apply triv_comm_iff_commutes.mpr
   rcases decompose αβ.height ψ.height j hj with ⟨ j₁, j₂, ⟨ rfl, hj₁, hj₂ ⟩ ⟩
   have hj₂i : j₂ + i ≤ βψ.height := by ht
-  rw [h_add_comm αβψ j₁ j₂, ← one_mul u]
+  rw [deg_add_comm αβψ j₁ j₂, ← one_mul u]
   grw [expr_αβψ_as_βψ_α_βψ_α_βψ hj₂ hj₁, expr_β_βψ_as_βψ_β hi hj₁,
     expr_β_α_as_αβ_α_β hj₂ hi, expr_β_βψ_as_βψ_β hi hj₁,
     expr_β_α_as_αβ_α_β hj₂ hi, expr_β_βψ_as_βψ_β hi hj₁,
@@ -389,7 +389,7 @@ theorem sufficient_conditions_for_comm_of_αβψ_and_ψ :
   grw [expr_αβψ_as_βψ_α_βψ_α_βψ hi hj, expr_βψ_ψ_as_ψ_β2ψ_βψ hk hj,
     expr_α_ψ_as_ψ_α hi hk, expr_βψ_ψ_as_ψ_β2ψ_βψ hk hj,
     expr_α_ψ_as_ψ_α hi hk, expr_βψ_ψ_as_ψ_β2ψ_βψ hk hj]
-  simp_rw [h_add_comm β2ψ k j]
+  simp_rw [deg_add_comm β2ψ k j]
   have : 2 * v * (u / 2) = u * v := by field_simp; group
   rw [this]
   clear this

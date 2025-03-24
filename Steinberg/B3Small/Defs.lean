@@ -149,9 +149,9 @@ abbrev fullDoubleSpanRootPairs : Set (DoubleSpanRootPair B3SmallPosRoot) :=
   weakDoubleSpanRootPairs
 
 -- TODO: this should really be via 'decide', but we had issues with declaring PartialChevalleySystem as a Finset
-theorem all_root_pairs_have_relation : every_pair_in_all_pairs B3SmallPosRoot fullTrivialSpanPairs fullSingleSpanRootPairs fullDoubleSpanRootPairs := by
+theorem all_root_pairs_have_relation : everyRootPairInRootPairs B3SmallPosRoot fullTrivialSpanPairs fullSingleSpanRootPairs fullDoubleSpanRootPairs := by
   intro ζ η h_ne
-  unfold to_pairs fullTrivialSpanPairs weakTrivialSpanPairs fullSingleSpanRootPairs
+  unfold toRootPairs fullTrivialSpanPairs weakTrivialSpanPairs fullSingleSpanRootPairs
     weakSingleSpanRootPairs fullDoubleSpanRootPairs weakDoubleSpanRootPairs
   simp only [Set.image_insert_eq, Set.image_singleton, Set.union_insert, Set.union_singleton, Prod.swap,
     Set.mem_insert_iff, Set.mem_singleton_iff]

@@ -34,7 +34,7 @@ variable {I : Type TI} [DecidableEq I] [Fintype I]
 variable {R : Type TR} [CommRing R]
 
 namespace Chevalley.TypeA
-open Chevalley.TypeA Mathlib.Group.Commutator
+open Chevalley.TypeA
 
 private def raw_M (i j : I) (hij : i ≠ j) (t : R) : Matrix I I R :=
   1 + t • (E i j)
@@ -51,13 +51,11 @@ private theorem inv_val_of_M {i j : I} {t : R} {hij : i ≠ j} :
   nth_rewrite 2 [←neg_neg t]
   exact val_inv_of_M
 
-def A_M (i j : I) (hij : i ≠ j) (t : R) : Matrix.GeneralLinearGroup I R :=
-  {
-    val := raw_M i j hij t,
-    inv := raw_M i j hij (-t),
-    val_inv := val_inv_of_M,
-    inv_val := inv_val_of_M
-  }
+def A_M (i j : I) (hij : i ≠ j) (t : R) : Matrix.GeneralLinearGroup I R where
+  val := raw_M i j hij t
+  inv := raw_M i j hij (-t)
+  val_inv := val_inv_of_M
+  inv_val := inv_val_of_M
 
 private theorem raw_M_prod_overlap (i j k : I) (hij : i ≠ j) (hjk : j ≠ k) (t u : R) :
   (raw_M i j hij t) * (raw_M j k hjk u) =

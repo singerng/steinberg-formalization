@@ -24,18 +24,22 @@ variable {G : Type TG} [Group G]
          {Φ : Type TΦ} [PositiveRootSystem Φ]
          {R : Type TR} [Ring R]
 
-/-- "Degree-reflection" map of `GradedGen`s corresponding to swapping degree `i` with `height ζ - i`. (An involution.) -/
+/-- "Degree-reflection" map on `GradedGenerator` elements corresponding to swapping degree `i` with `height ζ - i`. -/
 def reflect (g : GradedChevalleyGenerator Φ R) : GradedChevalleyGenerator Φ R :=
   GradedChevalleyGenerator.mk g.ζ (height g.ζ - g.i) (by ht) g.t
 
+/-- Degree-reflection is an involution, though we will not need this fact. -/
+example (g : GradedChevalleyGenerator Φ R) : reflect (reflect g) = g := by
+  let ⟨ ζ, i, hi, t ⟩ := g;
+  unfold reflect
+  congr
+  exact Nat.sub_sub_self hi
+
+/-- Composition of the reflection map with the definition map in a `GradedPartialChevalleyGroup`. The effect
+of this map is to simply apply `reflect` to present roots and more generally to reflect the definition of all
+roots. This  -/
 def defineThenReflect (w : GradedPartialChevalleyGroup Φ R) : GradedChevalleyGenerator Φ R → FreeGroup (GradedChevalleyGenerator Φ R) :=
   (FreeGroup.map reflect) ∘ w.define
-
-private theorem lift_of_refl_eq_comp (w : GradedPartialChevalleyGroup Φ R) : FreeGroup.lift (defineThenReflect w) = (FreeGroup.map reflect).comp (FreeGroup.lift w.define)
-  := by
-  ext a : 1
-  simp_all only [FreeGroup.lift.of, MonoidHom.coe_comp, Function.comp_apply]
-  rfl
 
 -- reflecting a present root simply applies reflect to it
 theorem defineThenReflect_eq_reflect_of_mem_presentRoots (w : GradedPartialChevalleyGroup Φ R)
@@ -125,7 +129,13 @@ private theorem defineThenReflect_eq_reflect_of_linearityRelationsOfRoot_of_mem_
   exists (height ζ - i), (by omega), t, u
 
 def reflectValidProp (w : GradedPartialChevalleyGroup Φ R) :=
-  (∀ S ∈ w.lifted_rels_sets, ∀ r ∈ S, w.project ((FreeGroup.lift (defineThenReflect w)) r) = 1)
+  (∀ S ∈ w.liftedRelationsSets, ∀ r ∈ S, w.project ((FreeGroup.lift (defineThenReflect w)) r) = 1)
+
+private theorem lift_of_refl_eq_comp (w : GradedPartialChevalleyGroup Φ R) : FreeGroup.lift (defineThenReflect w) = (FreeGroup.map reflect).comp (FreeGroup.lift w.define)
+  := by
+  ext a : 1
+  simp_all only [FreeGroup.lift.of, MonoidHom.coe_comp, Function.comp_apply]
+  rfl
 
 private theorem eq_one_of_defineThenReflect_lift_allRelations_of_reflectValidProp
   {w : GradedPartialChevalleyGroup Φ R} (h' : reflectValidProp w) :

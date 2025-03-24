@@ -93,7 +93,7 @@ theorem expr_βψ_as_ψ_β_ψ_β_ψ : forall_ij_tu β ψ,
   apply mul_right_cancel (b := ⸨ψ, j, 2 * u⸩⁻¹)
   rw [← inv_of_β, ← commutatorElement_def]
   grw [comm_of_β_ψ, expr_βψ_β2ψ_as_β2ψ_βψ]
-  rw [eq_of_hR_eq β2ψ (j + (i + j)) (by omega) (2 * u * (2 * t * u)) (by ring)]
+  rw [eq_of_deg_coef_eq β2ψ (j + (i + j)) (by omega) (2 * u * (2 * t * u)) (by ring)]
   grw [expr_β2ψ_as_ψ_βψ_ψ_βψ hj hij]
   ring_nf
   chev_simp

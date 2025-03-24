@@ -15,7 +15,7 @@ import Steinberg.Macro.Syntax
 
 /-!
 
-  File dox go here.
+  Implementation of (ungraded) unipotent Chevalley groups.
 
 -/
 
@@ -29,16 +29,16 @@ open PositiveRootSystem PartialChevalleySystem
 
 namespace PartialChevalley
 
-/-! ## Generators of (ungraded) Chevalley group -/
+/-! ## Generators of (ungraded) unipotent Chevalley group -/
 
 /--
-  Generators of the Chevalley subgroup corresponding to a positive root system
+  Generators of the (ungraded) unipotent Chevalley group corresponding to a positive root system
   over a ring.
 -/
 structure ChevalleyGenerator (Φ : Type TΦ) [PositiveRootSystem Φ] (R : Type TR) [Ring R] where
   mk ::
-  ζ : Φ
-  t : R
+  ζ : Φ -- root
+  t : R -- coefficient (ring element)
 
 namespace ChevalleyGenerator
 
@@ -46,9 +46,9 @@ instance instCoeProd : Coe (Φ × R) (ChevalleyGenerator Φ R) :=
   ⟨fun p => ⟨p.1, p.2⟩⟩
 
 /--
-  Shorthand for building free group elements from a root and ring element.
+  Shorthand `{ζ, t}` for building free group elements from a root `ζ` and coefficient `t`.
 
-  Note: To re-use this notation for specific `Chevalley`-like groups,
+  Note: To re-use this notation for specific groups,
   re-define it for that group and set the priority higher.
   Then implement delaboration to use the delab defined below.
 -/
@@ -100,7 +100,7 @@ def delab_free_mk : Delab := do
 
 end DelabBraces /- section -/
 
-theorem eq_of_R_eq (ζ : Φ) {t : R} (u : R) (h : t = u)
+theorem eq_of_coef_eq (ζ : Φ) {t : R} (u : R) (h : t = u)
     : {ζ, t} = {ζ, u} := by
   congr
 

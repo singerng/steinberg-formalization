@@ -5,6 +5,12 @@ Released under the Apache License v2.0; see LICENSE for full text.
 
 import Mathlib.Data.Nat.Notation
 
+/-!
+
+  Some hardcoded decompositions of small natural numbers, needed to state the "definition" relations.
+
+-/
+
 namespace Steinberg
 
 def split_3_into_1_2 (i : ℕ) (hi : i ≤ 3) :=
@@ -34,6 +40,10 @@ def split_4_into_1_3 (i : ℕ) (hi : i ≤ 4) :=
   | 2 => (1, 1)
   | 3 => (1, 2)
   | 4 => (1, 3)
+
+/-!
+Note that it is not possible to prove a `refl_of_split_4_into_1_3` theorem.
+-/
 
 theorem correct_of_split_4_into_1_3 (i : ℕ) (hi : i ≤ 4) :
   (split_4_into_1_3 i hi).1 ≤ 1 ∧ (split_4_into_1_3 i hi).2 ≤ 3 ∧ (split_4_into_1_3 i hi).1 + (split_4_into_1_3 i hi).2 = i := by

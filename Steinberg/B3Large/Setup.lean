@@ -333,7 +333,7 @@ theorem b3large_valid :
       right; right; right; right; right; left
       use S
       constructor
-      · simp only [weakB3LargeGraded, lifted_rels_sets, lifted_sets, Set.mem_union]
+      · simp only [weakB3LargeGraded, liftedRelationsSets, lifted_sets, Set.mem_union]
         right
         exact h_hom
       · exact this
@@ -487,7 +487,7 @@ theorem expr_βψ_ψ_as_ψ_β2ψ_βψ :
     ⸨βψ, j, u⸩ * ⸨ψ, i, t⸩ = ⸨ψ, i, t⸩ * ⸨β2ψ, i + j, -2 * t * u⸩ * ⸨βψ, j, u⸩ := by
   intro i j hi hj t u
   have hij : j + i ≤ β2ψ.height := by ht
-  rw [h_add_comm β2ψ i j, ← greassoc_of% expr_βψ_β2ψ_as_β2ψ_βψ hj hij, h_add_comm β2ψ j i]
+  rw [deg_add_comm β2ψ i j, ← greassoc_of% expr_βψ_β2ψ_as_β2ψ_βψ hj hij, deg_add_comm β2ψ j i]
   grw [expr_ψ_βψ_as_βψ_ψ_β2ψ hi hj]
 
 -- 8.114b
