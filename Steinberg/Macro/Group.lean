@@ -97,7 +97,7 @@ macro (name := mar) "mar" l:(location)? : tactic => `(tactic|
   mul_assoc_r $l ?
 )
 
-/- CC: Use these two theorems to generate an automatic new theorem from a commutative theorem. -/
+/- TODO-B: Use these two theorems to generate an automatic new theorem from a commutative theorem. -/
 
 private theorem mul_assoc_left {G : Type u} [Semigroup G] {b c d : G} (h : b * c = d) (a : G)
     : a * b * c = a * d := by
@@ -157,7 +157,7 @@ macro (name := mul_inj) "mul_inj" l:(location)? : tactic => `(tactic| (
 /--
   An empty list of `simp` lemmas and terms.
 
-  CC: See `Mathlib.Tactic.CategoryTheory.Reassoc` for a list of potential
+  TODO-B: See `Mathlib.Tactic.CategoryTheory.Reassoc` for a list of potential
       relevant lemmas, but for category theory. The problem of using a lot
       of standard group theory lemmas is that they will simplify away
       `a * 1`, which we often don't want to do in our proofs. If we find
@@ -211,8 +211,8 @@ initialize registerBuiltinAttribute {
       throwError "`reassoc` can only be used as a global attribute"
     addRelatedDecl src "_assoc_left" ref stx? fun type value levels => do
       pure (← reassocExpr_left (← mkExpectedTypeHint value type), levels)
-    -- CC: (3/18) Removing this still allows `B3Large/Thm.lean` to compile.
-    -- CC: I've removed this to speed up compilation.
+    -- TODO-B: (3/18) Removing this still allows `B3Large/Thm.lean` to compile.
+    -- TODO-B: I've removed this to speed up compilation.
     -- addRelatedDecl src "_assoc_right" ref stx? fun type value levels => do
     --  pure (← reassocExpr_right (← mkExpectedTypeHint value type), levels)
   | _ => throwUnsupportedSyntax
@@ -253,7 +253,7 @@ elab "greassoc_of_r% " t:term : term => do
   reassocExpr_right (← elabTerm t none)
 
 /-
-  CC: It's very, very hard to get `(rwRule| )` to type check, since it expects
+  TODO-B: It's very, very hard to get `(rwRule| )` to type check, since it expects
       a `term`, while most outputs of this function are `Term.app`, which for
       whatever reason is not a `term`. So we have to open the `.Compat`
       environment to extract coercions between the `TSyntax` kinds.
@@ -303,7 +303,7 @@ partial def replaceWithAssocName (stx : Syntax) : Option (TSyntax `term × TSynt
   `group_reassoc`-generated theorem to replace `a * b` with `c` by using
   the assoc version of the theorem instead.
 
-  CC: This tactic is a hack. There's no guarantee that the rewrite rule
+  TODO-B: This tactic is a hack. There's no guarantee that the rewrite rule
       has the right form, nor that there exists a reassoc theorem. Another
       attempt of the tactic tried to extract the sub-expression to reassociate
       instead, but constructing the right `mul_assoc` proof term was hard.

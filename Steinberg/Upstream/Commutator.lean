@@ -79,7 +79,7 @@ theorem reorder_left_of_eq_comm : ⁅x, y⁆ = z → reorder_left(x, y, z) := by
 theorem reorder_left_iff_eq_comm : reorder_left(x, y, z) ↔ ⁅x, y⁆ = z :=
   ⟨eq_comm_of_reorder_left, reorder_left_of_eq_comm⟩
 
-/- CC: For these `triv_comm` theorems, I don't like the approach of the proofs.
+/- TODO-B: For these `triv_comm` theorems, I don't like the approach of the proofs.
    So far, the proofs are essentially just unfolding the trivial commutator
    definition and applying commutativity as needed. But this sidesteps the
    potential usefulness of a `triv_comm` definition.
@@ -89,7 +89,7 @@ theorem reorder_left_iff_eq_comm : reorder_left(x, y, z) ↔ ⁅x, y⁆ = z :=
    "commutator theory."
 -/
 
--- CC: Perhaps we can replace this with `triv_comm()`, but I think the statement is clearer this way.
+-- TODO-B: Perhaps we can replace this with `triv_comm()`, but I think the statement is clearer this way.
 @[symm]
 theorem triv_comm_symm : ⁅ x, y ⁆ = 1 ↔ ⁅ y, x ⁆ = 1 := by
   simp_rw [triv_comm_iff_commutes]
@@ -111,13 +111,13 @@ theorem inv_triv_comm_iff_triv_comm' : triv_comm(x, y⁻¹) ↔ triv_comm(x, y) 
   simp_rw [@triv_comm_symm _ _ x]
   exact inv_triv_comm_iff_triv_comm
 
--- CC: Better name? Could be `triv_comm_trans_right` or `triv_comm_trans_mul_right`
+-- TODO-B: Better name? Could be `triv_comm_trans_right` or `triv_comm_trans_mul_right`
 theorem triv_comm_mul_right : triv_comm(x, y) → triv_comm(x, z) → triv_comm(x, y * z) := by
   simp_rw [triv_comm_iff_commutes]
   intro hxy hxz
   rw [← mul_assoc, hxy, mul_assoc, hxz, ← mul_assoc]
 
--- CC: Better name? Could be `triv_comm_trans_left`
+-- TODO-B: Better name? Could be `triv_comm_trans_left`
 theorem triv_comm_mul_left : triv_comm(x, z) → triv_comm(y, z) → triv_comm(x * y, z) := by
   simp_rw [triv_comm_iff_commutes]
   intro hxz hyz
@@ -127,7 +127,7 @@ theorem trivial_comm_mul_mul : triv_comm(x, w) → triv_comm(x, z)
     → triv_comm(y, w) → triv_comm(y, z) → triv_comm(x * y, w * z) := by
   simp_rw [triv_comm_iff_commutes]
   intro hxw hxz hyw hyz
-  -- CC: Ripe for automation/a macro!
+  -- TODO-B: Ripe for automation/a macro!
   rw [← mul_assoc, mul_assoc x, hyw, ← mul_assoc, hxw,
     mul_assoc, hyz, ← mul_assoc, mul_assoc w, hxz, ← mul_assoc, mul_assoc]
 

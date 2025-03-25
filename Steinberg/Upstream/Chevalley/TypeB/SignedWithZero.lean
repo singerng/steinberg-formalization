@@ -18,7 +18,7 @@ def SignedWithZero (I : Type TI) [DecidableEq I] [Fintype I] :=
 instance : DecidableEq (SignedWithZero I) := instDecidableEqSum
 instance : Fintype (SignedWithZero I) := instFintypeSum _ _
 
--- NS: Maybe there is a more 'idiomatic' way to write this shortly?
+-- TODO-A: Maybe there is a more 'idiomatic' way to write this shortly?
 
 def SignedWithZero.zero : SignedWithZero I := Sum.inr ()
 def Bool.inj (s : Bool) (i : I) : SignedWithZero I := Sum.inl (s, i)

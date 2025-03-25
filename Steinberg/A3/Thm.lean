@@ -68,7 +68,7 @@ theorem a3_valid :
 
 /-! ### Derive full commutator for αβ and βγ from nonhomogeneous lift -/
 
--- NS: this section should probably be abstracted for reuse
+-- TODO-A: this section should probably be abstracted for reuse
 
 /- Commutator relation in the case (i,j) is not (0,2) or (2,0) (via the previous theorem). -/
 private lemma hom_lift_of_comm_of_αβ_βγ (i j k : ℕ) (hi : i ≤ 1) (hj : j ≤ 1) (hk : k ≤ 1) :
@@ -195,7 +195,7 @@ theorem InterchangeRefl : forall_ijk_tu α β γ,
 
 /-! ### Commutator relations for (α,βγ) and (αβ,γ) via interchange relations -/
 
--- NS: Really need to figure out a more sane way to write this section.
+-- TODO-A: Really need to figure out a more sane way to write this section.
 
 -- height 0
 private lemma comm_of_α_βγ_00 (t u : R) :

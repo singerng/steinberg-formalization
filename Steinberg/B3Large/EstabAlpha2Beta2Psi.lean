@@ -12,7 +12,7 @@ open Steinberg B3LargePosRoot GradedPartialChevalley GradedChevalleyGenerator Gr
 
 variable {F : Type TF} [Field F] (Fchar : (2 : F) ≠ 0)
 
--- CC: (3/16) is there a better place/file for these theorems?
+-- TODO-B: (3/16) is there a better place/file for these theorems?
 include Fchar
 
 theorem defineThenReflect_eq_reflect_of_αβ2ψ (g : GradedChevalleyGenerator B3LargePosRoot F) (h : g.ζ = αβ2ψ) :

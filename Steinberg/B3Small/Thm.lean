@@ -100,7 +100,7 @@ theorem expr_βψ_as_ψ_β_ψ_β_ψ : forall_ij_tu β ψ,
 
 /-! ### Derive full commutator for βψ and ψω from nonhomogeneous lift -/
 
--- NS: this section should probably be abstracted for reuse
+-- TODO-A: this section should probably be abstracted for reuse
 
 /- Commutator relation in the case (i,j) is not (0,2) or (2,0) (via the previous theorem). -/
 private lemma hom_lift_of_comm_of_βψ_ψω (i j k : ℕ) (hi : i ≤ 1) (hj : j ≤ 1) (hk : k ≤ 1) :
@@ -152,7 +152,7 @@ private lemma comm_of_βψ_ψω_20 : ∀ (t u : F), ⁅ ⸨βψ, 2, t⸩, ⸨ψ�
   mul_assoc_l
   rw [← nonhom_lift_of_comm_of_βψ_ψω t 1 1 1 0 u]
   simp only [one_mul, mul_one, mul_zero, add_zero]
-  rw [id_of_ψω] -- NS: maybe should be a simp lemma? we can decide...
+  rw [id_of_ψω] -- TODO-A: maybe should be a simp lemma? we can decide...
   rw [one_mul]
   rw [← hom_lift_of_comm_of_βψ_ψω 1 1 0 (by trivial) (by trivial) (by trivial) t u]
   apply triv_comm_mul_left

@@ -161,7 +161,7 @@ def fullA3Graded (R : Type TR) [Ring R] := GradedPartialChevalleyGroup.fullMk A3
 
 /- Instantiate the `declare_thms` macros from `PartialChevalley.lean`. -/
 
--- CC: TODO: Make this a macro to declare all at once for A3.
+-- TODO-B: TODO: Make this a macro to declare all at once for A3.
 --     Something like: `declare_thms A3 weakA3Graded R`
 
 macro "declare_A3_trivial_span_expr_thm" R:term:arg r₁:term:arg r₂:term:arg : command =>
