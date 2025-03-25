@@ -235,38 +235,48 @@ end Props
 
 /-! ### Sets of Steinberg relations -/
 
-/-
-The set of elements which must vanish according to the theorem that the commutator of generators
-for two roots vanishes. (Used to construct a `PresentedGroup`.)
-
-Linked to `trivialSpanPropOfRootPair`.
--/
+/- The set of relations corresponding to `trivialSpanPropOfRootPair`. -/
 def trivialSpanRelationsOfRootPair (R : Type TR) [Ring R] (p : Φ × Φ)
     : Set (FreeGroup (GradedChevalleyGenerator Φ R)) :=
   let (ζ, η) := p;
   { ⁅ {ζ, i, t}, {η, j, u} ⁆
     | (i : ℕ) (j : ℕ) (hi : i ≤ height ζ) (hj : j ≤ height η) (t : R) (u : R) }
 
-def singleSpanRelationsOfRootPair (R : Type TR) [Ring R] (p : SingleSpanRootPair Φ) : Set (FreeGroup (GradedChevalleyGenerator Φ R)) :=
+/- The set of relations corresponding to `singleSpanPropOfRootPair`. -/
+def singleSpanRelationsOfRootPair (R : Type TR) [Ring R] (p : SingleSpanRootPair Φ)
+    : Set (FreeGroup (GradedChevalleyGenerator Φ R)) :=
   let ⟨ ζ, η, θ, C, h_height ⟩ := p;
   { ⁅ {ζ, i, t}, {η, j, u} ⁆ * {θ, i + j, C * t * u}⁻¹
     | (i : ℕ) (j : ℕ) (hi : i ≤ height ζ) (hj : j ≤ height η) (t : R) (u : R) }
 
-def doubleSpanRelationsOfRootPair (R : Type TR) [Ring R] (p : DoubleSpanRootPair Φ) : Set (FreeGroup (GradedChevalleyGenerator Φ R)) :=
+/- The set of relations corresponding to `doubleSpanPropOfRootPair`. -/
+def doubleSpanRelationsOfRootPair (R : Type TR) [Ring R] (p : DoubleSpanRootPair Φ)
+    : Set (FreeGroup (GradedChevalleyGenerator Φ R)) :=
   let ⟨ ζ, η, θ₁, θ₂, C₁, C₂, h_height₁, h_height₂ ⟩ := p;
   { ⁅ {ζ, i, t}, {η, j, u} ⁆ *
     ({θ₁, i + j, C₁ * t * u} * {θ₂, i + 2 * j, C₂ * t * u * u})⁻¹
     | (i : ℕ) (j : ℕ) (hi : i ≤ height ζ) (hj : j ≤ height η) (t : R) (u : R) }
 
+/- The set of relations corresponding to `mixedDegreePropOfRoot`. -/
 def mixedDegreeRelationsOfRoot (R : Type TR) [Ring R] (ζ : Φ) : Set (FreeGroup (GradedChevalleyGenerator Φ R)) :=
   trivialSpanRelationsOfRootPair R (ζ, ζ)
 
+/- The set of relations corresponding to `linearityPropOfRoot`. -/
 def linearityRelationsOfRoot (R : Type TR) [Ring R] (ζ : Φ) : Set (FreeGroup (GradedChevalleyGenerator Φ R)) :=
   { {ζ, i, t} * {ζ, i, u} * {ζ, i, t + u}⁻¹
     | (i : ℕ) (hi : i ≤ height ζ) (t : R) (u : R) }
 
 /-! ### Graded partial Chevalley groups -/
 
+/- A structure which contains the data needed to define a graded unipotent Chevalley group
+via a presentation (either the weak or full presentation).
+
+This structure bundles together several data:
+* A (possibly partial) set of Steinberg relations represented by a `PartialChevalleySystem`,
+  either all the relations in the full case or the codimension-one relations in the weak case.
+* A set of sets of "lifted" relations (no validity hypotheses for now).
+* A "definition" map, used to relate generators whose roots may not be present to present generators.
+-/
 structure GradedPartialChevalleyGroup (Φ : Type TΦ) [PositiveRootSystem Φ] (R : Type TR) [Ring R] where
   mk ::
   sys : PartialChevalleySystem Φ
@@ -277,6 +287,7 @@ structure GradedPartialChevalleyGroup (Φ : Type TΦ) [PositiveRootSystem Φ] (R
   h_define_is_projection : ∀ {g : GradedChevalleyGenerator Φ R}, (FreeGroup.lift define) (define g) = define g
 
   -- TODO: Ensure that everything in the image of `define` is actually present
+  -- TODO: validity hypothesis for liftedRelationsSets here?
 
 namespace GradedPartialChevalleyGroup
 
@@ -331,7 +342,11 @@ given by our subset of relations.-/
 def project (w : GradedPartialChevalleyGroup Φ R) : FreeGroup (GradedChevalleyGenerator Φ R) →* group w :=
   PresentedGroup.mk (GradedPartialChevalleyGroup.allRelations w)
 
-/-- Mapping between two `GradedPartialChevalleyGroup` graded groups -/
+/-- This theorem is used to create a homomorphism between two `GradedPartialChevalleyGroup`s (on
+the same underlying positive root system `Φ` and ring `R`). It gives a useful sufficient condition
+under which every relation holding in one group also holds in another group. This condition breaks down
+the seven classes of relations in `allRelations`. For the lifted and definition relations, the condition
+simply st -/
 theorem graded_injection (w₁ w₂ : GradedPartialChevalleyGroup Φ R)
   (h_good :
   ∀ (K : GradedSteinbergRelationClass),
@@ -399,8 +414,9 @@ def delab_project' : Delab := do
     let f_mk_mk ← withNaryArg 5 delab
     `($f_mk_mk)
 
-/-! ### Helper  -/
+/-! ### Helper functions for unpacking  -/
 
+/-- If a pair of roots -/
 theorem trivialSpanProp_of_mem_trivialSpanRoot_pairs {w : GradedPartialChevalleyGroup Φ R} {p : Φ × Φ}
     (h : p ∈ w.sys.trivialSpanRootPairs)
       : trivialSpanPropOfRootPair w.project p := by

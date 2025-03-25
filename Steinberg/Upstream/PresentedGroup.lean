@@ -7,6 +7,8 @@ import Mathlib.GroupTheory.PresentedGroup
 
 import Steinberg.Upstream.FreeGroup
 
+/-- A free group element is in the normal closure of the set of relations iff its image
+vanishes in the presented group. -/
 theorem eq_one_iff_mem_closure {α : Type u} {rels : Set (FreeGroup α)} {x : FreeGroup α} :
   PresentedGroup.mk rels x = 1 ↔ x ∈ Subgroup.normalClosure rels := by
   nth_rewrite 2 [← one_mul x, ← inv_one]
@@ -14,6 +16,8 @@ theorem eq_one_iff_mem_closure {α : Type u} {rels : Set (FreeGroup α)} {x : Fr
   simp only [QuotientGroup.mk_one, PresentedGroup.mk, MonoidHom.coe_mk, OneHom.coe_mk]
   use Eq.symm, Eq.symm
 
+/-- If a free group element is included in the set of relations, then its image
+vanishes in the presented group. -/
 theorem eq_one_of_mem_rels {α : Type u} {rels : Set (FreeGroup α)} {x : FreeGroup α} :
   x ∈ rels → PresentedGroup.mk rels x = 1 := by
   intro h
@@ -35,6 +39,7 @@ def toPresentedGroup {α β : Type u} {S : Set (FreeGroup α)} {T : Set (FreeGro
   (h : ∀ r ∈ S, (PresentedGroup.mk T) (FreeGroup.lift f r) = 1) : PresentedGroup S →* PresentedGroup T :=
   PresentedGroup.toGroup (helper h)
 
+/-- Apply `toPresentedGroup` to a generator. -/
 theorem toPresentedGroup.of {α β : Type u} {S : Set (FreeGroup α)} {T : Set (FreeGroup β)} {f : α → FreeGroup β}
   (h : ∀ r ∈ S, (PresentedGroup.mk T) (FreeGroup.lift f r) = 1) (x : α) :
   (toPresentedGroup h) (PresentedGroup.of x) = PresentedGroup.mk T (f x) := by
@@ -49,6 +54,7 @@ private theorem toPresentedGroup.mk' {α β : Type u} {S : Set (FreeGroup α)} {
   rw [← PresentedGroup.of]
   exact toPresentedGroup.of h a
 
+/-- Apply `toPresentedGroup` to the image of a free group element in a presented group. -/
 theorem toPresentedGroup.mk {α β : Type u} {S : Set (FreeGroup α)} {T : Set (FreeGroup β)} {f : α → FreeGroup β}
   (h : ∀ r ∈ S, (PresentedGroup.mk T) (FreeGroup.lift f r) = 1) (a : FreeGroup α) :
   (toPresentedGroup h) (PresentedGroup.mk S a) = PresentedGroup.mk T (FreeGroup.lift f a) := by

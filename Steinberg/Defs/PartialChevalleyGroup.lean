@@ -17,6 +17,8 @@ import Steinberg.Macro.Syntax
 
   Implementation of (ungraded) unipotent Chevalley groups.
 
+  *NOTE:* Cleanup in this file lags behind `GradedPartialChevalleyGroup.lean`.
+
 -/
 
 namespace Steinberg

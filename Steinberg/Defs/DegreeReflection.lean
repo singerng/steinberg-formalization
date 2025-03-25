@@ -24,7 +24,8 @@ variable {G : Type TG} [Group G]
          {Φ : Type TΦ} [PositiveRootSystem Φ]
          {R : Type TR} [Ring R]
 
-/-- "Degree-reflection" map on `GradedGenerator` elements corresponding to swapping degree `i` with `height ζ - i`. -/
+/-- "Degree-reflection" map on `GradedGenerator` elements corresponding to replacing
+degree `i` with `height ζ - i`. -/
 def reflect (g : GradedChevalleyGenerator Φ R) : GradedChevalleyGenerator Φ R :=
   GradedChevalleyGenerator.mk g.ζ (height g.ζ - g.i) (by ht) g.t
 
@@ -36,12 +37,12 @@ example (g : GradedChevalleyGenerator Φ R) : reflect (reflect g) = g := by
   exact Nat.sub_sub_self hi
 
 /-- Composition of the reflection map with the definition map in a `GradedPartialChevalleyGroup`. The effect
-of this map is to simply apply `reflect` to present roots and more generally to reflect the definition of all
-roots. This  -/
+of this map is to simply apply `reflect` to present generator and more generally to reflect the definition of all
+generators. This  -/
 def defineThenReflect (w : GradedPartialChevalleyGroup Φ R) : GradedChevalleyGenerator Φ R → FreeGroup (GradedChevalleyGenerator Φ R) :=
   (FreeGroup.map reflect) ∘ w.define
 
--- reflecting a present root simply applies reflect to it
+/- Defining-then-reflect a present generator is the same as just . -/
 theorem defineThenReflect_eq_reflect_of_mem_presentRoots (w : GradedPartialChevalleyGroup Φ R)
       (g : GradedChevalleyGenerator Φ R) (h : g.ζ ∈ w.sys.presentRoots)
     : defineThenReflect w g = FreeGroup.of (reflect g) := by
