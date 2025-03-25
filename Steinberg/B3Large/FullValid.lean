@@ -18,6 +18,8 @@ variable {F : Type TR} [Field F]
 open PartialChevalleySystem B3Large B3LargePosRoot PartialChevalley
   ChevalleyGenerator PartialChevalleyGroup Chevalley.TypeB
 
+namespace B3LargePosRoot
+
 def toB3Root (ζ : B3LargePosRoot) : BRoot (Fin 3) :=
   match ζ with
   | α =>     Sum.inl (BLongRoot.mk true false 0 1 (by tauto))
@@ -30,9 +32,14 @@ def toB3Root (ζ : B3LargePosRoot) : BRoot (Fin 3) :=
   | αβ2ψ =>  Sum.inl (BLongRoot.mk true true 0 2 (by tauto))
   | α2β2ψ => Sum.inl (BLongRoot.mk true true 0 1 (by tauto))
 
+
 abbrev toB3Mat (g : ChevalleyGenerator B3LargePosRoot F) := (toB3Root g.ζ).M g.t
 
-theorem valid :
+end B3LargePosRoot
+
+open B3LargePosRoot
+
+theorem b3Large_valid :
   ∀ r ∈ (fullB3Large F).allRelations, (FreeGroup.lift toB3Mat r) = 1 := by
   intro r h
   simp only [allRelations, Set.mem_iUnion] at h

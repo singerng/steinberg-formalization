@@ -7,8 +7,6 @@ import Steinberg.B3Large.Basic
 import Steinberg.B3Large.EstabAlphaBetaPsi
 import Mathlib.Tactic.Linarith
 
-set_option profiler true
-
 namespace Steinberg.B3Large
 
 open Steinberg B3LargePosRoot GradedPartialChevalley GradedChevalleyGenerator GradedPartialChevalleyGroup
