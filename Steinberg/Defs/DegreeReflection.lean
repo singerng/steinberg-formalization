@@ -29,7 +29,7 @@ degree `i` with `height ζ - i`. -/
 def reflect (g : GradedChevalleyGenerator Φ R) : GradedChevalleyGenerator Φ R :=
   GradedChevalleyGenerator.mk g.ζ (height g.ζ - g.i) (by ht) g.t
 
-/-- Degree-reflection is an involution, though we will not need this fact. -/
+/-- Reflection on generators is an involution, though we will not need this fact. -/
 example (g : GradedChevalleyGenerator Φ R) : reflect (reflect g) = g := by
   let ⟨ ζ, i, hi, t ⟩ := g;
   unfold reflect
@@ -38,11 +38,12 @@ example (g : GradedChevalleyGenerator Φ R) : reflect (reflect g) = g := by
 
 /-- Composition of the reflection map with the definition map in a `GradedPartialChevalleyGroup`. The effect
 of this map is to simply apply `reflect` to present generator and more generally to reflect the definition of all
-generators. This  -/
-def defineThenReflect (w : GradedPartialChevalleyGroup Φ R) : GradedChevalleyGenerator Φ R → FreeGroup (GradedChevalleyGenerator Φ R) :=
+generators. -/
+def defineThenReflect (w : GradedPartialChevalleyGroup Φ R)
+    : GradedChevalleyGenerator Φ R → FreeGroup (GradedChevalleyGenerator Φ R) :=
   (FreeGroup.map reflect) ∘ w.define
 
-/- Defining-then-reflect a present generator is the same as just . -/
+/- Defining-then-reflecting a present generator is the same as just reflecting the generator. -/
 theorem defineThenReflect_eq_reflect_of_mem_presentRoots (w : GradedPartialChevalleyGroup Φ R)
       (g : GradedChevalleyGenerator Φ R) (h : g.ζ ∈ w.sys.presentRoots)
     : defineThenReflect w g = FreeGroup.of (reflect g) := by
@@ -51,9 +52,14 @@ theorem defineThenReflect_eq_reflect_of_mem_presentRoots (w : GradedPartialCheva
   rw [this]
   simp only [FreeGroup.map.of]
 
-/-! ### Generic reflection theorems -/
+/-! ### Generic reflection theorems
 
-/-- Degree-reflection preserves the set of trivial commutator relations for any root pair. -/
+These theorems state that the relations which arise in a `GradedPartialChevalleyGroup` from its
+`PartialChevalleySystem` are always closed under defining-then-reflecting. (Note that these
+relations always only involve present roots.)
+-/
+
+/-- Defining-then-reflecting preserves the set of trivial commutator relations for any root pair. -/
 private theorem defineThenReflect_eq_reflect_of_trivialSpanRelationsOfRootPair_of_mem_presentRoots (ζ η : Φ)
   (h_ζ : ζ ∈ w.sys.presentRoots) (h_η : η ∈ w.sys.presentRoots)
     : ∀ r ∈ trivialSpanRelationsOfRootPair R (ζ, η),
@@ -66,8 +72,8 @@ private theorem defineThenReflect_eq_reflect_of_trivialSpanRelationsOfRootPair_o
   rw [defineThenReflect_eq_reflect_of_mem_presentRoots w (GradedChevalleyGenerator.mk η j hj u) h_η]
   exists (height ζ - i), (height η - j), (by omega), (by omega), t, u
 
-/-- Degree-reflection preserves the set of single commutator relations for any root pair. -/
--- TODO: maybe we can replace with passing the generator directly, it'll be faster
+/-- Defining-then-reflecting preserves the set of single commutator relations for any root pair. -/
+-- TODO: maybe we can replace with passing the generator directly, it'll be shorter
 private theorem defineThenReflect_eq_reflect_of_singleSpanRelationsOfRootPair_of_mem_presentRoots
   (ζ η θ : Φ) (C : ℤ) (h_height : height θ = height ζ + height η)
   (h_ζ : ζ ∈ w.sys.presentRoots) (h_η : η ∈ w.sys.presentRoots) (h_θ : θ ∈ w.sys.presentRoots)
@@ -85,7 +91,7 @@ private theorem defineThenReflect_eq_reflect_of_singleSpanRelationsOfRootPair_of
   simp only
   omega
 
-/-- Degree-reflection preserves the set of trivial commutator relations for any root pair. -/
+/-- Defining-then-reflecting preserves the set of trivial commutator relations for any root pair. -/
 private theorem defineThenReflect_eq_reflect_of_doubleSpanRelationsOfRootPair_of_mem_presentRoots
   (ζ η θ₁ θ₂ : Φ) (C₁ C₂ : ℤ) (h_height₁ : height θ₁ = height ζ + height η) (h_height₂ : height θ₂ = height ζ + 2 * height η)
   (h_ζ : ζ ∈ w.sys.presentRoots) (h_η : η ∈ w.sys.presentRoots) (h_θ₁ : θ₁ ∈ w.sys.presentRoots) (h_θ₂ : θ₂ ∈ w.sys.presentRoots)
@@ -104,8 +110,8 @@ private theorem defineThenReflect_eq_reflect_of_doubleSpanRelationsOfRootPair_of
   congr
   all_goals (ht)
 
-/-- Degree-reflection preserves the set of mixed-degree commutator relations for any root. -/
-private theorem defineThenReflect_eq_reflect_of_mixedDegRelationsOfRoot_of_mem_presentRoots (ζ : Φ) (h_ζ : ζ ∈ w.sys.presentRoots):
+/-- Defining-then-reflecting preserves the set of mixed-degree commutator relations for any root. -/
+private theorem defineThenReflect_eq_reflect_of_mixedDegRelationsOfRoot_of_mem_presentRoots (ζ : Φ) (h_ζ : ζ ∈ w.sys.presentRoots) :
   ∀ r ∈ mixedDegreeRelationsOfRoot R ζ,
     (FreeGroup.lift (defineThenReflect w)) r ∈ mixedDegreeRelationsOfRoot R ζ := by
   intro r h
@@ -116,7 +122,7 @@ private theorem defineThenReflect_eq_reflect_of_mixedDegRelationsOfRoot_of_mem_p
   rw [defineThenReflect_eq_reflect_of_mem_presentRoots w (GradedChevalleyGenerator.mk ζ j hj u) h_ζ]
   exists (height ζ - i), (height ζ - j), (by omega), (by omega), t, u
 
-/-- Degree-reflection preserves the set of trivial commutator relations for any root pair. -/
+/-- Defining-then-reflecting preserves the set of linearity relations for any root. -/
 private theorem defineThenReflect_eq_reflect_of_linearityRelationsOfRoot_of_mem_presentRoots (ζ : Φ) (h_ζ : ζ ∈ w.sys.presentRoots) :
   ∀ r ∈ linearityRelationsOfRoot R ζ,
     (FreeGroup.lift (defineThenReflect w)) r ∈ linearityRelationsOfRoot R ζ := by
@@ -129,6 +135,10 @@ private theorem defineThenReflect_eq_reflect_of_linearityRelationsOfRoot_of_mem_
   rw [defineThenReflect_eq_reflect_of_mem_presentRoots w (GradedChevalleyGenerator.mk ζ i hi (t + u)) h_ζ]
   exists (height ζ - i), (by omega), t, u
 
+/-! ### Establishing the reflection map -/
+
+/-- The following proposition supposes that the reflected definitions of lifted relations vanish.
+It is used as a hypothesis to define the reflection map. -/
 def reflectValidProp (w : GradedPartialChevalleyGroup Φ R) :=
   (∀ S ∈ w.liftedRelationsSets, ∀ r ∈ S, w.project ((FreeGroup.lift (defineThenReflect w)) r) = 1)
 
@@ -138,6 +148,7 @@ private theorem lift_of_refl_eq_comp (w : GradedPartialChevalleyGroup Φ R) : Fr
   simp_all only [FreeGroup.lift.of, MonoidHom.coe_comp, Function.comp_apply]
   rfl
 
+-- TODO: can we handle the first five cases uniformly?
 private theorem eq_one_of_defineThenReflect_lift_allRelations_of_reflectValidProp
   {w : GradedPartialChevalleyGroup Φ R} (h' : reflectValidProp w) :
     ∀ r ∈ w.allRelations, w.project (FreeGroup.lift (defineThenReflect w) r) = 1 := by
@@ -211,11 +222,14 @@ private theorem eq_one_of_defineThenReflect_lift_allRelations_of_reflectValidPro
       FreeGroup.lift.of, w.h_define_is_projection, inv_mul_cancel]
     rfl
 
+/-- A homomorphism from a `GradedPartialChevalleyGroup` to itself, assuming `reflectValidProp` holds. -/
 def defineThenReflectOfPresentedGroup {w : GradedPartialChevalleyGroup Φ R} (h : reflectValidProp w) : group w →* group w :=
   toPresentedGroup (eq_one_of_defineThenReflect_lift_allRelations_of_reflectValidProp h)
 
-theorem defineThenReflectOfPresentedGroup_of_project {w : GradedPartialChevalleyGroup Φ R} {h : reflectValidProp w} {g : FreeGroup (GradedChevalleyGenerator Φ R)} :
-  defineThenReflectOfPresentedGroup h (w.project g) = w.project (FreeGroup.lift (defineThenReflect w) g) := by
+/-- Defining-then-reflecting commutes with projection. -/
+theorem defineThenReflectOfPresentedGroup_of_project {w : GradedPartialChevalleyGroup Φ R} {h : reflectValidProp w}
+  {g : FreeGroup (GradedChevalleyGenerator Φ R)} :
+    defineThenReflectOfPresentedGroup h (w.project g) = w.project (FreeGroup.lift (defineThenReflect w) g) := by
   simp only [defineThenReflectOfPresentedGroup, project, toPresentedGroup.mk]
 
 end Steinberg

@@ -233,7 +233,10 @@ theorem inv_of_lin_of_root {f : FreeGroup (GradedChevalleyGenerator Φ R) →* G
 
 end Props
 
-/-! ### Sets of Steinberg relations -/
+/-! ### Sets of Steinberg relations
+
+We will include these sets of relations when building `PresentedGroup`s below.
+-/
 
 /- The set of relations corresponding to `trivialSpanPropOfRootPair`. -/
 def trivialSpanRelationsOfRootPair (R : Type TR) [Ring R] (p : Φ × Φ)
@@ -299,18 +302,39 @@ def fullMk (Φ : Type TΦ) [PositiveRootSystem Φ] (R : Type TR) [Ring R] (sys :
   : GradedPartialChevalleyGroup Φ R :=
   GradedPartialChevalleyGroup.mk sys ∅ FreeGroup.of (by tauto) (by tauto)
 
-/-! ### Sets of relations -/
+/-! ### Defining the actual group
 
+We now define the actual `PresentedGroup` corresponding to `GradedPartialChevalleyGroup`.
+We first give definitions which "pack" together the set of relations, and then give theorems
+which "unpack"
+-/
+
+/-- Inductive type enumerating the different classes of Steinberg relations
+which appear in a `GradedPartialChevalleyGroup`. We opted for this format as it lets us
+write the set of all relations defining the group as an indexed union, and therefore
+makes it easy to unpack the set of all relations into subsets. -/
+inductive GradedSteinbergRelationClass
+  | TrivialSpan | SingleSpan | DoubleSpan | MixedDegree | Linearity -- defined only by the `PartialChevalleySystem`
+  | Lifted | Definition -- defined by additional data in the `GradedPartialChevalleyGroup`
+
+open GradedSteinbergRelationClass
+
+/-! #### Packing the group -/
+
+/-- The set of "definition" relations. Note: If `ζ` is a present root, then
+`h_define_of_present` implies that
+  `w.define (GradedChevalleyGenerator.mk ζ i hi t) = {ζ, i, t}`
+and therefore the corresponding relation is trivial. On the other hand,
+if `ζ` is a missing root, this relation will typically be the only
+`GradedPartialChevalleyGroup` relation which directly mentions `ζ`'s generators.
+ -/
 def definitionRelations (w : GradedPartialChevalleyGroup Φ R) :=
   ⋃ (ζ : Φ), {
     {ζ, i, t}⁻¹ * w.define (GradedChevalleyGenerator.mk ζ i hi t) | (i : ℕ) (hi : i ≤ height ζ) (t : R)
   }
 
-inductive GradedSteinbergRelationClass
-  | TrivialSpan | SingleSpan | DoubleSpan | MixedDegree | Linearity | Lifted | Definition
-
-open GradedSteinbergRelationClass
-
+/-- The set of all relations which define a `GradedPartialChevalleyGroup`. An indexed union
+over `GradedSteinbergRelationClass`es. -/
 def allRelations (w : GradedPartialChevalleyGroup Φ R) :=
   ⋃ (K : GradedSteinbergRelationClass),
   (
@@ -331,22 +355,124 @@ def allRelations (w : GradedPartialChevalleyGroup Φ R) :=
         w.definitionRelations
   )
 
-/-! ### The group and the projection -/
-
 /-- The presented group on `GradedChevalleyGenerator`s given by modding out all the relations in `allRelations`. -/
 abbrev group (w : GradedPartialChevalleyGroup Φ R) :=
   PresentedGroup (GradedPartialChevalleyGroup.allRelations w)
 
 /-- The projection from the `FreeGroup` on `GradedChevalleyGenerator`s to the `PresentedGroup`
-given by our subset of relations.-/
+given by our subset of relations. -/
 def project (w : GradedPartialChevalleyGroup Φ R) : FreeGroup (GradedChevalleyGenerator Φ R) →* group w :=
   PresentedGroup.mk (GradedPartialChevalleyGroup.allRelations w)
 
+/-! #### Unpacking the group
+
+These are 'helper' theorems which let us deduce certain equalities which hold within the
+`PresentedGroup` formed by the data in a `GradedPartialChevalleyGroup`.
+-/
+
+/-- If a pair of roots occurs in the trivial-span field for the underlying `PartialChevalleySystem`,
+then we get a trivial-span theorem for these roots inside the `PresentedGroup`. -/
+theorem trivialSpanProp_of_mem_trivialSpanRoot_pairs {w : GradedPartialChevalleyGroup Φ R} {p : Φ × Φ}
+    (h : p ∈ w.sys.trivialSpanRootPairs)
+      : trivialSpanPropOfRootPair w.project p := by
+  intro i j hi hj t u
+  apply eq_one_of_mem_rels
+  simp only [allRelations, Set.mem_iUnion]
+  exists TrivialSpan
+  simp only [Set.mem_iUnion]
+  exists p, h
+  rw [trivialSpanRelationsOfRootPair]
+  exists i, j, hi, hj, t, u
+
+/-- If a pair of roots occurs in the single-span field for the underlying `PartialChevalleySystem`,
+then we get a single-span theorem for these roots inside the `PresentedGroup`. -/
+theorem singleSpanProp_of_mem_singleSpanRoot_pairs (w : GradedPartialChevalleyGroup Φ R) (p : SingleSpanRootPair Φ)
+  (h : p ∈ w.sys.singleSpanRootPairs)
+    : singleCommutatorPropOfRootPair w.project p := by
+  intro i j hi hj t u
+  apply eq_of_mul_inv_eq_one
+  apply eq_one_of_mem_rels
+  simp only [allRelations, Set.mem_iUnion]
+  exists SingleSpan
+  simp only [Set.mem_iUnion]
+  exists p, h
+  rw [singleSpanRelationsOfRootPair]
+  exists i, j, hi, hj, t, u
+
+/-- If a pair of roots occurs in the single-span field for the underlying `PartialChevalleySystem`,
+then we get a single-span theorem for these roots inside the `PresentedGroup`. -/
+theorem doubleSpanProp_of_mem_doubleSpanRootPairs (w : GradedPartialChevalleyGroup Φ R) (p : DoubleSpanRootPair Φ)
+  (h : p ∈ w.sys.doubleCommutatorRootPairs)
+    : doubleSpanPropOfRootPair w.project p := by
+  intro i j hi hj t u
+  apply eq_of_mul_inv_eq_one
+  apply eq_one_of_mem_rels
+  simp only [allRelations, Set.mem_iUnion]
+  exists DoubleSpan
+  simp only [Set.mem_iUnion]
+  exists p, h
+  rw [doubleSpanRelationsOfRootPair]
+  exists i, j, hi, hj, t, u
+
+/-- If a root is present for the underlying `PartialChevalleySystem`,
+then we get a mixed-degree theorem for this root inside the `PresentedGroup`. -/
+theorem mixedDegreeProp_of_mem_presentRoots (w : GradedPartialChevalleyGroup Φ R)
+  {ζ : Φ} (h : ζ ∈ w.sys.presentRoots)
+    : mixedDegreePropOfRoot w.project ζ := by
+  intro i j hi hj t u
+  apply eq_one_of_mem_rels
+  simp only [allRelations, Set.mem_iUnion]
+  exists MixedDegree
+  simp only [Set.mem_iUnion]
+  exists ζ, h
+  rw [mixedDegreeRelationsOfRoot]
+  exists i, j, hi, hj, t, u
+
+/-- If a root is present for the underlying `PartialChevalleySystem`,
+then we get a linearity theorem for this root inside the `PresentedGroup`. -/
+theorem lin_of_root_of_mem_presentRoots (w : GradedPartialChevalleyGroup Φ R)
+  {ζ : Φ} (h : ζ ∈ w.sys.presentRoots)
+    : lin_of_root(w.project, ζ) := by
+  intro i hi t u
+  apply eq_of_mul_inv_eq_one
+  apply eq_one_of_mem_rels
+  simp only [allRelations, Set.mem_iUnion]
+  exists Linearity
+  simp only [Set.mem_iUnion]
+  exists ζ, h
+  rw [linearityRelationsOfRoot]
+  exists i, hi, t, u
+
+/-- Every "lifted" relation we assume holds inside the `PresentedGroup`. -/
+theorem liftedProp_of_mem_lifted (w : GradedPartialChevalleyGroup Φ R)
+    : ∀ S ∈ w.liftedRelationsSets, ∀ r ∈ S, w.project r = 1 := by
+  intro S _ _ _
+  apply eq_one_of_mem_rels
+  simp only [allRelations, Set.mem_iUnion]
+  exists Lifted
+  apply Set.mem_sUnion.mpr
+  exists S
+
+/-- Every "definition" we assume holds inside the `PresentedGroup`. -/
+theorem definitionProp_of_define (w : GradedPartialChevalleyGroup Φ R)
+    : ∀ (ζ : Φ) (i : ℕ) (hi : i ≤ height ζ) (t : R),
+        w.project {ζ, i, t} = w.project (w.define (GradedChevalleyGenerator.mk ζ i hi t)) := by
+  intro ζ i hi t
+  apply eq_of_inv_mul_eq_one
+  apply eq_one_of_mem_rels
+  simp only [allRelations, Set.mem_iUnion]
+  exists Definition
+  simp only [definitionRelations, Set.mem_iUnion]
+  exists ζ
+  simp only [Set.mem_setOf_eq]
+  exists i, hi, t
+
+
 /-- This theorem is used to create a homomorphism between two `GradedPartialChevalleyGroup`s (on
-the same underlying positive root system `Φ` and ring `R`). It gives a useful sufficient condition
-under which every relation holding in one group also holds in another group. This condition breaks down
-the seven classes of relations in `allRelations`. For the lifted and definition relations, the condition
-simply st -/
+the same underlying positive root system `Φ` and ring `R`). It gives a helpful sufficient condition
+under which every relation holding in one group also holds in another group. This condition essentially
+states that these relations hold trivially when the groups' underlying `PartialChevalleySystem`
+structures overlap. Hence, we do not have to worry about the sets of relations arising in these cases. -/
 theorem graded_injection (w₁ w₂ : GradedPartialChevalleyGroup Φ R)
   (h_good :
   ∀ (K : GradedSteinbergRelationClass),
@@ -413,94 +539,6 @@ def delab_project' : Delab := do
     let mkApp5 (.const ``project _) _ _ _ _ _ := e.appFn!.appArg!' | failure
     let f_mk_mk ← withNaryArg 5 delab
     `($f_mk_mk)
-
-/-! ### Helper functions for unpacking  -/
-
-/-- If a pair of roots -/
-theorem trivialSpanProp_of_mem_trivialSpanRoot_pairs {w : GradedPartialChevalleyGroup Φ R} {p : Φ × Φ}
-    (h : p ∈ w.sys.trivialSpanRootPairs)
-      : trivialSpanPropOfRootPair w.project p := by
-  intro i j hi hj t u
-  apply eq_one_of_mem_rels
-  simp only [allRelations, Set.mem_iUnion]
-  exists TrivialSpan
-  simp only [Set.mem_iUnion]
-  exists p, h
-  rw [trivialSpanRelationsOfRootPair]
-  exists i, j, hi, hj, t, u
-
-theorem singleSpanProp_of_mem_singleSpanRoot_pairs (w : GradedPartialChevalleyGroup Φ R) (p : SingleSpanRootPair Φ)
-  (h : p ∈ w.sys.singleSpanRootPairs)
-    : singleCommutatorPropOfRootPair w.project p := by
-  intro i j hi hj t u
-  apply eq_of_mul_inv_eq_one
-  apply eq_one_of_mem_rels
-  simp only [allRelations, Set.mem_iUnion]
-  exists SingleSpan
-  simp only [Set.mem_iUnion]
-  exists p, h
-  rw [singleSpanRelationsOfRootPair]
-  exists i, j, hi, hj, t, u
-
-theorem doubleSpanProp_of_mem_doubleSpanRootPairs (w : GradedPartialChevalleyGroup Φ R) (p : DoubleSpanRootPair Φ)
-  (h : p ∈ w.sys.doubleCommutatorRootPairs)
-    : doubleSpanPropOfRootPair w.project p := by
-  intro i j hi hj t u
-  apply eq_of_mul_inv_eq_one
-  apply eq_one_of_mem_rels
-  simp only [allRelations, Set.mem_iUnion]
-  exists DoubleSpan
-  simp only [Set.mem_iUnion]
-  exists p, h
-  rw [doubleSpanRelationsOfRootPair]
-  exists i, j, hi, hj, t, u
-
-theorem mixedDegreeProp_of_mem_presentRoots (w : GradedPartialChevalleyGroup Φ R)
-  {ζ : Φ} (h : ζ ∈ w.sys.presentRoots)
-    : mixedDegreePropOfRoot w.project ζ := by
-  intro i j hi hj t u
-  apply eq_one_of_mem_rels
-  simp only [allRelations, Set.mem_iUnion]
-  exists MixedDegree
-  simp only [Set.mem_iUnion]
-  exists ζ, h
-  rw [mixedDegreeRelationsOfRoot]
-  exists i, j, hi, hj, t, u
-
-theorem lin_of_root_of_mem_presentRoots (w : GradedPartialChevalleyGroup Φ R)
-  {ζ : Φ} (h : ζ ∈ w.sys.presentRoots)
-    : lin_of_root(w.project, ζ) := by
-  intro i hi t u
-  apply eq_of_mul_inv_eq_one
-  apply eq_one_of_mem_rels
-  simp only [allRelations, Set.mem_iUnion]
-  exists Linearity
-  simp only [Set.mem_iUnion]
-  exists ζ, h
-  rw [linearityRelationsOfRoot]
-  exists i, hi, t, u
-
-theorem liftedProp_of_mem_lifted (w : GradedPartialChevalleyGroup Φ R)
-    : ∀ S ∈ w.liftedRelationsSets, ∀ r ∈ S, w.project r = 1 := by
-  intro S _ _ _
-  apply eq_one_of_mem_rels
-  simp only [allRelations, Set.mem_iUnion]
-  exists Lifted
-  apply Set.mem_sUnion.mpr
-  exists S
-
-theorem definitionProp_of_define (w : GradedPartialChevalleyGroup Φ R)
-    : ∀ (ζ : Φ) (i : ℕ) (hi : i ≤ height ζ) (t : R),
-        w.project {ζ, i, t} = w.project (w.define (GradedChevalleyGenerator.mk ζ i hi t)) := by
-  intro ζ i hi t
-  apply eq_of_inv_mul_eq_one
-  apply eq_one_of_mem_rels
-  simp only [allRelations, Set.mem_iUnion]
-  exists Definition
-  simp only [definitionRelations, Set.mem_iUnion]
-  exists ζ
-  simp only [Set.mem_setOf_eq]
-  exists i, hi, t
 
 section declareThms
 
