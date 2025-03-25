@@ -527,10 +527,9 @@ theorem full_relations_implied_by_weak_relations :
   ∀ r ∈ (fullB3SmallGraded F).allRelations, (weakB3SmallGraded F).project r = 1 := by
   simp only [fullB3SmallGraded, weakB3SmallGraded]
   apply GradedPartialChevalleyGroup.graded_injection
-  all_goals (
-    intro p h
-    simp only at h
-  )
+  intro K
+  rcases K
+  all_goals simp only; intro p h
   · rcases h with h_old|h_new
     · tauto
     · right

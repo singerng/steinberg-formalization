@@ -32,13 +32,15 @@ abbrev toB3Mat (g : ChevalleyGenerator B3SmallPosRoot F) := (toB3Root g.ζ).M g.
 theorem valid :
   ∀ r ∈ (fullB3Small F).allRelations, (FreeGroup.lift toB3Mat r) = 1 := by
   intro r h
-  simp only [allRelations, Set.sUnion_insert, Set.sUnion_singleton, Set.mem_union] at h
-  rcases h with h_triv|h_sing|h_doub|h_lin|h_def
-  · simp only [trivialSpanRelations, fullB3Small, fullMk, fullB3SmallSystem, mkFull,
-      fullTrivialSpanPairs, weakTrivialSpanPairs, Set.mem_union, Set.mem_iUnion] at h_triv
-    rcases h_triv with ⟨ p, h_p, h_triv ⟩
-    simp only [trivialSpanRelationsOfRootPair, Set.mem_setOf_eq] at h_triv
-    rcases h_triv with ⟨ t, u, h_triv ⟩
+  simp only [allRelations, Set.mem_iUnion] at h
+  rcases h with ⟨ K, h ⟩
+  rcases K
+  all_goals simp only at h
+  · simp only [fullB3Small, fullMk, fullB3SmallSystem, mkFull,
+      fullTrivialSpanPairs, weakTrivialSpanPairs, Set.mem_union, Set.mem_iUnion] at h
+    rcases h with ⟨ p, h_p, h ⟩
+    simp only [trivialSpanRelationsOfRootPair, Set.mem_setOf_eq] at h
+    rcases h with ⟨ t, u, h ⟩
     subst r
     simp only [map_commutatorElement, map_inv, map_mul, FreeGroup.lift.of]
     simp only [Set.mem_insert_iff, Set.mem_singleton_iff, or_assoc] at h_p
@@ -60,11 +62,11 @@ theorem valid :
       all_goals tauto
     )
     apply MLong_comm_disjoint'
-  · simp only [singleSpanRelations, fullB3Small, fullMk, fullB3SmallSystem, mkFull,
-      fullSingleSpanRootPairs, weakSingleSpanRootPairs, Set.mem_union, Set.mem_iUnion] at h_sing
-    rcases h_sing with ⟨ p, h_p, h_sing ⟩
-    simp only [singleSpanRelationsOfRootPair, Set.mem_setOf_eq] at h_sing
-    rcases h_sing with ⟨ t, u, h_sing ⟩
+  · simp only [fullB3Small, fullMk, fullB3SmallSystem, mkFull,
+      fullSingleSpanRootPairs, weakSingleSpanRootPairs, Set.mem_union, Set.mem_iUnion] at h
+    rcases h with ⟨ p, h_p, h ⟩
+    simp only [singleSpanRelationsOfRootPair, Set.mem_setOf_eq] at h
+    rcases h with ⟨ t, u, h ⟩
     subst r
     simp only [map_commutatorElement, map_inv, map_mul, FreeGroup.lift.of]
     simp only [Set.mem_insert_iff, Set.mem_singleton_iff, or_assoc] at h_p
@@ -87,11 +89,11 @@ theorem valid :
       simp only [true_toRing, false_toRing]
       ring_nf
       tauto
-  · simp only [doubleSpanRelations, fullB3Small, fullMk, fullB3SmallSystem, mkFull,
-      fullSingleSpanRootPairs, singleSpanRootPairs, Set.mem_union, Set.mem_iUnion] at h_doub
-    rcases h_doub with ⟨ p, h_p, h_doub ⟩
-    simp only [doubleSpanRelationsOfRootPair, Set.mem_setOf_eq] at h_doub
-    rcases h_doub with ⟨ t, u, h_doub ⟩
+  · simp only [fullB3Small, fullMk, fullB3SmallSystem, mkFull,
+      fullSingleSpanRootPairs, singleSpanRootPairs, Set.mem_union, Set.mem_iUnion] at h
+    rcases h with ⟨ p, h_p, h ⟩
+    simp only [doubleSpanRelationsOfRootPair, Set.mem_setOf_eq] at h
+    rcases h with ⟨ t, u, h ⟩
     subst r
     simp only [map_commutatorElement, map_inv, map_mul, FreeGroup.lift.of]
     simp only [Set.mem_insert_iff, Set.mem_singleton_iff, or_assoc] at h_p
@@ -102,11 +104,11 @@ theorem valid :
     · rw [MLong_swap, ←Bool.not_false, MLong_MShort_comm_overlap, MLong_swap]
       simp only [Bool.not_false, true_toRing, false_toRing]
       ring_nf
-  · simp only [linearityRelations, fullB3Small, fullMk, fullB3SmallSystem, mkFull,
-      fullPresentRoots, B3Small.weakPresentRoots, Set.mem_union, Set.mem_iUnion] at h_lin
-    rcases h_lin with ⟨ p, h_p, h_lin ⟩
-    simp only [linearityRelationsOfRoot, Set.mem_setOf_eq] at h_lin
-    rcases h_lin with ⟨ t, u, h_lin ⟩
+  · simp only [fullB3Small, fullMk, fullB3SmallSystem, mkFull,
+      fullPresentRoots, B3Small.weakPresentRoots, Set.mem_union, Set.mem_iUnion] at h
+    rcases h with ⟨ p, h_p, h ⟩
+    simp only [linearityRelationsOfRoot, Set.mem_setOf_eq] at h
+    rcases h with ⟨ t, u, h ⟩
     subst r
     simp only [map_commutatorElement, map_inv, map_mul, FreeGroup.lift.of, toB3Mat, toB3Root, BRoot.M, BShortRoot.M, BLongRoot.M]
     simp only [Set.mem_insert_iff, Set.mem_singleton_iff, or_assoc] at h_p
@@ -120,8 +122,8 @@ theorem valid :
     any_goals rw [MShort_mul_add]
     all_goals rw [MLong_mul_add]
   · simp only [definitionRelations, fullB3Small, fullMk, fullB3SmallSystem, mkFull,
-      Set.mem_iUnion] at h_def
-    rcases h_def with ⟨ p, h_p, h_def ⟩
+      Set.mem_iUnion] at h
+    rcases h with ⟨ p, h_p, h ⟩
     subst r
     simp only [inv_mul_cancel, map_one]
 

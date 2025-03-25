@@ -328,9 +328,8 @@ theorem b3large_valid :
         rw [←this]
         simp only [Set.mem_image]
         use r
-      simp only [allRelations, lifted_sets]
-      simp only [Set.sUnion_insert, Set.sUnion_singleton, Set.mem_union, Set.mem_sUnion]
-      right; right; right; right; right; left
+      simp only [allRelations, lifted_sets, Set.mem_iUnion]
+      use GradedSteinbergRelationClass.Lifted
       use S
       constructor
       · simp only [weakB3LargeGraded, liftedRelationsSets, lifted_sets, Set.mem_union]

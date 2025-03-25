@@ -142,26 +142,25 @@ private theorem eq_one_of_defineThenReflect_lift_allRelations_of_reflectValidPro
     ∀ r ∈ w.allRelations, w.project (FreeGroup.lift (defineThenReflect w) r) = 1 := by
   nth_rewrite 1 [allRelations]
   intro r h_r
-  simp only [sUnion_insert, sUnion_singleton, mem_image, mem_union, mem_sUnion] at h_r
-  rcases h_r with (h_triv | h_sing | h_doub | h_mix | h_lin | h_lift | h_def)
+  simp only [mem_iUnion] at h_r
+  rcases h_r with ⟨ K, h_r ⟩
+  rcases K
+  all_goals simp only at h_r
   · apply eq_one_of_mem_rels
-    simp only [trivialSpanRelations, mem_iUnion, exists_prop, Prod.exists] at h_triv
-    rcases h_triv with ⟨ ζ, η, h_in_pairs, h_t_in_rels ⟩
-    suffices (FreeGroup.lift (defineThenReflect w)) r ∈ w.trivialSpanRelations by
-      simp only [allRelations, sUnion_insert]
-      tauto
-    rw [trivialSpanRelations]
+    simp only [mem_iUnion, exists_prop, Prod.exists] at h_r
+    rcases h_r with ⟨ ζ, η, h_in_pairs, h_t_in_rels ⟩
+    simp only [allRelations, mem_iUnion]
+    use GradedSteinbergRelationClass.TrivialSpan
     simp only [mem_iUnion, exists_prop, Prod.exists]
     use ζ, η, h_in_pairs
     exact defineThenReflect_eq_reflect_of_trivialSpanRelationsOfRootPair_of_mem_presentRoots
       ζ η (w.sys.h_trivial_valid (ζ, η) h_in_pairs).1 (w.sys.h_trivial_valid (ζ, η) h_in_pairs).2 r h_t_in_rels
   · apply eq_one_of_mem_rels
-    simp only [singleSpanRelations, mem_iUnion, exists_prop, Sigma.exists, PProd.exists] at h_sing
-    rcases h_sing with ⟨ ζ, η, θ, C, h_height, h_in_pairs, h_t_in_rels ⟩
-    suffices (FreeGroup.lift (defineThenReflect w)) r ∈ w.singleSpanRelations by
-      simp only [allRelations, sUnion_insert]
-      tauto
-    simp only [singleSpanRelations, mem_iUnion, exists_prop, Prod.exists]
+    simp only [mem_iUnion, exists_prop, Sigma.exists, PProd.exists] at h_r
+    rcases h_r with ⟨ ζ, η, θ, C, h_height, h_in_pairs, h_t_in_rels ⟩
+    simp only [allRelations, mem_iUnion]
+    use GradedSteinbergRelationClass.SingleSpan
+    simp only [mem_iUnion, exists_prop, Prod.exists]
     use ⟨ ζ, η, θ, C, h_height ⟩, h_in_pairs
     exact defineThenReflect_eq_reflect_of_singleSpanRelationsOfRootPair_of_mem_presentRoots
       ζ η θ C h_height
@@ -169,12 +168,11 @@ private theorem eq_one_of_defineThenReflect_lift_allRelations_of_reflectValidPro
       (w.sys.h_single_valid ⟨ ζ, η, θ, C, h_height ⟩ h_in_pairs).2.2
       r h_t_in_rels
   · apply eq_one_of_mem_rels
-    simp only [doubleSpanRelations, mem_iUnion, exists_prop, Sigma.exists, PProd.exists] at h_doub
-    rcases h_doub with ⟨ ζ, η, θ₁, θ₂, ⟨ C₁, C₂, h_height₁, h_height₂ ⟩ , h_in_pairs, h_t_in_rels ⟩
-    suffices (FreeGroup.lift (defineThenReflect w)) r ∈ w.doubleSpanRelations by
-      simp only [allRelations, sUnion_insert]
-      tauto
-    simp only [doubleSpanRelations, mem_iUnion, exists_prop, Prod.exists]
+    simp only [mem_iUnion, exists_prop, Sigma.exists, PProd.exists] at h_r
+    rcases h_r with ⟨ ζ, η, θ₁, θ₂, ⟨ C₁, C₂, h_height₁, h_height₂ ⟩ , h_in_pairs, h_t_in_rels ⟩
+    simp only [allRelations, mem_iUnion]
+    use GradedSteinbergRelationClass.DoubleSpan
+    simp only [mem_iUnion, exists_prop, Prod.exists]
     use ⟨ ζ, η, θ₁, θ₂, C₁, C₂, h_height₁, h_height₂ ⟩, h_in_pairs
     exact defineThenReflect_eq_reflect_of_doubleSpanRelationsOfRootPair_of_mem_presentRoots ζ η θ₁ θ₂ C₁ C₂ h_height₁ h_height₂
       (w.sys.h_double_valid ⟨ ζ, η, θ₁, θ₂, C₁, C₂, h_height₁, h_height₂ ⟩ h_in_pairs).1
@@ -183,27 +181,25 @@ private theorem eq_one_of_defineThenReflect_lift_allRelations_of_reflectValidPro
       (w.sys.h_double_valid ⟨ ζ, η, θ₁, θ₂, C₁, C₂, h_height₁, h_height₂ ⟩ h_in_pairs).2.2.2
       r h_t_in_rels
   · apply eq_one_of_mem_rels
-    simp only [mixedDegreeCommutatorRelations, mem_iUnion, exists_prop, Prod.exists] at h_mix
-    rcases h_mix with ⟨ ζ, h_in_present, h_t_in_rels ⟩
-    suffices (FreeGroup.lift (defineThenReflect w)) r ∈ w.mixedDegreeCommutatorRelations by
-      simp only [allRelations, sUnion_insert, sUnion_singleton, mem_union, mem_sUnion]
-      tauto
-    simp only [mixedDegreeCommutatorRelations, mem_iUnion, exists_prop, Prod.exists]
+    simp only [mem_iUnion, exists_prop, Prod.exists] at h_r
+    rcases h_r with ⟨ ζ, h_in_present, h_t_in_rels ⟩
+    simp only [allRelations, mem_iUnion]
+    use GradedSteinbergRelationClass.MixedDegree
+    simp only [mem_iUnion, exists_prop, Prod.exists]
     use ζ, h_in_present
     exact defineThenReflect_eq_reflect_of_mixedDegRelationsOfRoot_of_mem_presentRoots ζ h_in_present r h_t_in_rels
   · apply eq_one_of_mem_rels
-    simp only [linearityRelations, mem_iUnion, exists_prop, Prod.exists] at h_lin
-    rcases h_lin with ⟨ ζ, h_in_present, h_t_in_rels ⟩
-    suffices (FreeGroup.lift (defineThenReflect w)) r ∈ w.linearityRelations by
-      simp only [allRelations, sUnion_insert]
-      tauto
-    simp only [linearityRelations, mem_iUnion, exists_prop, Prod.exists]
+    simp only [mem_iUnion, exists_prop, Prod.exists] at h_r
+    rcases h_r with ⟨ ζ, h_in_present, h_t_in_rels ⟩
+    simp only [allRelations, mem_iUnion]
+    use GradedSteinbergRelationClass.Linearity
+    simp only [mem_iUnion, exists_prop, Prod.exists]
     use ζ, h_in_present
     exact defineThenReflect_eq_reflect_of_linearityRelationsOfRoot_of_mem_presentRoots ζ h_in_present r h_t_in_rels
-  · rcases h_lift with ⟨ T, ⟨ h_T, h_t_T ⟩ ⟩
+  · rcases h_r with ⟨ T, ⟨ h_T, h_t_T ⟩ ⟩
     exact h' T h_T r h_t_T
-  · simp only [definitionRelations, mem_setOf_eq] at h_def
-    rcases h_def with ⟨ S, h_S, h_r ⟩
+  · simp only [definitionRelations, mem_setOf_eq] at h_r
+    rcases h_r with ⟨ S, h_S, h_r ⟩
     simp only [mem_range, SetLike.mem_coe] at h_S
     rcases h_S with ⟨ ζ, h_ζ ⟩
     subst S

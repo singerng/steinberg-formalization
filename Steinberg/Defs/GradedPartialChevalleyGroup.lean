@@ -290,33 +290,35 @@ def fullMk (Φ : Type TΦ) [PositiveRootSystem Φ] (R : Type TR) [Ring R] (sys :
 
 /-! ### Sets of relations -/
 
--- TODO: Should we make a `GradedRelationType` inductive type to make unpacking easier?
-
-def trivialSpanRelations (w : GradedPartialChevalleyGroup Φ R) : Set (FreeGroup (GradedChevalleyGenerator Φ R)) :=
-  ⋃ (p ∈ w.sys.trivialSpanRootPairs), trivialSpanRelationsOfRootPair R p
-
-def singleSpanRelations (w : GradedPartialChevalleyGroup Φ R) : Set (FreeGroup (GradedChevalleyGenerator Φ R)) :=
-  ⋃ (p ∈ w.sys.singleSpanRootPairs), singleSpanRelationsOfRootPair R p
-
-def doubleSpanRelations (w : GradedPartialChevalleyGroup Φ R) : Set (FreeGroup (GradedChevalleyGenerator Φ R)) :=
-  ⋃ (p ∈ w.sys.doubleCommutatorRootPairs), doubleSpanRelationsOfRootPair R p
-
-def mixedDegreeCommutatorRelations (w : GradedPartialChevalleyGroup Φ R) : Set (FreeGroup (GradedChevalleyGenerator Φ R)) :=
-  ⋃ (ζ ∈ w.sys.presentRoots), mixedDegreeRelationsOfRoot R ζ
-
-def linearityRelations (w : GradedPartialChevalleyGroup Φ R) : Set (FreeGroup (GradedChevalleyGenerator Φ R)) :=
-  ⋃ (ζ ∈ w.sys.presentRoots), linearityRelationsOfRoot R ζ
-
--- TODO : should there be a `definitionRelationOfRoot`?
-def definitionRelations (w : GradedPartialChevalleyGroup Φ R) : Set (FreeGroup (GradedChevalleyGenerator Φ R)) :=
+def definitionRelations (w : GradedPartialChevalleyGroup Φ R) :=
   ⋃ (ζ : Φ), {
-      {ζ, i, t}⁻¹ * w.define (GradedChevalleyGenerator.mk ζ i hi t) | (i : ℕ) (hi : i ≤ height ζ) (t : R)
+    {ζ, i, t}⁻¹ * w.define (GradedChevalleyGenerator.mk ζ i hi t) | (i : ℕ) (hi : i ≤ height ζ) (t : R)
   }
 
-/-- The set of relations used to define the `PresentedGroup`. -/
+inductive GradedSteinbergRelationClass
+  | TrivialSpan | SingleSpan | DoubleSpan | MixedDegree | Linearity | Lifted | Definition
+
+open GradedSteinbergRelationClass
+
 def allRelations (w : GradedPartialChevalleyGroup Φ R) :=
-  ⋃₀ {trivialSpanRelations w, singleSpanRelations w, doubleSpanRelations w, mixedDegreeCommutatorRelations w,
-      linearityRelations w, ⋃₀ liftedRelationsSets w, definitionRelations w}
+  ⋃ (K : GradedSteinbergRelationClass),
+  (
+    match K with
+    | TrivialSpan =>
+        ⋃ (p ∈ w.sys.trivialSpanRootPairs), trivialSpanRelationsOfRootPair R p
+    | SingleSpan =>
+        ⋃ (p ∈ w.sys.singleSpanRootPairs), singleSpanRelationsOfRootPair R p
+    | DoubleSpan =>
+        ⋃ (p ∈ w.sys.doubleCommutatorRootPairs), doubleSpanRelationsOfRootPair R p
+    | MixedDegree =>
+        ⋃ (ζ ∈ w.sys.presentRoots), mixedDegreeRelationsOfRoot R ζ
+    | Linearity =>
+        ⋃ (ζ ∈ w.sys.presentRoots), linearityRelationsOfRoot R ζ
+    | Lifted =>
+        ⋃₀ liftedRelationsSets w
+    | Definition =>
+        w.definitionRelations
+  )
 
 /-! ### The group and the projection -/
 
@@ -331,94 +333,55 @@ def project (w : GradedPartialChevalleyGroup Φ R) : FreeGroup (GradedChevalleyG
 
 /-- Mapping between two `GradedPartialChevalleyGroup` graded groups -/
 theorem graded_injection (w₁ w₂ : GradedPartialChevalleyGroup Φ R)
-  (h_triv : ∀ p ∈ w₁.sys.trivialSpanRootPairs, p ∈ w₂.sys.trivialSpanRootPairs ∨
-    (∀ r ∈ (trivialSpanRelationsOfRootPair R p), w₂.project r = 1))
-  (h_single : ∀ p ∈ w₁.sys.singleSpanRootPairs, p ∈ w₂.sys.singleSpanRootPairs ∨
-    (∀ r ∈ (singleSpanRelationsOfRootPair R p), w₂.project r = 1))
-  (h_doub : ∀ p ∈ w₁.sys.doubleCommutatorRootPairs, p ∈ w₂.sys.doubleCommutatorRootPairs ∨
-    (∀ r ∈ (doubleSpanRelationsOfRootPair R p), w₂.project r = 1))
-  (h_mix : ∀ p ∈ w₁.sys.presentRoots, p ∈ w₂.sys.presentRoots ∨
-    (∀ r ∈ (mixedDegreeRelationsOfRoot R p), w₂.project r = 1))
-  (h_lin : ∀ p ∈ w₁.sys.presentRoots, p ∈ w₂.sys.presentRoots ∨
-    (∀ r ∈ (linearityRelationsOfRoot R p), w₂.project r = 1))
-  (h_lift : ∀ S ∈ w₁.liftedRelationsSets, ∀ p ∈ S, w₂.project p = 1)
-  (h_def : ∀ p ∈ w₁.definitionRelations, w₂.project p = 1)
+  (h_good :
+  ∀ (K : GradedSteinbergRelationClass),
+    match K with
+    | TrivialSpan =>
+      ∀ p ∈ w₁.sys.trivialSpanRootPairs, p ∈ w₂.sys.trivialSpanRootPairs ∨
+        (∀ r ∈ (trivialSpanRelationsOfRootPair R p), w₂.project r = 1)
+    | SingleSpan =>
+      ∀ p ∈ w₁.sys.singleSpanRootPairs, p ∈ w₂.sys.singleSpanRootPairs ∨
+        (∀ r ∈ (singleSpanRelationsOfRootPair R p), w₂.project r = 1)
+    | DoubleSpan =>
+      ∀ p ∈ w₁.sys.doubleCommutatorRootPairs, p ∈ w₂.sys.doubleCommutatorRootPairs ∨
+        (∀ r ∈ (doubleSpanRelationsOfRootPair R p), w₂.project r = 1)
+    | MixedDegree =>
+      ∀ p ∈ w₁.sys.presentRoots, p ∈ w₂.sys.presentRoots ∨
+        (∀ r ∈ (mixedDegreeRelationsOfRoot R p), w₂.project r = 1)
+    | Linearity =>
+      ∀ p ∈ w₁.sys.presentRoots, p ∈ w₂.sys.presentRoots ∨
+        (∀ r ∈ (linearityRelationsOfRoot R p), w₂.project r = 1)
+    | Lifted =>
+      ∀ S ∈ w₁.liftedRelationsSets, ∀ p ∈ S, w₂.project p = 1
+    | Definition =>
+      ∀ p ∈ w₁.definitionRelations, w₂.project p = 1
+  )
   : ∀ r ∈ w₁.allRelations, w₂.project r = 1 := by
   simp only [allRelations]
   intro r h
-  simp only [Set.sUnion_insert, Set.sUnion_singleton, Set.mem_union, Set.mem_sUnion] at h
-  rcases h with h|h|h|h|h|h|h
-  · simp only [trivialSpanRelations, Set.sUnion_image, Set.mem_iUnion, exists_prop] at h
+  simp only [Set.mem_iUnion] at h
+  rcases h with ⟨ K, h ⟩
+  rcases h_K : K
+  all_goals (
+    simp only [h_K] at h
+    specialize h_good K
+    simp only [h_K] at h_good
+  )
+  any_goals (
+    simp only [Set.mem_iUnion, exists_prop] at h
     rcases h with ⟨ p, h_p, h_r_p ⟩
-    specialize h_triv p
-    simp_all only [forall_const]
-    rcases h_triv with h|h
+    specialize h_good p h_p
+    rcases h_good with h|h
     · apply eq_one_of_mem_rels
-      simp only [allRelations]
-      have : r ∈ w₂.trivialSpanRelations := by
-        simp only [trivialSpanRelations]
-        simp only [Set.sUnion_image, Set.mem_iUnion, exists_prop]
-        use p
-      simp only [Set.sUnion_insert, Set.sUnion_singleton, Set.mem_union, Set.mem_sUnion]
-      tauto
+      simp only [allRelations, Set.mem_iUnion]
+      exists K
+      rw [h_K]
+      simp only [Set.mem_iUnion, exists_prop]
+      exists p
     · tauto
-  · simp only [singleSpanRelations, Set.sUnion_image, Set.mem_iUnion, exists_prop] at h
-    rcases h with ⟨ p, h_p, h_r_p ⟩
-    specialize h_single p
-    simp_all only [forall_const]
-    rcases h_single with h|h
-    · apply eq_one_of_mem_rels
-      simp only [allRelations]
-      have : r ∈ w₂.singleSpanRelations := by
-        simp only [singleSpanRelations]
-        simp only [Set.sUnion_image, Set.mem_iUnion, exists_prop]
-        use p
-      simp only [Set.sUnion_insert, Set.sUnion_singleton, Set.mem_union, Set.mem_sUnion]
-      tauto
-    · tauto
-  · simp only [doubleSpanRelations, Set.sUnion_image, Set.mem_iUnion, exists_prop] at h
-    rcases h with ⟨ p, h_p, h_r_p ⟩
-    specialize h_doub p
-    simp_all only [forall_const]
-    rcases h_doub with h|h
-    · apply eq_one_of_mem_rels
-      simp only [allRelations]
-      have : r ∈ w₂.doubleSpanRelations := by
-        simp only [doubleSpanRelations]
-        simp only [Set.sUnion_image, Set.mem_iUnion, exists_prop]
-        use p
-      simp only [Set.sUnion_insert, Set.sUnion_singleton, Set.mem_union, Set.mem_sUnion]
-      tauto
-    · tauto
-  · simp only [mixedDegreeCommutatorRelations, Set.sUnion_image, Set.mem_iUnion, exists_prop] at h
-    rcases h with ⟨ p, h_p, h_r_p ⟩
-    specialize h_mix p
-    simp_all only [forall_const]
-    rcases h_mix with h|h
-    · apply eq_one_of_mem_rels
-      simp only [allRelations]
-      have : r ∈ w₂.mixedDegreeCommutatorRelations := by
-        simp only [mixedDegreeCommutatorRelations]
-        simp only [Set.sUnion_image, Set.mem_iUnion, exists_prop]
-        use p
-      simp only [Set.sUnion_insert, Set.sUnion_singleton, Set.mem_union, Set.mem_sUnion]
-      tauto
-    · tauto
-  · simp only [linearityRelations, Set.sUnion_image, Set.mem_iUnion, exists_prop] at h
-    rcases h with ⟨ p, h_p, h_r_p ⟩
-    specialize h_lin p
-    simp_all only [forall_const]
-    rcases h_lin with h|h
-    · apply eq_one_of_mem_rels
-      simp only [allRelations]
-      have : r ∈ w₂.linearityRelations := by
-        simp only [linearityRelations]
-        simp only [Set.sUnion_image, Set.mem_iUnion, exists_prop]
-        use p
-      simp only [Set.sUnion_insert, Set.sUnion_singleton, Set.mem_union, Set.mem_sUnion]
-      tauto
-    · tauto
-  · tauto
+  )
+  · simp only [Set.mem_sUnion] at h
+    tauto
   · tauto
 
 open Lean PrettyPrinter Delaborator SubExpr in
@@ -443,15 +406,12 @@ theorem trivialSpanProp_of_mem_trivialSpanRoot_pairs {w : GradedPartialChevalley
       : trivialSpanPropOfRootPair w.project p := by
   intro i j hi hj t u
   apply eq_one_of_mem_rels
-  apply Set.mem_sUnion.mpr
-  use w.trivialSpanRelations
-  constructor
-  · tauto
-  · simp only [trivialSpanRelations]
-    simp only [Set.mem_iUnion]
-    use p, h
-    rw [trivialSpanRelationsOfRootPair]
-    exists i, j, hi, hj, t, u
+  simp only [allRelations, Set.mem_iUnion]
+  exists TrivialSpan
+  simp only [Set.mem_iUnion]
+  exists p, h
+  rw [trivialSpanRelationsOfRootPair]
+  exists i, j, hi, hj, t, u
 
 theorem singleSpanProp_of_mem_singleSpanRoot_pairs (w : GradedPartialChevalleyGroup Φ R) (p : SingleSpanRootPair Φ)
   (h : p ∈ w.sys.singleSpanRootPairs)
@@ -459,15 +419,12 @@ theorem singleSpanProp_of_mem_singleSpanRoot_pairs (w : GradedPartialChevalleyGr
   intro i j hi hj t u
   apply eq_of_mul_inv_eq_one
   apply eq_one_of_mem_rels
-  apply Set.mem_sUnion.mpr
-  use w.singleSpanRelations
-  constructor
-  · tauto
-  · simp only [singleSpanRelations]
-    simp only [Set.mem_iUnion]
-    use p, h
-    rw [singleSpanRelationsOfRootPair]
-    exists i, j, hi, hj, t, u
+  simp only [allRelations, Set.mem_iUnion]
+  exists SingleSpan
+  simp only [Set.mem_iUnion]
+  exists p, h
+  rw [singleSpanRelationsOfRootPair]
+  exists i, j, hi, hj, t, u
 
 theorem doubleSpanProp_of_mem_doubleSpanRootPairs (w : GradedPartialChevalleyGroup Φ R) (p : DoubleSpanRootPair Φ)
   (h : p ∈ w.sys.doubleCommutatorRootPairs)
@@ -475,30 +432,24 @@ theorem doubleSpanProp_of_mem_doubleSpanRootPairs (w : GradedPartialChevalleyGro
   intro i j hi hj t u
   apply eq_of_mul_inv_eq_one
   apply eq_one_of_mem_rels
-  apply Set.mem_sUnion.mpr
-  use w.doubleSpanRelations
-  constructor
-  · tauto
-  · simp only [doubleSpanRelations]
-    simp only [Set.mem_iUnion]
-    use p, h
-    rw [doubleSpanRelationsOfRootPair]
-    exists i, j, hi, hj, t, u
+  simp only [allRelations, Set.mem_iUnion]
+  exists DoubleSpan
+  simp only [Set.mem_iUnion]
+  exists p, h
+  rw [doubleSpanRelationsOfRootPair]
+  exists i, j, hi, hj, t, u
 
 theorem mixedDegreeProp_of_mem_presentRoots (w : GradedPartialChevalleyGroup Φ R)
   {ζ : Φ} (h : ζ ∈ w.sys.presentRoots)
     : mixedDegreePropOfRoot w.project ζ := by
   intro i j hi hj t u
   apply eq_one_of_mem_rels
-  apply Set.mem_sUnion.mpr
-  use w.mixedDegreeCommutatorRelations
-  constructor
-  · tauto
-  · simp only [mixedDegreeCommutatorRelations]
-    simp only [Set.mem_iUnion]
-    use ζ, h
-    rw [mixedDegreeRelationsOfRoot]
-    exists i, j, hi, hj, t, u
+  simp only [allRelations, Set.mem_iUnion]
+  exists MixedDegree
+  simp only [Set.mem_iUnion]
+  exists ζ, h
+  rw [mixedDegreeRelationsOfRoot]
+  exists i, j, hi, hj, t, u
 
 theorem lin_of_root_of_mem_presentRoots (w : GradedPartialChevalleyGroup Φ R)
   {ζ : Φ} (h : ζ ∈ w.sys.presentRoots)
@@ -506,26 +457,21 @@ theorem lin_of_root_of_mem_presentRoots (w : GradedPartialChevalleyGroup Φ R)
   intro i hi t u
   apply eq_of_mul_inv_eq_one
   apply eq_one_of_mem_rels
-  apply Set.mem_sUnion.mpr
-  use w.linearityRelations
-  constructor
-  · tauto
-  · simp only [linearityRelations]
-    simp only [Set.mem_iUnion]
-    use ζ, h
-    rw [linearityRelationsOfRoot]
-    exists i, hi, t, u
+  simp only [allRelations, Set.mem_iUnion]
+  exists Linearity
+  simp only [Set.mem_iUnion]
+  exists ζ, h
+  rw [linearityRelationsOfRoot]
+  exists i, hi, t, u
 
 theorem liftedProp_of_mem_lifted (w : GradedPartialChevalleyGroup Φ R)
     : ∀ S ∈ w.liftedRelationsSets, ∀ r ∈ S, w.project r = 1 := by
   intro S _ _ _
   apply eq_one_of_mem_rels
+  simp only [allRelations, Set.mem_iUnion]
+  exists Lifted
   apply Set.mem_sUnion.mpr
-  use ⋃₀ liftedRelationsSets w
-  constructor
-  · tauto
-  · apply Set.mem_sUnion.mpr
-    use S
+  exists S
 
 theorem definitionProp_of_define (w : GradedPartialChevalleyGroup Φ R)
     : ∀ (ζ : Φ) (i : ℕ) (hi : i ≤ height ζ) (t : R),
@@ -533,15 +479,12 @@ theorem definitionProp_of_define (w : GradedPartialChevalleyGroup Φ R)
   intro ζ i hi t
   apply eq_of_inv_mul_eq_one
   apply eq_one_of_mem_rels
-  apply Set.mem_sUnion.mpr
-  use w.definitionRelations
-  constructor
-  · tauto
-  · simp only [definitionRelations]
-    simp only [Set.mem_iUnion]
-    use ζ
-    simp only [Set.mem_setOf_eq]
-    use i, hi, t
+  simp only [allRelations, Set.mem_iUnion]
+  exists Definition
+  simp only [definitionRelations, Set.mem_iUnion]
+  exists ζ
+  simp only [Set.mem_setOf_eq]
+  exists i, hi, t
 
 section declareThms
 
