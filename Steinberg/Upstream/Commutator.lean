@@ -207,3 +207,5 @@ theorem HW1 : ⁅⁅y, x⁆, conj x z⁆ * ⁅⁅x, z⁆, conj z y⁆ * ⁅⁅z,
 theorem HW2 : (conj y ⁅⁅y⁻¹, x⁆, z⁆) * (conj z ⁅⁅z⁻¹, y⁆, x⁆) * (conj x ⁅⁅x⁻¹, z⁆, y⁆) = 1 := by
   simp only [commutatorElement_def, conj_apply, ← mul_assoc, inv_mul_cancel_right,
     mul_inv_rev, inv_inv, mul_inv_cancel_right, mul_inv_cancel, one_mul]
+
+theorem commutatorElement_def' : ⁅ x, y ⁆ = (x * y) * (x⁻¹ * y⁻¹) := by group

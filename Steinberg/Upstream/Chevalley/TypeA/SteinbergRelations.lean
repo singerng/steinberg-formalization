@@ -27,15 +27,7 @@ variable {R : Type TR} [CommRing R]
 namespace Chevalley.TypeA
 open Chevalley Chevalley.TypeA
 
-private theorem raw_M_prod_overlap (i j k : I) (hij : i ≠ j) (hjk : j ≠ k) (t u : R) :
-  (raw_M i j hij t) * (raw_M j k hjk u) =
-    1 + t • E i j + u • E j k + (u * t) • E i k := by
-  unfold raw_M
-  algebra
-  rw [E_mul_overlap]
-  module
-
-private theorem raw_M_prod_disjoint (i j k l : I) (hij : i ≠ j) (hkl : k ≠ l) (hjk : j ≠ k) (t u : R) :
+private theorem raw_M_prod_disjoint {i j k l : I} (hij : i ≠ j) (hkl : k ≠ l) (hjk : j ≠ k) (t u : R) :
   (raw_M i j hij t) * (raw_M k l hkl u) =
     1 + t • E i j + u • E k l := by
   unfold raw_M
@@ -43,13 +35,25 @@ private theorem raw_M_prod_disjoint (i j k l : I) (hij : i ≠ j) (hkl : k ≠ l
   rw [E_mul_disjoint hjk]
   module
 
+/-! ## Linearity relations -/
+
 theorem M_mul_add (i j : I) (hij : i ≠ j) (t u : R)
   : (A_M i j hij t) * (A_M i j hij u) = A_M i j hij (t + u) := by
   ext1
   unfold A_M
   simp only [Units.val_mul]
-  rw [raw_M_prod_disjoint i j i j hij hij hij.symm]
+  rw [raw_M_prod_disjoint]
+  module
+  · exact hij.symm
+
+/-! ## Commutator relations -/
+
+private theorem raw_M_prod_overlap (i j k : I) (hij : i ≠ j) (hjk : j ≠ k) (t u : R) :
+  (raw_M i j hij t) * (raw_M j k hjk u) =
+    1 + t • E i j + u • E j k + (u * t) • E i k := by
   unfold raw_M
+  algebra
+  rw [E_mul_overlap]
   module
 
 theorem M_commutator_disjoint (i j k l : I) (hij : i ≠ j) (hkl : k ≠ l)
@@ -59,8 +63,8 @@ theorem M_commutator_disjoint (i j k l : I) (hij : i ≠ j) (hkl : k ≠ l)
   ext1
   unfold A_M
   simp only [Units.val_mul]
-  rw [raw_M_prod_disjoint i j k l hij hkl hjk]
-  rw [raw_M_prod_disjoint k l i j hkl hij hil.symm]
+  rw [raw_M_prod_disjoint hij hkl hjk]
+  rw [raw_M_prod_disjoint hkl hij hil.symm]
   module
 
 theorem M_commutator_overlap (i j k : I) (hij : i ≠ j) (hjk : j ≠ k) (hik : i ≠ k) (t u : R)
@@ -70,7 +74,7 @@ theorem M_commutator_overlap (i j k : I) (hij : i ≠ j) (hjk : j ≠ k) (hik : 
   unfold A_M
   simp only [Units.val_mul]
   rw [raw_M_prod_overlap i j k hij hjk]
-  rw [raw_M_prod_disjoint i k j k hik hjk hjk.symm]
+  rw [raw_M_prod_disjoint hik hjk hjk.symm]
   unfold raw_M
   algebra
   simp only [E_mul_disjoint hik.symm]

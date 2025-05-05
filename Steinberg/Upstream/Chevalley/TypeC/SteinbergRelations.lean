@@ -33,6 +33,8 @@ theorem MShort_swap (a b : Bool) (i j : I) (t : R) (hij : i ≠ j) :
   simp only [MShort, raw_MShort]
   module
 
+/-! ## Linearity relations -/
+
 theorem MLong_mul_add {a : Bool} {i : I} {t u : R}
   : (MLong a i t) * (MLong a i u) = MLong a i (t + u) := by
   ext1
@@ -52,6 +54,8 @@ theorem MShort_mul_add {a b : Bool} {i j : I} {t u : R} (hij : i ≠ j)
     E_mul_disjoint Signed.ne_of_neg
   ]
   module
+
+/-! ## Commutator relations -/
 
 /- ### Trivial commutators -/
 

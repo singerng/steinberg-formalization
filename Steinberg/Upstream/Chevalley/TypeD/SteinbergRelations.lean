@@ -25,11 +25,13 @@ variable {R : Type TR} [CommRing R]
 namespace Chevalley.TypeD
 open Chevalley.TypeD
 
-theorem M_swap (x : Bool) (a b : Bool) (i j : I) (t : R) (hij : i ≠ j) :
+theorem M_swap (a b : Bool) (i j : I) (t : R) (hij : i ≠ j) :
   (D_M a b i j hij t) = (D_M b a j i hij.symm (-t)) := by
   ext1
   simp only [D_M, raw_M]
   module
+
+/-! ## Commutator relations -/
 
 theorem M_add {a b : Bool} {i j : I} {hij : i ≠ j} {t u : R}
   : (D_M a b i j hij t) * (D_M a b i j hij u) = D_M a b i j hij (t + u) := by
@@ -44,6 +46,8 @@ theorem M_add {a b : Bool} {i j : I} {hij : i ≠ j} {t u : R}
   ]
   algebra
   module
+
+/-! ## Linearity relations -/
 
 /- ### Trivial commutators -/
 
