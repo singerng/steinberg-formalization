@@ -3,15 +3,9 @@ Copyright (c) 2025 The Steinberg Group
 Released under the Apache License v2.0; see LICENSE for full text.
 -/
 
-import Mathlib.Data.Matrix.Basic
-import Mathlib.Tactic
+import Steinberg.Upstream.Chevalley.TypeA.Defs
 
-import Steinberg.Macro.Group
-
-import Steinberg.Upstream.Chevalley.Macro.Algebra
-import Steinberg.Upstream.Chevalley.IndicatorMatrix
 import Steinberg.Upstream.Commutator
-
 
 /-!
   An implementation of the group `GL_{n+1}(R)` of `(n+1)×(n+1)` matrices with determinant `1` over a ring `R`.
@@ -27,35 +21,11 @@ import Steinberg.Upstream.Commutator
   the group.
 -/
 
-universe u v
-
-universe TI TR
 variable {I : Type TI} [DecidableEq I] [Fintype I]
 variable {R : Type TR} [CommRing R]
 
 namespace Chevalley.TypeA
-open Chevalley.TypeA
-
-private def raw_M (i j : I) (hij : i ≠ j) (t : R) : Matrix I I R :=
-  1 + t • (E i j)
-
-private theorem val_inv_of_M {i j : I} {t : R} {hij : i ≠ j} :
-  (raw_M i j hij t) * (raw_M i j hij (-t)) = 1 := by
-  simp only [raw_M]
-  algebra
-  simp only [E_mul_disjoint hij.symm]
-  module
-
-private theorem inv_val_of_M {i j : I} {t : R} {hij : i ≠ j} :
-  (raw_M i j hij (-t)) * (raw_M i j hij t) = 1 := by
-  nth_rewrite 2 [←neg_neg t]
-  exact val_inv_of_M
-
-def A_M (i j : I) (hij : i ≠ j) (t : R) : Matrix.GeneralLinearGroup I R where
-  val := raw_M i j hij t
-  inv := raw_M i j hij (-t)
-  val_inv := val_inv_of_M
-  inv_val := inv_val_of_M
+open Chevalley Chevalley.TypeA
 
 private theorem raw_M_prod_overlap (i j k : I) (hij : i ≠ j) (hjk : j ≠ k) (t u : R) :
   (raw_M i j hij t) * (raw_M j k hjk u) =
@@ -105,13 +75,3 @@ theorem M_commutator_overlap (i j k : I) (hij : i ≠ j) (hjk : j ≠ k) (hik : 
   algebra
   simp only [E_mul_disjoint hik.symm]
   module
-
-/-- ### Type-A roots -/
-
-structure ARoot (I : Type u) [DecidableEq I] [Fintype I] where
-  mk ::
-  i : I
-  j : I
-  hij : i ≠ j
-
-def ARoot.M (ζ : ARoot I) (t : R) := A_M ζ.i ζ.j ζ.hij t

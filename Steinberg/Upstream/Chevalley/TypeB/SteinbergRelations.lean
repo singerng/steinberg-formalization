@@ -3,7 +3,7 @@ Copyright (c) 2025 The Steinberg Group
 Released under the Apache License v2.0; see LICENSE for full text.
 -/
 
-import Steinberg.Upstream.Chevalley.TypeB.MatrixDefs
+import Steinberg.Upstream.Chevalley.TypeB.Defs
 
 import Steinberg.Upstream.Commutator
 
@@ -16,18 +16,16 @@ import Steinberg.Upstream.Commutator
   `long` matrices have two paired nonzero off-diagonal entries, and the `short` matrices have three.
   We again verify the *Steinberg* relations followed by these roots.
 
-  The paired structure of the coordinates is reflected in the type `Signed I` below, which given an
+  The paired structure of the coordinates is reflected in the type `ZSigned I` below, which given an
   instance `I` of `Fintype` and `DecidableEq` produces a new type which is an instance of the same
   typeclasses and has cardinality `2|I|+1`.
 -/
 
-universe u v
-
-variable {I : Type TI} [DecidableEq I] [Fintype I] [LinearOrder I]
+variable {I : Type TI} [DecidableEq I] [Fintype I]
 variable {R : Type TR} [CommRing R]
 
 namespace Chevalley.TypeB
-open Chevalley.TypeB
+open Chevalley Chevalley.TypeB
 
 theorem MLong_swap (a b : Bool) (i j : I) (t : R) (hij : i ≠ j) :
   (MLong a b i j t hij) = (MLong b a j i (-t * a * b) (Ne.symm hij)) := by
@@ -42,9 +40,9 @@ theorem MShort_mul_add {a : Bool} {i : I} {t u : R}
   ext1
   simp only [MShort, raw_MShort, Units.val_mul]
   algebra
-  simp only [E_mul_disjoint SignedWithZero.zero_ne_signed,
-            E_mul_disjoint SignedWithZero.signed_ne_zero,
-            E_mul_disjoint SignedWithZero.ne_of_neg, E_mul_overlap]
+  simp only [E_mul_disjoint ZSigned.zero_ne_signed,
+            E_mul_disjoint ZSigned.signed_ne_zero,
+            E_mul_disjoint ZSigned.ne_of_neg, E_mul_overlap]
   algebra
   ring_nf
   simp only [square_eq_one]
@@ -55,12 +53,30 @@ theorem MLong_mul_add {a b : Bool} {i j : I} {t u : R} (hij : i ≠ j)
   ext1
   simp only [MLong, raw_MLong, Units.val_mul]
   algebra
-  simp only [E_mul_disjoint (SignedWithZero.ne_of_ne hij),
-            E_mul_disjoint (SignedWithZero.ne_of_ne (Ne.symm hij)),
-            E_mul_disjoint (SignedWithZero.ne_of_neg)]
+  simp only [E_mul_disjoint (ZSigned.ne_of_ne hij),
+            E_mul_disjoint (ZSigned.ne_of_ne hij.symm),
+            E_mul_disjoint (ZSigned.ne_of_neg)]
   module
 
 /- ### Trivial commutators -/
+
+private lemma MLong_prod_disjoint {a b c d : Bool} {i j k l : I} {t u : R} (hij : i ≠ j) (hkl : k ≠ l)
+  (hik : a.inj i ≠ (!c).inj k) (hil : a.inj i ≠ (!d).inj l) (hjk : b.inj j ≠ (!c).inj k) (hjl : b.inj j ≠ (!d).inj l)
+  : (raw_MLong a b i j t hij) * (raw_MLong c d k l u hkl) =
+    1 + (a * t) • E (a.inj i) ((!b).inj j)
+      - (a * t) • E (b.inj j) ((!a).inj i)
+      + (c * u) • E (c.inj k) ((!d).inj l)
+      - (c * u) • E (d.inj l) ((!c).inj k)
+    := by
+  algebra
+  ring_nf
+  simp only [
+    E_mul_disjoint (ZSigned.neg_of_ne hik),
+    E_mul_disjoint (ZSigned.neg_of_ne hil),
+    E_mul_disjoint (ZSigned.neg_of_ne hjk),
+    E_mul_disjoint (ZSigned.neg_of_ne hjl)
+  ]
+  algebra
 
 theorem MLong_comm_disjoint {a b c d : Bool} {i j k l : I} {t u : R} (hij : i ≠ j) (hkl : k ≠ l)
   (hik : a.inj i ≠ (!c).inj k) (hil : a.inj i ≠ (!d).inj l) (hjk : b.inj j ≠ (!c).inj k) (hjl : b.inj j ≠ (!d).inj l)
@@ -68,38 +84,39 @@ theorem MLong_comm_disjoint {a b c d : Bool} {i j k l : I} {t u : R} (hij : i �
   apply triv_comm_iff_commutes.mpr
   ext1
   simp only [MLong, Units.val_mul, Units.inv_mk]
+  rw [MLong_prod_disjoint hij hkl hik hil hjk hjl]
+  rw [MLong_prod_disjoint hkl hij (ZSigned.neg_of_ne hik).symm (ZSigned.neg_of_ne hjk).symm
+    (ZSigned.neg_of_ne hil).symm (ZSigned.neg_of_ne hjl).symm]
+  module
 
+private lemma MLong_prod_disjoint' {a b : Bool} {i j : I} {t u : R} (hij : i ≠ j)
+  : (raw_MLong a b i j t hij) * (raw_MLong a (!b) i j u hij) =
+    1 + (a * t) • E (a.inj i) ((!b).inj j)
+      - (a * t) • (E (b.inj j) ((!a).inj i))
+      + (a * u) • (E (a.inj i) (b.inj j))
+      - (a * u) • (E ((!b).inj j) ((!a).inj i))
+      - (t * u) • (E (a.inj i) ((!a).inj i))
+    := by
   algebra
   ring_nf
-  simp only [E_mul_overlap,
-    E_mul_disjoint (Ne.symm hik),
-    E_mul_disjoint (Ne.symm hil),
-    E_mul_disjoint (Ne.symm hjk),
-    E_mul_disjoint (Ne.symm hjl),
-    E_mul_disjoint (SignedWithZero.neg_of_ne hik),
-    E_mul_disjoint (SignedWithZero.neg_of_ne hil),
-    E_mul_disjoint (SignedWithZero.neg_of_ne hjk),
-    E_mul_disjoint (SignedWithZero.neg_of_ne hjl)]
-  algebra
+  simp only [
+    square_eq_one,
+    Bool.not_not,
+    E_mul_overlap,
+    E_mul_disjoint ZSigned.ne_of_neg,
+    E_mul_disjoint (ZSigned.ne_of_ne hij),
+    E_mul_disjoint (ZSigned.ne_of_ne hij.symm)
+  ]
   module
 
 theorem MLong_comm_disjoint' {a b : Bool} {i j : I} {t u : R} (hij : i ≠ j)
   : ⁅ (MLong a b i j t hij), (MLong a (!b) i j u hij) ⁆ = 1 := by
-  rw [commutatorElement_def]
-  apply mul_inv_eq_of_eq_mul
-  apply mul_inv_eq_of_eq_mul
-  simp only [one_mul]
+  apply triv_comm_iff_commutes.mpr
   ext1
-  simp only [MLong, raw_MLong, Units.val_mul]
-  algebra
-  ring_nf
-  simp only [E_mul_overlap,
-    E_mul_disjoint SignedWithZero.ne_of_neg,
-    E_mul_disjoint (SignedWithZero.ne_of_ne hij),
-    E_mul_disjoint (SignedWithZero.ne_of_ne hij.symm),
-    Bool.not_not
-    ]
-  algebra
+  simp only [MLong, Units.val_mul]
+  nth_rewrite 4 [← Bool.not_not b]
+  simp only [MLong_prod_disjoint']
+  rw [Bool.not_not]
   module
 
 theorem MLong_MShort_comm_disjoint {a b c : Bool} {i j k : I} {t u : R} (hij : i ≠ j)
@@ -114,13 +131,13 @@ theorem MLong_MShort_comm_disjoint {a b c : Bool} {i j k : I} {t u : R} (hij : i
   algebra
   ring_nf
   simp only [E_mul_overlap,
-    E_mul_disjoint SignedWithZero.zero_ne_signed,
-    E_mul_disjoint SignedWithZero.signed_ne_zero,
-    E_mul_disjoint SignedWithZero.ne_of_neg,
+    E_mul_disjoint ZSigned.zero_ne_signed,
+    E_mul_disjoint ZSigned.signed_ne_zero,
+    E_mul_disjoint ZSigned.ne_of_neg,
     E_mul_disjoint hik.symm,
     E_mul_disjoint hjk.symm,
-    E_mul_disjoint (SignedWithZero.neg_of_ne hik),
-    E_mul_disjoint (SignedWithZero.neg_of_ne hjk)
+    E_mul_disjoint (ZSigned.neg_of_ne hik),
+    E_mul_disjoint (ZSigned.neg_of_ne hjk)
     ]
   algebra
   module
@@ -138,14 +155,14 @@ theorem MLong_comm_overlap {a b c : Bool} {i j k : I} {t u : R} (hij : i ≠ j) 
   ring_nf
   simp only [E_mul_overlap,
     Bool.not_not,
-    E_mul_disjoint SignedWithZero.ne_of_neg,
-    E_mul_disjoint SignedWithZero.ne_of_neg.symm,
-    E_mul_disjoint (SignedWithZero.ne_of_ne hjk),
-    E_mul_disjoint (SignedWithZero.neg_of_ne (SignedWithZero.ne_of_ne hjk.symm)),
-    E_mul_disjoint (SignedWithZero.neg_of_ne (SignedWithZero.ne_of_ne hik)),
-    E_mul_disjoint (SignedWithZero.neg_of_ne (SignedWithZero.ne_of_ne hik.symm)),
-    E_mul_disjoint (SignedWithZero.neg_of_ne (SignedWithZero.ne_of_ne hij)),
-    E_mul_disjoint (SignedWithZero.ne_of_ne hij.symm),
+    E_mul_disjoint ZSigned.ne_of_neg,
+    E_mul_disjoint ZSigned.ne_of_neg.symm,
+    E_mul_disjoint (ZSigned.ne_of_ne hjk),
+    E_mul_disjoint (ZSigned.neg_of_ne (ZSigned.ne_of_ne hjk.symm)),
+    E_mul_disjoint (ZSigned.neg_of_ne (ZSigned.ne_of_ne hik)),
+    E_mul_disjoint (ZSigned.neg_of_ne (ZSigned.ne_of_ne hik.symm)),
+    E_mul_disjoint (ZSigned.neg_of_ne (ZSigned.ne_of_ne hij)),
+    E_mul_disjoint (ZSigned.ne_of_ne hij.symm),
   ]
   algebra
   simp only [Bool.int_of_neg]
@@ -157,18 +174,17 @@ theorem MShort_comm {a b : Bool} {i j : I} {t u : R} (hij : i ≠ j)
   ext1
   simp only [MShort, MLong, raw_MShort, raw_MLong, Units.inv_mk, Units.val_mul]
   algebra
-  simp only [E_mul_disjoint SignedWithZero.zero_ne_signed,
-    E_mul_disjoint SignedWithZero.signed_ne_zero,
-    E_mul_disjoint SignedWithZero.ne_of_neg,
-    E_mul_disjoint (SignedWithZero.ne_of_ne hij),
-    E_mul_disjoint (SignedWithZero.ne_of_ne (Ne.symm hij)),
+  simp only [E_mul_disjoint ZSigned.zero_ne_signed,
+    E_mul_disjoint ZSigned.signed_ne_zero,
+    E_mul_disjoint ZSigned.ne_of_neg,
+    E_mul_disjoint (ZSigned.ne_of_ne hij),
+    E_mul_disjoint (ZSigned.ne_of_ne (Ne.symm hij)),
     E_mul_overlap
     ]
   algebra
   ring_nf
   simp only [square_eq_one]
   module
-
 
 /- ### Double commutators -/
 
@@ -181,12 +197,12 @@ theorem MLong_MShort_comm_overlap (a b : Bool) (i j : I) (t u : R) (hij : i ≠ 
     algebra
     simp only [Bool.not_not]
     simp only [E_mul_overlap,
-      E_mul_disjoint SignedWithZero.zero_ne_signed,
-      E_mul_disjoint SignedWithZero.signed_ne_zero,
-      E_mul_disjoint SignedWithZero.ne_of_neg,
-      E_mul_disjoint (Ne.symm (SignedWithZero.ne_of_neg)),
-      E_mul_disjoint (SignedWithZero.ne_of_ne hij),
-      E_mul_disjoint (SignedWithZero.ne_of_ne (Ne.symm hij))]
+      E_mul_disjoint ZSigned.zero_ne_signed,
+      E_mul_disjoint ZSigned.signed_ne_zero,
+      E_mul_disjoint ZSigned.ne_of_neg,
+      E_mul_disjoint (Ne.symm (ZSigned.ne_of_neg)),
+      E_mul_disjoint (ZSigned.ne_of_ne hij),
+      E_mul_disjoint (ZSigned.ne_of_ne (Ne.symm hij))]
     algebra
     ring_nf
     match_scalars
@@ -195,31 +211,3 @@ theorem MLong_MShort_comm_overlap (a b : Bool) (i j : I) (t u : R) (hij : i ≠ 
     all_goals ring_nf
     all_goals simp only [square_eq_one]
     all_goals ring_nf
-
-/-- Encodes a vector with exactly two ±1 entries -/
-structure BLongRoot (I : Type TI) [LinearOrder I] where
-  mk ::
-  a : Bool
-  b : Bool
-  i : I
-  j : I
-  hij : i < j
-
-def BLongRoot.M (ζ : BLongRoot I) (t : R) :=
-  MLong ζ.a ζ.b ζ.i ζ.j t (ne_of_lt ζ.hij)
-
-/-- Encodes a vector with exactly one ±1 entry -/
-structure BShortRoot (I : Type TI) where
-  mk ::
-  a : Bool
-  i : I
-
-def BShortRoot.M (ζ : BShortRoot I) (t : R) :=
-  MShort ζ.a ζ.i t
-
-def BRoot (I : Type TI) [LinearOrder I] := BLongRoot I ⊕ BShortRoot I
-
-def BRoot.M (ζ : BRoot I) (t : R) :=
-  match ζ with
-  | Sum.inl ζ => ζ.M t
-  | Sum.inr ζ => ζ.M t
