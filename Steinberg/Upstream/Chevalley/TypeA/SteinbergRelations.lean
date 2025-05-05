@@ -79,3 +79,53 @@ theorem M_commutator_overlap (i j k : I) (hij : i ≠ j) (hjk : j ≠ k) (hik : 
   algebra
   simp only [E_mul_disjoint hik.symm]
   module
+
+/-! ## Diagonal relations -/
+
+def n_elt (i j : I) (hij : i ≠ j) (t : Rˣ) := (A_M i j hij t.val) * (A_M j i hij.symm (-t.inv)) * (A_M i j hij t.val)
+
+private lemma n_elt_form (i j : I) (hij : i ≠ j) (t : Rˣ) : (n_elt i j hij t).val =
+  1 + t.val • E i j
+    - t.inv • E j i
+    - E i i
+    - E j j
+  := by
+  simp only [n_elt, A_M, Units.val_mul, raw_M]
+  algebra
+  simp only [
+    E_mul_overlap,
+    E_mul_disjoint hij,
+    E_mul_disjoint hij.symm
+  ]
+  algebra
+  simp only [Units.inv_eq_val_inv, Units.inv_mul, Units.mul_inv, neg_mul]
+  module
+
+def h_elt (i j : I) (hij : i ≠ j) (t : Rˣ) := (n_elt i j hij t) * (n_elt i j hij (-1))
+
+private lemma h_elt_form (i j : I) (hij : i ≠ j) (t : Rˣ) : (h_elt i j hij t).val =
+  1 + (t.val - 1) • E i i + (t.inv - 1) • E j j
+  := by
+  simp only [h_elt, Units.val_mul, n_elt_form]
+  algebra
+  simp only [
+    E_mul_overlap,
+    E_mul_disjoint hij,
+    E_mul_disjoint hij.symm,
+  ]
+  algebra
+  simp only [Units.inv_eq_val_inv, inv_one, Units.val_one, inv_neg]
+  module
+
+theorem M_diagonal (i j : I) (hij : i ≠ j) (t u : Rˣ) : (h_elt i j hij t) * (h_elt i j hij u) = (h_elt i j hij (t*u)) := by
+  ext1
+  simp only [h_elt_form, Units.val_mul]
+  algebra
+  simp only [
+    E_mul_overlap,
+    E_mul_disjoint hij,
+    E_mul_disjoint hij.symm
+  ]
+  ring_nf
+  simp only [Units.inv_eq_val_inv, mul_inv_rev, Units.val_mul]
+  module

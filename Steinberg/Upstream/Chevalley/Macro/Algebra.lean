@@ -13,9 +13,9 @@ macro (name := algebra) "algebra" : tactic => `(tactic|
     -- distributiveness
     mul_add, add_mul,
     -- additive ring structure
-    neg_add, sub_eq_add_neg, add_zero, zero_add,
+    neg_add, sub_eq_add_neg, add_zero, zero_add, neg_zero,
     -- multiplicative ring structure
-    one_mul, mul_one, mul_zero, zero_mul, mul_neg,
+    one_mul, mul_one, mul_zero, zero_mul, mul_neg, neg_mul, neg_neg,
     -- scalar structure
     smul_smul,              -- t • (u • x) = (t * u) • x
     mul_smul_comm,          -- x * (t • y) = t • (x * y)
