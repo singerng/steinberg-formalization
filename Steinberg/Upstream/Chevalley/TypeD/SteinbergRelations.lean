@@ -7,7 +7,17 @@ import Steinberg.Upstream.Chevalley.TypeD.Defs
 
 import Steinberg.Upstream.Commutator
 
-universe u v
+/-!
+* Group name: `SO_{2n}(R)`.
+* Matrix shape: `(2n)×(2n)` matrices over a ring `R`.
+* Group description: the group of `(2n)×(2n)` *orthogonal* matrices with determinant
+  `1` over `R`. The coordinates are indexed by `Signed I`, which is a type with `2n`
+  elements when `I` has `n` elements.
+* Corresponding root system: `D_n`.
+* Generators: All generators have `1`'s on the diagonal and two paired off-diagonal entries.
+
+We verify the *Steinberg* relations for these generators.
+-/
 
 variable {I : Type TI} [DecidableEq I] [Fintype I]
 variable {R : Type TR} [CommRing R]

@@ -8,17 +8,18 @@ import Steinberg.Upstream.Chevalley.TypeB.Defs
 import Steinberg.Upstream.Commutator
 
 /-!
-  An implementation of the group `Ω_{2n+1}(R)` of `(2n+1)×(2n+1)` matrices over a ring `R`.
-  This is a certain "mysterious" subgroup of `SO_{2n+1}(R)`, the group of `(2n+1)×(2n+1)`
-  *orthogonal* matrices with determinant `1` over `R`. The group `Ω_{2n+1}(R)` is the Chevalley
-  group for the root system `B_n`. Its generators fall into two disjoint classes corresponding
-  to `short` and `long` roots in the root system. All generators have `1`'s on the diagonal. The
-  `long` matrices have two paired nonzero off-diagonal entries, and the `short` matrices have three.
-  We again verify the *Steinberg* relations followed by these roots.
+* Group name: `Ω_{2n+1}(R)`.
+* Matrix shape: `(2n+1)×(2n+1)` matrices over a ring `R`.
+* Group description: this is a "mysterious" subgroup of `SO_{2n+1}(R)`, the group
+    of `(2n+1)×(2n+1)` *orthogonal* matrices with determinant `1` over `R`. The coordinates
+    are indexed by `ZSigned I`, which is a type with `2n+1` elements when `I` has `n` elements.
+* Corresponding root system: `B_n`.
+* Generators: Two disjoint classes corresponding to `short` and `long` roots in the
+    root system. All generators have `1`'s on the diagonal.
+  * Generators for `long` roots: Two paired nonzero off-diagonal entries.
+  * Generators for `short` roots: Three nonzero off-diagonal entries.
 
-  The paired structure of the coordinates is reflected in the type `ZSigned I` below, which given an
-  instance `I` of `Fintype` and `DecidableEq` produces a new type which is an instance of the same
-  typeclasses and has cardinality `2|I|+1`.
+We verify the *Steinberg* relations for these generators.
 -/
 
 variable {I : Type TI} [DecidableEq I] [Fintype I]

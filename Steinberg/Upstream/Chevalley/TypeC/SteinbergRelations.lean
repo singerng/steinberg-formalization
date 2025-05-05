@@ -7,6 +7,20 @@ import Steinberg.Upstream.Chevalley.TypeC.Defs
 
 import Steinberg.Upstream.Commutator
 
+/-!
+* Group name: `Sp_{2n+1}(R)`.
+* Matrix shape: `(2n)×(2n)` matrices over a ring `R`.
+* Group description: this is the group of `(2n)×(2n)` *symplectic* matrices over `R`.
+  The coordinates are indexed by `Signed I`, which is a type with `2n` elements when `I` has `n` elements.
+* Corresponding root system: `C_n`.
+* Generators: Two disjoint classes corresponding to `short` and `long` roots in the
+    root system. All generators have `1`'s on the diagonal.
+  * Generators for `long` roots: One nonzero off-diagonal entries.
+  * Generators for `short` roots: Two paired nonzero off-diagonal entries.
+
+We verify the *Steinberg* relations for these generators.
+-/
+
 variable {I : Type TI} [DecidableEq I] [Fintype I]
 variable {R : Type TR} [CommRing R]
 

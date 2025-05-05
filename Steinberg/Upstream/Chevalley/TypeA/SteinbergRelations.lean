@@ -8,17 +8,17 @@ import Steinberg.Upstream.Chevalley.TypeA.Defs
 import Steinberg.Upstream.Commutator
 
 /-!
-  An implementation of the group `GL_{n+1}(R)` of `(n+1)×(n+1)` matrices with determinant `1` over a ring `R`.
-  This group is the Chevalley group for the root system `A_n`. This implementation proceeds by constructing
-  generator matrices for the group (which are matrices with `1`'s on the diagonal and a single nonzero entry
-  off the diagonal, corresponding to elementary operations in Gaussian elimination), and then verifies
-  the *Steinberg* relations which these elements satisfy.
+* Group name: `SL_{n}(R)`.
+* Matrix shape: `n×n` matrices over a ring `R`.
+* Group description: the group of `n×n` matrices with determinant `1` over `R`.
+  The coordinates are indexed by a type `I`.
+* Corresponding root system: `A_n`.
+* Generators: All generators have `1`'s on the diagonal and one off-diagonal entry.
 
-  The matrices' rows and columns can be indexed by any type `I` which is an instance of `Fintype` and
-  `DecidableEq`.
+We verify the *Steinberg* relations for these generators.
 
-  TODO: Show that the generators generate the entire group and that the relations are enough to present
-  the group.
+TODO: Show that the generators generate the entire group and that the relations are enough to present
+the group.
 -/
 
 variable {I : Type TI} [DecidableEq I] [Fintype I]
