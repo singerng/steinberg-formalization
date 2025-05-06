@@ -87,7 +87,7 @@ theorem B_MShort_mul_add {a : Bool} {i : I} {t u : R}
     ring_nf
   · exact ZSigned.ne_of_neg.symm
 
-theorem B_MLong_mul_add {a b : Bool} {i j : I} {t u : R} (hij : i ≠ j)
+theorem B_MLong_mul_add {a b : Bool} {i j : I} {t u : R} {hij : i ≠ j}
   : (B_MLong a b i j t hij) * (B_MLong a b i j u hij) = B_MLong a b i j (t + u) hij := by
   ext1
   simp only [B_MLong, Units.val_mul]
@@ -343,7 +343,7 @@ private lemma B_Long_h_elt_form (a b : Bool) (i j : I) (hij : i ≠ j) (t : Rˣ)
   simp only [Units.inv_eq_val_inv, inv_one, Units.val_one, inv_neg, square_eq_one]
   module
 
-theorem B_Long_diagonal (a b : Bool) (i j : I) (hij : i ≠ j) (t u : Rˣ) :
+theorem B_Long_diagonal {a b : Bool} {i j : I} {hij : i ≠ j} {t u : Rˣ} :
   (B_Long_h_elt a b i j hij t) * (B_Long_h_elt a b i j hij u) = (B_Long_h_elt a b i j hij (t*u)) := by
   ext1
   simp only [B_Long_h_elt_form, Units.val_mul]
@@ -382,15 +382,30 @@ private lemma B_Short_n_elt_form (a : Bool) (i : I) (t : Rˣ) : (B_Short_n_elt a
   ring_nf
   simp only [square_eq_one, cube_eq]
   ring_nf
-  sorry
-  -- match_scalars
-  -- all_goals ring_nf
-  -- sorry
-  -- simp only [mul_assoc, Units.inv_eq_val_inv, ←Units.val_pow_eq_pow_val, ←Units.val_mul,
-  --   pow_eq_zpow, ←zpow_neg_one, ←pow_add]
-
-  -- rw [←zpow_add]
-  -- sorry
+  simp only [mul_assoc, Units.inv_eq_val_inv, ←Units.val_pow_eq_pow_val, ←Units.val_mul]
+  have : (t ^ 3 * t⁻¹ ^ 2) = t := by group
+  rw [this]
+  have : (t ^ 2 * t⁻¹) = t := by group
+  rw [this]
+  have : (t ^ 3 * t⁻¹) = t ^ 2 := by group
+  rw [this]
+  have : (t ^ 4 * t⁻¹ ^ 2) = t ^ 2 := by group
+  rw [this]
+  have : (t * t⁻¹) = 1 := by group
+  rw [this]
+  have : (t ^ 2 * t⁻¹ ^ 2) = 1 := by group
+  rw [this]
+  have : (t⁻¹ ^ 2 * t) = t⁻¹ := by group
+  match_scalars
+  any_goals ring_nf
+  nth_rewrite 2 [mul_assoc]
+  nth_rewrite 2 [mul_assoc]
+  nth_rewrite 2 [←mul_assoc]
+  rw [←Units.val_pow_eq_pow_val, ←Units.val_mul, this]
+  ring_nf
+  nth_rewrite 1 [mul_assoc]
+  rw [←Units.val_pow_eq_pow_val, ←Units.val_mul, this]
+  ring_nf
 
 def B_Short_h_elt (a : Bool) (i : I) (t : Rˣ) :=
   (B_Short_n_elt a i t) * (B_Short_n_elt a i (-1))
@@ -413,7 +428,7 @@ private lemma B_Short_h_elt_form (a : Bool) (i : I) (t : Rˣ) : (B_Short_h_elt a
   simp only [Units.inv_eq_val_inv, inv_one, Units.val_one, inv_neg, square_eq_one]
   module
 
-theorem B_Short_diagonal (a : Bool) (i : I) (t u : Rˣ) :
+theorem B_Short_diagonal {a : Bool} {i : I} {t u : Rˣ} :
   (B_Short_h_elt a i t) * (B_Short_h_elt a i u) = (B_Short_h_elt a i (t * u)) := by
   ext1
   simp only [B_Short_h_elt_form, Units.val_mul]
@@ -432,13 +447,14 @@ instance instChevalleyRealization (I : Type TI) [DecidableEq I] [Fintype I] [Lin
     match ζ with
     | Sum.inl ζ => B_MLong ζ.a ζ.b ζ.i ζ.j t ζ.hij.ne
     | Sum.inr ζ => B_MShort ζ.a ζ.i t
+
   M_mul_add := by
     intro ζ t u
     cases ζ with
-    | inl ζ => exact B_MLong_mul_add ζ.hij.ne
+    | inl ζ => exact B_MLong_mul_add
     | inr ζ => exact B_MShort_mul_add
   h_mul_mul := by
     intro ζ t u
     cases ζ with
-    | inl ζ => exact B_Long_diagonal ζ.a ζ.b ζ.i ζ.j ζ.hij.ne t u
-    | inr ζ => exact B_Short_diagonal ζ.a ζ.i t u
+    | inl ζ => exact B_Long_diagonal
+    | inr ζ => exact B_Short_diagonal

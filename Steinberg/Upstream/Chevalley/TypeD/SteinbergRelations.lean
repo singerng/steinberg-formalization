@@ -142,6 +142,7 @@ def h_elt (a b : Bool) (i j : I) (hij : i ≠ j) (t : Rˣ) := (n_elt a b i j hij
 private lemma h_elt_form (a b : Bool) (i j : I) (hij : i ≠ j) (t : Rˣ) : (h_elt a b i j hij t).val =
   1 + (6 * t.val - 6) • E (a, i) (!b, j) + (2 * t.inv - 2) • E (!b, j) (a, i)
     - (2 * t.inv - 2) • E (!a, i) (b, j) - (6 * t.val - 6) • E (b, j) (!a, i)
+
     + (-3 * t.val + 3) • E (a, i) (a, i) + (-3 * t.val + 3) • E (b, j) (b, j)
     + (-3 * t.inv + 3) • E (!a, i) (!a, i) + (-3 * t.inv + 3) • E (!b, j) (!b, j)
   := by
@@ -177,5 +178,6 @@ theorem M_diagonal (a b : Bool) (i j : I) (hij : i ≠ j) (t u : Rˣ) : (h_elt a
 instance instChevalleyRealization (I : Type TI) [DecidableEq I] [Fintype I] [LinearOrder I] (R : Type TR) [CommRing R]
   : ChevalleyRealization (DRoot I) (Signed I) R where
   M (ζ : DRoot I) (t : R) := D_M ζ.a ζ.b ζ.i ζ.j ζ.hij.ne t
+
   M_mul_add := by intro ζ t u; exact M_mul_add
   h_mul_mul := sorry

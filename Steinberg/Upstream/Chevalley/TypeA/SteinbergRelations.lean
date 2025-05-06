@@ -37,7 +37,7 @@ private theorem raw_A_M_prod_disjoint {i j k l : I} (hij : i ≠ j) (hkl : k ≠
 
 /-! ## Linearity relations -/
 
-theorem M_mul_add (i j : I) (hij : i ≠ j) (t u : R)
+theorem M_mul_add {i j : I} {hij : i ≠ j} {t u : R}
   : (A_M i j hij t) * (A_M i j hij u) = A_M i j hij (t + u) := by
   ext1
   unfold A_M
@@ -117,7 +117,7 @@ private lemma h_elt_form (i j : I) (hij : i ≠ j) (t : Rˣ) : (h_elt i j hij t)
   simp only [Units.inv_eq_val_inv, inv_one, Units.val_one, inv_neg]
   module
 
-theorem A_diagonal (i j : I) (hij : i ≠ j) (t u : Rˣ) : (h_elt i j hij t) * (h_elt i j hij u) = (h_elt i j hij (t*u)) := by
+theorem A_diagonal {i j : I} {hij : i ≠ j} {t u : Rˣ} : (h_elt i j hij t) * (h_elt i j hij u) = (h_elt i j hij (t*u)) := by
   ext1
   simp only [h_elt_form, Units.val_mul]
   algebra
@@ -135,7 +135,7 @@ instance instChevalleyRealization (I : Type TI) [DecidableEq I] [Fintype I] (R :
 
   M_mul_add := by
     intro ζ t u
-    exact M_mul_add ζ.i ζ.j ζ.hij t u
+    exact M_mul_add
   h_mul_mul := by
     intro ζ t u
-    exact A_diagonal ζ.i ζ.j ζ.hij t u
+    exact A_diagonal

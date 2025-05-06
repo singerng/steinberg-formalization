@@ -16,13 +16,16 @@ class RootSystem (Φ : Type TΦ) where
 
 open RootSystem
 
+/-- Typeclass for matrix groups realizing Chevalley gruops corresponding to a root system. -/
 class ChevalleyRealization (Φ : Type TΦ) [RootSystem Φ] (I' : Type TI) [DecidableEq I'] [Fintype I'] (R : Type TR) [CommRing R]
   where
   M : Φ → R → Matrix.GeneralLinearGroup I' R
-  n (ζ : Φ) (t : Rˣ) := (M ζ t.val) * (M (neg ζ) (-t.inv)) * (M ζ t.val)
-  h (ζ : Φ) (t : Rˣ) := (n ζ t) * (n ζ (-1))
 
   -- linear relation
   M_mul_add : ∀ (ζ : Φ) (t u : R), (M ζ t) * (M ζ u) = M ζ (t + u)
+
+  n (ζ : Φ) (t : Rˣ) := (M ζ t.val) * (M (neg ζ) (-t.inv)) * (M ζ t.val)
+  h (ζ : Φ) (t : Rˣ) := (n ζ t) * (n ζ (-1))
+
   -- diagonal relation
   h_mul_mul : ∀ (ζ : Φ) (t u : Rˣ), (h ζ t) * (h ζ u) = h ζ (t * u)
