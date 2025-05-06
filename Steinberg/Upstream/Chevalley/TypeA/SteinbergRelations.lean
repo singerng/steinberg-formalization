@@ -27,10 +27,10 @@ variable {R : Type TR} [CommRing R]
 namespace Chevalley.TypeA
 open Chevalley Chevalley.TypeA
 
-private theorem raw_M_prod_disjoint {i j k l : I} (hij : i ≠ j) (hkl : k ≠ l) (hjk : j ≠ k) (t u : R) :
-  (raw_M i j hij t) * (raw_M k l hkl u) =
+private theorem raw_A_M_prod_disjoint {i j k l : I} (hij : i ≠ j) (hkl : k ≠ l) (hjk : j ≠ k) (t u : R) :
+  (raw_A_M i j hij t) * (raw_A_M k l hkl u) =
     1 + t • E i j + u • E k l := by
-  unfold raw_M
+  unfold raw_A_M
   algebra
   rw [E_mul_disjoint hjk]
   module
@@ -42,16 +42,16 @@ theorem M_mul_add (i j : I) (hij : i ≠ j) (t u : R)
   ext1
   unfold A_M
   simp only [Units.val_mul]
-  rw [raw_M_prod_disjoint]
+  rw [raw_A_M_prod_disjoint]
   module
   · exact hij.symm
 
 /-! ## Commutator relations -/
 
-private theorem raw_M_prod_overlap (i j k : I) (hij : i ≠ j) (hjk : j ≠ k) (t u : R) :
-  (raw_M i j hij t) * (raw_M j k hjk u) =
+private theorem raw_A_M_prod_overlap (i j k : I) (hij : i ≠ j) (hjk : j ≠ k) (t u : R) :
+  (raw_A_M i j hij t) * (raw_A_M j k hjk u) =
     1 + t • E i j + u • E j k + (u * t) • E i k := by
-  unfold raw_M
+  unfold raw_A_M
   algebra
   rw [E_mul_overlap]
   module
@@ -63,8 +63,8 @@ theorem M_commutator_disjoint (i j k l : I) (hij : i ≠ j) (hkl : k ≠ l)
   ext1
   unfold A_M
   simp only [Units.val_mul]
-  rw [raw_M_prod_disjoint hij hkl hjk]
-  rw [raw_M_prod_disjoint hkl hij hil.symm]
+  rw [raw_A_M_prod_disjoint hij hkl hjk]
+  rw [raw_A_M_prod_disjoint hkl hij hil.symm]
   module
 
 theorem M_commutator_overlap (i j k : I) (hij : i ≠ j) (hjk : j ≠ k) (hik : i ≠ k) (t u : R)
@@ -73,9 +73,9 @@ theorem M_commutator_overlap (i j k : I) (hij : i ≠ j) (hjk : j ≠ k) (hik : 
   ext1
   unfold A_M
   simp only [Units.val_mul]
-  rw [raw_M_prod_overlap i j k hij hjk]
-  rw [raw_M_prod_disjoint hik hjk hjk.symm]
-  unfold raw_M
+  rw [raw_A_M_prod_overlap i j k hij hjk]
+  rw [raw_A_M_prod_disjoint hik hjk hjk.symm]
+  unfold raw_A_M
   algebra
   simp only [E_mul_disjoint hik.symm]
   module
@@ -90,7 +90,7 @@ private lemma n_elt_form (i j : I) (hij : i ≠ j) (t : Rˣ) : (n_elt i j hij t)
     - E i i
     - E j j
   := by
-  simp only [n_elt, A_M, Units.val_mul, raw_M]
+  simp only [n_elt, A_M, Units.val_mul, raw_A_M]
   algebra
   simp only [
     E_mul_overlap,

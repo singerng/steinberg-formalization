@@ -20,24 +20,24 @@ open Chevalley Chevalley.TypeA
 
 /-! ## Generators corresponding to roots -/
 
-abbrev raw_M (i j : I) (hij : i ≠ j) (t : R) : Matrix I I R :=
+abbrev raw_A_M (i j : I) (hij : i ≠ j) (t : R) : Matrix I I R :=
   1 + t • (E i j)
 
 private theorem val_inv_of_M {i j : I} {t : R} {hij : i ≠ j} :
-  (raw_M i j hij t) * (raw_M i j hij (-t)) = 1 := by
-  simp only [raw_M]
+  (raw_A_M i j hij t) * (raw_A_M i j hij (-t)) = 1 := by
+  simp only [raw_A_M]
   algebra
   simp only [E_mul_disjoint hij.symm]
   module
 
 private theorem inv_val_of_M {i j : I} {t : R} {hij : i ≠ j} :
-  (raw_M i j hij (-t)) * (raw_M i j hij t) = 1 := by
+  (raw_A_M i j hij (-t)) * (raw_A_M i j hij t) = 1 := by
   nth_rewrite 2 [←neg_neg t]
   exact val_inv_of_M
 
 def A_M (i j : I) (hij : i ≠ j) (t : R) : Matrix.GeneralLinearGroup I R where
-  val := raw_M i j hij t
-  inv := raw_M i j hij (-t)
+  val := raw_A_M i j hij t
+  inv := raw_A_M i j hij (-t)
   val_inv := val_inv_of_M
   inv_val := inv_val_of_M
 

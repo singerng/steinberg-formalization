@@ -21,12 +21,12 @@ open Chevalley.TypeD
 
 /-! ## Generators corresponding to roots -/
 
-abbrev raw_M (a b : Bool) (i j : I) (h : i ≠ j) (t : R) : Matrix (Signed I) (Signed I) R :=
+abbrev raw_D_M (a b : Bool) (i j : I) (h : i ≠ j) (t : R) : Matrix (Signed I) (Signed I) R :=
   1 + t • (E (a, i) (!b, j)) - t • E (b, j) (!a, i)
 
 private theorem val_inv_of_M {a b : Bool} {i j : I} {h : i ≠ j} {t : R} :
-  (raw_M a b i j h t) * (raw_M a b i j h (-t)) = 1 := by
-  simp only [raw_M]
+  (raw_D_M a b i j h t) * (raw_D_M a b i j h (-t)) = 1 := by
+  simp only [raw_D_M]
   algebra
   simp only [E_mul_overlap,
     E_mul_disjoint Signed.ne_of_neg,
@@ -37,13 +37,13 @@ private theorem val_inv_of_M {a b : Bool} {i j : I} {h : i ≠ j} {t : R} :
   module
 
 private theorem inv_val_of_M {a b : Bool} {i j : I} {h : i ≠ j} {t : R} :
-  (raw_M a b i j h (-t)) * (raw_M a b i j h t) = 1 := by
+  (raw_D_M a b i j h (-t)) * (raw_D_M a b i j h t) = 1 := by
   nth_rewrite 2 [←neg_neg t]
   exact val_inv_of_M
 
 def D_M (a b : Bool) (i j : I) (h : i ≠ j) (t : R) : Matrix.GeneralLinearGroup (Signed I) R where
-  val := raw_M a b i j h t
-  inv := raw_M a b i j h (-t)
+  val := raw_D_M a b i j h t
+  inv := raw_D_M a b i j h (-t)
   val_inv := val_inv_of_M
   inv_val := inv_val_of_M
 

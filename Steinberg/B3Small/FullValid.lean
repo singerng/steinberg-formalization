@@ -5,7 +5,7 @@ Released under the Apache License v2.0; see LICENSE for full text.
 
 import Steinberg.B3Small.Defs
 import Steinberg.Defs.PartialChevalleyGroup
-import Steinberg.Upstream.Chevalley.TypeB.TypeB
+import Steinberg.Upstream.Chevalley.TypeB.SteinbergRelations
 
 import Steinberg.Defs.Commutator
 
@@ -19,13 +19,13 @@ open PartialChevalleySystem B3Small
 
 def toB3Root (ζ : B3SmallPosRoot) : BRoot (Fin 3) :=
   match ζ with
-  | β =>   Sum.inl (BLongRoot.mk true false 1 2 (by tauto))
-  | ψ =>   Sum.inr (BShortRoot.mk true 2)
-  | ω =>   Sum.inr (BShortRoot.mk false 0)
-  | βψ =>  Sum.inr (BShortRoot.mk true 1)
-  | ψω =>  Sum.inl (BLongRoot.mk false true 0 2 (by tauto))
-  | β2ψ => Sum.inl (BLongRoot.mk true true 1 2 (by tauto))
-  | βψω => Sum.inl (BLongRoot.mk false true 0 1 (by tauto))
+  | β =>   Sum.inl (TwoSignVector.mk true false 1 2 (by tauto))
+  | ψ =>   Sum.inr (OneSignVector.mk true 2)
+  | ω =>   Sum.inr (OneSignVector.mk false 0)
+  | βψ =>  Sum.inr (OneSignVector.mk true 1)
+  | ψω =>  Sum.inl (TwoSignVector.mk false true 0 2 (by tauto))
+  | β2ψ => Sum.inl (TwoSignVector.mk true true 1 2 (by tauto))
+  | βψω => Sum.inl (TwoSignVector.mk false true 0 1 (by tauto))
 
 abbrev toB3Mat (g : ChevalleyGenerator B3SmallPosRoot F) := (toB3Root g.ζ).M g.t
 
@@ -50,18 +50,18 @@ theorem valid :
       simp only [toB3Mat, toB3Root, BRoot.M, BShortRoot.M, BLongRoot.M]
     )
     any_goals (
-      rw [MLong_MShort_comm_disjoint]
+      rw [B_MLong_MShort_comm_disjoint]
       all_goals tauto
     )
-    any_goals ( -- handle the goals where we have ⁅ MShort, MLong ⁆
-      rw [triv_comm_symm, MLong_MShort_comm_disjoint]
+    any_goals ( -- handle the goals where we have ⁅ B_MShort, B_MLong ⁆
+      rw [triv_comm_symm, B_MLong_MShort_comm_disjoint]
       all_goals tauto
     )
     any_goals (
-      rw [MLong_comm_disjoint]
+      rw [B_MLong_comm_disjoint]
       all_goals tauto
     )
-    apply MLong_comm_disjoint'
+    apply B_MLong_comm_disjoint'
   · simp only [fullB3Small, fullMk, fullB3SmallSystem, mkFull,
       fullSingleSpanRootPairs, weakSingleSpanRootPairs, Set.mem_union, Set.mem_iUnion] at h
     rcases h with ⟨ p, h_p, h ⟩
@@ -78,14 +78,14 @@ theorem valid :
         Fin.isValue, Int.cast_one, Int.cast_two, Int.cast_neg, one_mul]
     )
     any_goals (
-      rw [MShort_comm, MLong_swap]
+      rw [B_MShort_comm, B_MLong_swap]
       simp only [true_toRing, false_toRing]
       ring_nf
       tauto
     )
-    · nth_rewrite 2 [MLong_swap]
-      rw [←Bool.not_false, MLong_comm_overlap]
-      nth_rewrite 2 [MLong_swap]
+    · nth_rewrite 2 [B_MLong_swap]
+      rw [←Bool.not_false, B_MLong_comm_overlap]
+      nth_rewrite 2 [B_MLong_swap]
       simp only [true_toRing, false_toRing]
       ring_nf
       tauto
@@ -101,7 +101,7 @@ theorem valid :
     apply mul_inv_eq_of_eq_mul
     simp only [toB3Mat, toB3Root, BRoot.M, BShortRoot.M, BLongRoot.M,
       Fin.isValue, Int.cast_one, one_mul]
-    · rw [MLong_swap, ←Bool.not_false, MLong_MShort_comm_overlap, MLong_swap]
+    · rw [B_MLong_swap, ←Bool.not_false, B_MLong_MShort_comm_overlap, B_MLong_swap]
       simp only [Bool.not_false, true_toRing, false_toRing]
       ring_nf
   · simp only [fullB3Small, fullMk, fullB3SmallSystem, mkFull,
@@ -119,8 +119,8 @@ theorem valid :
       apply mul_inv_eq_of_eq_mul
       simp only [one_mul]
     )
-    any_goals rw [MShort_mul_add]
-    all_goals rw [MLong_mul_add]
+    any_goals rw [B_MShort_mul_add]
+    all_goals rw [B_MLong_mul_add]
   · simp only [definitionRelations, fullB3Small, fullMk, fullB3SmallSystem, mkFull,
       Set.mem_iUnion] at h
     rcases h with ⟨ p, h_p, h ⟩

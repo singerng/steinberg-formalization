@@ -28,7 +28,7 @@ open Chevalley.TypeD
 theorem M_swap (a b : Bool) (i j : I) (t : R) (hij : i ≠ j) :
   (D_M a b i j hij t) = (D_M b a j i hij.symm (-t)) := by
   ext1
-  simp only [D_M, raw_M]
+  simp only [D_M, raw_D_M]
   module
 
 /-! ## Commutator relations -/
@@ -36,7 +36,7 @@ theorem M_swap (a b : Bool) (i j : I) (t : R) (hij : i ≠ j) :
 theorem M_add {a b : Bool} {i j : I} {hij : i ≠ j} {t u : R}
   : (D_M a b i j hij t) * (D_M a b i j hij u) = D_M a b i j hij (t + u) := by
   ext1
-  simp only [D_M, raw_M, Units.val_mul]
+  simp only [D_M, raw_D_M, Units.val_mul]
   algebra
   simp only [
     E_mul_disjoint (Signed.ne_of_ne hij),
@@ -77,7 +77,7 @@ theorem M_comm_disjoint' {a b : Bool} {i j : I} {t u : R} (hij : i ≠ j)
   apply mul_inv_eq_of_eq_mul
   apply mul_inv_eq_of_eq_mul
   ext1
-  simp only [D_M, raw_M, Units.val_mul, Units.val_one]
+  simp only [D_M, raw_D_M, Units.val_mul, Units.val_one]
   algebra
   simp only [
     E_mul_overlap,
@@ -96,7 +96,7 @@ theorem M_comm_overlap {a b c : Bool} {i j k : I} {t u : R} (hij : i ≠ j) (hjk
   apply mul_inv_eq_of_eq_mul
   apply mul_inv_eq_of_eq_mul
   ext1
-  simp only [D_M, raw_M, Units.val_mul]
+  simp only [D_M, raw_D_M, Units.val_mul]
   algebra
   ring_nf
   simp only [
@@ -124,7 +124,7 @@ private lemma n_elt_form (a b : Bool) (i j : I) (hij : i ≠ j) (t : Rˣ) : (n_e
     - (t.inv) • E (!a, i) (b, j) + (t.inv) • E (!b, j) (a, i)
     + E (a, i) (a, i) + E (b, j) (b, j) + E (!a, i) (!a, i) + E (!b, j) (!b, j)
   := by
-  simp only [n_elt, D_M, Units.val_mul, raw_M]
+  simp only [n_elt, D_M, Units.val_mul, raw_D_M]
   algebra
   simp only [
     E_mul_overlap,
