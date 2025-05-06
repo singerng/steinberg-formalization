@@ -382,7 +382,8 @@ private lemma B_Short_n_elt_form (a : Bool) (i : I) (t : Rˣ) : (B_Short_n_elt a
   ring_nf
   simp only [square_eq_one, cube_eq]
   ring_nf
-  simp only [mul_assoc, Units.inv_eq_val_inv, ←Units.val_pow_eq_pow_val, ←Units.val_mul]
+  repeat rw [mul_assoc a.toRing]
+  simp only [Units.inv_eq_val_inv, ←Units.val_pow_eq_pow_val, ←Units.val_mul]
   have : (t ^ 3 * t⁻¹ ^ 2) = t := by group
   rw [this]
   have : (t ^ 2 * t⁻¹) = t := by group
@@ -395,17 +396,12 @@ private lemma B_Short_n_elt_form (a : Bool) (i : I) (t : Rˣ) : (B_Short_n_elt a
   rw [this]
   have : (t ^ 2 * t⁻¹ ^ 2) = 1 := by group
   rw [this]
-  have : (t⁻¹ ^ 2 * t) = t⁻¹ := by group
+  have : (t * t⁻¹ ^ 2 ) = t⁻¹ := by group
   match_scalars
-  any_goals ring_nf
-  nth_rewrite 2 [mul_assoc]
-  nth_rewrite 2 [mul_assoc]
-  nth_rewrite 2 [←mul_assoc]
-  rw [←Units.val_pow_eq_pow_val, ←Units.val_mul, this]
-  ring_nf
-  nth_rewrite 1 [mul_assoc]
-  rw [←Units.val_pow_eq_pow_val, ←Units.val_mul, this]
-  ring_nf
+  any_goals (
+    rw [mul_assoc a.toRing, ←Units.val_pow_eq_pow_val, ←Units.val_mul, this]
+  )
+  all_goals ring_nf
 
 def B_Short_h_elt (a : Bool) (i : I) (t : Rˣ) :=
   (B_Short_n_elt a i t) * (B_Short_n_elt a i (-1))
