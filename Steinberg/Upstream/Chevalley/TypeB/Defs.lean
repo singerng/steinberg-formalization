@@ -21,14 +21,14 @@ open Chevalley Chevalley.TypeB
 
 /-! ## Generators corresponding to roots -/
 
-abbrev raw_MShort (a : Bool) (i : I) (t : R) : Matrix (ZSigned I) (ZSigned I) R :=
+abbrev raw_B_MShort (a : Bool) (i : I) (t : R) : Matrix (ZSigned I) (ZSigned I) R :=
   1 + (2 * a * t) • (E (a.inj i) ZSigned.zero)
     - (a * t) • (E ZSigned.zero ((!a).inj i))
     - (t^2) • (E (a.inj i) ((!a).inj i))
 
-private theorem val_inv_of_MShort {a : Bool} {i : I} {t : R} :
-  (raw_MShort a i t) * (raw_MShort a i (-t)) = 1 := by
-  simp only [raw_MShort]
+private theorem val_inv_of_B_MShort {a : Bool} {i : I} {t : R} :
+  (raw_B_MShort a i t) * (raw_B_MShort a i (-t)) = 1 := by
+  simp only [raw_B_MShort]
   algebra
   simp only [E_mul_overlap,
     E_mul_disjoint ZSigned.ne_of_neg,
@@ -38,24 +38,24 @@ private theorem val_inv_of_MShort {a : Bool} {i : I} {t : R} :
   simp only [square_eq_one]
   module
 
-private theorem inv_val_of_MShort {a : Bool} {i : I} {t : R} :
-  (raw_MShort a i (-t)) * (raw_MShort a i t) = 1 := by
+private theorem inv_val_of_B_MShort {a : Bool} {i : I} {t : R} :
+  (raw_B_MShort a i (-t)) * (raw_B_MShort a i t) = 1 := by
   nth_rewrite 2 [←neg_neg t]
-  exact val_inv_of_MShort
+  exact val_inv_of_B_MShort
 
-def MShort (a : Bool) (i : I) (t : R) : Matrix.GeneralLinearGroup (ZSigned I) R where
-  val := raw_MShort a i t
-  inv := raw_MShort a i (-t)
-  val_inv := val_inv_of_MShort
-  inv_val := inv_val_of_MShort
+def B_MShort (a : Bool) (i : I) (t : R) : Matrix.GeneralLinearGroup (ZSigned I) R where
+  val := raw_B_MShort a i t
+  inv := raw_B_MShort a i (-t)
+  val_inv := val_inv_of_B_MShort
+  inv_val := inv_val_of_B_MShort
 
-abbrev raw_MLong (a b : Bool) (i j : I) (t : R) (hij : i ≠ j) : Matrix (ZSigned I) (ZSigned I) R :=
+abbrev raw_B_MLong (a b : Bool) (i j : I) (t : R) (hij : i ≠ j) : Matrix (ZSigned I) (ZSigned I) R :=
   1 + (a * t) • (E (a.inj i) ((!b).inj j))
     - (a * t) • (E (b.inj j) ((!a).inj i))
 
-private theorem val_inv_of_MLong {a b : Bool} {i j : I} {t : R} {hij : i ≠ j} :
-  (raw_MLong a b i j t hij) * (raw_MLong a b i j (-t) hij) = 1 := by
-  simp only [raw_MLong]
+private theorem val_inv_of_B_MLong {a b : Bool} {i j : I} {t : R} {hij : i ≠ j} :
+  (raw_B_MLong a b i j t hij) * (raw_B_MLong a b i j (-t) hij) = 1 := by
+  simp only [raw_B_MLong]
   algebra
   simp only [E_mul_overlap,
     E_mul_disjoint (ZSigned.ne_of_ne hij),
@@ -66,36 +66,36 @@ private theorem val_inv_of_MLong {a b : Bool} {i j : I} {t : R} {hij : i ≠ j} 
   simp only [square_eq_one]
   module
 
-private theorem inv_val_of_MLong {a b : Bool} {i j : I} {t : R} {hij : i ≠ j} :
-  (raw_MLong a b i j (-t) hij) * (raw_MLong a b i j t hij) = 1 := by
+private theorem inv_val_of_B_MLong {a b : Bool} {i j : I} {t : R} {hij : i ≠ j} :
+  (raw_B_MLong a b i j (-t) hij) * (raw_B_MLong a b i j t hij) = 1 := by
   nth_rewrite 2 [←neg_neg t]
-  exact val_inv_of_MLong
+  exact val_inv_of_B_MLong
 
-def MLong (a b : Bool) (i j : I) (t : R) (hij : i ≠ j) : Matrix.GeneralLinearGroup (ZSigned I) R where
-  val := raw_MLong a b i j t hij
-  inv := raw_MLong a b i j (-t) hij
-  val_inv := val_inv_of_MLong
-  inv_val := inv_val_of_MLong
+def B_MLong (a b : Bool) (i j : I) (t : R) (hij : i ≠ j) : Matrix.GeneralLinearGroup (ZSigned I) R where
+  val := raw_B_MLong a b i j t hij
+  inv := raw_B_MLong a b i j (-t) hij
+  val_inv := val_inv_of_B_MLong
+  inv_val := inv_val_of_B_MLong
 
-theorem inv_of_MLong (a b : Bool) (i j : I) (t : R) (hij : i ≠ j) :
-  (MLong a b i j t hij)⁻¹ = MLong a b i j (-t) hij := by
-  simp only [MLong, Units.inv_mk, neg_neg]
+theorem inv_of_B_MLong (a b : Bool) (i j : I) (t : R) (hij : i ≠ j) :
+  (B_MLong a b i j t hij)⁻¹ = B_MLong a b i j (-t) hij := by
+  simp only [B_MLong, Units.inv_mk, neg_neg]
 
-theorem inv_of_MShort (a : Bool) (i : I) (t : R) :
-  (MShort a i t)⁻¹ = MShort a i (-t) := by
-  simp only [MShort, Units.inv_mk, neg_neg]
+theorem inv_of_B_MShort (a : Bool) (i : I) (t : R) :
+  (B_MShort a i t)⁻¹ = B_MShort a i (-t) := by
+  simp only [B_MShort, Units.inv_mk, neg_neg]
 
 /-! ## Root datastructures -/
 
 abbrev BLongRoot (I : Type TI) [LinearOrder I] := TwoSignVector I
 
 def BLongRoot.M [LinearOrder I] (ζ : BLongRoot I) (t : R) :=
-  MLong ζ.a ζ.b ζ.i ζ.j t (ne_of_lt ζ.hij)
+  B_MLong ζ.a ζ.b ζ.i ζ.j t (ne_of_lt ζ.hij)
 
 abbrev BShortRoot (I : Type TI) := OneSignVector I
 
 def BShortRoot.M (ζ : BShortRoot I) (t : R) :=
-  MShort ζ.a ζ.i t
+  B_MShort ζ.a ζ.i t
 
 def BRoot (I : Type TI) [LinearOrder I] := BLongRoot I ⊕ BShortRoot I
 

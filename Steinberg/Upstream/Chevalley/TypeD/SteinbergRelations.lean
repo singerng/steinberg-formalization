@@ -112,3 +112,64 @@ theorem M_comm_overlap {a b c : Bool} {i j k : I} {t u : R} (hij : i ≠ j) (hjk
   ]
   algebra
   module
+
+
+/-! ## Diagonal relations -/
+
+def n_elt (a b : Bool) (i j : I) (hij : i ≠ j) (t : Rˣ) :=
+  (D_M a b i j hij t.val) * (D_M (!a) (!b) i j hij (-t.inv)) * (D_M a b i j hij t.val)
+
+private lemma n_elt_form (a b : Bool) (i j : I) (hij : i ≠ j) (t : Rˣ) : (n_elt a b i j hij t).val =
+  1 + (3 * t.val) • E (a, i) (!b, j) - (3 * t.val) • E (b, j) (!a, i)
+    - (t.inv) • E (!a, i) (b, j) + (t.inv) • E (!b, j) (a, i)
+    + E (a, i) (a, i) + E (b, j) (b, j) + E (!a, i) (!a, i) + E (!b, j) (!b, j)
+  := by
+  simp only [n_elt, D_M, Units.val_mul, raw_M]
+  algebra
+  simp only [
+    E_mul_overlap,
+    E_mul_disjoint (Signed.ne_of_ne hij),
+    E_mul_disjoint (Signed.ne_of_ne hij.symm),
+    E_mul_disjoint Signed.ne_of_neg,
+    Bool.not_not
+  ]
+  algebra
+  simp only [Units.inv_eq_val_inv, Units.inv_mul, Units.mul_inv, neg_mul]
+  module
+
+def h_elt (a b : Bool) (i j : I) (hij : i ≠ j) (t : Rˣ) := (n_elt a b i j hij t) * (n_elt a b i j hij (-1))
+
+private lemma h_elt_form (A B C D : R) (a b : Bool) (i j : I) (hij : i ≠ j) (t : Rˣ) : (h_elt a b i j hij t).val =
+  -- 1 + (3 * (1 - t.val)) • E (a, i) (a, i) - (3 * (1 - t.val)) • E (b, j) (b, j)
+  --   - (3 * (1 - t.inv)) • E (!a, i) (!a, i) + (3 * (1 - t.inv)) • E (!b, j) (!b, j)
+  1 + A • E (a, i) (a, i) + B • E (b, j) (b, j)
+    + C • E (!a, i) (!a, i) + D • E (!b, j) (!b, j)
+  := by
+  simp only [h_elt, Units.val_mul, n_elt_form]
+  algebra
+  simp only [
+    E_mul_overlap,
+    E_mul_disjoint (Signed.ne_of_ne hij),
+    E_mul_disjoint (Signed.ne_of_ne hij.symm),
+    E_mul_disjoint Signed.ne_of_neg,
+    E_mul_disjoint Signed.ne_of_neg.symm
+  ]
+  algebra
+  simp only [Units.inv_eq_val_inv, inv_one, Units.val_one, inv_neg]
+  match_scalars
+  module
+
+
+theorem M_diagonal (a b : Bool) (i j : I) (hij : i ≠ j) (t u : Rˣ) : (h_elt a b i j hij t) * (h_elt a b i j hij u) = (h_elt a b i j hij (t*u)) := by
+  ext1
+  simp only [h_elt_form, Units.val_mul]
+  algebra
+  simp only [
+    E_mul_disjoint (Signed.ne_of_ne hij),
+    E_mul_disjoint (Signed.ne_of_ne hij.symm),
+    E_mul_disjoint Signed.ne_of_neg,
+    E_mul_disjoint Signed.ne_of_neg.symm
+  ]
+  ring_nf
+  simp only [Units.inv_eq_val_inv, mul_inv_rev, Units.val_mul]
+  module

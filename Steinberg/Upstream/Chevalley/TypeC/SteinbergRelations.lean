@@ -27,26 +27,26 @@ variable {R : Type TR} [CommRing R]
 namespace Chevalley.TypeC
 open Chevalley Chevalley.TypeC
 
-theorem MShort_swap (a b : Bool) (i j : I) (t : R) (hij : i ≠ j) :
-  (MShort a b i j t hij) = (MShort b a j i (t) hij.symm) := by
+theorem C_MShort_swap (a b : Bool) (i j : I) (t : R) (hij : i ≠ j) :
+  (C_MShort a b i j t hij) = (C_MShort b a j i (t) hij.symm) := by
   ext1
-  simp only [MShort, raw_MShort]
+  simp only [C_MShort, raw_C_MShort]
   module
 
 /-! ## Linearity relations -/
 
-theorem MLong_mul_add {a : Bool} {i : I} {t u : R}
-  : (MLong a i t) * (MLong a i u) = MLong a i (t + u) := by
+theorem C_MLong_mul_add {a : Bool} {i : I} {t u : R}
+  : (C_MLong a i t) * (C_MLong a i u) = C_MLong a i (t + u) := by
   ext1
-  simp only [MLong, raw_MLong, Units.val_mul]
+  simp only [C_MLong, raw_C_MLong, Units.val_mul]
   algebra
   simp only [E_mul_disjoint Signed.ne_of_neg, E_mul_overlap]
   module
 
-theorem MShort_mul_add {a b : Bool} {i j : I} {t u : R} (hij : i ≠ j)
-  : (MShort a b i j t hij) * (MShort a b i j u hij) = MShort a b i j (t + u) hij := by
+theorem C_MShort_mul_add {a b : Bool} {i j : I} {t u : R} (hij : i ≠ j)
+  : (C_MShort a b i j t hij) * (C_MShort a b i j u hij) = C_MShort a b i j (t + u) hij := by
   ext1
-  simp only [MShort, raw_MShort, Units.val_mul]
+  simp only [C_MShort, raw_C_MShort, Units.val_mul]
   algebra
   simp only [
     E_mul_disjoint (Signed.ne_of_ne hij),
@@ -59,9 +59,9 @@ theorem MShort_mul_add {a b : Bool} {i j : I} {t u : R} (hij : i ≠ j)
 
 /- ### Trivial commutators -/
 
-private theorem MShort_prod_disjoint {a b c d : Bool} {i j k l : I} {t u : R} (hij : i ≠ j) (hkl : k ≠ l)
+private theorem C_MShort_prod_disjoint {a b c d : Bool} {i j k l : I} {t u : R} (hij : i ≠ j) (hkl : k ≠ l)
   (hik : (a, i) ≠ (!c, k)) (hil : (a, i) ≠ (!d, l)) (hjk : (b, j) ≠ (!c, k)) (hjl : (b, j) ≠ (!d, l)) :
-  (raw_MShort a b i j t hij) * (raw_MShort c d k l u hkl) =
+  (raw_C_MShort a b i j t hij) * (raw_C_MShort c d k l u hkl) =
     1 + (a * t) • E (a, i) (!b, j)
       + (b * t) • E (b, j) (!a, i)
       + (c * u) • E (c, k) (!d, l)
@@ -76,26 +76,26 @@ private theorem MShort_prod_disjoint {a b c d : Bool} {i j k l : I} {t u : R} (h
   ]
   module
 
-theorem MShort_comm_disjoint {a b c d : Bool} {i j k l : I} {t u : R} (hij : i ≠ j) (hkl : k ≠ l)
+theorem C_MShort_comm_disjoint {a b c d : Bool} {i j k l : I} {t u : R} (hij : i ≠ j) (hkl : k ≠ l)
   (hik : (a, i) ≠ (!c, k)) (hil : (a, i) ≠ (!d, l)) (hjk : (b, j) ≠ (!c, k)) (hjl : (b, j) ≠ (!d, l))
-  : ⁅ (MShort a b i j t hij), (MShort c d k l u hkl) ⁆ = 1 := by
+  : ⁅ (C_MShort a b i j t hij), (C_MShort c d k l u hkl) ⁆ = 1 := by
   apply triv_comm_iff_commutes.mpr
   ext1
-  simp only [MShort, Units.val_mul, Units.inv_mk]
-  rw [MShort_prod_disjoint hij hkl hik hil hjk hjl]
-  rw [MShort_prod_disjoint hkl hij (Signed.neg_of_ne hik).symm (Signed.neg_of_ne hjk).symm
+  simp only [C_MShort, Units.val_mul, Units.inv_mk]
+  rw [C_MShort_prod_disjoint hij hkl hik hil hjk hjl]
+  rw [C_MShort_prod_disjoint hkl hij (Signed.neg_of_ne hik).symm (Signed.neg_of_ne hjk).symm
     (Signed.neg_of_ne hil).symm (Signed.neg_of_ne hjl).symm]
   module
 
 /- ### Single commutators -/
 
-theorem MShort_comm_overlap {a b : Bool} {i j : I} {t u : R} (hij : i ≠ j)
-  : ⁅ (MShort a b i j t hij), (MShort a (!b) i j u hij) ⁆ = MLong a i (-2 * a * b * t * u) := by
+theorem C_MShort_comm_overlap {a b : Bool} {i j : I} {t u : R} (hij : i ≠ j)
+  : ⁅ (C_MShort a b i j t hij), (C_MShort a (!b) i j u hij) ⁆ = C_MLong a i (-2 * a * b * t * u) := by
   rw [commutatorElement_def]
   apply mul_inv_eq_of_eq_mul
   apply mul_inv_eq_of_eq_mul
   ext1
-  simp only [MShort, raw_MShort, MLong, raw_MLong, Units.val_mul, Units.val_one]
+  simp only [C_MShort, raw_C_MShort, C_MLong, raw_C_MLong, Units.val_mul, Units.val_one]
   algebra
   ring_nf
   simp only [
@@ -108,13 +108,13 @@ theorem MShort_comm_overlap {a b : Bool} {i j : I} {t u : R} (hij : i ≠ j)
   algebra
   module
 
-theorem MShort_comm_overlap' {a b c : Bool} {i j k : I} {t u : R} (hij : i ≠ j) (hjk : j ≠ k) (hik : i ≠ k)
-  : ⁅ (MShort a b i j t hij), (MShort (!b) c j k u hjk) ⁆ = (MShort a c i k (-b*t*u) hik) := by
+theorem C_MShort_comm_overlap' {a b c : Bool} {i j k : I} {t u : R} (hij : i ≠ j) (hjk : j ≠ k) (hik : i ≠ k)
+  : ⁅ (C_MShort a b i j t hij), (C_MShort (!b) c j k u hjk) ⁆ = (C_MShort a c i k (-b*t*u) hik) := by
   rw [commutatorElement_def]
   apply mul_inv_eq_of_eq_mul
   apply mul_inv_eq_of_eq_mul
   ext1
-  simp only [MShort, raw_MShort, Units.val_mul]
+  simp only [C_MShort, raw_C_MShort, Units.val_mul]
   algebra
   ring_nf
   simp only [E_mul_overlap,
@@ -134,13 +134,13 @@ theorem MShort_comm_overlap' {a b c : Bool} {i j k : I} {t u : R} (hij : i ≠ j
 
 /- ### Double commutators -/
 
-theorem MLong_MShort_comm_overlap {a b : Bool} {i j : I} {t u : R} (hij : i ≠ j)
-  : ⁅ (MShort a (!b) i j t hij), (MLong b j u) ⁆ = (MShort a b i j (t*u) hij) * (MLong a i (a * b * t^2 * u)) := by
+theorem C_MLong_C_MShort_comm_overlap {a b : Bool} {i j : I} {t u : R} (hij : i ≠ j)
+  : ⁅ (C_MShort a (!b) i j t hij), (C_MLong b j u) ⁆ = (C_MShort a b i j (t*u) hij) * (C_MLong a i (a * b * t^2 * u)) := by
   rw [commutatorElement_def]
   apply mul_inv_eq_of_eq_mul
   apply mul_inv_eq_of_eq_mul
   ext1
-  simp only [MShort, raw_MShort, MLong, raw_MLong, Units.val_mul]
+  simp only [C_MShort, raw_C_MShort, C_MLong, raw_C_MLong, Units.val_mul]
   algebra
   ring_nf
   simp only [E_mul_overlap,

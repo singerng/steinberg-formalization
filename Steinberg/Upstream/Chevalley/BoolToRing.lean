@@ -21,7 +21,14 @@ theorem false_toRing : false.toRing = (-1 : R) := by simp only [Bool.toRing]
 instance : Coe Bool R where
   coe x := x.toRing
 
-theorem square_eq_one {a : Bool} : a.toRing^2 = (1 : R) := by
+theorem square_eq_one {a : Bool} : a.toRing ^ 2 = (1 : R) := by
+  rcases a
+  all_goals (
+    simp only [Bool.toRing]
+    ring
+  )
+
+theorem cube_eq {a : Bool} : a.toRing ^ 3 = (a.toRing : R) := by
   rcases a
   all_goals (
     simp only [Bool.toRing]
