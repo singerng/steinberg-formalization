@@ -3,7 +3,7 @@ Copyright (c) 2025 The Steinberg Group
 Released under the Apache License v2.0; see LICENSE for full text.
 -/
 
-import Steinberg.Upstream.Chevalley.TypeB.Defs
+import Steinberg.Upstream.Chevalley.TypeB.MatrixDefs
 
 import Steinberg.Upstream.Commutator
 
@@ -289,108 +289,156 @@ theorem B_MLong_MShort_comm_overlap (a b : Bool) (i j : I) (t u : R) (hij : i �
 
 /-! ## Diagonal relations -/
 
--- def B_Long_n_elt (a b : Bool) (i j : I) (hij : i ≠ j) (t : F) :=
---   (B_MLong a b i j t hij) * (B_MLong (!a) (!b) i j (-t⁻¹) hij) * (B_MLong a b i j t hij)
+def B_Long_n_elt (a b : Bool) (i j : I) (hij : i ≠ j) (t : Rˣ) :=
+  (B_MLong a b i j t.val hij) * (B_MLong (!a) (!b) i j (-t.inv) hij) * (B_MLong a b i j t.val hij)
 
--- private lemma B_Long_n_elt_form (a b : Bool) (i j : I) (hij : i ≠ j) (t : F) (h : t ≠ 0) : (B_Long_n_elt a b i j hij t).val =
---   1 + (a * t) • E (a.inj i) ((!b).inj j)
---     + (a * t⁻¹) • E ((!a).inj i) (b.inj j)
---     - (a * t) • E (b.inj j) ((!a).inj i)
---     - (a * t⁻¹) • E ((!b).inj j) (a.inj i)
---     - E (a.inj i) (a.inj i)
---     - E (b.inj j) (b.inj j)
---     - E ((!a).inj i) ((!a).inj i)
---     - E ((!b).inj j) ((!b).inj j)
---   := by
---   simp only [B_Long_n_elt, B_MLong, Units.val_mul, raw_B_MLong]
---   algebra
---   simp only [
---     E_mul_overlap,
---     E_mul_disjoint (ZSigned.ne_of_ne hij),
---     E_mul_disjoint (ZSigned.ne_of_ne hij.symm),
---     E_mul_disjoint ZSigned.ne_of_neg,
---     Bool.not_not
---   ]
---   algebra
---   simp only [Bool.int_of_neg]
---   ring_nf
---   -- simp only [pow_two]
---   match_scalars
---   · trivial
---   · rw [cube_eq]
---     simp only [mul_one, add_right_eq_self]
---     group
---     simp only [Int.reduceNeg, zpow_neg, zpow_one]
+private lemma B_Long_n_elt_form (a b : Bool) (i j : I) (hij : i ≠ j) (t : Rˣ) : (B_Long_n_elt a b i j hij t).val =
+  1 + (a * t.val) • E (a.inj i) ((!b).inj j)
+    + (a * t.inv) • E ((!a).inj i) (b.inj j)
+    - (a * t.val) • E (b.inj j) ((!a).inj i)
+    - (a * t.inv) • E ((!b).inj j) (a.inj i)
+    - E (a.inj i) (a.inj i)
+    - E (b.inj j) (b.inj j)
+    - E ((!a).inj i) ((!a).inj i)
+    - E ((!b).inj j) ((!b).inj j)
+  := by
+  simp only [B_Long_n_elt, B_MLong, Units.val_mul, raw_B_MLong]
+  algebra
+  simp only [
+    E_mul_overlap,
+    E_mul_disjoint (ZSigned.ne_of_ne hij),
+    E_mul_disjoint (ZSigned.ne_of_ne hij.symm),
+    E_mul_disjoint ZSigned.ne_of_neg,
+    Bool.not_not
+  ]
+  algebra
+  simp only [Bool.int_of_neg]
+  ring_nf
+  rw [cube_eq, square_eq_one]
+  /- associate to the right so that we can deal with powers of `t` -/
+  simp only [mul_assoc, Units.inv_eq_val_inv, ←Units.val_pow_eq_pow_val, ←Units.val_mul]
+  group
+  module
 
+def B_Long_h_elt (a b : Bool) (i j : I) (hij : i ≠ j) (t : Rˣ) :=
+  (B_Long_n_elt a b i j hij t) * (B_Long_n_elt a b i j hij (-1))
 
--- def B_Long_h_elt (a b : Bool) (i j : I) (hij : i ≠ j) (t : F) :=
---   (B_Long_n_elt a b i j hij t) * (B_Long_n_elt a b i j hij (-1))
+private lemma B_Long_h_elt_form (a b : Bool) (i j : I) (hij : i ≠ j) (t : Rˣ) : (B_Long_h_elt a b i j hij t).val =
+  1 + (t.val - 1) • E (a.inj i) (a.inj i)
+    + (t.val - 1) • E (b.inj j) (b.inj j)
+    + (t.inv - 1) • E ((!a).inj i) ((!a).inj i)
+    + (t.inv - 1) • E ((!b).inj j) ((!b).inj j)
+  := by
+  simp only [B_Long_h_elt, Units.val_mul, B_Long_n_elt_form]
+  algebra
+  simp only [
+    E_mul_overlap,
+    E_mul_disjoint (ZSigned.ne_of_ne hij),
+    E_mul_disjoint (ZSigned.ne_of_ne hij.symm),
+    E_mul_disjoint ZSigned.ne_of_neg,
+    E_mul_disjoint ZSigned.ne_of_neg.symm
+  ]
+  algebra
+  ring_nf
+  simp only [Units.inv_eq_val_inv, inv_one, Units.val_one, inv_neg, square_eq_one]
+  module
 
--- private lemma B_Long_h_elt_form (a b : Bool) (i j : I) (hij : i ≠ j) (t : F) : (B_Long_h_elt a b i j hij t).val =
---   1 + (t - 1) • E (a.inj i) (a.inj i)
---     + (t - 1) • E (b.inj j) (b.inj j)
---     + (t⁻¹ - 1) • E ((!a).inj i) ((!a).inj i)
---     + (t⁻¹ - 1) • E ((!b).inj j) ((!b).inj j)
---   := by
---   simp only [B_Long_h_elt, Units.val_mul, B_Long_n_elt_form]
---   algebra
---   simp only [
---     E_mul_overlap,
---     E_mul_disjoint (ZSigned.ne_of_ne hij),
---     E_mul_disjoint (ZSigned.ne_of_ne hij.symm),
---     E_mul_disjoint ZSigned.ne_of_neg,
---     E_mul_disjoint ZSigned.ne_of_neg.symm
---   ]
---   algebra
---   ring_nf
---   simp only [Units.inv_eq_val_inv, inv_one, Units.val_one, inv_neg, square_eq_one]
---   module
+theorem B_Long_diagonal (a b : Bool) (i j : I) (hij : i ≠ j) (t u : Rˣ) :
+  (B_Long_h_elt a b i j hij t) * (B_Long_h_elt a b i j hij u) = (B_Long_h_elt a b i j hij (t*u)) := by
+  ext1
+  simp only [B_Long_h_elt_form, Units.val_mul]
+  algebra
+  simp only [
+    E_mul_overlap,
+    E_mul_disjoint (ZSigned.ne_of_ne hij),
+    E_mul_disjoint (ZSigned.ne_of_ne hij.symm),
+    E_mul_disjoint ZSigned.ne_of_neg,
+    E_mul_disjoint ZSigned.ne_of_neg.symm
+  ]
+  simp only [Units.inv_eq_val_inv, mul_inv_rev, Units.val_mul]
+  module
 
--- theorem B_Long_M_diagonal (a b : Bool) (i j : I) (hij : i ≠ j) (t u : F) :
---   (B_Long_h_elt a b i j hij t) * (B_Long_h_elt a b i j hij u) = (B_Long_h_elt a b i j hij (t*u)) := by
---   ext1
---   simp only [B_Long_h_elt_form, Units.val_mul]
---   algebra
---   simp only [
---     E_mul_overlap,
---     E_mul_disjoint (ZSigned.ne_of_ne hij),
---     E_mul_disjoint (ZSigned.ne_of_ne hij.symm),
---     E_mul_disjoint ZSigned.ne_of_neg,
---     E_mul_disjoint ZSigned.ne_of_neg.symm
---   ]
---   ring_nf
---   simp only [Units.inv_eq_val_inv, mul_inv_rev, Units.val_mul]
---   module
+def B_Short_n_elt (a : Bool) (i : I) (t : Rˣ) :=
+  (B_MShort a i t.val) * (B_MShort (!a) i (-t.inv)) * (B_MShort a i t.val)
 
--- def B_Short_n_elt (a : Bool) (i : I) (t : F) :=
---   (B_MShort a i t) * (B_MShort (!a) i (-t⁻¹)) * (B_MShort a i t)
+private lemma B_Short_n_elt_form (a : Bool) (i : I) (t : Rˣ) : (B_Short_n_elt a i t).val =
+  1 - 2 • E ZSigned.zero ZSigned.zero
+    - 1 • E (a.inj i) (a.inj i)
+    - 1 • E ((!a).inj i) ((!a).inj i)
+    - (t.val^2) • E (a.inj i) ((!a).inj i)
+    - (t.inv^2) • E ((!a).inj i) (a.inj i)
+  := by
+  simp only [B_Short_n_elt, B_MShort, Units.val_mul, raw_B_MShort]
+  algebra
+  simp only [
+    E_mul_overlap,
+    E_mul_disjoint ZSigned.zero_ne_signed,
+    E_mul_disjoint ZSigned.signed_ne_zero,
+    E_mul_disjoint ZSigned.ne_of_neg,
+    Bool.not_not
+  ]
+  algebra
+  simp only [Units.inv_eq_val_inv, Units.inv_mul, Units.mul_inv, neg_mul, Bool.int_of_neg]
+  ring_nf
+  simp only [square_eq_one, cube_eq]
+  ring_nf
+  sorry
+  -- match_scalars
+  -- all_goals ring_nf
+  -- sorry
+  -- simp only [mul_assoc, Units.inv_eq_val_inv, ←Units.val_pow_eq_pow_val, ←Units.val_mul,
+  --   pow_eq_zpow, ←zpow_neg_one, ←pow_add]
 
--- private lemma B_Short_n_elt_form (A B C D : R) (a : Bool) (i : I) (t : F) : (B_Short_n_elt a i t).val =
---   1 - 2 • E ZSigned.zero ZSigned.zero
---     - 1 • E (a.inj i) (a.inj i)
---     - 1 • E ((!a).inj i) ((!a).inj i)
---   := by
---   simp only [B_Short_n_elt, B_MShort, Units.val_mul, raw_B_MShort]
---   algebra
---   simp only [
---     E_mul_overlap,
---     E_mul_disjoint ZSigned.zero_ne_signed,
---     E_mul_disjoint ZSigned.signed_ne_zero,
---     E_mul_disjoint ZSigned.ne_of_neg,
---     Bool.not_not
---   ]
---   algebra
---   simp only [Units.inv_eq_val_inv, Units.inv_mul, Units.mul_inv, neg_mul, Bool.int_of_neg]
---   ring_nf
---   simp only [square_eq_one, cube_eq]
---   match_scalars
---   all_goals ring_nf
---   -- rw [three_two]
---   group
---   rw [pow_two, pow_three]
---   have : ↑t ^ 2 * ↑t⁻¹ = ↑ t := by rw [pow_two]
---   aesop?
---   sorry
+  -- rw [←zpow_add]
+  -- sorry
 
--- def B_Short_h_elt (a : Bool) (i : I) (t : Rˣ) :=
---   (B_Short_n_elt a i t) * (B_Short_n_elt a i (-1))
+def B_Short_h_elt (a : Bool) (i : I) (t : Rˣ) :=
+  (B_Short_n_elt a i t) * (B_Short_n_elt a i (-1))
+
+private lemma B_Short_h_elt_form (a : Bool) (i : I) (t : Rˣ) : (B_Short_h_elt a i t).val =
+  1 + (t.val^2 - 1) • E (a.inj i) (a.inj i)
+    + (t.inv^2 - 1) • E ((!a).inj i) ((!a).inj i)
+  := by
+  simp only [B_Short_h_elt, Units.val_mul, B_Short_n_elt_form]
+  algebra
+  simp only [
+    E_mul_overlap,
+    E_mul_disjoint ZSigned.ne_of_neg,
+    E_mul_disjoint ZSigned.ne_of_neg.symm,
+    E_mul_disjoint ZSigned.zero_ne_signed,
+    E_mul_disjoint ZSigned.signed_ne_zero
+  ]
+  algebra
+  ring_nf
+  simp only [Units.inv_eq_val_inv, inv_one, Units.val_one, inv_neg, square_eq_one]
+  module
+
+theorem B_Short_diagonal (a : Bool) (i : I) (t u : Rˣ) :
+  (B_Short_h_elt a i t) * (B_Short_h_elt a i u) = (B_Short_h_elt a i (t * u)) := by
+  ext1
+  simp only [B_Short_h_elt_form, Units.val_mul]
+  algebra
+  simp only [
+    E_mul_overlap,
+    E_mul_disjoint ZSigned.ne_of_neg,
+    E_mul_disjoint ZSigned.ne_of_neg.symm
+  ]
+  simp only [Units.inv_eq_val_inv, mul_inv_rev, Units.val_mul]
+  module
+
+instance instChevalleyRealization (I : Type TI) [DecidableEq I] [Fintype I] [LinearOrder I] (R : Type TR) [CommRing R]
+  : ChevalleyRealization (BRoot I) (ZSigned I) R where
+  M (ζ : BRoot I) (t : R) :=
+    match ζ with
+    | Sum.inl ζ => B_MLong ζ.a ζ.b ζ.i ζ.j t ζ.hij.ne
+    | Sum.inr ζ => B_MShort ζ.a ζ.i t
+  M_mul_add := by
+    intro ζ t u
+    cases ζ with
+    | inl ζ => exact B_MLong_mul_add ζ.hij.ne
+    | inr ζ => exact B_MShort_mul_add
+  h_mul_mul := by
+    intro ζ t u
+    cases ζ with
+    | inl ζ => exact B_Long_diagonal ζ.a ζ.b ζ.i ζ.j ζ.hij.ne t u
+    | inr ζ => exact B_Short_diagonal ζ.a ζ.i t u

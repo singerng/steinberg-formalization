@@ -3,7 +3,7 @@ Copyright (c) 2025 The Steinberg Group
 Released under the Apache License v2.0; see LICENSE for full text.
 -/
 
-import Steinberg.Upstream.Chevalley.TypeD.Defs
+import Steinberg.Upstream.Chevalley.TypeD.MatrixDefs
 
 import Steinberg.Upstream.Commutator
 
@@ -33,7 +33,7 @@ theorem M_swap (a b : Bool) (i j : I) (t : R) (hij : i ≠ j) :
 
 /-! ## Commutator relations -/
 
-theorem M_add {a b : Bool} {i j : I} {hij : i ≠ j} {t u : R}
+theorem M_mul_add {a b : Bool} {i j : I} {hij : i ≠ j} {t u : R}
   : (D_M a b i j hij t) * (D_M a b i j hij u) = D_M a b i j hij (t + u) := by
   ext1
   simp only [D_M, raw_D_M, Units.val_mul]
@@ -139,11 +139,11 @@ private lemma n_elt_form (a b : Bool) (i j : I) (hij : i ≠ j) (t : Rˣ) : (n_e
 
 def h_elt (a b : Bool) (i j : I) (hij : i ≠ j) (t : Rˣ) := (n_elt a b i j hij t) * (n_elt a b i j hij (-1))
 
-private lemma h_elt_form (A B C D : R) (a b : Bool) (i j : I) (hij : i ≠ j) (t : Rˣ) : (h_elt a b i j hij t).val =
-  -- 1 + (3 * (1 - t.val)) • E (a, i) (a, i) - (3 * (1 - t.val)) • E (b, j) (b, j)
-  --   - (3 * (1 - t.inv)) • E (!a, i) (!a, i) + (3 * (1 - t.inv)) • E (!b, j) (!b, j)
-  1 + A • E (a, i) (a, i) + B • E (b, j) (b, j)
-    + C • E (!a, i) (!a, i) + D • E (!b, j) (!b, j)
+private lemma h_elt_form (a b : Bool) (i j : I) (hij : i ≠ j) (t : Rˣ) : (h_elt a b i j hij t).val =
+  1 + (6 * t.val - 6) • E (a, i) (!b, j) + (2 * t.inv - 2) • E (!b, j) (a, i)
+    - (2 * t.inv - 2) • E (!a, i) (b, j) - (6 * t.val - 6) • E (b, j) (!a, i)
+    + (-3 * t.val + 3) • E (a, i) (a, i) + (-3 * t.val + 3) • E (b, j) (b, j)
+    + (-3 * t.inv + 3) • E (!a, i) (!a, i) + (-3 * t.inv + 3) • E (!b, j) (!b, j)
   := by
   simp only [h_elt, Units.val_mul, n_elt_form]
   algebra
@@ -156,15 +156,14 @@ private lemma h_elt_form (A B C D : R) (a b : Bool) (i j : I) (hij : i ≠ j) (t
   ]
   algebra
   simp only [Units.inv_eq_val_inv, inv_one, Units.val_one, inv_neg]
-  match_scalars
   module
-
 
 theorem M_diagonal (a b : Bool) (i j : I) (hij : i ≠ j) (t u : Rˣ) : (h_elt a b i j hij t) * (h_elt a b i j hij u) = (h_elt a b i j hij (t*u)) := by
   ext1
   simp only [h_elt_form, Units.val_mul]
   algebra
   simp only [
+    E_mul_overlap,
     E_mul_disjoint (Signed.ne_of_ne hij),
     E_mul_disjoint (Signed.ne_of_ne hij.symm),
     E_mul_disjoint Signed.ne_of_neg,
@@ -172,4 +171,11 @@ theorem M_diagonal (a b : Bool) (i j : I) (hij : i ≠ j) (t u : Rˣ) : (h_elt a
   ]
   ring_nf
   simp only [Units.inv_eq_val_inv, mul_inv_rev, Units.val_mul]
+  algebra
   module
+
+instance instChevalleyRealization (I : Type TI) [DecidableEq I] [Fintype I] [LinearOrder I] (R : Type TR) [CommRing R]
+  : ChevalleyRealization (DRoot I) (Signed I) R where
+  M (ζ : DRoot I) (t : R) := D_M ζ.a ζ.b ζ.i ζ.j ζ.hij.ne t
+  M_mul_add := by intro ζ t u; exact M_mul_add
+  h_mul_mul := sorry

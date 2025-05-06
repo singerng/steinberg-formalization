@@ -11,6 +11,8 @@ import Steinberg.Upstream.Chevalley.BoolToRing
 
 import Steinberg.Upstream.Chevalley.Macro.Algebra
 
+import Steinberg.Upstream.Chevalley.TypeA.ARoot
+
 universe TI TR
 variable {I : Type TI} [DecidableEq I] [Fintype I]
 variable {R : Type TR} [CommRing R]
@@ -40,13 +42,3 @@ def A_M (i j : I) (hij : i ≠ j) (t : R) : Matrix.GeneralLinearGroup I R where
   inv := raw_A_M i j hij (-t)
   val_inv := val_inv_of_M
   inv_val := inv_val_of_M
-
-/-! ## Root datastructures -/
-
-structure ARoot (I : Type u) [DecidableEq I] [Fintype I] where
-  mk ::
-  i : I
-  j : I
-  hij : i ≠ j
-
-def ARoot.M (ζ : ARoot I) (t : R) := A_M ζ.i ζ.j ζ.hij t

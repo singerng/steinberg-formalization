@@ -5,10 +5,11 @@ Released under the Apache License v2.0; see LICENSE for full text.
 
 import Mathlib.Data.Matrix.Basic
 
+import Steinberg.Upstream.Chevalley.TypeD.DRoot
+
 import Steinberg.Upstream.Chevalley.IndicatorMatrix
 import Steinberg.Upstream.Chevalley.Signed
 import Steinberg.Upstream.Chevalley.BoolToRing
-import Steinberg.Upstream.Chevalley.SparseSignVector
 
 import Steinberg.Upstream.Chevalley.Macro.Algebra
 
@@ -50,10 +51,3 @@ def D_M (a b : Bool) (i j : I) (h : i ≠ j) (t : R) : Matrix.GeneralLinearGroup
 theorem inv_of_M (a b : Bool) (i j : I) (h : i ≠ j) (t : R) :
   (D_M a b i j h t)⁻¹ = D_M a b i j h (-t) := by
   simp only [D_M, Units.inv_mk, neg_neg]
-
-/-! ## Root datastructures -/
-
-abbrev DRoot (I : Type TI) [LinearOrder I] := TwoSignVector I
-
-def DRoot.M [LinearOrder I] (ζ : DRoot I) (t : R) :=
-  D_M ζ.a ζ.b ζ.i ζ.j (ne_of_lt ζ.hij) t

@@ -3,7 +3,7 @@ Copyright (c) 2025 The Steinberg Group
 Released under the Apache License v2.0; see LICENSE for full text.
 -/
 
-import Steinberg.Upstream.Chevalley.TypeA.Defs
+import Steinberg.Upstream.Chevalley.TypeA.MatrixDefs
 
 import Steinberg.Upstream.Commutator
 
@@ -117,7 +117,7 @@ private lemma h_elt_form (i j : I) (hij : i ≠ j) (t : Rˣ) : (h_elt i j hij t)
   simp only [Units.inv_eq_val_inv, inv_one, Units.val_one, inv_neg]
   module
 
-theorem M_diagonal (i j : I) (hij : i ≠ j) (t u : Rˣ) : (h_elt i j hij t) * (h_elt i j hij u) = (h_elt i j hij (t*u)) := by
+theorem A_diagonal (i j : I) (hij : i ≠ j) (t u : Rˣ) : (h_elt i j hij t) * (h_elt i j hij u) = (h_elt i j hij (t*u)) := by
   ext1
   simp only [h_elt_form, Units.val_mul]
   algebra
@@ -126,6 +126,16 @@ theorem M_diagonal (i j : I) (hij : i ≠ j) (t u : Rˣ) : (h_elt i j hij t) * (
     E_mul_disjoint hij,
     E_mul_disjoint hij.symm
   ]
-  ring_nf
   simp only [Units.inv_eq_val_inv, mul_inv_rev, Units.val_mul]
   module
+
+instance instChevalleyRealization (I : Type TI) [DecidableEq I] [Fintype I] (R : Type TR) [CommRing R]
+  : ChevalleyRealization (ARoot I) I R where
+  M (ζ : ARoot I) (t : R) := A_M ζ.i ζ.j ζ.hij t
+
+  M_mul_add := by
+    intro ζ t u
+    exact M_mul_add ζ.i ζ.j ζ.hij t u
+  h_mul_mul := by
+    intro ζ t u
+    exact A_diagonal ζ.i ζ.j ζ.hij t u

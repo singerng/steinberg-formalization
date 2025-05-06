@@ -5,6 +5,8 @@ Released under the Apache License v2.0; see LICENSE for full text.
 
 import Steinberg.B3Small.Defs
 import Steinberg.Defs.PartialChevalleyGroup
+
+import Steinberg.Upstream.Chevalley.ZSigned
 import Steinberg.Upstream.Chevalley.TypeB.SteinbergRelations
 
 import Steinberg.Defs.Commutator
@@ -15,7 +17,8 @@ variable {F : Type TR} [CommRing F]
 
 open PartialChevalleySystem B3Small
   B3SmallPosRoot PartialChevalley ChevalleyGenerator
-  PartialChevalleyGroup Chevalley.TypeB
+  PartialChevalleyGroup
+  Chevalley Chevalley.TypeB Chevalley.ChevalleyRealization
 
 def toB3Root (ζ : B3SmallPosRoot) : BRoot (Fin 3) :=
   match ζ with
@@ -27,7 +30,8 @@ def toB3Root (ζ : B3SmallPosRoot) : BRoot (Fin 3) :=
   | β2ψ => Sum.inl (TwoSignVector.mk true true 1 2 (by tauto))
   | βψω => Sum.inl (TwoSignVector.mk false true 0 1 (by tauto))
 
-abbrev toB3Mat (g : ChevalleyGenerator B3SmallPosRoot F) := (toB3Root g.ζ).M g.t
+abbrev toB3Mat (g : ChevalleyGenerator B3SmallPosRoot F) :
+  Matrix.GeneralLinearGroup (ZSigned (Fin 3)) F := M (toB3Root g.ζ) g.t
 
 theorem valid :
   ∀ r ∈ (fullB3Small F).allRelations, (FreeGroup.lift toB3Mat r) = 1 := by
@@ -47,7 +51,7 @@ theorem valid :
     rcases h_p with h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h
     all_goals (
       subst p
-      simp only [toB3Mat, toB3Root, BRoot.M, BShortRoot.M, BLongRoot.M]
+      simp only [toB3Mat, toB3Root, M]
     )
     any_goals (
       rw [B_MLong_MShort_comm_disjoint]
@@ -74,7 +78,7 @@ theorem valid :
     all_goals (
       subst p
       apply mul_inv_eq_of_eq_mul
-      simp only [toB3Mat, toB3Root, BRoot.M, BShortRoot.M, BLongRoot.M,
+      simp only [toB3Mat, toB3Root, M,
         Fin.isValue, Int.cast_one, Int.cast_two, Int.cast_neg, one_mul]
     )
     any_goals (
@@ -99,8 +103,7 @@ theorem valid :
     simp only [Set.mem_insert_iff, Set.mem_singleton_iff, or_assoc] at h_p
     subst p
     apply mul_inv_eq_of_eq_mul
-    simp only [toB3Mat, toB3Root, BRoot.M, BShortRoot.M, BLongRoot.M,
-      Fin.isValue, Int.cast_one, one_mul]
+    simp only [toB3Mat, toB3Root, M, Fin.isValue, Int.cast_one, one_mul]
     · rw [B_MLong_swap, ←Bool.not_false, B_MLong_MShort_comm_overlap, B_MLong_swap]
       simp only [Bool.not_false, true_toRing, false_toRing]
       ring_nf
@@ -110,7 +113,7 @@ theorem valid :
     simp only [linearityRelationsOfRoot, Set.mem_setOf_eq] at h
     rcases h with ⟨ t, u, h ⟩
     subst r
-    simp only [map_commutatorElement, map_inv, map_mul, FreeGroup.lift.of, toB3Mat, toB3Root, BRoot.M, BShortRoot.M, BLongRoot.M]
+    simp only [map_commutatorElement, map_inv, map_mul, FreeGroup.lift.of, toB3Mat, toB3Root, M]
     simp only [Set.mem_insert_iff, Set.mem_singleton_iff, or_assoc] at h_p
     rcases h_p with h|h|h|h|h|h|h
     all_goals (

@@ -16,7 +16,8 @@ namespace Steinberg
 variable {F : Type TR} [Field F]
 
 open PartialChevalleySystem B3Large B3LargePosRoot PartialChevalley
-  ChevalleyGenerator PartialChevalleyGroup Chevalley.TypeB
+  ChevalleyGenerator PartialChevalleyGroup
+  Chevalley Chevalley.TypeB Chevalley.ChevalleyRealization
 
 def toB3Root (ζ : B3LargePosRoot) : BRoot (Fin 3) :=
   match ζ with
@@ -30,7 +31,8 @@ def toB3Root (ζ : B3LargePosRoot) : BRoot (Fin 3) :=
   | αβ2ψ =>  Sum.inl (TwoSignVector.mk true true 0 2 (by tauto))
   | α2β2ψ => Sum.inl (TwoSignVector.mk true true 0 1 (by tauto))
 
-abbrev toB3Mat (g : ChevalleyGenerator B3LargePosRoot F) := (toB3Root g.ζ).M g.t
+abbrev toB3Mat (g : ChevalleyGenerator B3LargePosRoot F) :
+  Matrix.GeneralLinearGroup (ZSigned (Fin 3)) F := M (toB3Root g.ζ) g.t
 
 theorem valid :
   ∀ r ∈ (fullB3Large F).allRelations, (FreeGroup.lift toB3Mat r) = 1 := by
@@ -50,7 +52,7 @@ theorem valid :
     rcases h_p with h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h|h
     all_goals (
       subst p
-      simp only [toB3Mat, toB3Root, BRoot.M, BShortRoot.M, BLongRoot.M]
+      simp only [toB3Mat, toB3Root, M]
     )
     any_goals (rw [B_MLong_MShort_comm_disjoint]; all_goals tauto)
     any_goals (rw [triv_comm_symm, B_MLong_MShort_comm_disjoint]; all_goals tauto) -- handle the goals where we have ⁅ B_MShort, B_MLong ⁆
@@ -68,7 +70,7 @@ theorem valid :
     all_goals (
       subst p
       apply mul_inv_eq_of_eq_mul
-      simp only [toB3Mat, toB3Root, BRoot.M, BShortRoot.M, BLongRoot.M,
+      simp only [toB3Mat, toB3Root, M,
         Fin.isValue, Int.cast_one, Int.cast_two, Int.cast_neg, one_mul]
     )
     any_goals (
@@ -113,7 +115,7 @@ theorem valid :
     all_goals (
       subst p
       apply mul_inv_eq_of_eq_mul
-      simp only [toB3Mat, toB3Root, BRoot.M, BShortRoot.M, BLongRoot.M,
+      simp only [toB3Mat, toB3Root, M,
         Fin.isValue, Int.cast_one, one_mul]
     )
     all_goals (
@@ -132,7 +134,7 @@ theorem valid :
     rcases h_p with h|h|h|h|h|h|h|h|h
     all_goals (
       subst p
-      simp only [toB3Mat, toB3Root, BRoot.M, BShortRoot.M, BLongRoot.M]
+      simp only [toB3Mat, toB3Root, M]
       apply mul_inv_eq_of_eq_mul
       simp only [one_mul]
     )

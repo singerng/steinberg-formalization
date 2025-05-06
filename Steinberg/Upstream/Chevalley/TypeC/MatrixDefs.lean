@@ -5,10 +5,11 @@ Released under the Apache License v2.0; see LICENSE for full text.
 
 import Mathlib.Data.Matrix.Basic
 
+import Steinberg.Upstream.Chevalley.TypeC.CRoot
+
 import Steinberg.Upstream.Chevalley.IndicatorMatrix
 import Steinberg.Upstream.Chevalley.Signed
 import Steinberg.Upstream.Chevalley.BoolToRing
-import Steinberg.Upstream.Chevalley.SparseSignVector
 
 import Steinberg.Upstream.Chevalley.Macro.Algebra
 
@@ -81,22 +82,3 @@ theorem inv_of_C_MShort (a b : Bool) (i j : I) (t : R) (hij : i ≠ j) :
 theorem inv_of_C_MLong (a : Bool) (i : I) (t : R) :
   (C_MLong a i t)⁻¹ = C_MLong a i (-t) := by
   simp only [C_MLong, Units.inv_mk, neg_neg]
-
-/-! ## Root datastructures -/
-
-abbrev CShortRoot (I : Type TI) [LinearOrder I] := TwoSignVector I
-
-def CShortRoot.M [LinearOrder I] (ζ : CShortRoot I) (t : R) :=
-  C_MShort ζ.a ζ.b ζ.i ζ.j t (ne_of_lt ζ.hij)
-
-abbrev CLongRoot (I : Type TI) := OneSignVector I
-
-def CLongRoot.M (ζ : CLongRoot I) (t : R) :=
-  C_MLong ζ.a ζ.i t
-
-def CRoot (I : Type TI) [LinearOrder I] := CShortRoot I ⊕ CLongRoot I
-
-def CRoot.M [LinearOrder I] (ζ : CRoot I) (t : R) :=
-  match ζ with
-  | Sum.inl ζ => ζ.M t
-  | Sum.inr ζ => ζ.M t

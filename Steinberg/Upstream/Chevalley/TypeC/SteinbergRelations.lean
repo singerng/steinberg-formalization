@@ -3,7 +3,7 @@ Copyright (c) 2025 The Steinberg Group
 Released under the Apache License v2.0; see LICENSE for full text.
 -/
 
-import Steinberg.Upstream.Chevalley.TypeC.Defs
+import Steinberg.Upstream.Chevalley.TypeC.MatrixDefs
 
 import Steinberg.Upstream.Commutator
 
@@ -153,3 +153,16 @@ theorem C_MLong_C_MShort_comm_overlap {a b : Bool} {i j : I} {t u : R} (hij : i 
   algebra
   simp only [Bool.int_of_neg, square_eq_one]
   module
+
+instance instChevalleyRealization (I : Type TI) [DecidableEq I] [Fintype I] [LinearOrder I] (R : Type TR) [CommRing R]
+  : ChevalleyRealization (CRoot I) (Signed I) R where
+  M (ζ : CRoot I) (t : R) :=
+    match ζ with
+    | Sum.inl ζ => C_MLong ζ.a ζ.i t
+    | Sum.inr ζ => C_MShort ζ.a ζ.b ζ.i ζ.j t ζ.hij.ne
+  M_mul_add := by
+    intro ζ t u
+    cases ζ with
+    | inl ζ => exact C_MLong_mul_add
+    | inr ζ => exact C_MShort_mul_add ζ.hij.ne
+  h_mul_mul := sorry
