@@ -23,7 +23,7 @@ open Chevalley.TypeD
 /-! ## Generators corresponding to roots -/
 
 abbrev raw_D_M (a b : Bool) (i j : I) (h : i ≠ j) (t : R) : Matrix (Signed I) (Signed I) R :=
-  1 + t • (E (a, i) (!b, j)) - t • E (b, j) (!a, i)
+  1 + (a * t) • (E (a, i) (!b, j)) - (a * t) • E (b, j) (!a, i)
 
 private theorem val_inv_of_M {a b : Bool} {i j : I} {h : i ≠ j} {t : R} :
   (raw_D_M a b i j h t) * (raw_D_M a b i j h (-t)) = 1 := by
