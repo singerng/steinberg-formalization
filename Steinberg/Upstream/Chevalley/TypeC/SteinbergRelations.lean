@@ -27,11 +27,11 @@ variable {R : Type TR} [CommRing R]
 namespace Chevalley.TypeC
 open Chevalley Chevalley.TypeC
 
-theorem C_MShort_swap (a b : Bool) (i j : I) (t : R) (hij : i ≠ j) :
-  (C_MShort a b i j t hij) = (C_MShort b a j i (t) hij.symm) := by
-  ext1
-  simp only [C_MShort, raw_C_MShort]
-  module
+-- theorem C_MShort_swap (a b : Bool) (i j : I) (t : R) (hij : i ≠ j) :
+--   (C_MShort a b i j t hij) = (C_MShort b a j i (-t) hij.symm) := by
+--   ext1
+--   simp only [C_MShort, raw_C_MShort]
+--   module
 
 /-! ## Linearity relations -/
 
@@ -62,10 +62,10 @@ theorem C_MShort_mul_add {a b : Bool} {i j : I} {t u : R} (hij : i ≠ j)
 private theorem C_MShort_prod_disjoint {a b c d : Bool} {i j k l : I} {t u : R} (hij : i ≠ j) (hkl : k ≠ l)
   (hik : (a, i) ≠ (!c, k)) (hil : (a, i) ≠ (!d, l)) (hjk : (b, j) ≠ (!c, k)) (hjl : (b, j) ≠ (!d, l)) :
   (raw_C_MShort a b i j t hij) * (raw_C_MShort c d k l u hkl) =
-    1 + (a * t) • E (a, i) (!b, j)
-      + (b * t) • E (b, j) (!a, i)
-      + (c * u) • E (c, k) (!d, l)
-      + (d * u) • E (d, l) (!c, k) := by
+    1 + ((a || !b) * t) • E (a, i) (!b, j)
+      + ((!a || b) * t) • E (b, j) (!a, i)
+      + ((c || !d) * u) • E (c, k) (!d, l)
+      + ((!c || d) * u) • E (d, l) (!c, k) := by
   algebra
   ring_nf
   simp only [
@@ -90,7 +90,9 @@ theorem C_MShort_comm_disjoint {a b c d : Bool} {i j k l : I} {t u : R} (hij : i
 /- ### Single commutators -/
 
 theorem C_MShort_comm_overlap {a b : Bool} {i j : I} {t u : R} (hij : i ≠ j)
-  : ⁅ (C_MShort a b i j t hij), (C_MShort a (!b) i j u hij) ⁆ = C_MLong a i (-2 * a * b * t * u) := by
+  : ⁅ (C_MShort a b i j t hij), (C_MShort a (!b) i j u hij) ⁆ = C_MLong a i (
+    ((!a || !b) * (a || !b) - (a || b) * (!a || b))
+     * t * u) := by
   rw [commutatorElement_def]
   apply mul_inv_eq_of_eq_mul
   apply mul_inv_eq_of_eq_mul
@@ -106,10 +108,19 @@ theorem C_MShort_comm_overlap {a b : Bool} {i j : I} {t u : R} (hij : i ≠ j)
     Bool.not_not, Bool.int_of_neg
   ]
   algebra
-  module
+  match_scalars
+  any_goals ring_nf--x = ((!a || !b) * (a || !b) - (a || b) * (!a || b))
+
+--
+
+private lemma prod2 {a b c : Bool} :
+  -((a || !b) : R) * (!b || !c) * (a || !c) * (!a || c) = (!a || b) * (b || c) := by
+  fin_cases a, b, c
+  all_goals simp [Bool.toRing]
 
 theorem C_MShort_comm_overlap' {a b c : Bool} {i j k : I} {t u : R} (hij : i ≠ j) (hjk : j ≠ k) (hik : i ≠ k)
-  : ⁅ (C_MShort a b i j t hij), (C_MShort (!b) c j k u hjk) ⁆ = (C_MShort a c i k (-b*t*u) hik) := by
+  : ⁅ (C_MShort a b i j t hij), (C_MShort (!b) c j k u hjk) ⁆ = C_MShort a c i k (
+   (a || !b) * (!b || !c) * (a || !c) * t * u) hik := by
   rw [commutatorElement_def]
   apply mul_inv_eq_of_eq_mul
   apply mul_inv_eq_of_eq_mul
@@ -129,13 +140,26 @@ theorem C_MShort_comm_overlap' {a b c : Bool} {i j k : I} {t u : R} (hij : i ≠
     E_mul_disjoint (Signed.ne_of_ne hij.symm),
   ]
   algebra
-  simp only [Bool.int_of_neg]
-  module
+  simp only [square_eq_one]
+  simp only [mul_assoc, Units.inv_eq_val_inv, ←Units.val_pow_eq_pow_val,
+    ←Units.val_mul]
+  match_scalars
+  any_goals ring_nf
+  repeat rw [mul_assoc]
+  rw [←prod2]
+  ring_nf
 
 /- ### Double commutators -/
 
+private lemma prod { a b : Bool } :
+  ((!a || !b) : R) = -(a || b) * (a || !b) * (!a || b) := by
+  fin_cases a, b
+  all_goals simp [Bool.toRing]
+
 theorem C_MLong_C_MShort_comm_overlap {a b : Bool} {i j : I} {t u : R} (hij : i ≠ j)
-  : ⁅ (C_MShort a (!b) i j t hij), (C_MLong b j u) ⁆ = (C_MShort a b i j (t*u) hij) * (C_MLong a i (a * b * t^2 * u)) := by
+  : ⁅ (C_MShort a (!b) i j t hij), (C_MLong b j u) ⁆ =
+    (C_MShort a b i j ((a || b) * (a || (!b)) * t*u) hij) *
+    (C_MLong a i (-(a || b) * (!a || !b)  * (a || !b) ^ 2  * t^2 * u)) := by
   rw [commutatorElement_def]
   apply mul_inv_eq_of_eq_mul
   apply mul_inv_eq_of_eq_mul
@@ -151,8 +175,13 @@ theorem C_MLong_C_MShort_comm_overlap {a b : Bool} {i j : I} {t u : R} (hij : i 
     E_mul_disjoint (Signed.ne_of_ne hij.symm),
   ]
   algebra
-  simp only [Bool.int_of_neg, square_eq_one]
-  module
+  ring_nf
+  match_scalars
+  all_goals ring_nf
+  simp only [square_eq_one]
+  ring_nf
+  rw [prod]
+  ring_nf
 
 /-! ## Diagonal relations -/
 
@@ -160,14 +189,14 @@ def C_Short_n_elt (a b : Bool) (i j : I) (hij : i ≠ j) (t : Rˣ) :=
   (C_MShort a b i j t.val hij) * (C_MShort (!a) (!b) i j (-t.inv) hij) * (C_MShort a b i j t.val hij)
 
 private lemma C_Short_n_elt_form (a b : Bool) (i j : I) (hij : i ≠ j) (t : Rˣ) : (C_Short_n_elt a b i j hij t).val =
-  1 + ((2 * a + b) * t.val) • E (a, i) ((!b), j)
-    + (a * t.inv) • E ((!a), i) (b, j)
-    + ((2 * b + a) * t.val) • E (b, j) ((!a), i)
-    + (b * t.inv) • E ((!b), j) (a, i)
-    + (a * b : R) • E (a, i) (a, i)
-    + (a * b : R) • E (b, j) (b, j)
-    + (a * b : R) • E ((!a), i) ((!a), i)
-    + (a * b : R) • E ((!b), j) ((!b), j)
+  1 + ((a || !b) * t.val) • E (a, i) ((!b), j)
+    - ((!a || b) * t.inv) • E ((!a), i) (b, j)
+    + ((!a || b) * t.val) • E (b, j) ((!a), i)
+    - ((a || !b) * t.inv) • E ((!b), j) (a, i)
+    - E (a, i) (a, i)
+    - E (b, j) (b, j)
+    - E ((!a), i) ((!a), i)
+    - E ((!b), j) ((!b), j)
   := by
   simp only [C_Short_n_elt, C_MShort, Units.val_mul, raw_C_MShort]
   algebra
@@ -179,28 +208,34 @@ private lemma C_Short_n_elt_form (a b : Bool) (i j : I) (hij : i ≠ j) (t : Rˣ
     Bool.not_not
   ]
   algebra
-  simp only [Bool.int_of_neg]
+  -- simp only [Bool.int_of_neg]
   ring_nf
   /- associate to the right so that we can deal with powers of `t` -/
-  -- simp only [mul_assoc, Units.inv_eq_val_inv, ←Units.val_pow_eq_pow_val, ←Units.val_mul]
+  simp only [mul_assoc, Units.inv_eq_val_inv, ←Units.val_pow_eq_pow_val,
+    ←Units.val_mul]
+  ring_nf
+  simp only [square_eq_one]
+  have : (t ^ 2 * t⁻¹) = t := by group
   match_scalars
-  any_goals rw [square_eq_one]
-  any_goals ring_nf
-
-  sorry
+  all_goals ring_nf
+  any_goals simp only [cube_eq, Units.mul_inv]
+  · simp only [mul_assoc, Units.inv_eq_val_inv, ←Units.val_pow_eq_pow_val,
+      ←Units.val_mul]
+    rw [this]
+    ring_nf
+  · rw [mul_comm (t ^ 2 : R), mul_assoc _ (t ^ 2 : R),
+      ←Units.val_pow_eq_pow_val, ←Units.val_mul]
+    rw [this]
+    ring_nf
 
 def C_Short_h_elt (a b : Bool) (i j : I) (hij : i ≠ j) (t : Rˣ) :=
   (C_Short_n_elt a b i j hij t) * (C_Short_n_elt a b i j hij (-1))
 
--- a.toRing * b.toRing * 1 + (a.toRing * ↑t * b.toRing * -1 * 2 + ↑t * -1) * 1 + (a.toRing * b.toRing * 1 + 1 * 1)
--- 2ab + 1 - 2abt - t
--- (2ab+1) * (1-t)
-
 private lemma C_Short_h_elt_form (a b : Bool) (i j : I) (hij : i ≠ j) (t : Rˣ) : (C_Short_h_elt a b i j hij t).val =
-  1 - ((2 * a * b + 1) * (t.val - 1)) • E (a, i) (a, i)
-    - ((2 * a * b + 1) * (t.val - 1)) • E (b, j) (b, j)
-    - ((2 * a * b + 1) * (t.inv - 1)) • E ((!a), i) ((!a), i)
-    - ((2 * a * b + 1) * (t.inv - 1)) • E ((!b), j) ((!b), j)
+  1 + ((t.val - 1)) • E (a, i) (a, i)
+    + ((t.val - 1)) • E (b, j) (b, j)
+    + ((t.inv - 1)) • E ((!a), i) ((!a), i)
+    + ((t.inv - 1)) • E ((!b), j) ((!b), j)
   := by
   simp only [C_Short_h_elt, Units.val_mul, C_Short_n_elt_form]
   algebra
@@ -215,7 +250,7 @@ private lemma C_Short_h_elt_form (a b : Bool) (i j : I) (hij : i ≠ j) (t : Rˣ
   ring_nf
   simp only [Units.inv_eq_val_inv, inv_one, Units.val_one, inv_neg, square_eq_one]
   ring_nf
-  match_scalars
+  module
 
 theorem C_Short_diagonal {a b : Bool} {i j : I} {hij : i ≠ j} {t u : Rˣ} :
   (C_Short_h_elt a b i j hij t) * (C_Short_h_elt a b i j hij u) = (C_Short_h_elt a b i j hij (t*u)) := by
@@ -291,7 +326,6 @@ instance instChevalleyRealization (I : Type TI) [DecidableEq I] [Fintype I] [Lin
     match ζ with
     | Sum.inl ζ => C_MLong ζ.a ζ.i t
     | Sum.inr ζ => C_MShort ζ.a ζ.b ζ.i ζ.j t ζ.hij.ne
-
   M_mul_add := by
     intro ζ t u
     cases ζ with

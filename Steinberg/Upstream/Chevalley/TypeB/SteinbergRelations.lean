@@ -362,11 +362,11 @@ def B_Short_n_elt (a : Bool) (i : I) (t : Rˣ) :=
   (B_MShort a i t.val) * (B_MShort (!a) i (-t.inv)) * (B_MShort a i t.val)
 
 private lemma B_Short_n_elt_form (a : Bool) (i : I) (t : Rˣ) : (B_Short_n_elt a i t).val =
-  1 - 2 • E ZSigned.zero ZSigned.zero
+  1 - (t.val^2) • E (a.inj i) ((!a).inj i)
+    - (t.inv^2) • E ((!a).inj i) (a.inj i)
+    - 2 • E ZSigned.zero ZSigned.zero
     - 1 • E (a.inj i) (a.inj i)
     - 1 • E ((!a).inj i) ((!a).inj i)
-    - (t.val^2) • E (a.inj i) ((!a).inj i)
-    - (t.inv^2) • E ((!a).inj i) (a.inj i)
   := by
   simp only [B_Short_n_elt, B_MShort, Units.val_mul, raw_B_MShort]
   algebra

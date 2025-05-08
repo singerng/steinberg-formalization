@@ -48,8 +48,8 @@ def C_MLong (a : Bool) (i : I) (t : R) : Matrix.GeneralLinearGroup (Signed I) R 
   inv_val := inv_val_of_C_MLong
 
 abbrev raw_C_MShort (a b : Bool) (i j : I) (t : R) (hij : i ≠ j) : Matrix (Signed I) (Signed I) R :=
-  1 + (a * t) • (E (a, i) (!b, j))
-    + (b * t) • (E (b, j) (!a, i))
+  1 + (((a) || (!b)) * t) • (E (a, i) (!b, j))
+    + (((!a) || b) * t) • (E (b, j) (!a, i))
 
 private theorem val_inv_of_C_MShort {a b : Bool} {i j : I} {t : R} {hij : i ≠ j} :
   (raw_C_MShort a b i j t hij) * (raw_C_MShort a b i j (-t) hij) = 1 := by
