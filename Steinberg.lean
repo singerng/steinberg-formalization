@@ -11,3 +11,6 @@ import Steinberg.B3Large
 import Steinberg.B3Small
 import Steinberg.Defs
 import Steinberg.Upstream
+
+-- Used to suppress build warnings looking for a `main` function.
+def main : IO Unit := pure ()

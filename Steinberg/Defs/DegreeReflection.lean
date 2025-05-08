@@ -13,7 +13,6 @@ import Mathlib.GroupTheory.Commutator.Basic
   File dox go here.
 
 -/
-set_option profiler true
 
 namespace Steinberg
 

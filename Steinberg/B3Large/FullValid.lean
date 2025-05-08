@@ -19,6 +19,8 @@ open PartialChevalleySystem B3Large B3LargePosRoot PartialChevalley
   ChevalleyGenerator PartialChevalleyGroup
   Chevalley Chevalley.TypeB Chevalley.ChevalleyRealization
 
+namespace B3LargePosRoot
+
 def toB3Root (ζ : B3LargePosRoot) : BRoot (Fin 3) :=
   match ζ with
   | α =>     Sum.inl (TwoSignVector.mk true false 0 1 (by tauto))
@@ -34,7 +36,11 @@ def toB3Root (ζ : B3LargePosRoot) : BRoot (Fin 3) :=
 abbrev toB3Mat (g : ChevalleyGenerator B3LargePosRoot F) :
   Matrix.GeneralLinearGroup (ZSigned (Fin 3)) F := M (toB3Root g.ζ) g.t
 
-theorem valid :
+end B3LargePosRoot
+
+open B3LargePosRoot
+
+theorem b3Large_valid :
   ∀ r ∈ (fullB3Large F).allRelations, (FreeGroup.lift toB3Mat r) = 1 := by
   intro r h
   simp only [allRelations, Set.mem_iUnion] at h
