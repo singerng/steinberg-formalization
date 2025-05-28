@@ -543,19 +543,11 @@ private lemma image_of_hom_lift_of_comm_of_αβ_βψ {i j : ℕ} (hi : i ≤ α�
 
 private lemma comm_of_αβ_βψ_20 : ∀ (t u : F), ⁅ ⸨αβ, 2, t⸩, ⸨βψ, 0, u⸩ ⁆ = 1 := by
   intro t u
-  apply @trivial_comm_from_embedded_comm_and_pairs _ _ ⸨βψ, 1, u⸩ _ (⸨αβ, 1, t + 1⸩ * ⸨αβ, 0, 1⸩)
-  · mul_assoc_l
-    rw [←raw_nonhom_lift_of_comm_of_αβ_βψ t 1 1 1 0 u]
-    simp only [one_mul, mul_one, mul_zero, add_zero]
-    rw [id_of_βψ]
-    rw [one_mul]
-  · rw [←hom_lift_of_comm_of_αβ_βψ 1 1 0 (by trivial) (by trivial) (by trivial) t u]
-  · apply triv_comm_mul_left
-    rw [←hom_lift_of_comm_of_αβ_βψ 0 1 0 (by trivial) (by trivial) (by trivial) (t+1) u]
-    rw [←hom_lift_of_comm_of_αβ_βψ 0 0 1 (by trivial) (by trivial) (by trivial) 1 u]
-  apply triv_comm_mul_left
-  rw [←hom_lift_of_comm_of_αβ_βψ 1 0 0 (by trivial) (by trivial) (by trivial) (t+1) u]
-  rw [←hom_lift_of_comm_of_αβ_βψ 0 0 0 (by trivial) (by trivial) (by trivial) 1 u]
+  apply @trivial_comm_from_embedded_comm_and_pairs _ _ ⸨βψ, 1, u⸩ _ ⸨αβ, 1, t⸩
+  grw [← raw_nonhom_lift_of_comm_of_αβ_βψ t 0 1 1 0 u]
+  rw [← hom_lift_of_comm_of_αβ_βψ 1 1 0 (by trivial) (by trivial) (by trivial) t u]
+  rw [← hom_lift_of_comm_of_αβ_βψ 0 1 0 (by trivial) (by trivial) (by trivial) t u]
+  rw [← hom_lift_of_comm_of_αβ_βψ 1 0 0 (by trivial) (by trivial) (by trivial) t u]
 
 private lemma comm_of_αβ_βψ_02 : ∀ (t u : F), ⁅ ⸨αβ, 0, t⸩, ⸨βψ, 2, u⸩⁆ = 1 := by
   intro t u

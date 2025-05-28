@@ -116,15 +116,11 @@ private lemma image_of_hom_lift_of_comm_of_αβ_βγ {i j : ℕ} (hi : i ≤ α�
 
 private lemma comm_of_αβ_βγ_20 : ∀ (t u : R), ⁅ ⸨αβ, 2, t⸩, ⸨βγ, 0, u⸩ ⁆ = 1 := by
   intro t u
-  apply @trivial_comm_from_embedded_comm_and_pairs _ _ ⸨βγ, 1, u⸩ _ (⸨αβ, 1, t + 1⸩ * ⸨αβ, 0, 1⸩)
-  grw [← nonhom_lift_of_comm_of_αβ_βγ t 1 1 1 0 u]
+  apply @trivial_comm_from_embedded_comm_and_pairs _ _ ⸨βγ, 1, u⸩ _ ⸨αβ, 1, t⸩
+  grw [← nonhom_lift_of_comm_of_αβ_βγ t 0 1 1 0 u]
   rw [← hom_lift_of_comm_of_αβ_βγ 1 1 0 (by trivial) (by trivial) (by trivial) t u]
-  apply triv_comm_mul_left
-  rw [← hom_lift_of_comm_of_αβ_βγ 0 1 0 (by trivial) (by trivial) (by trivial) (t+1) u]
-  rw [← hom_lift_of_comm_of_αβ_βγ 0 0 1 (by trivial) (by trivial) (by trivial) 1 u]
-  apply triv_comm_mul_left
-  rw [← hom_lift_of_comm_of_αβ_βγ 1 0 0 (by trivial) (by trivial) (by trivial) (t+1) u]
-  rw [← hom_lift_of_comm_of_αβ_βγ 0 0 0 (by trivial) (by trivial) (by trivial) 1 u]
+  rw [← hom_lift_of_comm_of_αβ_βγ 0 1 0 (by trivial) (by trivial) (by trivial) t u]
+  rw [← hom_lift_of_comm_of_αβ_βγ 1 0 0 (by trivial) (by trivial) (by trivial) t u]
 
 -- symmetric to proof of `comm_of_αβ_βγ_20`
 private lemma comm_of_αβ_βγ_02 : ∀ (t u : R), ⁅ ⸨αβ, 0, t⸩, ⸨βγ, 2, u⸩ ⁆ = 1 := by

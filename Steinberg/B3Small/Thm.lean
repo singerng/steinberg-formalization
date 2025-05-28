@@ -148,19 +148,11 @@ private lemma image_of_hom_lift_of_comm_of_βψ_ψω {i j : ℕ} (hi : i ≤ β�
 
 private lemma comm_of_βψ_ψω_20 : ∀ (t u : F), ⁅ ⸨βψ, 2, t⸩, ⸨ψω, 0, u⸩ ⁆ = 1 := by
   intro t u
-  apply @trivial_comm_from_embedded_comm_and_pairs _ _ ⸨ψω, 1, u⸩ _ (⸨βψ, 1, t + 1⸩ * ⸨βψ, 0, 1⸩)
-  mul_assoc_l
-  rw [← nonhom_lift_of_comm_of_βψ_ψω t 1 1 1 0 u]
-  simp only [one_mul, mul_one, mul_zero, add_zero]
-  rw [id_of_ψω] -- TODO-A: maybe should be a simp lemma? we can decide...
-  rw [one_mul]
+  apply @trivial_comm_from_embedded_comm_and_pairs _ _ ⸨ψω, 1, u⸩ _ ⸨βψ, 1, t⸩
+  grw [← nonhom_lift_of_comm_of_βψ_ψω t 0 1 1 0 u]
   rw [← hom_lift_of_comm_of_βψ_ψω 1 1 0 (by trivial) (by trivial) (by trivial) t u]
-  apply triv_comm_mul_left
-  rw [← hom_lift_of_comm_of_βψ_ψω 0 1 0 (by trivial) (by trivial) (by trivial) (t+1) u]
-  rw [← hom_lift_of_comm_of_βψ_ψω 0 0 1 (by trivial) (by trivial) (by trivial) 1 u]
-  apply triv_comm_mul_left
-  rw [← hom_lift_of_comm_of_βψ_ψω 1 0 0 (by trivial) (by trivial) (by trivial) (t+1) u]
-  rw [← hom_lift_of_comm_of_βψ_ψω 0 0 0 (by trivial) (by trivial) (by trivial) 1 u]
+  rw [← hom_lift_of_comm_of_βψ_ψω 0 1 0 (by trivial) (by trivial) (by trivial) t u]
+  rw [← hom_lift_of_comm_of_βψ_ψω 1 0 0 (by trivial) (by trivial) (by trivial) t u]
 
 -- symmetric to proof of `comm_of_βψ_ψω_20`
 private lemma comm_of_βψ_ψω_02 : ∀ (t u : F), ⁅ ⸨βψ, 0, t⸩, ⸨ψω, 2, u⸩ ⁆ = 1 := by
