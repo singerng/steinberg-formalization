@@ -36,4 +36,7 @@ The "Steinberg Group" refers to the authors/contributors listed below.
 
 ## Authors and contributors
 
-***Anonymous***
+* Eric Wang <ejwang2@andrew.cmu.edu>
+* Arohee Bhoja <arohee@cmu.edu>
+* Cayden Codel <ccodel@andrew.cmu.edu>
+* Noah Singer <ngsinger@cs.cmu.edu>
